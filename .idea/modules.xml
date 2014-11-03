@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Citymaps.iml" filepath="$PROJECT_DIR$/Citymaps.iml" />
       <module fileurl="file://$PROJECT_DIR$/citymaps/citymaps.iml" filepath="$PROJECT_DIR$/citymaps/citymaps.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/facebook/facebook.iml" filepath="$PROJECT_DIR$/libraries/facebook/facebook.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libraries/mapenginelibrary/MapEngineLibraryAndroid/mapenginelibrary.iml" filepath="$PROJECT_DIR$/libraries/mapenginelibrary/MapEngineLibraryAndroid/mapenginelibrary.iml" />
     </modules>
   </component>
 </project>
