@@ -4,4 +4,16 @@
 				android:id="@id/mapcontainer"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				tools:context=".view.MainFragment" />
+				tools:context=".view.MainFragment">
+
+	<android.support.v7.widget.Toolbar
+			android:id="@+id/bottomtoolbar"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
