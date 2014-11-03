@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- Default alpha value of app bar over map -->
+	<integer name="ab_alpha">128</integer>
+
+</resources>

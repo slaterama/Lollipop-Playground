@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App strings -->
+
+    <string name="app_name">Citymaps</string>
+	<string name="hello_world">Hello world!</string>
+
+    <!-- Action (menu) strings -->
+
+    <string name="action_settings">Settings</string>
+    <string name="action_profile">Profile</string>
+    <string name="action_friend_finder">Friend Finder</string>
+    <string name="action_search">Search</string>
+
+    <string name="title_activity_test">TestActivity</string>
+
+</resources>

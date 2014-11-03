@@ -1,0 +1,2 @@
+include ':citymaps', ':facebook'
+project(':facebook').projectDir = new File('libraries/facebook')

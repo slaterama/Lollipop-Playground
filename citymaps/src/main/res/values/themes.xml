@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme -->
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+
+		<!-- Customize the color palette -->
+		<item name="colorPrimary">@color/color_primary</item>
+		<item name="colorPrimaryDark">@color/color_primary_dark</item>
+		<item name="colorAccent">@color/color_accent</item>
+	</style>
+
+	<!-- Theme with no title/action/app bar -->
+
+	<style name="AppTheme.NoTitleOrActionBar">
+		<item name="android:windowActionBar">false</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="windowActionBar">false</item>
+	</style>
+
+	<!-- Base application theme with translucent app bar -->
+	<!-- Inspired by "Pushing the ActionBar to the Next Level" by Cyril Mottier,
+	     http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/ -->
+
+	<style name="AppTheme.TranslucentAppBar">
+		<item name="actionBarStyle">@style/Widget.AppBar.Transparent</item>
+	</style>
+
+	<!-- Base application theme with translucent app bar and overlay -->
+
+	<style name="AppTheme.TranslucentAppBar.Overlay">
+		<item name="windowActionBarOverlay">true</item>
+	</style>
+
+</resources>

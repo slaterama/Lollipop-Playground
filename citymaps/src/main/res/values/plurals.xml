@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- CM Object plurals -->
+
+	<plurals name="cmobj_unknown">
+		<item quantity="one">unknown</item>
+		<item quantity="other">unknown</item>
+	</plurals>
+
+	<plurals name="cmobj_business">
+		<item quantity="one">business</item>
+		<item quantity="other">businesses</item>
+	</plurals>
+
+	<plurals name="cmobj_collection">
+		<item quantity="one">collection</item>
+		<item quantity="other">collections</item>
+	</plurals>
+
+	<plurals name="cmobj_user">
+		<item quantity="one">user</item>
+		<item quantity="other">users</item>
+	</plurals>
+
+	<plurals name="cmobj_tip">
+		<item quantity="one">tip</item>
+		<item quantity="other">tips</item>
+	</plurals>
+
+	<plurals name="cmobj_marker">
+		<item quantity="one">marker</item>
+		<item quantity="other">markers</item>
+	</plurals>
+
+	<plurals name="cmobj_region">
+		<item quantity="one">region</item>
+		<item quantity="other">regions</item>
+	</plurals>
+
+	<plurals name="cmobj_poi">
+		<item quantity="one">place of interest</item>
+		<item quantity="other">places of interest</item>
+	</plurals>
+
+	<plurals name="cmobj_geocoded_address">
+		<item quantity="one">address</item>
+		<item quantity="other">addresses</item>
+	</plurals>
+
+	<plurals name="cmobj_country">
+		<item quantity="one">country</item>
+		<item quantity="other">countries</item>
+	</plurals>
+
+	<plurals name="cmobj_state">
+		<item quantity="one">state</item>
+		<item quantity="other">states</item>
+	</plurals>
+
+	<plurals name="cmobj_city">
+		<item quantity="one">city</item>
+		<item quantity="other">cities</item>
+	</plurals>
+
+	<plurals name="cmobj_neighborhood">
+		<item quantity="one">neighborhood</item>
+		<item quantity="other">neighborhoods</item>
+	</plurals>
+
+	<!-- Capitalized CM Object plurals -->
+
+	<plurals name="cmobj_unknown_capital">
+		<item quantity="one">Unknown</item>
+		<item quantity="other">Unknown</item>
+	</plurals>
+
+	<plurals name="cmobj_business_capital">
+		<item quantity="one">Business</item>
+		<item quantity="other">Businesses</item>
+	</plurals>
+
+	<plurals name="cmobj_collection_capital">
+		<item quantity="one">Collection</item>
+		<item quantity="other">Collections</item>
+	</plurals>
+
+	<plurals name="cmobj_user_capital">
+		<item quantity="one">User</item>
+		<item quantity="other">Users</item>
+	</plurals>
+
+	<plurals name="cmobj_tip_capital">
+		<item quantity="one">Tip</item>
+		<item quantity="other">Tips</item>
+	</plurals>
+
+	<plurals name="cmobj_marker_capital">
+		<item quantity="one">Marker</item>
+		<item quantity="other">Markers</item>
+	</plurals>
+
+	<plurals name="cmobj_region_capital">
+		<item quantity="one">Region</item>
+		<item quantity="other">Regions</item>
+	</plurals>
+
+	<plurals name="cmobj_poi_capital">
+		<item quantity="one">Place of Interest</item>
+		<item quantity="other">Places of Interest</item>
+	</plurals>
+
+	<plurals name="cmobj_geocoded_address_capital">
+		<item quantity="one">Address</item>
+		<item quantity="other">Addresses</item>
+	</plurals>
+
+	<plurals name="cmobj_country_capital">
+		<item quantity="one">Country</item>
+		<item quantity="other">Countries</item>
+	</plurals>
+
+	<plurals name="cmobj_state_capital">
+		<item quantity="one">State</item>
+		<item quantity="other">States</item>
+	</plurals>
+
+	<plurals name="cmobj_city_capital">
+		<item quantity="one">City</item>
+		<item quantity="other">Cities</item>
+	</plurals>
+
+	<plurals name="cmobj_neighborhood_capital">
+		<item quantity="one">Neighborhood</item>
+		<item quantity="other">Neighborhoods</item>
+	</plurals>
+
+</resources>
