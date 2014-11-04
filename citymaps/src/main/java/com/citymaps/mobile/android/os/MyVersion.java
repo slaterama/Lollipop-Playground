@@ -5,7 +5,7 @@ import android.text.TextUtils;
 public class MyVersion
 		implements Comparable<MyVersion> {
 
-	// TODO Should "build" be constrained to at least 1 ?
+	// TODO Should "build" be constrained to at least 1 ? A: Yes
 	// TODO Should we allow any characters other than digit / a-z / hyphen / underscore ? A: No
 
 	/*
