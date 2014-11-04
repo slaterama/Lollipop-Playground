@@ -1,9 +1,15 @@
 package com.citymaps.mobile.android.config;
 
-public class ApiVersion3 extends Api {
+import com.citymaps.mobile.android.model.vo.ApiBuild;
+
+public class ApiVersion3 extends ApiBase {
+
+	public ApiVersion3(ApiBuild apiBuild) {
+		super(apiBuild);
+	}
 
 	@Override
-	public String getEndpointString(Api.Endpoint endpoint, Object... args) {
-		return null;
+	public void defineEndpoints(EndpointMap endpointMap) {
+		super.defineEndpoints(endpointMap);
 	}
 }

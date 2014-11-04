@@ -8,6 +8,8 @@ import android.os.IBinder;
 import com.citymaps.mobile.android.provider.ConfigDatabase;
 */
 
+// TODO Should this be an IntentService?
+
 public class StartupService extends Service {
 
 	/*
