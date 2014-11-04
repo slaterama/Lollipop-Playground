@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.model.vo;
 
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -10,32 +11,34 @@ public class ApiBuild {
 	/**
 	 * The Citymaps API version.
 	 */
-	private int mVersion;
+	@SerializedName("version")
+	private int mVersionNumber;
 
 	/**
 	 * The Citymaps API build string.
 	 */
-	private String mBuild;
+	@SerializedName("build")
+	private String mBuildString;
 
-	public ApiBuild(int version, String build) {
-		mVersion = version;
-		mBuild = build;
+	public ApiBuild(int versionNumber, String buildString) {
+		mVersionNumber = versionNumber;
+		mBuildString = buildString;
 	}
 
 	/**
 	 * Returns the Citymaps API version.
 	 * @return The Citymaps API version.
 	 */
-	public int getVersion() {
-		return mVersion;
+	public int getVersionNumber() {
+		return mVersionNumber;
 	}
 
 	/**
 	 * Returns the Citymaps API build string.
 	 * @return The build string.
 	 */
-	public String getBuild() {
-		return mBuild;
+	public String getBuildString() {
+		return mBuildString;
 	}
 
 	@Override

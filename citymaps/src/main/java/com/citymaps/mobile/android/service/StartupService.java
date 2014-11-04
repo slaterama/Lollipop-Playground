@@ -1,9 +1,11 @@
 package com.citymaps.mobile.android.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import com.citymaps.mobile.android.map.MapViewService;
 /*
 import com.citymaps.mobile.android.provider.ConfigDatabase;
 */
@@ -29,6 +31,11 @@ public class StartupService extends Service {
 		ConfigDatabase configDatabase = new ConfigDatabase(this);
 		configDatabase.getWritableDatabase();
 		*/
+
+		// Start other services
+		Context applicationContext = getApplicationContext();
+		applicationContext.startService(new Intent(applicationContext, SessionService.class));
+		applicationContext.startService(new Intent(applicationContext, MapViewService.class));
 
 		return START_STICKY;
 	}

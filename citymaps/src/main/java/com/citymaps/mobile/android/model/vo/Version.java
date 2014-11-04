@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * A class representing information about the Citymaps API version.
  */
-public class ApiVersion {
+public class Version {
 
 	/**
 	 * The return code associated with this API request.

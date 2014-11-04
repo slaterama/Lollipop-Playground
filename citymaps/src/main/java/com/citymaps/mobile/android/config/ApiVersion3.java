@@ -4,12 +4,7 @@ import com.citymaps.mobile.android.model.vo.ApiBuild;
 
 public class ApiVersion3 extends ApiBase {
 
-	public ApiVersion3(ApiBuild apiBuild) {
-		super(apiBuild);
-	}
-
-	@Override
-	public void defineEndpoints(EndpointMap endpointMap) {
-		super.defineEndpoints(endpointMap);
+	public ApiVersion3(Environment environment, ApiBuild apiBuild) {
+		super(environment, apiBuild);
 	}
 }

@@ -32,7 +32,7 @@ public class PackageUtils {
 		return new BuildVersion(getBaseApiBuildString(context));
 	}
 
-	public static int getVersionCode(Context context) {
+	public static int getAppVersionCode(Context context) {
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 			return info.versionCode;
@@ -41,7 +41,7 @@ public class PackageUtils {
 		}
 	}
 
-	public static String getVersionName(Context context) {
+	public static String getAppVersionName(Context context) {
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 			return info.versionName;
@@ -50,12 +50,15 @@ public class PackageUtils {
 		}
 	}
 
-	public static BuildVersion getVersion(Context context) {
+	public static BuildVersion getAppBuildVersion(Context context) {
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 			return new BuildVersion(info.versionName);
 		} catch (PackageManager.NameNotFoundException e) {
 			return null;
 		}
+	}
+
+	private PackageUtils() {
 	}
 }

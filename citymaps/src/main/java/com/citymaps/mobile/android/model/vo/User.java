@@ -8,6 +8,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * A user of the Citymaps application.
+ * <p>Examples:
+ * <ul>
+ *     <li>Development: </li>
+ * </ul>
+ * </p>
  */
 public class User implements CitymapsObject {
 

@@ -3,7 +3,7 @@ package com.citymaps.mobile.android.http.response;
 import com.citymaps.mobile.android.app.DataWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.model.vo.ApiBuild;
-import com.citymaps.mobile.android.model.vo.ApiVersion;
+import com.citymaps.mobile.android.model.vo.Version;
 import com.google.gson.JsonElement;
 
 /**
@@ -19,7 +19,7 @@ public class BuildResponseHandler extends CitymapsResponseHandler<ApiBuild> {
 	 */
 	@Override
 	protected Wrapper<ApiBuild, Exception> wrapResult(JsonElement json) {
-		ApiVersion version = getGson().fromJson(json, ApiVersion.class);
+		Version version = getGson().fromJson(json, Version.class);
 		ApiBuild build = new ApiBuild(version.getVersion(), version.getBuild());
 		return new DataWrapper<ApiBuild, Exception>(build);
 	}

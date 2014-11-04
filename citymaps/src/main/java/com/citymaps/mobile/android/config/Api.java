@@ -1,49 +1,57 @@
 package com.citymaps.mobile.android.config;
 
 import com.citymaps.mobile.android.model.vo.ApiBuild;
+import com.citymaps.mobile.android.util.LogEx;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Api {
 
-	public static Api newInstance(ApiBuild apiBuild) {
-		int version = apiBuild.getVersion();
-		if (version >= 3) {
-			return new ApiVersion3(apiBuild);
+	public static Api newInstance(Environment environment, ApiBuild apiBuild) {
+		int versionNumber = apiBuild.getVersionNumber();
+		if (versionNumber >= 3) {
+			return new ApiVersion3(environment, apiBuild);
 		} else {
-			return new ApiBase(apiBuild);
+			return new ApiBase(environment, apiBuild);
 		}
 	}
 
-	private ApiBuild mApiBuild;
+	protected Environment mEnvironment;
 
-	private EndpointMap mEndpointMap;
+	protected ApiBuild mApiBuild;
 
-	public Api(ApiBuild apiBuild) {
+	private Map<Endpoint, String> mEndpointMap;
+
+	public Api(Environment environment, ApiBuild apiBuild) {
 		super();
+		mEnvironment = environment;
 		mApiBuild = apiBuild;
-		mEndpointMap = new EndpointMap();
-		defineEndpoints(mEndpointMap);
+		mEndpointMap = new HashMap<Endpoint, String>();
 	}
 
-	public abstract void defineEndpoints(EndpointMap endpointMap);
+	protected void configureEndpoint(Endpoint endpoint, String endpointString) {
+		mEndpointMap.put(endpoint, endpointString);
+	}
 
-	public String getEndpointString(Endpoint endpoint, Object... args) {
-		String endpointString = null;
-		String unformattedEndpointString = mEndpointMap.get(endpoint);
-		if (unformattedEndpointString != null) {
-			endpointString = String.format(unformattedEndpointString, args);
+	public String getUrlString(Endpoint endpoint, Object... args) {
+		String urlString = null;
+		try {
+			String endpointString = mEndpointMap.get(endpoint);
+			Host host = endpoint.getHost();
+			URL url = mEnvironment.buildUrl(host, endpointString, args);
+			urlString = url.toString();
+		} catch (MalformedURLException e) {
+			if (LogEx.isLoggable(LogEx.ERROR)) {
+				LogEx.e(e.getMessage(), e);
+			}
+		} catch (NullPointerException e) {
+			if (LogEx.isLoggable(LogEx.ERROR)) {
+				LogEx.e(e.getMessage(), e);
+			}
 		}
-		return endpointString;
-	}
-
-	protected static class EndpointMap extends HashMap<Endpoint, String> {}
-
-	public static enum Endpoint {
-		BUILD,
-		USER,
-		PLACE,
-		COLLECTIONS,
-		COLLECTIONS_FOR_USER
+		return urlString;
 	}
 }
