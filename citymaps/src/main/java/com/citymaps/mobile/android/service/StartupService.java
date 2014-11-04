@@ -4,7 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import com.citymaps.mobile.android.os.MyVersion2;
+import com.citymaps.mobile.android.os.MyVersion3;
 /*
 import com.citymaps.mobile.android.provider.ConfigDatabase;
 */
@@ -29,7 +29,7 @@ public class StartupService extends Service {
 		configDatabase.getWritableDatabase();
 		*/
 
-		MyVersion2.testMyVersion2();
+		MyVersion3.testMyVersion3();
 
 		return START_STICKY;
 	}
@@ -45,9 +45,11 @@ public class StartupService extends Service {
 
 	public class StartupBinder extends Binder {
 
+		/*
 		public void openOrCreateDatabase() {
 
 		}
+		*/
 
 	}
 }
