@@ -1,11 +1,3 @@
-//
-//  FileName.java
-//  Citymaps
-//
-//  Created by Scott Slater on 11/4/14.
-//  Copyright (c) 2014 CityMaps. All rights reserved.
-//
-
 package com.citymaps.mobile.android.http.request;
 
 import android.content.Context;
