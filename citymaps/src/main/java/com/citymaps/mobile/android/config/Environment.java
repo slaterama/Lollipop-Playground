@@ -51,12 +51,12 @@ public abstract class Environment {
 		HostInfo info = mHostMap.get(host);
 		if (info == null) {
 			info = new HostInfo();
+			mHostMap.put(host, info);
 		}
-		info.mProtocol = protocol;
 		info.mHost = host;
+		info.mProtocol = protocol;
 		info.mHostString = hostString;
 		info.mPort = port;
-		mHostMap.put(host, info);
 	}
 
 	protected void configureHost(Host host, String protocol, String hostString) {
@@ -69,8 +69,8 @@ public abstract class Environment {
 	}
 
 	protected static class HostInfo {
-		protected String mProtocol;
 		protected Host mHost;
+		protected String mProtocol;
 		protected String mHostString;
 		protected int mPort;
 	}

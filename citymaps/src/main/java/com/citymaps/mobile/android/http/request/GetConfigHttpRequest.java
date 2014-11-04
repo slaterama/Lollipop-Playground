@@ -2,20 +2,19 @@ package com.citymaps.mobile.android.http.request;
 
 import android.content.Context;
 import com.citymaps.mobile.android.app.Wrapper;
+import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.model.vo.Config;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.params.HttpParams;
 
-import java.net.MalformedURLException;
-
 public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 
-	public static GetConfigHttpRequest makeRequest(Context context, String serverName) {
-		return new GetConfigHttpRequest(context, serverName);
+	public static GetConfigHttpRequest makeRequest(Context context, Api api) {
+		return new GetConfigHttpRequest(context, api);
 	}
 
-	private GetConfigHttpRequest(Context context, String serverName, Object... args) {
-		super(context, serverName, args);
+	public GetConfigHttpRequest(Context context, Api api, Object... args) {
+		super(context, api, args);
 	}
 
 	@Override
@@ -24,12 +23,7 @@ public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 	}
 
 	@Override
-	public String getUrlString(String serverName, Object... args) throws MalformedURLException {
-		return null;
-	}
-
-	@Override
-	public HttpParams getParams(String serverName, Object... args) {
+	public HttpParams getParams(Object... args) {
 		return null;
 	}
 }
