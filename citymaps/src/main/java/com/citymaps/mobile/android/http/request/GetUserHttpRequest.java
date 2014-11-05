@@ -1,9 +1,9 @@
 package com.citymaps.mobile.android.http.request;
 
-import android.content.Context;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.http.response.UserResponseHandler;
 import com.citymaps.mobile.android.model.vo.User;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.params.BasicHttpParams;
@@ -19,31 +19,29 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	/**
 	 * Returns a GetUserHttpRequest instance appropriate to the specified server.
 	 *
-	 * @param context       The context to use.
 	 * @param api           The {@link Api} in which this request will be executed.
 	 * @param userId        The Citymaps User ID that will be used to get the user.
 	 * @param citymapsToken The Citymaps token that will be used to get the user.
 	 * @return A {@link Wrapper} object that will wrap either the
 	 * user if the request succeeded, or any Exception that may have been encountered along the way.
 	 */
-	public static GetUserHttpRequest makeRequest(Context context, Api api, String userId, String citymapsToken) {
+	public static GetUserHttpRequest makeRequest(Api api, String userId, String citymapsToken) {
 		String encodedUserId = encode(userId);
 		String encodedCitymapsToken = encode(citymapsToken);
-		return new GetUserHttpRequest(context, api, encodedUserId, encodedCitymapsToken);
+		return new GetUserHttpRequest(api, encodedUserId, encodedCitymapsToken);
 	}
 
 	/**
 	 * Creates a new GetUserHttpRequest using the specified server and arguments. Note that this is
 	 * a private constructor; build requests should be created using
-	 * {@link #makeRequest(Context, Api, String, String)}.
+	 * {@link #makeRequest(Api, String, String)}.
 	 *
-	 * @param context       The context to use.
 	 * @param api           The {@link Api} in which this request will be executed.
 	 * @param userId        The Citymaps User ID that will be used to get the user.
 	 * @param citymapsToken The Citymaps token that will be used to get the user.
 	 */
-	private GetUserHttpRequest(Context context, Api api, String userId, String citymapsToken) {
-		super(context, api, userId, citymapsToken);
+	private GetUserHttpRequest(Api api, String userId, String citymapsToken) {
+		super(api, userId, citymapsToken);
 	}
 
 	/**
@@ -82,6 +80,6 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 */
 	@Override
 	protected ResponseHandler<Wrapper<User, Exception>> getResponseHandler() {
-		return null; // TODO new UserResponseHandler();
+		return new UserResponseHandler();
 	}
 }

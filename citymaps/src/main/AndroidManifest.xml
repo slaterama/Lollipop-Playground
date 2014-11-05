@@ -40,12 +40,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".view.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.TranslucentAppBar.Overlay" >
         </activity>
+
         <activity
             android:name=".view.ProfileActivity"
             android:label="@string/title_activity_profile"
@@ -56,17 +58,35 @@
             android:name=".service.StartupService"
             android:enabled="true"
             android:exported="false" >
-        </service>
-        <service
-            android:name=".map.MapViewService"
-            android:enabled="true"
-            android:exported="false" >
-        </service>
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.action.STARTUP_SERVICE"/>
+
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+		</service>
+
         <service
             android:name=".service.SessionService"
             android:enabled="true"
             android:exported="false" >
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.action.SESSION_SERVICE"/>
+
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
         </service>
-    </application>
+
+		<service
+				android:name=".map.MapViewService"
+				android:enabled="true"
+				android:exported="false" >
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.action.MAP_VIEW_SERVICE"/>
+
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+		</service>
+
+	</application>
 
 </manifest>

@@ -55,6 +55,10 @@ public abstract class Api {
 		mEndpointMap = new HashMap<Endpoint.Type, Endpoint>(Endpoint.Type.values().length);
 	}
 
+	public Context getContext() {
+		return mContext;
+	}
+
 	public abstract int getApiVersion();
 
 	public abstract SoftwareVersion getApiBuild();

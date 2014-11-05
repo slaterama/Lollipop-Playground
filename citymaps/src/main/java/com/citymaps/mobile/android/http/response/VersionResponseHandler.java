@@ -9,7 +9,7 @@ import com.google.gson.JsonElement;
 /**
  * A ResponseHandler class designed to handle a ApiBuild HTTP response.
  */
-public class BuildResponseHandler extends CitymapsResponseHandler<ApiBuild> {
+public class VersionResponseHandler extends CitymapsResponseHandler<ApiBuild> {
 
 	/**
 	 * Wraps Development build data.

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<!-- Material Design metrics -->
+
+
+
+	<!-- Material Design colors -->
+
 	<!-- Red -->
 
 	<color name="material_red_50">#fde0dc</color>

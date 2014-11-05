@@ -50,22 +50,7 @@ public class MainActivity extends ActionBarActivity
 			case R.id.action_settings:
 				return true;
 			case R.id.action_profile:
-
-				// TODO VERY TEMP. Just trying to make an Http request
-				/*
-				new AsyncTask<Void, Void, Void>() {
-					@Override
-					protected Void doInBackground(Void... params) {
-						GetBuildHttpRequest r = GetBuildHttpRequest.makeRequest(MainActivity.this, "Production", "", "");
-						Wrapper<ApiBuild, Exception> result = r.execute();
-
-						return null;
-					}
-				}.execute();
-				*/
-
 				startActivity(new Intent(this, ProfileActivity.class));
-
 				return true;
 		}
         return super.onOptionsItemSelected(item);

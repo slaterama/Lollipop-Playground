@@ -52,16 +52,18 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	/**
 	 * Creates a new instance of CitymapsHttpGet using the specified server name and the specified arguments.
 	 *
-	 * @param context The context to use.
 	 * @param api     The {@link Api} in which this request will be executed.
 	 * @param args    The arguments that will be used to get the URL string and HTTP parameter object.
 	 */
-	public CitymapsHttpGet(Context context, Api api, Object... args) {
+	public CitymapsHttpGet(Api api, Object... args) {
 		super();
-		mContext = context;
+		mContext = api.getContext();
 		try {
 			setURI(URI.create(getUrlString(api, args)));
-			setParams(getParams(args));
+			HttpParams params = getParams(args);
+			if (params != null) {
+				setParams(params);
+			}
 		} catch (MalformedURLException e) {
 			throw new CitymapsRuntimeException(e.getMessage(), e);
 		}

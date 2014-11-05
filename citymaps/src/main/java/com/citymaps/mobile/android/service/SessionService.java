@@ -5,13 +5,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import com.citymaps.mobile.android.config.Api;
-import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.os.SoftwareVersion;
-import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.PackageUtils;
-
-import java.net.MalformedURLException;
 
 public class SessionService extends Service {
 
@@ -33,6 +29,7 @@ public class SessionService extends Service {
 		SoftwareVersion apiBuild = PackageUtils.getBaseApiBuild(this, SoftwareVersion.DEFAULT_VERSION);
 		mApi = Api.newInstance(mEnvironment, apiVersion, apiBuild);
 
+		/*
 		try {
 			String urlString = mApi.buildUrlString(Endpoint.Type.USER);
 			LogEx.d(String.format("urlString=%s", urlString));
@@ -45,6 +42,7 @@ public class SessionService extends Service {
 		} catch (MalformedURLException e) {
 
 		}
+		*/
 	}
 
 	@Override
@@ -56,6 +54,8 @@ public class SessionService extends Service {
     }
 
 	public class SessionBinder extends Binder {
-
+		public Api getApi() {
+			return mApi;
+		}
 	}
 }

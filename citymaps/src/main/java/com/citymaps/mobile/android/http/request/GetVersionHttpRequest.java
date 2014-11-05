@@ -1,10 +1,9 @@
 package com.citymaps.mobile.android.http.request;
 
-import android.content.Context;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.http.response.BuildResponseHandler;
+import com.citymaps.mobile.android.http.response.VersionResponseHandler;
 import com.citymaps.mobile.android.model.vo.ApiBuild;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.params.BasicHttpParams;
@@ -15,29 +14,27 @@ import java.net.MalformedURLException;
 /**
  * A CitymapsHttpGet class that returns the build of the API currently being used.
  */
-public class GetBuildHttpRequest extends CitymapsHttpGet<ApiBuild> {
+public class GetVersionHttpRequest extends CitymapsHttpGet<ApiBuild> {
 
 	/**
 	 * Returns a GetBuildHttpRequest instance appropriate to the specified server.
 	 *
-	 * @param context The context to use.
 	 * @param api     The {@link Api} in which this request will be executed.
 	 * @return A GetBuildHttpRequest
 	 */
-	public static GetBuildHttpRequest makeRequest(Context context, Api api) {
-		return new GetBuildHttpRequest(context, api);
+	public static GetVersionHttpRequest makeRequest(Api api) {
+		return new GetVersionHttpRequest(api);
 	}
 
 	/**
 	 * Creates a new GetBuildHttpRequest using the specified server and arguments. Note that this is
 	 * a private constructor; build requests should be created using
-	 * {@link #makeRequest(Context, Api)}.
+	 * {@link #makeRequest(Api)}.
 	 *
-	 * @param context The context to use.
 	 * @param api     The {@link Api} in which this request will be executed.
 	 */
-	private GetBuildHttpRequest(Context context, Api api) {
-		super(context, api);
+	private GetVersionHttpRequest(Api api) {
+		super(api);
 	}
 
 	/**
@@ -76,6 +73,6 @@ public class GetBuildHttpRequest extends CitymapsHttpGet<ApiBuild> {
 	 */
 	@Override
 	protected ResponseHandler<Wrapper<ApiBuild, Exception>> getResponseHandler() {
-		return new BuildResponseHandler();
+		return new VersionResponseHandler();
 	}
 }
