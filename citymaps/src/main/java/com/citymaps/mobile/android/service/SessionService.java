@@ -5,7 +5,11 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
+import com.citymaps.mobile.android.os.SoftwareVersion;
+import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.PackageUtils;
 
 public class SessionService extends Service {
 
@@ -20,19 +24,21 @@ public class SessionService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		SoftwareVersion appVersion = PackageUtils.getAppVersion(this, SoftwareVersion.DEFAULT_VERSION);
+		mEnvironment = Environment.newInstance(appVersion.isDevelopment()
+				? Environment.Type.DEVELOPMENT : Environment.Type.PRODUCTION);
+		int apiVersion = PackageUtils.getBaseApiVersion(this, 1);
+		SoftwareVersion apiBuild = PackageUtils.getBaseApiBuild(this, SoftwareVersion.DEFAULT_VERSION);
+		mApi = Api.newInstance(mEnvironment, apiVersion, apiBuild);
 
-		/* TODO catch exceptions
-		BuildVersion appBuildVersion = PackageUtils.getAppBuildVersion(this);
+		String urlString = mApi.buildUrlString(this, Endpoint.Type.USER);
+		LogEx.d(String.format("urlString=%s", urlString));
 
-		mEnvironment = Environment.newInstance(appBuildVersion);
+		urlString = mApi.buildUrlString(this, Endpoint.Type.USER, mEnvironment.getGhostUserId());
+		LogEx.d(String.format("urlString=%s", urlString));
 
-		int baseApiVersionNumber = PackageUtils.getBaseApiVersionNumber(this);
-		BuildVersion baseApiBuildVersion = PackageUtils.getBaseApiBuildVersion(this);
-
-		ApiBuild tempBuild = new ApiBuild(baseApiVersionNumber, baseApiBuildVersion.toString());
-		mApi = Api.newInstance(mEnvironment, tempBuild);
-		*/
-
+		urlString = mApi.buildUrlString(this, Endpoint.Type.CONFIG);
+		LogEx.d(String.format("urlString=%s", urlString));
 	}
 
 	@Override

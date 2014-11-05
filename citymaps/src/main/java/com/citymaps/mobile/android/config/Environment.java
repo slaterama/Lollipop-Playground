@@ -1,100 +1,64 @@
 package com.citymaps.mobile.android.config;
 
-import android.text.TextUtils;
-import com.citymaps.mobile.android.os.BuildVersion;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Environment {
 
-	private final static String DEVELOPMENT_QUALIFIER_REGEX = "^dev";
-	private final static String STAGING_QUALIFIER_REGEX = "^stag";
+	protected static final String GHOST_USER_ID_PROD = "345a8d0a-922b-4ff7-81ba-3000c2d55e4d";
+	protected static final String GHOST_USER_ID_DEV = "28e20039-9742-45b6-a565-07a7acd88908";
 
-	public final static String STANDARD_PROTOCOL = "http";
-	public final static String SECURE_PROTOCOL = "https";
-
-	public static Environment newInstance(BuildVersion buildVersion) {
-		return newInstance(Type.fromBuildVersion(buildVersion));
-	}
+	protected static final String CONFIG_ENDPOINT_PROD = "riak/appconfig/android_config.json";
+	protected static final String CONFIG_ENDPOINT_DEV = "riak/appconfig/android_config_dev.json";
 
 	public static Environment newInstance(Type type) {
-		if (type == null) {
-			return null;
-		} else switch (type) {
+		switch (type) {
 			case DEVELOPMENT:
 				return new EnvironmentDevelopment();
-			case STAGING:
-				return new EnvironmentStaging();
 			case PRODUCTION:
 			default:
 				return new EnvironmentProduction();
 		}
 	}
 
-	private Map<Host, HostInfo> mHostMap;
+	private Map<Server.Type, Server> mServerMap;
 
-	protected Environment() {
+	public Environment() {
 		super();
-		mHostMap = new HashMap<Host, HostInfo>(Host.values().length);
-		configureHost(Host.ASSETS, STANDARD_PROTOCOL, "r.citymaps.com");
-		configureHost(Host.MAP_TILE, SECURE_PROTOCOL, "tilecache.citymaps.com");
-		configureHost(Host.BUSINESS_TILE, SECURE_PROTOCOL, "tilecache.citymaps.com");
-		configureHost(Host.REGION_TILE, SECURE_PROTOCOL, "tilecache.citymaps.com");
+		mServerMap = new HashMap<Server.Type, Server>(Server.Type.values().length);
 	}
 
 	public abstract Type getType();
 
-	protected void configureHost(Host host, String protocol, String hostString, int port) {
-		HostInfo info = mHostMap.get(host);
-		if (info == null) {
-			info = new HostInfo();
-			mHostMap.put(host, info);
+	public abstract String getConfigEndpoint();
+
+	protected Server createServer(Server.Type type) {
+		switch (type) {
+			case MAP_TILE:
+			case BUSINESS_TILE:
+			case REGION_TILE:
+				return new Server(type, "tilecache.citymaps.com", Server.Protocol.SECURE);
+			default:
+				return null;
 		}
-		info.mHost = host;
-		info.mProtocol = protocol;
-		info.mHostString = hostString;
-		info.mPort = port;
 	}
 
-	protected void configureHost(Host host, String protocol, String hostString) {
-		configureHost(host, protocol, hostString, -1);
-	}
+	public abstract String getGhostUserId();
 
-	public URL buildUrl(Host host, String endpointString, Object... args) throws MalformedURLException {
-		HostInfo info = mHostMap.get(host);
-		return new URL(info.mProtocol, info.mHostString, info.mPort, String.format(endpointString, args));
-	}
-
-	protected static class HostInfo {
-		protected Host mHost;
-		protected String mProtocol;
-		protected String mHostString;
-		protected int mPort;
+	public Server getServer(Server.Type type) {
+		Server server = mServerMap.get(type);
+		if (server == null) {
+			server = createServer(type);
+			if (server == null) {
+				throw new IllegalStateException(String.format("No server defined for '%s' in %s environment", type, getType().name().toLowerCase()));
+			}
+			mServerMap.put(type, server);
+		}
+		return server;
 	}
 
 	public static enum Type {
 		PRODUCTION,
-		DEVELOPMENT,
-		STAGING;
-
-		public static Type fromBuildVersion(BuildVersion buildVersion) {
-			Type type = null;
-			if (buildVersion != null) {
-				String qualifier = buildVersion.getQualifier();
-				if (TextUtils.isEmpty(qualifier)) {
-					type = PRODUCTION;
-				} else if (qualifier.matches(DEVELOPMENT_QUALIFIER_REGEX)) {
-					type = DEVELOPMENT;
-				} else if (qualifier.matches(STAGING_QUALIFIER_REGEX)) {
-					type = STAGING;
-				} else {
-					type = PRODUCTION;
-				}
-			}
-			return type;
-		}
+		DEVELOPMENT
 	}
 }

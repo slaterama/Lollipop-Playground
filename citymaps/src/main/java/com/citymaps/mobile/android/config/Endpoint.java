@@ -1,24 +1,81 @@
 package com.citymaps.mobile.android.config;
 
-public enum Endpoint {
-	CONFIG(Host.CONFIG),
-	BUILD(),
-	USER(),
-	PLACE(),
-	COLLECTIONS(),
-	COLLECTIONS_FOR_USER();
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
-	private Host mHost;
+public class Endpoint {
 
-	private Endpoint(Host host) {
-		mHost = host;
+	public static final int APPEND_TIMESTAMP = 0x00000001;
+	public static final int APPEND_ANDROID_VERSION = 0x00000002;
+	public static final int APPEND_USER_ID = 0x00000004;
+	public static final int APPEND_DEVICE_ID = 0x00000008;
+	public static final int APPEND_SECRET = 0x00000010;
+
+	public static final int APPEND_CITYMAPS_TOKEN = 0x00000020;
+	public static final int APPEND_ENDPOINT_VERSION = 0x00000040;
+
+	public static final int APPEND_DEFAULT = APPEND_TIMESTAMP|APPEND_ANDROID_VERSION|
+			APPEND_USER_ID|APPEND_DEVICE_ID|APPEND_SECRET;
+
+	public static final int APPEND_DEFAULT_TOKEN = APPEND_DEFAULT|APPEND_CITYMAPS_TOKEN;
+
+	private Type mType;
+
+	private Server.Type mServerType;
+
+	private String mFile;
+
+	private int mFlags;
+
+	public Endpoint(Type type, Server.Type serverType, String file, int flags) {
+		if (type == null) {
+			throw new IllegalArgumentException("type can not be null");
+		}
+		if (serverType == null) {
+			throw new IllegalArgumentException("serverType can not be null");
+		}
+		if (file == null) {
+			throw new IllegalArgumentException("file can not be null");
+		}
+		if (flags < 0) {
+			throw new IllegalArgumentException("flags can not be < 0");
+		}
+		mType = type;
+		mServerType = serverType;
+		mFile = file;
+		mFlags = flags;
 	}
 
-	private Endpoint() {
-		this(Host.API);
+	public Type getType() {
+		return mType;
 	}
 
-	public Host getHost() {
-		return mHost;
+	public Server.Type getServerType() {
+		return mServerType;
+	}
+
+	public String getFile() {
+		return mFile;
+	}
+
+	public int getFlags() {
+		return mFlags;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("mType", mType)
+				.append("mFile", mFile)
+				.append("mFlags", mFlags)
+				.toString();
+	}
+
+	public static enum Type {
+		CONFIG,
+		STATUS,
+		USER,
+		PLACE,
+		COLLECTIONS,
+		COLLECTIONS_FOR_USER
 	}
 }

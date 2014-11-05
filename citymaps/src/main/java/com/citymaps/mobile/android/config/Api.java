@@ -1,57 +1,134 @@
 package com.citymaps.mobile.android.config;
 
-import com.citymaps.mobile.android.model.vo.ApiBuild;
-import com.citymaps.mobile.android.util.LogEx;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.util.Base64;
+import com.citymaps.mobile.android.app.CitymapsRuntimeException;
+import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.os.SoftwareVersion;
+import com.citymaps.mobile.android.util.PackageUtils;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingFormatArgumentException;
+
+import static com.citymaps.mobile.android.config.Endpoint.*;
 
 public abstract class Api {
 
-	public static Api newInstance(Environment environment, ApiBuild apiBuild) {
-		int versionNumber = apiBuild.getVersionNumber();
-		if (versionNumber >= 3) {
-			return new ApiVersion3(environment, apiBuild);
+	protected static String encodeSecret(String key) {
+		byte[] bytes = DigestUtils.sha1(key);
+		String hex = new String(Hex.encodeHex(bytes));
+		Hex.encodeHex(bytes);
+		return Base64.encodeToString(hex.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP).replace('=', '_');
+	}
+
+	public static Api newInstance(Environment environment, int apiVersion, SoftwareVersion apiBuild) {
+		if (apiVersion >= 3) {
+			return new ApiVersion3(environment, apiVersion, apiBuild);
 		} else {
-			return new ApiBase(environment, apiBuild);
+			return new ApiBase(environment, apiVersion, apiBuild);
 		}
 	}
 
 	protected Environment mEnvironment;
 
-	protected ApiBuild mApiBuild;
+	protected int mApiVersion;
 
-	private Map<Endpoint, String> mEndpointMap;
+	protected SoftwareVersion mApiBuild;
 
-	public Api(Environment environment, ApiBuild apiBuild) {
+	private Map<Endpoint.Type, Endpoint> mEndpointMap;
+
+	public Api(Environment environment, int apiVersion, SoftwareVersion apiBuild) {
 		super();
 		mEnvironment = environment;
+		mApiVersion = apiVersion;
 		mApiBuild = apiBuild;
-		mEndpointMap = new HashMap<Endpoint, String>();
+		mEndpointMap = new HashMap<Endpoint.Type, Endpoint>(Endpoint.Type.values().length);
 	}
 
-	protected void configureEndpoint(Endpoint endpoint, String endpointString) {
-		mEndpointMap.put(endpoint, endpointString);
-	}
+	protected abstract Endpoint createEndpoint(Endpoint.Type type);
 
-	public String getUrlString(Endpoint endpoint, Object... args) {
-		String urlString = null;
-		try {
-			String endpointString = mEndpointMap.get(endpoint);
-			Host host = endpoint.getHost();
-			URL url = mEnvironment.buildUrl(host, endpointString, args);
-			urlString = url.toString();
-		} catch (MalformedURLException e) {
-			if (LogEx.isLoggable(LogEx.ERROR)) {
-				LogEx.e(e.getMessage(), e);
+	public Endpoint getEndpoint(Endpoint.Type type) {
+		Endpoint endpoint = mEndpointMap.get(type);
+		if (endpoint == null) {
+			endpoint = createEndpoint(type);
+			if (endpoint == null) {
+				throw new IllegalStateException(String.format("No endpoint defined for '%s'", type));
 			}
-		} catch (NullPointerException e) {
-			if (LogEx.isLoggable(LogEx.ERROR)) {
-				LogEx.e(e.getMessage(), e);
+			mEndpointMap.put(type, endpoint);
+		}
+		return endpoint;
+	}
+
+	public String buildUrlString(Context context, Endpoint.Type type, Object... args) {
+		Endpoint endpoint = getEndpoint(type);
+		Server server = mEnvironment.getServer(endpoint.getServerType());
+
+		String file = endpoint.getFile();
+
+		String baseUrlString;
+		String formattedFile;
+		if (args == null) {
+			formattedFile = file;
+		} else try {
+			formattedFile = String.format(file, args);
+		} catch (MissingFormatArgumentException e) {
+			formattedFile = file;
+		}
+
+		try {
+			URL url = new URL(server.getProtocol().getValue(), server.getHost(), server.getPort(), formattedFile);
+			baseUrlString = url.toString();
+		} catch (MalformedURLException e) {
+			throw new CitymapsRuntimeException("Error building urlString");
+		}
+
+		Uri.Builder builder = Uri.parse(baseUrlString).buildUpon();
+		int flags = endpoint.getFlags();
+		if ((flags & APPEND_TIMESTAMP) == APPEND_TIMESTAMP) {
+			builder.appendQueryParameter("timestamp", String.valueOf(System.currentTimeMillis()));
+		}
+		if ((flags & APPEND_ANDROID_VERSION) == APPEND_ANDROID_VERSION) {
+			builder.appendQueryParameter("android_version", Build.VERSION.RELEASE);
+		}
+		if ((flags & APPEND_DEVICE_ID) == APPEND_DEVICE_ID) {
+			builder.appendQueryParameter("device_id", Build.SERIAL);
+		}
+
+		User user = null; // TODO How should I get the current user?
+		user = new User();
+		user.setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
+		user.setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
+
+		if (user != null) {
+			if ((flags & APPEND_USER_ID) == APPEND_USER_ID) {
+				builder.appendQueryParameter("user_id", user.getId());
+			}
+			if ((flags & APPEND_CITYMAPS_TOKEN) == APPEND_CITYMAPS_TOKEN) {
+				String citymapsToken = user.getCitymapsToken();
+				if (citymapsToken != null) {
+					builder.appendQueryParameter("citymaps_token", citymapsToken);
+				}
 			}
 		}
-		return urlString;
+
+		if ((flags & APPEND_ENDPOINT_VERSION) == APPEND_ENDPOINT_VERSION) {
+			builder.appendQueryParameter("ev", mApiBuild.toString());
+		}
+
+		if ((flags & APPEND_SECRET) == APPEND_SECRET) {
+			String secret = PackageUtils.getCitymapsSecret(context);
+			if (secret != null) {
+				builder.appendQueryParameter("secret", encodeSecret(String.format("%s%s", builder.toString(), secret)));
+			}
+		}
+
+		return builder.toString();
 	}
 }

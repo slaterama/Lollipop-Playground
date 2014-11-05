@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 /**
  * A class that encapsulates build version information.
  */
-public class BuildVersion
-		implements Comparable<BuildVersion> {
+public class SoftwareVersion
+		implements Comparable<SoftwareVersion> {
 	/**
 	 * A regular expression used to capture a version prefix.
 	 */
@@ -116,6 +116,16 @@ public class BuildVersion
 	private static final int CATEGORY_QUALIFIER_GROUP = 2;
 
 	/**
+	 * A regular expression string that determines if this software version represents a development software version.
+	 */
+	private static final String DEVELOPMENT_QUALIFER_REGEX = "^dev";
+
+	/**
+	 * A default {@code SoftwareVersion} representing an initial release.
+	 */
+	public static final SoftwareVersion DEFAULT_VERSION = new SoftwareVersion(1, 0, 0, null);
+
+	/**
 	 * Parses the specified string as a signed decimal integer value, returning 0
 	 * if any runtime exceptions are caught.
 	 * @param string The string representation of an integer value.
@@ -208,7 +218,7 @@ public class BuildVersion
 	 * Constructs a new {@code Version} with the specified version string.
 	 * @param versionString The string representation of the version.
 	 */
-	public BuildVersion(String versionString) {
+	public SoftwareVersion(String versionString) {
 		if (versionString == null) {
 			throw new IllegalArgumentException("Version string can not be null");
 		}
@@ -238,7 +248,7 @@ public class BuildVersion
 	 * @param build A string representing the build category.
 	 * @param qualifier Any additional qualifier to append to this version.
 	 */
-	public BuildVersion(String major, String minor, String release, String build, String qualifier) {
+	public SoftwareVersion(String major, String minor, String release, String build, String qualifier) {
 		mPrefix = null;
 		if (major == null) {
 			throw new IllegalArgumentException("Major category can not be null");
@@ -300,19 +310,19 @@ public class BuildVersion
 		mToString = toString0();
 	}
 	
-	public BuildVersion(int major, int minor, int release, int build, String qualifier) {
+	public SoftwareVersion(int major, int minor, int release, int build, String qualifier) {
 		this(String.valueOf(major), String.valueOf(minor), String.valueOf(release), String.valueOf(build), qualifier);
 	}
 
-	public BuildVersion(int major, int minor, int release, String qualifier) {
+	public SoftwareVersion(int major, int minor, int release, String qualifier) {
 		this(String.valueOf(major), String.valueOf(minor), String.valueOf(release), null, qualifier);
 	}
 
-	public BuildVersion(int major, int minor, String qualifier) {
+	public SoftwareVersion(int major, int minor, String qualifier) {
 		this(String.valueOf(major), String.valueOf(minor), null, null, qualifier);
 	}
 
-	public BuildVersion(int major, String qualifier) {
+	public SoftwareVersion(int major, String qualifier) {
 		this(String.valueOf(major), null, null, null, qualifier);
 	}
 
@@ -429,6 +439,14 @@ public class BuildVersion
 	}
 
 	/**
+	 * Returns whether this software version represents a development software version.
+	 * A development software version is any software version with a qualifier that begins with "dev".
+	 */
+	public boolean isDevelopment() {
+		return (mQualifier != null && mQualifier.matches(DEVELOPMENT_QUALIFER_REGEX));
+	}
+
+	/**
 	 * Constructs a string representation of this {@code Version}.
 	 * @return A concise, human-readable description of this {@code Version}.
 	 */
@@ -474,7 +492,7 @@ public class BuildVersion
 	 * greater than {@code another}; 0 if this instance has the same order as {@code another}.
 	 */
 	@Override
-	public int compareTo(@NonNull BuildVersion another) {
+	public int compareTo(@NonNull SoftwareVersion another) {
 		int compareTo = intCompare(getMajorInt(), another.getMajorInt());
 		if (compareTo != 0) {
 			return compareTo;
