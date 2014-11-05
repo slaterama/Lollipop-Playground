@@ -24,10 +24,10 @@ public abstract class Environment {
 
 		switch (type) {
 			case DEVELOPMENT:
-				return new EnvironmentDevelopment(context.getApplicationContext());
+				return new EnvironmentDevelopment(context);
 			case PRODUCTION:
 			default:
-				return new EnvironmentProduction(context.getApplicationContext());
+				return new EnvironmentProduction(context);
 		}
 	}
 
@@ -37,7 +37,7 @@ public abstract class Environment {
 
 	protected Environment(Context context) {
 		super();
-		mContext = context;
+		mContext = context.getApplicationContext();
 		mServerMap = new HashMap<Server.Type, Server>(Server.Type.values().length);
 	}
 
