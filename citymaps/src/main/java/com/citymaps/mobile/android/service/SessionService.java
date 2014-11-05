@@ -6,9 +6,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.vo.ApiBuild;
-import com.citymaps.mobile.android.os.BuildVersion;
-import com.citymaps.mobile.android.util.PackageUtils;
 
 public class SessionService extends Service {
 
@@ -24,7 +21,9 @@ public class SessionService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
+		/* TODO catch exceptions
 		BuildVersion appBuildVersion = PackageUtils.getAppBuildVersion(this);
+
 		mEnvironment = Environment.newInstance(appBuildVersion);
 
 		int baseApiVersionNumber = PackageUtils.getBaseApiVersionNumber(this);
@@ -32,6 +31,8 @@ public class SessionService extends Service {
 
 		ApiBuild tempBuild = new ApiBuild(baseApiVersionNumber, baseApiBuildVersion.toString());
 		mApi = Api.newInstance(mEnvironment, tempBuild);
+		*/
+
 	}
 
 	@Override
