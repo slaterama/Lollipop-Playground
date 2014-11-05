@@ -3,6 +3,7 @@ package com.citymaps.mobile.android.http.request;
 import android.content.Context;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.http.response.BuildResponseHandler;
 import com.citymaps.mobile.android.model.vo.ApiBuild;
 import org.apache.http.client.ResponseHandler;
@@ -19,67 +20,45 @@ public class GetBuildHttpRequest extends CitymapsHttpGet<ApiBuild> {
 	/**
 	 * Returns a GetBuildHttpRequest instance appropriate to the specified server.
 	 *
-	 * @param context       The context to use.
-	 * @param api           The {@link Api} in which this request will be executed.
-	 * @param userId        The Citymaps User ID that will be used to get the build. Note that
-	 *                      this argument is only needed when requesting the build in the Production
-	 *                      environment.
-	 * @param citymapsToken The Citymaps token that will be used to get the build. Note that
-	 *                      this argument is only needed when requesting the build in the
-	 *                      Production environment.
+	 * @param context The context to use.
+	 * @param api     The {@link Api} in which this request will be executed.
 	 * @return A GetBuildHttpRequest
 	 */
-	public static GetBuildHttpRequest makeRequest(Context context, Api api, String userId, String citymapsToken) {
-		String encodedUserId = encode(userId);
-		String encodedCitymapsToken = encode(citymapsToken);
-		return new GetBuildHttpRequest(context, api, encodedUserId, encodedCitymapsToken);
+	public static GetBuildHttpRequest makeRequest(Context context, Api api) {
+		return new GetBuildHttpRequest(context, api);
 	}
 
 	/**
 	 * Creates a new GetBuildHttpRequest using the specified server and arguments. Note that this is
 	 * a private constructor; build requests should be created using
-	 * {@link #makeRequest(Context, Api, String, String)}.
+	 * {@link #makeRequest(Context, Api)}.
 	 *
-	 * @param context       The context to use.
-	 * @param api           The {@link Api} in which this request will be executed.
-	 * @param userId        The Citymaps User ID that will be used to get the build. Note that
-	 *                      this argument is only needed when requesting the build in the Production
-	 *                      environment.
-	 * @param citymapsToken The Citymaps token that will be used to get the build. Note that
-	 *                      this argument is only needed when requesting the build in the
-	 *                      Production environment.
+	 * @param context The context to use.
+	 * @param api     The {@link Api} in which this request will be executed.
 	 */
-	private GetBuildHttpRequest(Context context, Api api, String userId, String citymapsToken) {
-		super(context, api, userId, citymapsToken);
+	private GetBuildHttpRequest(Context context, Api api) {
+		super(context, api);
 	}
 
 	/**
 	 * Gets the URL string that will be used to execute this request.
 	 *
-	 * @param serverName The name of the server that will be used to
-	 *                   determine the host and endpoint of the HTTP request.
-	 * @param args       Any arguments that will be passed to the Api endpoint in order to create
-	 *                   the URL String.
+	 * @param api  The {@link Api} in which this request will be executed.
+	 * @param args Any arguments that will be passed to the Api endpoint in order to create
+	 *             the URL String.
 	 * @return The URL string that will be used to execute this request.
 	 * @throws MalformedURLException
 	 */
-	/*
 	@Override
-	public String getUrlString(String serverName, Object... args)
-			throws MalformedURLException {
-		mServerName = serverName;
-		String protocol = "http"; // TODO server.getDefaultProtocol();
-		String host = "coreapi.citymaps.com"; // TODO server.getHost(Server.HostType.API);
-		String endpoint = "v2/status/version"; // TODO server.getApi().getEndpoint(EndpointType.BUILD, args[0]);
-		return new URL(protocol, host, endpoint).toString();
+	public String getUrlString(Api api, Object... args) throws MalformedURLException {
+		return api.buildUrlString(Endpoint.Type.STATUS, args);
 	}
-	*/
 
 	/**
 	 * Gets the HttpParams that will be passed along with this request.
 	 *
-	 * @param args       The arguments that will be used to determine the parameters that should be
-	 *                   passed to the HTTP request.
+	 * @param args The arguments that will be used to determine the parameters that should be
+	 *             passed to the HTTP request.
 	 * @return The parameters that will be passed along with this request.
 	 */
 	@Override

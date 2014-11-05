@@ -5,10 +5,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.http.AndroidHttpClient;
 import com.citymaps.mobile.android.app.CitymapsConnectivityException;
+import com.citymaps.mobile.android.app.CitymapsRuntimeException;
 import com.citymaps.mobile.android.app.ThrowableWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.util.LogEx;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -16,6 +19,8 @@ import org.apache.http.params.HttpParams;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URLEncoder;
 
 /**
@@ -54,13 +59,12 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	public CitymapsHttpGet(Context context, Api api, Object... args) {
 		super();
 		mContext = context;
-//		try {
-//			api.
-//			setURI(URI.create(getUrlString(serverName, args)));
+		try {
+			setURI(URI.create(getUrlString(api, args)));
 			setParams(getParams(args));
-//		} catch (MalformedURLException e) {
-//			throw new CitymapsRuntimeException(e.getMessage(), e);
-//		}
+		} catch (MalformedURLException e) {
+			throw new CitymapsRuntimeException(e.getMessage(), e);
+		}
 	}
 
 	/**

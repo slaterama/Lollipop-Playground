@@ -1,6 +1,12 @@
 package com.citymaps.mobile.android.config;
 
+import android.content.Context;
+
 public class EnvironmentProduction extends Environment {
+
+	protected EnvironmentProduction(Context context) {
+		super(context);
+	}
 
 	@Override
 	public Type getType() {

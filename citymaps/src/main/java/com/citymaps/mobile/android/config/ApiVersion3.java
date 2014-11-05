@@ -4,7 +4,20 @@ import com.citymaps.mobile.android.os.SoftwareVersion;
 
 public class ApiVersion3 extends ApiBase {
 
-	public ApiVersion3(Environment environment, int apiVersion, SoftwareVersion apiBuild) {
-		super(environment, apiVersion, apiBuild);
+	private SoftwareVersion mApiBuild;
+
+	protected ApiVersion3(Environment environment) {
+		super(environment);
+		mApiBuild = new SoftwareVersion(3, 0, 0);
+	}
+
+	@Override
+	public int getApiVersion() {
+		return 3;
+	}
+
+	@Override
+	public SoftwareVersion getApiBuild() {
+		return mApiBuild;
 	}
 }

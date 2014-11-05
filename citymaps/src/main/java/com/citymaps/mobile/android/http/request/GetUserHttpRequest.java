@@ -3,6 +3,7 @@ package com.citymaps.mobile.android.http.request;
 import android.content.Context;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.model.vo.User;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.params.BasicHttpParams;
@@ -48,28 +49,22 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	/**
 	 * Gets the URL string that will be used to execute this request.
 	 *
-	 * @param serverName The name of the server that will be used to
-	 *                   determine the host and endpoint of the HTTP request.
-	 * @param args       Any arguments that will be passed to the Api endpoint in order to create
-	 *                   the URL String.
+	 * @param api  The {@link Api} in which this request will be executed.
+	 * @param args Any arguments that will be passed to the Api endpoint in order to create
+	 *             the URL String.
 	 * @return The URL string that will be used to execute this request.
 	 * @throws MalformedURLException
 	 */
-	/*
 	@Override
-	public String getUrlString(String serverName, Object... args) throws MalformedURLException {
-		String protocol = ""; // TODO server.getDefaultProtocol();
-		String host = ""; // TODO server.getHost(Server.HostType.API);
-		String endpoint = ""; // TODO server.getApi().getEndpoint(EndpointType.USER, args[0]);
-		return new URL(protocol, host, endpoint).toString();
+	public String getUrlString(Api api, Object... args) throws MalformedURLException {
+		return api.buildUrlString(Endpoint.Type.USER, args);
 	}
-	*/
 
 	/**
 	 * Gets the HttpParams that will be passed along with this request.
 	 *
-	 * @param args       The arguments that will be used to determine the parameters that should be
-	 *                   passed to the HTTP request.
+	 * @param args The arguments that will be used to determine the parameters that should be
+	 *             passed to the HTTP request.
 	 * @return The parameters that will be passed along with this request.
 	 */
 	@Override

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
-import com.citymaps.mobile.android.app.CitymapsRuntimeException;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.util.PackageUtils;
@@ -29,28 +28,36 @@ public abstract class Api {
 	}
 
 	public static Api newInstance(Environment environment, int apiVersion, SoftwareVersion apiBuild) {
-		if (apiVersion >= 3) {
-			return new ApiVersion3(environment, apiVersion, apiBuild);
-		} else {
-			return new ApiBase(environment, apiVersion, apiBuild);
+		if (environment == null) {
+			throw new IllegalArgumentException("environment can not be null");
 		}
+
+		if (apiVersion >= 3) {
+			return new ApiVersion3(environment);
+		} else {
+			return new ApiBase(environment);
+		}
+	}
+
+	public static Api newInstance(Environment environment, int apiVersion) {
+		return newInstance(environment, apiVersion, null);
 	}
 
 	protected Environment mEnvironment;
 
-	protected int mApiVersion;
-
-	protected SoftwareVersion mApiBuild;
+	protected Context mContext;
 
 	private Map<Endpoint.Type, Endpoint> mEndpointMap;
 
-	public Api(Environment environment, int apiVersion, SoftwareVersion apiBuild) {
-		super();
+	protected Api(Environment environment) {
 		mEnvironment = environment;
-		mApiVersion = apiVersion;
-		mApiBuild = apiBuild;
+		mContext = environment.getContext();
 		mEndpointMap = new HashMap<Endpoint.Type, Endpoint>(Endpoint.Type.values().length);
 	}
+
+	public abstract int getApiVersion();
+
+	public abstract SoftwareVersion getApiBuild();
 
 	protected abstract Endpoint createEndpoint(Endpoint.Type type);
 
@@ -66,13 +73,12 @@ public abstract class Api {
 		return endpoint;
 	}
 
-	public String buildUrlString(Context context, Endpoint.Type type, Object... args) {
+	public String buildUrlString(Endpoint.Type type, Object... args) throws MalformedURLException {
 		Endpoint endpoint = getEndpoint(type);
 		Server server = mEnvironment.getServer(endpoint.getServerType());
 
 		String file = endpoint.getFile();
 
-		String baseUrlString;
 		String formattedFile;
 		if (args == null) {
 			formattedFile = file;
@@ -82,14 +88,9 @@ public abstract class Api {
 			formattedFile = file;
 		}
 
-		try {
-			URL url = new URL(server.getProtocol().getValue(), server.getHost(), server.getPort(), formattedFile);
-			baseUrlString = url.toString();
-		} catch (MalformedURLException e) {
-			throw new CitymapsRuntimeException("Error building urlString");
-		}
+		URL url = new URL(server.getProtocol().getValue(), server.getHost(), server.getPort(), formattedFile);
+		Uri.Builder builder = Uri.parse(url.toString()).buildUpon();
 
-		Uri.Builder builder = Uri.parse(baseUrlString).buildUpon();
 		int flags = endpoint.getFlags();
 		if ((flags & APPEND_TIMESTAMP) == APPEND_TIMESTAMP) {
 			builder.appendQueryParameter("timestamp", String.valueOf(System.currentTimeMillis()));
@@ -119,11 +120,11 @@ public abstract class Api {
 		}
 
 		if ((flags & APPEND_ENDPOINT_VERSION) == APPEND_ENDPOINT_VERSION) {
-			builder.appendQueryParameter("ev", mApiBuild.toString());
+			builder.appendQueryParameter("ev", getApiBuild().toString());
 		}
 
 		if ((flags & APPEND_SECRET) == APPEND_SECRET) {
-			String secret = PackageUtils.getCitymapsSecret(context);
+			String secret = PackageUtils.getCitymapsSecret(mContext);
 			if (secret != null) {
 				builder.appendQueryParameter("secret", encodeSecret(String.format("%s%s", builder.toString(), secret)));
 			}

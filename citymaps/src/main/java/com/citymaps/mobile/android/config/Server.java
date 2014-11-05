@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Server {
 
-	public static final int STANDARD_PORT = -1;
+	public static final int DEFAULT_PORT = -1;
 
 	private Type mType;
 
@@ -31,11 +31,11 @@ public class Server {
 	}
 
 	public Server(Type type, String host, Protocol protocol) {
-		this(type, host, protocol, STANDARD_PORT);
+		this(type, host, protocol, DEFAULT_PORT);
 	}
 
 	public Server(Type type, String host) {
-		this(type, host, Protocol.SECURE, STANDARD_PORT);
+		this(type, host, Protocol.SECURE, DEFAULT_PORT);
 	}
 
 	public Type getType() {

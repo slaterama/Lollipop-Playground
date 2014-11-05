@@ -1,5 +1,7 @@
 package com.citymaps.mobile.android.config;
 
+import android.content.Context;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,24 +13,39 @@ public abstract class Environment {
 	protected static final String CONFIG_ENDPOINT_PROD = "riak/appconfig/android_config.json";
 	protected static final String CONFIG_ENDPOINT_DEV = "riak/appconfig/android_config_dev.json";
 
-	public static Environment newInstance(Type type) {
+	public static Environment newInstance(Context context, Type type) {
+		if (context == null) {
+			throw new IllegalArgumentException("context can not be null");
+		}
+
+		if (type == null) {
+			throw new IllegalArgumentException("type can not be null");
+		}
+
 		switch (type) {
 			case DEVELOPMENT:
-				return new EnvironmentDevelopment();
+				return new EnvironmentDevelopment(context.getApplicationContext());
 			case PRODUCTION:
 			default:
-				return new EnvironmentProduction();
+				return new EnvironmentProduction(context.getApplicationContext());
 		}
 	}
 
+	private Context mContext;
+
 	private Map<Server.Type, Server> mServerMap;
 
-	public Environment() {
+	protected Environment(Context context) {
 		super();
+		mContext = context;
 		mServerMap = new HashMap<Server.Type, Server>(Server.Type.values().length);
 	}
 
 	public abstract Type getType();
+
+	public Context getContext() {
+		return mContext;
+	}
 
 	public abstract String getConfigEndpoint();
 

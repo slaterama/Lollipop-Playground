@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.http.request;
 
+import com.citymaps.mobile.android.config.Api;
 import org.apache.http.params.HttpParams;
 
 import java.net.MalformedURLException;
@@ -29,23 +30,20 @@ public interface CitymapsHttpRequest {
 	/**
 	 * Get the URL String that will be used to execute the Citymaps HTTP request.
 	 *
-	 * @param serverName The name of the server that will be used to
-	 *                   determine the host and endpoint of the HTTP request.
-	 * @param args       Any arguments that will be passed to the Api endpoint in order to create
-	 *                   the URL String.
+	 * @param api  The {@link Api} in which this request will be executed.
+	 * @param args Any arguments that will be passed to the Api endpoint in order to create
+	 *             the URL String.
 	 * @return The URL String.
 	 * @throws MalformedURLException
 	 */
-	/*
-	public String getUrlString(String serverName, Object... args)
+	public String getUrlString(Api api, Object... args)
 			throws MalformedURLException;
-	*/
 
 	/**
 	 * Get the collection of parameters (if any) that will be sent along with the Citymaps HTTP request.
 	 *
-	 * @param args       The arguments that will be used to determine the parameters that should be
-	 *                   passed to the HTTP request.
+	 * @param args The arguments that will be used to determine the parameters that should be
+	 *             passed to the HTTP request.
 	 * @return The collection of parameters that should be sent along with the HTTP request.
 	 */
 	public HttpParams getParams(Object... args);

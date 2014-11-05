@@ -123,7 +123,7 @@ public class SoftwareVersion
 	/**
 	 * A default {@code SoftwareVersion} representing an initial release.
 	 */
-	public static final SoftwareVersion DEFAULT_VERSION = new SoftwareVersion(1, 0, 0, null);
+	public static final SoftwareVersion DEFAULT_VERSION = new SoftwareVersion(1, 0, 0);
 
 	/**
 	 * Parses the specified string as a signed decimal integer value, returning 0
@@ -314,16 +314,32 @@ public class SoftwareVersion
 		this(String.valueOf(major), String.valueOf(minor), String.valueOf(release), String.valueOf(build), qualifier);
 	}
 
+	public SoftwareVersion(int major, int minor, int release, int build) {
+		this(String.valueOf(major), String.valueOf(minor), String.valueOf(release), String.valueOf(build), null);
+	}
+
 	public SoftwareVersion(int major, int minor, int release, String qualifier) {
 		this(String.valueOf(major), String.valueOf(minor), String.valueOf(release), null, qualifier);
+	}
+
+	public SoftwareVersion(int major, int minor, int release) {
+		this(String.valueOf(major), String.valueOf(minor), String.valueOf(release), null, null);
 	}
 
 	public SoftwareVersion(int major, int minor, String qualifier) {
 		this(String.valueOf(major), String.valueOf(minor), null, null, qualifier);
 	}
 
+	public SoftwareVersion(int major, int minor) {
+		this(String.valueOf(major), String.valueOf(minor), null, null, null);
+	}
+
 	public SoftwareVersion(int major, String qualifier) {
 		this(String.valueOf(major), null, null, null, qualifier);
+	}
+
+	public SoftwareVersion(int major) {
+		this(String.valueOf(major), null, null, null, null);
 	}
 
 	/**

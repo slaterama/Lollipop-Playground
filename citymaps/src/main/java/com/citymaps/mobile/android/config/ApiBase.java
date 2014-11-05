@@ -2,12 +2,20 @@ package com.citymaps.mobile.android.config;
 
 import com.citymaps.mobile.android.os.SoftwareVersion;
 
-
-
 public class ApiBase extends Api {
 
-	public ApiBase(Environment environment, int apiVersion, SoftwareVersion apiBuild) {
-		super(environment, apiVersion, apiBuild);
+	protected ApiBase(Environment environment) {
+		super(environment);
+	}
+
+	@Override
+	public int getApiVersion() {
+		return 1;
+	}
+
+	@Override
+	public SoftwareVersion getApiBuild() {
+		return SoftwareVersion.DEFAULT_VERSION;
 	}
 
 	@Override
