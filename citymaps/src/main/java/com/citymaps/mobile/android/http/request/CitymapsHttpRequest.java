@@ -36,8 +36,8 @@ public interface CitymapsHttpRequest {
 	 * @return The URL String.
 	 * @throws MalformedURLException
 	 */
-	public String getUrlString(Api api, Object... args)
-			throws MalformedURLException;
+//	public String getUrlString(Api api, Object... args)
+//			throws MalformedURLException;
 
 	/**
 	 * Get the collection of parameters (if any) that will be sent along with the Citymaps HTTP request.

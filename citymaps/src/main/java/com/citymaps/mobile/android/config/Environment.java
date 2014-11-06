@@ -43,10 +43,13 @@ public abstract class Environment {
 
 	private Map<Server.Type, Server> mServerMap;
 
+	private Map<Endpoint.Type, Endpoint> mEndpointMap;
+
 	protected Environment(Context context) {
 		super();
 		mContext = context.getApplicationContext();
 		mServerMap = new HashMap<Server.Type, Server>(Server.Type.values().length);
+		mEndpointMap = new HashMap<Endpoint.Type, Endpoint>();
 	}
 
 	public abstract Type getType();
@@ -88,7 +91,7 @@ public abstract class Environment {
 
 		public static Type defaultType() {
 			String buildType = BuildConfig.BUILD_TYPE;
-			String flavor = BuildConfig.FLAVOR;
+			//String flavor = BuildConfig.FLAVOR; <-- Unused for now
 			if (BUILD_VARIANT_RELEASE.equals(buildType)) {
 				return PRODUCTION;
 			} else {

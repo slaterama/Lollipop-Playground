@@ -3,8 +3,9 @@ package com.citymaps.mobile.android.http.request;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.http.response.VersionResponseHandler;
-import com.citymaps.mobile.android.model.vo.ApiBuild;
+import com.citymaps.mobile.android.confignew.Environment;
+import com.citymaps.mobile.android.http.response.StatusResponseHandler;
+import com.citymaps.mobile.android.model.vo.ApiStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
@@ -14,7 +15,7 @@ import java.net.MalformedURLException;
 /**
  * A CitymapsHttpGet class that returns the build of the API currently being used.
  */
-public class GetVersionHttpRequest extends CitymapsHttpGet<ApiBuild> {
+public class GetStatusHttpRequest extends CitymapsHttpGet<ApiStatus> {
 
 	/**
 	 * Returns a GetBuildHttpRequest instance appropriate to the specified server.
@@ -22,19 +23,19 @@ public class GetVersionHttpRequest extends CitymapsHttpGet<ApiBuild> {
 	 * @param api     The {@link Api} in which this request will be executed.
 	 * @return A GetBuildHttpRequest
 	 */
-	public static GetVersionHttpRequest makeRequest(Api api) {
-		return new GetVersionHttpRequest(api);
+	public static GetStatusHttpRequest makeRequest(Environment environment) {
+		return new GetStatusHttpRequest(environment);
 	}
 
 	/**
 	 * Creates a new GetBuildHttpRequest using the specified server and arguments. Note that this is
 	 * a private constructor; build requests should be created using
-	 * {@link #makeRequest(Api)}.
+	 * {@link #makeRequest(Environment)}.
 	 *
 	 * @param api     The {@link Api} in which this request will be executed.
 	 */
-	private GetVersionHttpRequest(Api api) {
-		super(api);
+	private GetStatusHttpRequest(Environment environment) {
+		super(environment, Endpoint.Type.STATUS);
 	}
 
 	/**
@@ -46,10 +47,12 @@ public class GetVersionHttpRequest extends CitymapsHttpGet<ApiBuild> {
 	 * @return The URL string that will be used to execute this request.
 	 * @throws MalformedURLException
 	 */
+	/*
 	@Override
 	public String getUrlString(Api api, Object... args) throws MalformedURLException {
 		return api.buildUrlString(Endpoint.Type.STATUS, args);
 	}
+	*/
 
 	/**
 	 * Gets the HttpParams that will be passed along with this request.
@@ -61,7 +64,7 @@ public class GetVersionHttpRequest extends CitymapsHttpGet<ApiBuild> {
 	@Override
 	public HttpParams getParams(Object... args) {
 		HttpParams params = new BasicHttpParams();
-		params.setParameter(PARAM_NAME_CITYMAPS_TOKEN, args[1]);
+//		params.setParameter(PARAM_NAME_CITYMAPS_TOKEN, args[1]);
 		return params;
 	}
 
@@ -72,7 +75,7 @@ public class GetVersionHttpRequest extends CitymapsHttpGet<ApiBuild> {
 	 * @return The handler that will be used to process this request.
 	 */
 	@Override
-	protected ResponseHandler<Wrapper<ApiBuild, Exception>> getResponseHandler() {
-		return new VersionResponseHandler();
+	protected ResponseHandler<Wrapper<ApiStatus, Exception>> getResponseHandler() {
+		return new StatusResponseHandler();
 	}
 }

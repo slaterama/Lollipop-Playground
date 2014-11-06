@@ -3,6 +3,7 @@ package com.citymaps.mobile.android.http.request;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.confignew.Environment;
 import com.citymaps.mobile.android.http.response.UserResponseHandler;
 import com.citymaps.mobile.android.model.vo.User;
 import org.apache.http.client.ResponseHandler;
@@ -25,10 +26,8 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 * @return A {@link Wrapper} object that will wrap either the
 	 * user if the request succeeded, or any Exception that may have been encountered along the way.
 	 */
-	public static GetUserHttpRequest makeRequest(Api api, String userId, String citymapsToken) {
-		String encodedUserId = encode(userId);
-		String encodedCitymapsToken = encode(citymapsToken);
-		return new GetUserHttpRequest(api, encodedUserId, encodedCitymapsToken);
+	public static GetUserHttpRequest makeRequest(Environment environment, User user, String userId) {
+		return new GetUserHttpRequest(environment, Endpoint.Type.USER, user, userId);
 	}
 
 	/**
@@ -40,8 +39,8 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 * @param userId        The Citymaps User ID that will be used to get the user.
 	 * @param citymapsToken The Citymaps token that will be used to get the user.
 	 */
-	private GetUserHttpRequest(Api api, String userId, String citymapsToken) {
-		super(api, userId, citymapsToken);
+	public GetUserHttpRequest(Environment environment, Endpoint.Type endpointType, User user, String userId) {
+		super(environment, endpointType, user, userId);
 	}
 
 	/**
@@ -53,10 +52,12 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 * @return The URL string that will be used to execute this request.
 	 * @throws MalformedURLException
 	 */
+	/*
 	@Override
 	public String getUrlString(Api api, Object... args) throws MalformedURLException {
 		return api.buildUrlString(Endpoint.Type.USER, args);
 	}
+	*/
 
 	/**
 	 * Gets the HttpParams that will be passed along with this request.

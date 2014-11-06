@@ -27,15 +27,15 @@ public class ApiBase extends Api {
 				return new Endpoint(type, Server.Type.API, "v2/status/version", 0);
 
 			case COLLECTIONS:
-				return new Endpoint(type, Server.Type.API, "maps/%s", Endpoint.APPEND_DEFAULT_TOKEN);
+				return new Endpoint(type, Server.Type.API, "maps/%s", Endpoint.APPEND_DEFAULT);
 			case COLLECTIONS_FOR_USER:
-				return new Endpoint(type, Server.Type.API, "v2/maps/user/%s", Endpoint.APPEND_DEFAULT_TOKEN);
+				return new Endpoint(type, Server.Type.API, "v2/maps/user/%s", Endpoint.APPEND_DEFAULT);
 
 			case PLACE:
-				return new Endpoint(type, Server.Type.API, "business/%s", Endpoint.APPEND_DEFAULT_TOKEN);
+				return new Endpoint(type, Server.Type.API, "business/%s", Endpoint.APPEND_DEFAULT);
 
 			case USER:
-				return new Endpoint(type, Server.Type.API, "user/%s", Endpoint.APPEND_DEFAULT_TOKEN);
+				return new Endpoint(type, Server.Type.API, "user/%s", Endpoint.APPEND_DEFAULT);
 
 			default:
 				return null;

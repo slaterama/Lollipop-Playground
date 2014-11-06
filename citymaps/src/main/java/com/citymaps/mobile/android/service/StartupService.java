@@ -60,7 +60,6 @@ public class StartupService extends Service
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		testConnectedState();
 		registerReceiver(mConnectivityReceiver, CONNECTIVITY_FILTER);
-
 		bindService(new Intent(this, SessionService.class), this, BIND_AUTO_CREATE);
 	}
 
@@ -141,9 +140,10 @@ public class StartupService extends Service
 		new AsyncTask<Void, Void, Wrapper<Config, Exception>>() {
 			@Override
 			protected Wrapper<Config, Exception> doInBackground(Void... params) {
-				Api api = mSessionBinder.getApi();
-				GetConfigHttpRequest request = GetConfigHttpRequest.makeRequest(api);
-				return request.execute();
+				//Api api = mSessionBinder.getApi();
+				//GetConfigHttpRequest request = GetConfigHttpRequest.makeRequest(api);
+				//return request.execute();
+				return null;
 			}
 
 			@Override

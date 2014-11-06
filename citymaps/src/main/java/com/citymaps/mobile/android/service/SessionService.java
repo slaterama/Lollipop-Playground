@@ -4,29 +4,32 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import com.citymaps.mobile.android.config.Api;
-import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.os.SoftwareVersion;
-import com.citymaps.mobile.android.util.PackageUtils;
+import com.citymaps.mobile.android.confignew.Environment;
 
 public class SessionService extends Service {
 
 	private SessionBinder mBinder;
 
+	/*
 	private Environment mEnvironment;
 	private Api mApi;
+	*/
 
-    public SessionService() {
-    }
+	private Environment mEnvironment;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		/*
 		SoftwareVersion appVersion = PackageUtils.getAppVersion();
 		mEnvironment = Environment.newInstance(this);
 		int apiVersion = PackageUtils.getBaseApiVersion(this, 1);
 		SoftwareVersion apiBuild = PackageUtils.getBaseApiBuild(this, SoftwareVersion.DEFAULT_VERSION);
 		mApi = Api.newInstance(mEnvironment, apiVersion, apiBuild);
+		*/
+
+		mEnvironment = Environment.newInstance(this);
 
 		/*
 		try {
@@ -53,8 +56,6 @@ public class SessionService extends Service {
     }
 
 	public class SessionBinder extends Binder {
-		public Api getApi() {
-			return mApi;
-		}
+
 	}
 }

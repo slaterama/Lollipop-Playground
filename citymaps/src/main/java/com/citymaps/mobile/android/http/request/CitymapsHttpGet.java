@@ -9,6 +9,8 @@ import com.citymaps.mobile.android.app.CitymapsRuntimeException;
 import com.citymaps.mobile.android.app.ThrowableWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.confignew.Environment;
 import com.citymaps.mobile.android.util.LogEx;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.http.client.ResponseHandler;
@@ -45,7 +47,9 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	/**
 	 * The {@link android.content.Context} that will be used to check network connectivity.
 	 */
-	private Context mContext;
+	//private Context mContext;
+
+	private Environment mEnvironment;
 
 	/**
 	 * Creates a new instance of CitymapsHttpGet using the specified server name and the specified arguments.
@@ -53,11 +57,15 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	 * @param api     The {@link Api} in which this request will be executed.
 	 * @param args    The arguments that will be used to get the URL string and HTTP parameter object.
 	 */
-	public CitymapsHttpGet(Api api, Object... args) {
+	protected CitymapsHttpGet(Environment environment, Endpoint.Type endpointType, Object... args) {
 		super();
-		mContext = api.getContext();
+		//mContext = api.getContext();
+
+		mEnvironment = environment;
+
 		try {
-			setURI(URI.create(getUrlString(api, args)));
+			String urlString = mEnvironment.buildUrlString(endpointType, null, args);
+			setURI(URI.create(urlString));
 			HttpParams params = getParams(args);
 			if (params != null) {
 				setParams(params);
@@ -73,8 +81,14 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	 *
 	 * @return The HTTP request's context.
 	 */
+	/*
 	public Context getContext() {
 		return mContext;
+	}
+	*/
+
+	public Environment getEnvironment() {
+		return mEnvironment;
 	}
 
 	/**
@@ -91,7 +105,7 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 					ToStringBuilder.reflectionToString(params)));
 		}
 
-		ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivityManager = (ConnectivityManager) mEnvironment.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 		if (networkInfo == null || !networkInfo.isConnectedOrConnecting())
 			return new ThrowableWrapper<D, Exception>(new CitymapsConnectivityException("No network connection available"));
