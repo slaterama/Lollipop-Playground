@@ -4,7 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import com.citymaps.mobile.android.confignew.Environment;
+import com.citymaps.mobile.android.config.Environment;
 
 public class SessionService extends Service {
 
@@ -56,6 +56,8 @@ public class SessionService extends Service {
     }
 
 	public class SessionBinder extends Binder {
-
+		public Environment getEnvironment() {
+			return mEnvironment;
+		}
 	}
 }

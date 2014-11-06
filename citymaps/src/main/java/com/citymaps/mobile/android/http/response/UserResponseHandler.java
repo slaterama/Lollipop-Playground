@@ -1,8 +1,8 @@
 package com.citymaps.mobile.android.http.response;
 
+import com.citymaps.mobile.android.app.CitymapsExceptionWrapper;
 import com.citymaps.mobile.android.app.CitymapsHttpException;
 import com.citymaps.mobile.android.app.DataWrapper;
-import com.citymaps.mobile.android.app.ThrowableWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.model.vo.ApiResult;
 import com.citymaps.mobile.android.model.vo.User;
@@ -20,14 +20,14 @@ public class UserResponseHandler extends CitymapsResponseHandler<User> {
 	 * @return The wrapped user data.
 	 */
 	@Override
-	protected Wrapper<User, Exception> wrapResult(JsonElement json) {
+	protected Wrapper<User> wrapResult(JsonElement json) {
 		UserResult userResult = getGson().fromJson(json, UserResult.class);
 		int code = userResult.getCode();
 		if (code == 0)
-			return new DataWrapper<User, Exception>(userResult.getUser());
+			return new DataWrapper<User>(userResult.getUser());
 		else {
 			CitymapsHttpException e = new CitymapsHttpException(code, userResult.getError());
-			return new ThrowableWrapper<User, Exception>(e);
+			return new CitymapsExceptionWrapper<User>(e);
 		}
 	}
 

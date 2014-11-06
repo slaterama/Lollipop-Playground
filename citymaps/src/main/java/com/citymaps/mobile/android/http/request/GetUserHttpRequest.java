@@ -1,9 +1,8 @@
 package com.citymaps.mobile.android.http.request;
 
 import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.confignew.Environment;
+import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.http.response.UserResponseHandler;
 import com.citymaps.mobile.android.model.vo.User;
 import org.apache.http.client.ResponseHandler;
@@ -80,7 +79,7 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 * @return The handler that will be used to process this request.
 	 */
 	@Override
-	protected ResponseHandler<Wrapper<User, Exception>> getResponseHandler() {
+	protected ResponseHandler<Wrapper<User>> getResponseHandler() {
 		return new UserResponseHandler();
 	}
 }

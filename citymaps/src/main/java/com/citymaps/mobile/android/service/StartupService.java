@@ -7,7 +7,7 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.http.request.GetConfigHttpRequest;
 import com.citymaps.mobile.android.map.MapViewService;
@@ -41,8 +41,6 @@ public class StartupService extends Service
 
 	private ConnectivityManager mConnectivityManager;
 
-	private boolean mConnected = false;
-
 	private boolean mConfigLoaded = false;
 
 	private boolean mVersionLoaded = false;
@@ -50,7 +48,7 @@ public class StartupService extends Service
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			testConnectedState();
+			testState();
 		}
 	};
 
@@ -58,7 +56,7 @@ public class StartupService extends Service
 	public void onCreate() {
 		super.onCreate();
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		testConnectedState();
+		testState();
 		registerReceiver(mConnectivityReceiver, CONNECTIVITY_FILTER);
 		bindService(new Intent(this, SessionService.class), this, BIND_AUTO_CREATE);
 	}
@@ -106,49 +104,52 @@ public class StartupService extends Service
 		mSessionBinder = null;
 	}
 
-	private void testConnectedState() {
-		boolean connected = (mConnectivityManager.getActiveNetworkInfo() != null);
-		if (mConnected != connected) {
-			mConnected = connected;
-			if (LogEx.isLoggable(LogEx.VERBOSE)) {
-				LogEx.v(mConnected ? "Connected" : "Not connected");
+	private void testState() {
+		synchronized (this) {
+			if (mSessionBinder == null) {
+				return;
 			}
 
-			testState();
-		}
-	}
+			if (mConnectivityManager.getActiveNetworkInfo() == null) {
+				return;
+			}
 
-	private void testState() {
-		if (mSessionBinder == null) {
-			return;
-		}
+			if (!mConfigLoaded) {
+				loadConfig();
+				return;
+			}
 
-		if (!mConnected) {
-			return;
-		}
+			if (!mVersionLoaded) {
+				loadVersion();
+				return;
+			}
 
-		if (!mConfigLoaded) {
-			loadConfig();
-		}
-
-		if (!mVersionLoaded) {
-			loadVersion();
+			// Done?
+			stopSelf();
 		}
 	}
 
 	private void loadConfig() {
-		new AsyncTask<Void, Void, Wrapper<Config, Exception>>() {
+		new AsyncTask<Void, Void, Wrapper<Config>>() {
 			@Override
-			protected Wrapper<Config, Exception> doInBackground(Void... params) {
+			protected Wrapper<Config> doInBackground(Void... params) {
+				Environment environment = mSessionBinder.getEnvironment();
+				return GetConfigHttpRequest.makeRequest(environment).execute();
+
 				//Api api = mSessionBinder.getApi();
 				//GetConfigHttpRequest request = GetConfigHttpRequest.makeRequest(api);
 				//return request.execute();
-				return null;
+				//return null;
 			}
 
 			@Override
-			protected void onPostExecute(Wrapper<Config, Exception> result) {
+			protected void onPostExecute(Wrapper<Config> result) {
+				try {
+					Config config = result.getData();
+					LogEx.d(String.format("config=%s", config));
+				} catch (Exception e) {
 
+				}
 			}
 		}.execute();
 	}

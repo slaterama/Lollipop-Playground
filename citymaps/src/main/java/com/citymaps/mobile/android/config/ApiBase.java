@@ -1,44 +1,12 @@
 package com.citymaps.mobile.android.config;
 
-import com.citymaps.mobile.android.os.SoftwareVersion;
-
 public class ApiBase extends Api {
 
-	protected ApiBase(Environment environment) {
-		super(environment);
-	}
-
-	@Override
-	public int getApiVersion() {
-		return 1;
-	}
-
-	@Override
-	public SoftwareVersion getApiBuild() {
-		return SoftwareVersion.DEFAULT_VERSION;
-	}
-
-	@Override
-	protected Endpoint createEndpoint(Endpoint.Type type) {
-		switch (type) {
-			case CONFIG:
-				return new Endpoint(type, Server.Type.ASSETS, mEnvironment.getConfigEndpoint(), 0);
-			case STATUS:
-				return new Endpoint(type, Server.Type.API, "v2/status/version", 0);
-
-			case COLLECTIONS:
-				return new Endpoint(type, Server.Type.API, "maps/%s", Endpoint.APPEND_DEFAULT);
-			case COLLECTIONS_FOR_USER:
-				return new Endpoint(type, Server.Type.API, "v2/maps/user/%s", Endpoint.APPEND_DEFAULT);
-
-			case PLACE:
-				return new Endpoint(type, Server.Type.API, "business/%s", Endpoint.APPEND_DEFAULT);
-
-			case USER:
-				return new Endpoint(type, Server.Type.API, "user/%s", Endpoint.APPEND_DEFAULT);
-
-			default:
-				return null;
-		}
+	protected ApiBase(int apiVersion, String apiBuild) {
+		super(apiVersion, apiBuild);
+		addEndpoint(new Endpoint(Endpoint.Type.COLLECTIONS, Server.Type.API, "maps/%s", APPEND_DEFAULT));
+		addEndpoint(new Endpoint(Endpoint.Type.COLLECTIONS_FOR_USER, Server.Type.API, "v2/maps/user/%s", APPEND_DEFAULT));
+		addEndpoint(new Endpoint(Endpoint.Type.PLACE, Server.Type.API, "business/%s", APPEND_DEFAULT));
+		addEndpoint(new Endpoint(Endpoint.Type.USER, Server.Type.API, "v2/user/%s", APPEND_DEFAULT));
 	}
 }

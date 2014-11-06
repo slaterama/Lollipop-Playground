@@ -1,15 +1,12 @@
 package com.citymaps.mobile.android.http.request;
 
 import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.confignew.Environment;
+import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.http.response.ConfigResponseHandler;
 import com.citymaps.mobile.android.model.vo.Config;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.params.HttpParams;
-
-import java.net.MalformedURLException;
 
 public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 
@@ -28,7 +25,7 @@ public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 	}
 
 	@Override
-	protected ResponseHandler<Wrapper<Config, Exception>> getResponseHandler() {
+	protected ResponseHandler<Wrapper<Config>> getResponseHandler() {
 		return new ConfigResponseHandler();
 	}
 

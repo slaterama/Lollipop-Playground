@@ -2,12 +2,10 @@ package com.citymaps.mobile.android.app;
 
 /**
  * <p>A DataWrapper object wraps a data object.</p>
- * <p>Note that in this implementation, calls to getData will never result in a Throwable being thrown.</p>
+ * <p>Note that in this implementation, calls to getData will never result in a Citymaps Exception being thrown.</p>
  * @param <D> The type of the data this wrapper is wrapping.
- * @param <T> The type of the Throwable this wrapper is wrapping. Note that in this implementation,
- *           this throwable will never be thrown.
  */
-public class DataWrapper<D, T extends Throwable> implements Wrapper<D, T> {
+public class DataWrapper<D> implements Wrapper<D> {
 
 	private D mData;
 
@@ -19,7 +17,7 @@ public class DataWrapper<D, T extends Throwable> implements Wrapper<D, T> {
 	 * Returns the data being wrapped by this wrapper.
 	 */
 	@Override
-	public D getData() throws T {
+	public D getData() throws CitymapsException {
 		return mData;
 	}
 }

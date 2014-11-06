@@ -8,8 +8,8 @@ import com.google.gson.JsonElement;
 public class ConfigResponseHandler extends CitymapsResponseHandler<Config> {
 
 	@Override
-	protected Wrapper<Config, Exception> wrapResult(JsonElement json) {
+	protected Wrapper<Config> wrapResult(JsonElement json) {
 		Config config = getGson().fromJson(json, Config.class);
-		return new DataWrapper<Config, Exception>(config);
+		return new DataWrapper<Config>(config);
 	}
 }

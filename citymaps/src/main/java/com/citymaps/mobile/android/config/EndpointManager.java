@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.confignew;
+package com.citymaps.mobile.android.config;
 
 import com.citymaps.mobile.android.config.Endpoint;
 

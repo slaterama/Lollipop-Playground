@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.config;
 
 import android.content.Context;
+import com.citymaps.mobile.android.BuildConfig;
 
 public class EnvironmentProduction extends Environment {
 
@@ -9,33 +10,16 @@ public class EnvironmentProduction extends Environment {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.PRODUCTION;
-	}
-
-	@Override
-	public String getConfigEndpoint() {
-		return CONFIG_ENDPOINT_PROD;
-	}
-
-	@Override
-	protected Server createServer(Server.Type type) {
-		switch (type) {
-			case API:
-				return new Server(type, "coreapi.citymaps.com", Server.Protocol.SECURE);
-			case SEARCH:
-				return new Server(type, "coresearch.citymaps.com", Server.Protocol.SECURE);
-			case MOBILE:
-				return new Server(type, "m.citymaps.com", Server.Protocol.SECURE);
-			case ASSETS:
-				return new Server(type, "r.citymaps.com", Server.Protocol.STANDARD);
-			default:
-				return super.createServer(type);
-		}
-	}
-
-	@Override
 	public String getGhostUserId() {
-		return GHOST_USER_ID_PROD;
+		return BuildConfig.GHOST_USER_ID_PROD;
+	}
+
+	@Override
+	protected void onCreate() {
+		super.onCreate();
+		addServer(new Server(Server.Type.API, "coreapi.citymaps.com", Server.Protocol.SECURE));
+		addServer(new Server(Server.Type.SEARCH, "coresearch.citymaps.com", Server.Protocol.SECURE));
+		addServer(new Server(Server.Type.MOBILE, "m.citymaps.com", Server.Protocol.SECURE));
+		addServer(new Server(Server.Type.ASSETS, "r.citymaps.com", Server.Protocol.STANDARD));
 	}
 }

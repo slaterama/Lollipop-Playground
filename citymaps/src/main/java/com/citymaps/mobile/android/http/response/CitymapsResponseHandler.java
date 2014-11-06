@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.http.response;
 
-import com.citymaps.mobile.android.app.ThrowableWrapper;
+import com.citymaps.mobile.android.app.CitymapsException;
+import com.citymaps.mobile.android.app.CitymapsExceptionWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.Gson;
@@ -25,7 +26,7 @@ import java.io.InputStreamReader;
  *            will be wrapped in a {@link Wrapper} before being
  *            returned.
  */
-public abstract class CitymapsResponseHandler<D> implements ResponseHandler<Wrapper<D, Exception>> {
+public abstract class CitymapsResponseHandler<D> implements ResponseHandler<Wrapper<D>> {
 
 	/**
 	 * A {@link com.google.gson.Gson} instance used to generate the result.
@@ -50,13 +51,13 @@ public abstract class CitymapsResponseHandler<D> implements ResponseHandler<Wrap
 	}
 
 	@Override
-	public Wrapper<D, Exception> handleResponse(HttpResponse httpResponse) throws IOException {
+	public Wrapper<D> handleResponse(HttpResponse httpResponse) throws IOException {
 
 		final StatusLine statusLine = httpResponse.getStatusLine();
 		int statusCode = statusLine.getStatusCode();
 		if (statusCode >= 300)
-			return new ThrowableWrapper<D, Exception>(
-					new HttpResponseException(statusCode, statusLine.getReasonPhrase()));
+			return new CitymapsExceptionWrapper<D>(
+					new CitymapsException(new HttpResponseException(statusCode, statusLine.getReasonPhrase())));
 
 		final HttpEntity entity = httpResponse.getEntity();
 		InputStream inputStream = entity.getContent();
@@ -81,5 +82,5 @@ public abstract class CitymapsResponseHandler<D> implements ResponseHandler<Wrap
 	 * @param json The JsonElement that contains the content resulting from the HTTP request.
 	 * @return The result (or Exception) wrapped in a {@link Wrapper} object.
 	 */
-	protected abstract Wrapper<D, Exception> wrapResult(JsonElement json);
+	protected abstract Wrapper<D> wrapResult(JsonElement json);
 }

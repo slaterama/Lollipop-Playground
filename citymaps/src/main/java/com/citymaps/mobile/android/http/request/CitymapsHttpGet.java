@@ -4,13 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.http.AndroidHttpClient;
-import com.citymaps.mobile.android.app.CitymapsConnectivityException;
-import com.citymaps.mobile.android.app.CitymapsRuntimeException;
-import com.citymaps.mobile.android.app.ThrowableWrapper;
-import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.app.*;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.confignew.Environment;
+import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.util.LogEx;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.http.client.ResponseHandler;
@@ -97,7 +93,7 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	 * @return The data returned by the {@link ResponseHandler} associated with this Citymaps HTTP request, which
 	 * is itself returned by {@link #getResponseHandler()}.
 	 */
-	public Wrapper<D, Exception> execute() {
+	public Wrapper<D> execute() {
 		if (LogEx.isLoggable(LogEx.VERBOSE)) {
 			String urlString = getURI().toString();
 			HttpParams params = getParams();
@@ -108,14 +104,14 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 		ConnectivityManager connectivityManager = (ConnectivityManager) mEnvironment.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 		if (networkInfo == null || !networkInfo.isConnectedOrConnecting())
-			return new ThrowableWrapper<D, Exception>(new CitymapsConnectivityException("No network connection available"));
+			return new CitymapsExceptionWrapper<D>(new CitymapsConnectivityException("No network connection available"));
 
-		Wrapper<D, Exception> response;
+		Wrapper<D> response;
 		AndroidHttpClient client = AndroidHttpClient.newInstance(HTTP_AGENT);
 		try {
 			response = client.execute(this, getResponseHandler());
 		} catch (IOException e) {
-			response = new ThrowableWrapper<D, Exception>(e);
+			response = new CitymapsExceptionWrapper<D>(new CitymapsException(e));
 		} finally {
 			client.close();
 		}
@@ -128,5 +124,5 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	 *
 	 * @return The ResponseHandler that will be used to execute the request.
 	 */
-	protected abstract ResponseHandler<Wrapper<D, Exception>> getResponseHandler();
+	protected abstract ResponseHandler<Wrapper<D>> getResponseHandler();
 }

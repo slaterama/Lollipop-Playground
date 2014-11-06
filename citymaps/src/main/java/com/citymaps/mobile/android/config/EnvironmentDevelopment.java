@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.config;
 
 import android.content.Context;
+import com.citymaps.mobile.android.BuildConfig;
 
 public class EnvironmentDevelopment extends Environment {
 
@@ -9,33 +10,17 @@ public class EnvironmentDevelopment extends Environment {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.DEVELOPMENT;
-	}
-
-	@Override
-	public String getConfigEndpoint() {
-		return CONFIG_ENDPOINT_DEV;
-	}
-
-	@Override
-	protected Server createServer(Server.Type type) {
-		switch (type) {
-			case API:
-				return new Server(type, "dev-coreapi.citymaps.com", Server.Protocol.STANDARD);
-			case SEARCH:
-				return new Server(type, "dev-coresearch.citymaps.com", Server.Protocol.STANDARD);
-			case MOBILE:
-				return new Server(type, "dev-m.citymaps.com", Server.Protocol.STANDARD);
-			case ASSETS:
-				return new Server(type, "riak.citymaps.com", Server.Protocol.STANDARD, 8098);
-			default:
-				return super.createServer(type);
-		}
-	}
-
-	@Override
 	public String getGhostUserId() {
-		return GHOST_USER_ID_DEV;
+		return BuildConfig.GHOST_USER_ID_DEV;
+	}
+
+	@Override
+	protected void onCreate() {
+		super.onCreate();
+		addServer(new Server(Server.Type.API, "dev-coreapi.citymaps.com", Server.Protocol.STANDARD));
+		addServer(new Server(Server.Type.SEARCH, "dev-coresearch.citymaps.com", Server.Protocol.STANDARD));
+		addServer(new Server(Server.Type.MOBILE, "dev-m.citymaps.com", Server.Protocol.STANDARD));
+		addServer(new Server(Server.Type.ASSETS, "riak.citymaps.com", Server.Protocol.STANDARD, 8098));
+		addEndpoint(new Endpoint(Endpoint.Type.CONFIG, Server.Type.ASSETS, "riak/appconfig/android_config_dev.json", 0));
 	}
 }

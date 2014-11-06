@@ -1,6 +1,5 @@
 package com.citymaps.mobile.android.http.request;
 
-import com.citymaps.mobile.android.config.Api;
 import org.apache.http.params.HttpParams;
 
 import java.net.MalformedURLException;

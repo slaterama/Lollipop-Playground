@@ -18,9 +18,9 @@ public class StatusResponseHandler extends CitymapsResponseHandler<ApiStatus> {
 	 * @return The wrapped build data.
 	 */
 	@Override
-	protected Wrapper<ApiStatus, Exception> wrapResult(JsonElement json) {
+	protected Wrapper<ApiStatus> wrapResult(JsonElement json) {
 		Version version = getGson().fromJson(json, Version.class);
 		ApiStatus build = new ApiStatus(version.getVersion(), version.getBuild());
-		return new DataWrapper<ApiStatus, Exception>(build);
+		return new DataWrapper<ApiStatus>(build);
 	}
 }
