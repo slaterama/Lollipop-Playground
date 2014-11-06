@@ -30,6 +30,8 @@ public class StartupService extends Service
 	protected static final IntentFilter CONNECTIVITY_FILTER =
 			new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 
+	// TODO I was unable to use this intent to start or bind to service
+	// once I started using build variants
 	protected static final CitymapsIntent SESSION_SERVICE_INTENT =
 			new CitymapsIntent(CitymapsIntent.ACTION_SESSION_SERVICE);
 
@@ -58,7 +60,8 @@ public class StartupService extends Service
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		testConnectedState();
 		registerReceiver(mConnectivityReceiver, CONNECTIVITY_FILTER);
-		bindService(SESSION_SERVICE_INTENT, this, BIND_AUTO_CREATE);
+
+		bindService(new Intent(this, SessionService.class), this, BIND_AUTO_CREATE);
 	}
 
 	@Override

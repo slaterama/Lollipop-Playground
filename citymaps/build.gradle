@@ -9,7 +9,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 repositories {
-        jcenter()
+    jcenter()
 }
 
 android {
@@ -24,20 +24,32 @@ android {
         versionName "2.0"
     }
 
+    signingConfigs {
+        releaseConfig {
+            storeFile file('../resources/CitymapsAndroid.jks');
+            storePassword "map!city"
+            keyAlias "citymaps"
+            keyPassword "map!city"
+        }
+    }
+
     buildTypes {
         release {
+            debuggable true
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
+            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.ERROR"
+            resValue "string", "app_name", "Citymaps"
+            resValue "string", "citymaps_engine_api_key", "76b15e871173450fb41fb002b2fab463"
         }
 
 		debug {
-
-		}
-
-		development.initWith(buildTypes.debug)
-		development {
-			//applicationIdSuffix ".dev"
-			versionNameSuffix "-dev"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.VERBOSE"
+            resValue "string", "app_name", "Citymaps Dev"
+            resValue "string", "citymaps_engine_api_key", "2e4c9a9ee762475aac1fc69aab20f7ac"
 		}
     }
 

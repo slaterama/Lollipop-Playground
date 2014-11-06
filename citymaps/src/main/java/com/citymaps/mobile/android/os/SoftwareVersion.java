@@ -116,11 +116,6 @@ public class SoftwareVersion
 	private static final int CATEGORY_QUALIFIER_GROUP = 2;
 
 	/**
-	 * A regular expression string that determines if this software version represents a development software version.
-	 */
-	private static final String DEVELOPMENT_QUALIFER_REGEX = "^dev";
-
-	/**
 	 * A default {@code SoftwareVersion} representing an initial release.
 	 */
 	public static final SoftwareVersion DEFAULT_VERSION = new SoftwareVersion(1, 0, 0);
@@ -452,14 +447,6 @@ public class SoftwareVersion
 	 */
 	public String getQualifier() {
 		return mQualifier;
-	}
-
-	/**
-	 * Returns whether this software version represents a development software version.
-	 * A development software version is any software version with a qualifier that begins with "dev".
-	 */
-	public boolean isDevelopment() {
-		return (mQualifier != null && mQualifier.matches(DEVELOPMENT_QUALIFER_REGEX));
 	}
 
 	/**

@@ -24,7 +24,7 @@ public abstract class Api {
 		byte[] bytes = DigestUtils.sha1(key);
 		String hex = new String(Hex.encodeHex(bytes));
 		Hex.encodeHex(bytes);
-		return Base64.encodeToString(hex.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP).replace('=', '_');
+		return Base64.encodeToString(hex.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
 	}
 
 	public static Api newInstance(Environment environment, int apiVersion, SoftwareVersion apiBuild) {

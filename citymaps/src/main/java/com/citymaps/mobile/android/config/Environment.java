@@ -1,11 +1,15 @@
 package com.citymaps.mobile.android.config;
 
 import android.content.Context;
+import com.citymaps.mobile.android.BuildConfig;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Environment {
+
+	private static final String BUILD_VARIANT_RELEASE = "release";
+	private static final String BUILD_VARIANT_DEBUG = "debug";
 
 	protected static final String GHOST_USER_ID_PROD = "345a8d0a-922b-4ff7-81ba-3000c2d55e4d";
 	protected static final String GHOST_USER_ID_DEV = "28e20039-9742-45b6-a565-07a7acd88908";
@@ -29,6 +33,10 @@ public abstract class Environment {
 			default:
 				return new EnvironmentProduction(context);
 		}
+	}
+
+	public static Environment newInstance(Context context) {
+		return newInstance(context, Type.defaultType());
 	}
 
 	private Context mContext;
@@ -76,6 +84,16 @@ public abstract class Environment {
 
 	public static enum Type {
 		PRODUCTION,
-		DEVELOPMENT
+		DEVELOPMENT;
+
+		public static Type defaultType() {
+			String buildType = BuildConfig.BUILD_TYPE;
+			String flavor = BuildConfig.FLAVOR;
+			if (BUILD_VARIANT_RELEASE.equals(buildType)) {
+				return PRODUCTION;
+			} else {
+				return DEVELOPMENT;
+			}
+		}
 	}
 }

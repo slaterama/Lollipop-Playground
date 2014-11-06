@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.os.SoftwareVersion;
 
 public class PackageUtils {
@@ -49,6 +50,7 @@ public class PackageUtils {
 		return new SoftwareVersion((String) getMetaData(context, BASE_API_BUILD_STRING, fallback));
 	}
 
+	/*
 	public static int getAppVersionCode(Context context, int fallback) {
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
@@ -74,28 +76,10 @@ public class PackageUtils {
 	public static String getAppVersionName(Context context) {
 		return getAppVersionName(context, null);
 	}
+	*/
 
-	public static SoftwareVersion getAppVersion(Context context, SoftwareVersion fallback) {
-		PackageInfo info = null;
-		try {
-			info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-			return new SoftwareVersion(info.versionName);
-		} catch (PackageManager.NameNotFoundException e) {
-			return fallback;
-		}
-	}
-
-	public static SoftwareVersion getAppVersion(Context context, String fallback) {
-		try {
-			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-			return new SoftwareVersion(info.versionName);
-		} catch (PackageManager.NameNotFoundException e) {
-			return new SoftwareVersion(fallback);
-		}
-	}
-
-	public static SoftwareVersion getAppVersion(Context context) {
-		return getAppVersion(context, (SoftwareVersion) null);
+	public static SoftwareVersion getAppVersion() {
+		return new SoftwareVersion(BuildConfig.VERSION_NAME);
 	}
 
 	private PackageUtils() {

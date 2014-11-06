@@ -25,25 +25,28 @@ public class CitymapsIntent extends Intent {
 	 */
 	private static final String EXTRA = "extra";
 
+//	private static final String PACKAGE_NAME = BuildConfig.PACKAGE_NAME;
+	private static final String PACKAGE_NAME = BuildConfig.class.getPackage().getName();
+
 	/**
 	 * A convenience method used to build action intent strings.
 	 */
 	private static final String makeAction(String name) {
-		return String.format("%s.%s.%s", BuildConfig.PACKAGE_NAME, ACTION, name);
+		return String.format("%s.%s.%s", PACKAGE_NAME, ACTION, name);
 	}
 
 	/**
 	 * A convenience method used to build category intent strings.
 	 */
 	private static final String makeCategory(String name) {
-		return String.format("%s.%s.%s", BuildConfig.PACKAGE_NAME, CATEGORY, name);
+		return String.format("%s.%s.%s", PACKAGE_NAME, CATEGORY, name);
 	}
 
 	/**
 	 * A convenience method used to build extra intent strings.
 	 */
 	private static final String makeExtra(String name) {
-		return String.format("%s.%s.%s", BuildConfig.PACKAGE_NAME, EXTRA, name);
+		return String.format("%s.%s.%s", PACKAGE_NAME, EXTRA, name);
 	}
 
 	/**

@@ -22,9 +22,8 @@ public class SessionService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		SoftwareVersion appVersion = PackageUtils.getAppVersion(this, SoftwareVersion.DEFAULT_VERSION);
-		mEnvironment = Environment.newInstance(this, appVersion.isDevelopment()
-				? Environment.Type.DEVELOPMENT : Environment.Type.PRODUCTION);
+		SoftwareVersion appVersion = PackageUtils.getAppVersion();
+		mEnvironment = Environment.newInstance(this);
 		int apiVersion = PackageUtils.getBaseApiVersion(this, 1);
 		SoftwareVersion apiBuild = PackageUtils.getBaseApiBuild(this, SoftwareVersion.DEFAULT_VERSION);
 		mApi = Api.newInstance(mEnvironment, apiVersion, apiBuild);

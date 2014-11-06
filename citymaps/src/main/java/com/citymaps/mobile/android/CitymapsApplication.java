@@ -10,7 +10,7 @@ public class CitymapsApplication extends Application {
 	public CitymapsApplication() {
 		super();
 		LogEx.setTagFormat("CM|%s", LogEx.Placeholder.SIMPLE_CLASS_NAME);
-		LogEx.setLogLevel(LogEx.VERBOSE);
+		LogEx.setLogLevel(BuildConfig.LOG_LEVEL);
 	}
 
 	@Override
