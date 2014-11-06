@@ -5,7 +5,7 @@ import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.http.response.CitymapsResponseHandler;
-import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.model.vo.ApiStatus;
 import com.citymaps.mobile.android.model.vo.User;
 import com.google.gson.JsonElement;
 import org.apache.http.client.ResponseHandler;
@@ -13,24 +13,24 @@ import org.apache.http.client.ResponseHandler;
 import java.net.MalformedURLException;
 
 /**
- * A CitymapsHttpGet class that returns Citymaps config information.
+ * A CitymapsHttpGet class that returns the status (version and build) of the API currently being used.
  */
-public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
+public class GetApiStatusHttpRequest extends CitymapsHttpGet<ApiStatus> {
 
-	private CitymapsResponseHandler<Config> mResponseHandler = new CitymapsResponseHandler<Config>() {
+	private CitymapsResponseHandler<ApiStatus> mResponseHandler = new CitymapsResponseHandler<ApiStatus>() {
 		@Override
-		protected Wrapper<Config> wrapResult(JsonElement json) {
-			Config config = getGson().fromJson(json, Config.class);
-			return new DataWrapper<Config>(config);
+		protected Wrapper<ApiStatus> wrapResult(JsonElement json) {
+			ApiStatus apiStatus = getGson().fromJson(json, ApiStatus.class);
+			return new DataWrapper<ApiStatus>(apiStatus);
 		}
 	};
 
 	/**
-	 * Creates a new GetConfigHttpRequest using the specified {@link Environment}.
+	 * Creates a new GetStatusHttpRequest using the specified {@link Environment}.
 	 *
 	 * @param environment The environment that will be used to execute the request.
 	 */
-	public GetConfigHttpRequest(Environment environment) {
+	public GetApiStatusHttpRequest(Environment environment) {
 		super(environment, null);
 	}
 
@@ -39,14 +39,14 @@ public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 	 */
 	@Override
 	public String getUrlString(Environment environment, User user, Object... args) throws MalformedURLException {
-		return environment.buildUrlString(Endpoint.Type.CONFIG);
+		return environment.buildUrlString(Endpoint.Type.STATUS);
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	@Override
-	protected ResponseHandler<Wrapper<Config>> getResponseHandler() {
+	protected ResponseHandler<Wrapper<ApiStatus>> getResponseHandler() {
 		return mResponseHandler;
 	}
 }

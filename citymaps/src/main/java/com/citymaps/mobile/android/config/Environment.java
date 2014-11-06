@@ -2,13 +2,9 @@ package com.citymaps.mobile.android.config;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Base64;
 import com.citymaps.mobile.android.BuildConfig;
-import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.http.request.GetStatusHttpRequest;
-import com.citymaps.mobile.android.model.vo.ApiStatus;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.PackageUtils;
 import org.apache.commons.codec.binary.Hex;
@@ -31,14 +27,6 @@ public abstract class Environment extends EndpointManager {
 	}
 
 	public static Environment newInstance(Context context, Type type) {
-		if (context == null) {
-			throw new IllegalArgumentException("context can not be null");
-		}
-
-		if (type == null) {
-			throw new IllegalArgumentException("type can not be null");
-		}
-
 		switch (type) {
 			case DEVELOPMENT:
 				return new EnvironmentDevelopment(context);
@@ -58,10 +46,11 @@ public abstract class Environment extends EndpointManager {
 
 	private Api mApi;
 
+	/*
 	private AsyncTask<Void, Void, Wrapper<ApiStatus>> mGetVersionTask = new AsyncTask<Void, Void, Wrapper<ApiStatus>>() {
 		@Override
 		protected Wrapper<ApiStatus> doInBackground(Void... params) {
-			return GetStatusHttpRequest.makeRequest(Environment.this).execute();
+			return new GetStatusHttpRequest(Environment.this).execute();
 		}
 
 		@Override
@@ -74,12 +63,10 @@ public abstract class Environment extends EndpointManager {
 			}
 		}
 	};
+	*/
 
 	protected Environment(Context context) {
 		super();
-		if (context == null) {
-			throw new IllegalArgumentException("context can not be null");
-		}
 		mContext = context.getApplicationContext();
 		mServerMap = new HashMap<Server.Type, Server>(Server.Type.values().length);
 		addServer(new Server(Server.Type.MAP_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
@@ -89,7 +76,7 @@ public abstract class Environment extends EndpointManager {
 		onCreate();
 
 		// Create the Api
-		mGetVersionTask.execute();
+		//mGetVersionTask.execute();
 	}
 
 	protected void onCreate() {

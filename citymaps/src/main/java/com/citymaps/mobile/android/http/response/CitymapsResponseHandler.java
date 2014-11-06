@@ -2,6 +2,7 @@ package com.citymaps.mobile.android.http.response;
 
 import com.citymaps.mobile.android.app.CitymapsException;
 import com.citymaps.mobile.android.app.CitymapsExceptionWrapper;
+import com.citymaps.mobile.android.app.DataWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.Gson;
@@ -9,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -18,6 +20,7 @@ import org.apache.http.client.ResponseHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 
 /**
  * Base ResponseHandler for handling Citymaps API requests.

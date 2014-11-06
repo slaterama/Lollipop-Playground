@@ -6,11 +6,13 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import com.citymaps.mobile.android.app.CitymapsException;
 import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
+import com.citymaps.mobile.android.http.request.GetApiStatusHttpRequest;
 import com.citymaps.mobile.android.http.request.GetConfigHttpRequest;
 import com.citymaps.mobile.android.map.MapViewService;
+import com.citymaps.mobile.android.model.vo.ApiStatus;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.util.LogEx;
 /*
@@ -66,6 +68,7 @@ public class StartupService extends Service
 		super.onDestroy();
 		unregisterReceiver(mConnectivityReceiver);
 		unbindService(this);
+		LogEx.d("Byeeeeeeeee....");
 	}
 
 	@Override
@@ -78,7 +81,7 @@ public class StartupService extends Service
 
 		// Start other services
 		Context applicationContext = getApplicationContext();
-		applicationContext.startService(new Intent(applicationContext, SessionService.class));
+//		applicationContext.startService(new Intent(applicationContext, SessionService.class));
 		applicationContext.startService(new Intent(applicationContext, MapViewService.class));
 
 		return START_STICKY;
@@ -133,29 +136,42 @@ public class StartupService extends Service
 		new AsyncTask<Void, Void, Wrapper<Config>>() {
 			@Override
 			protected Wrapper<Config> doInBackground(Void... params) {
-				Environment environment = mSessionBinder.getEnvironment();
-				return GetConfigHttpRequest.makeRequest(environment).execute();
-
-				//Api api = mSessionBinder.getApi();
-				//GetConfigHttpRequest request = GetConfigHttpRequest.makeRequest(api);
-				//return request.execute();
-				//return null;
+				return new GetConfigHttpRequest(mSessionBinder.getEnvironment()).execute();
 			}
 
 			@Override
 			protected void onPostExecute(Wrapper<Config> result) {
 				try {
 					Config config = result.getData();
-					LogEx.d(String.format("config=%s", config));
-				} catch (Exception e) {
-
+				} catch (CitymapsException e) {
+					// TODO Error handling
+				} finally {
+					mConfigLoaded = true;
+					testState();
 				}
 			}
 		}.execute();
 	}
 
 	private void loadVersion() {
+		new AsyncTask<Void, Void, Wrapper<ApiStatus>>() {
+			@Override
+			protected Wrapper<ApiStatus> doInBackground(Void... params) {
+				return new GetApiStatusHttpRequest(mSessionBinder.getEnvironment()).execute();
+			}
 
+			@Override
+			protected void onPostExecute(Wrapper<ApiStatus> result) {
+				try {
+					ApiStatus status = result.getData();
+				} catch (CitymapsException e) {
+					// TODO Error handling
+				} finally {
+					mVersionLoaded = true;
+					testState();
+				}
+			}
+		}.execute();
 	}
 
 	public class StartupBinder extends Binder {

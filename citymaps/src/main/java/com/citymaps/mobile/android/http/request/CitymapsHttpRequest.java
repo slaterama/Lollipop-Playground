@@ -1,5 +1,7 @@
 package com.citymaps.mobile.android.http.request;
 
+import com.citymaps.mobile.android.config.Environment;
+import com.citymaps.mobile.android.model.vo.User;
 import org.apache.http.params.HttpParams;
 
 import java.net.MalformedURLException;
@@ -16,34 +18,20 @@ public interface CitymapsHttpRequest {
 	public static final String HTTP_AGENT = "http.agent";
 
 	/**
-	 * UTF-8 string used in Citymaps HttpRequest classes for UTF-8 encoding.
+	 * Returns the url string that will be used to execute this http request.
+	 * @param environment The {@link Environment} used to create this CitymapsHttpRequest.
+	 * @param user The user that is currently logged in to the system, or null if no user is currently logged in.
+	 * @param args The arguments that will be used to get the url string and http parameter object.
+	 * @return The url string.
 	 */
-	public static final String UTF_8 = "UTF-8";
+	public String getUrlString(Environment environment, User user, Object... args) throws MalformedURLException;
 
 	/**
-	 * String constant containing the name of the the Citymaps Token HTTP parameter
-	 * for Citymaps HTTP requests.
-	 */
-	public static final String PARAM_NAME_CITYMAPS_TOKEN = "citymaps_token";
-
-	/**
-	 * Get the URL String that will be used to execute the Citymaps HTTP request.
-	 *
-	 * @param api  The {@link Api} in which this request will be executed.
-	 * @param args Any arguments that will be passed to the Api endpoint in order to create
-	 *             the URL String.
-	 * @return The URL String.
-	 * @throws MalformedURLException
-	 */
-//	public String getUrlString(Api api, Object... args)
-//			throws MalformedURLException;
-
-	/**
-	 * Get the collection of parameters (if any) that will be sent along with the Citymaps HTTP request.
+	 * Get the collection of parameters (if any) that will be sent along with the CitymapsHttpRequest.
 	 *
 	 * @param args The arguments that will be used to determine the parameters that should be
-	 *             passed to the HTTP request.
-	 * @return The collection of parameters that should be sent along with the HTTP request.
+	 *             passed to the http request.
+	 * @return The collection of parameters that should be sent along with the http request.
 	 */
 	public HttpParams getParams(Object... args);
 }

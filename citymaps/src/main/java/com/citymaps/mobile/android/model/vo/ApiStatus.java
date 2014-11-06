@@ -1,51 +1,61 @@
 package com.citymaps.mobile.android.model.vo;
 
 import com.google.gson.annotations.SerializedName;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * Value object class representing a Citymaps Api status.
+ * A class representing information about the Citymaps API version.
  */
 public class ApiStatus {
 
 	/**
-	 * The Citymaps Api version.
+	 * The return code associated with this API request.
+	 */
+	@SerializedName("code")
+	private int mCode;
+
+	/**
+	 * The error string associated with this API request if an error occurred.
+	 */
+	@SerializedName("error")
+	private String mError;
+
+	/**
+	 * The Citymaps API version number.
 	 */
 	@SerializedName("version")
 	private int mVersion;
 
 	/**
-	 * The Citymaps Api build.
+	 * The Citymaps API build string.
 	 */
 	@SerializedName("build")
 	private String mBuild;
 
-	public ApiStatus(int version, String build) {
-		mVersion = version;
-		mBuild = build;
+	/**
+	 * Returns the return code associated with this API request.
+	 */
+	public int getCode() {
+		return mCode;
 	}
 
 	/**
-	 * Returns the Citymaps Api version.
-	 * @return The Citymaps Api version.
+	 * Returns the error string associated with this API request if an error occurred.
+	 */
+	public String getError() {
+		return mError;
+	}
+
+	/**
+	 * Returns the Citymaps API version number.
 	 */
 	public int getVersion() {
 		return mVersion;
 	}
 
 	/**
-	 * Returns the Citymaps Api build.
-	 * @return The Citymaps Api build.
+	 * Returns the Citymaps API build string.
 	 */
 	public String getBuild() {
 		return mBuild;
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("mVersion", mVersion)
-				.append("mBuild", mBuild)
-				.toString();
 	}
 }

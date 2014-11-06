@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.model.vo;
 
 import com.google.gson.annotations.SerializedName;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * A class containing application configuration information as retrieved from the Internet.
@@ -83,5 +84,10 @@ public final class Config {
 	 */
 	public String getUpgradePrompt() {
 		return mUpgradePrompt;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }
