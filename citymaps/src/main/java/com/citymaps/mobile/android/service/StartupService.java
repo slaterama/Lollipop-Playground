@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
@@ -106,9 +105,6 @@ public class StartupService extends Service {
 	private void checkState() {
 		synchronized (this) {
 			if (mConnectivityManager.getActiveNetworkInfo() != null) {
-
-				//SessionManager sessionManager = SessionManager.getInstance(this);
-
 				if (mGetConfigRequest == null) {
 					mGetConfigRequest = new GetConfigRequest(this, new Response.Listener<Config>() {
 						@Override
