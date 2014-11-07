@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import com.citymaps.mobile.android.app.CitymapsException;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.content.CitymapsIntent;
@@ -18,6 +19,8 @@ import com.citymaps.mobile.android.util.LogEx;
 /*
 import com.citymaps.mobile.android.provider.ConfigDatabase;
 */
+
+import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
 // TODO Should this be an IntentService?
 
@@ -37,28 +40,33 @@ public class StartupService extends Service
 	protected static final CitymapsIntent SESSION_SERVICE_INTENT =
 			new CitymapsIntent(CitymapsIntent.ACTION_SESSION_SERVICE);
 
+	private LocalBroadcastManager mLocalBroadcastManager;
+
+	private ConnectivityManager mConnectivityManager;
+
 	private StartupBinder mBinder;
 
 	private SessionService.SessionBinder mSessionBinder;
 
-	private ConnectivityManager mConnectivityManager;
+	private ConfigTask mConfigTask;
 
-	private boolean mConfigLoaded = false;
+	private StatusTask mStatusTask;
 
-	private boolean mVersionLoaded = false;
+	private Config mConfig;
 
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			testState();
+			checkState();
 		}
 	};
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		testState();
+		checkState();
 		registerReceiver(mConnectivityReceiver, CONNECTIVITY_FILTER);
 		bindService(new Intent(this, SessionService.class), this, BIND_AUTO_CREATE);
 	}
@@ -81,7 +89,7 @@ public class StartupService extends Service
 
 		// Start other services
 		Context applicationContext = getApplicationContext();
-//		applicationContext.startService(new Intent(applicationContext, SessionService.class));
+		applicationContext.startService(new Intent(applicationContext, SessionService.class));
 		applicationContext.startService(new Intent(applicationContext, MapViewService.class));
 
 		return START_STICKY;
@@ -92,14 +100,13 @@ public class StartupService extends Service
 		if (mBinder == null) {
 			mBinder = new StartupBinder();
 		}
-
 		return mBinder;
 	}
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		mSessionBinder = (SessionService.SessionBinder) service;
-		testState();
+		checkState();
 	}
 
 	@Override
@@ -107,80 +114,26 @@ public class StartupService extends Service
 		mSessionBinder = null;
 	}
 
-	private void testState() {
+	private void checkState() {
 		synchronized (this) {
-			if (mSessionBinder == null) {
-				return;
+			if (mSessionBinder != null
+					&& mConnectivityManager.getActiveNetworkInfo() != null) {
+				if (mConfigTask == null) {
+					mConfigTask = new ConfigTask();
+					mConfigTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				}
+
+				if (mStatusTask == null) {
+					mStatusTask = new StatusTask();
+					mStatusTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				}
 			}
 
-			if (mConnectivityManager.getActiveNetworkInfo() == null) {
-				return;
+			if (mConfigTask != null && mConfigTask.getStatus() == AsyncTask.Status.FINISHED
+					&& mStatusTask != null && mStatusTask.getStatus() == AsyncTask.Status.FINISHED) {
+				stopSelf();
 			}
-
-			if (!mConfigLoaded) {
-				loadConfig();
-				return;
-			}
-
-			if (!mVersionLoaded) {
-				loadVersion();
-				return;
-			}
-
-			// Done?
-			stopSelf();
 		}
-	}
-
-	private void loadConfig() {
-		new AsyncTask<Void, Void, Wrapper<Config>>() {
-			@Override
-			protected Wrapper<Config> doInBackground(Void... params) {
-				return new GetConfigHttpRequest(mSessionBinder.getEnvironment()).execute();
-			}
-
-			@Override
-			protected void onPostExecute(Wrapper<Config> result) {
-				try {
-					Config config = result.getData();
-
-					// TODO Test some config stuff
-
-				} catch (CitymapsException e) {
-					// TODO Error handling
-				} finally {
-					mConfigLoaded = true;
-					testState();
-				}
-			}
-		}.execute();
-	}
-
-	private void loadVersion() {
-		new AsyncTask<Void, Void, Wrapper<ApiStatus>>() {
-			@Override
-			protected Wrapper<ApiStatus> doInBackground(Void... params) {
-				return new GetApiStatusHttpRequest(mSessionBinder.getEnvironment()).execute();
-			}
-
-			@Override
-			protected void onPostExecute(Wrapper<ApiStatus> result) {
-				try {
-					ApiStatus status = result.getData();
-
-					// TODO start SessionService
-					CitymapsIntent intent = new CitymapsIntent(StartupService.this, SessionService.class);
-					CitymapsIntent.putApiStatus(intent, status);
-					startService(intent);
-
-				} catch (CitymapsException e) {
-					// TODO Error handling
-				} finally {
-					mVersionLoaded = true;
-					testState();
-				}
-			}
-		}.execute();
 	}
 
 	public class StartupBinder extends Binder {
@@ -191,5 +144,52 @@ public class StartupService extends Service
 		}
 		*/
 
+		public Config getConfig() {
+			return mConfig;
+		}
+
+	}
+
+	private class ConfigTask extends AsyncTask<Void, Void, Wrapper<Config>> {
+		@Override
+		protected Wrapper<Config> doInBackground(Void... params) {
+			return new GetConfigHttpRequest(mSessionBinder.getEnvironment()).execute();
+		}
+
+		@Override
+		protected void onPostExecute(Wrapper<Config> result) {
+			try {
+				mConfig = result.getData();
+				CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
+				CitymapsIntent.putConfig(intent, mConfig);
+				mLocalBroadcastManager.sendBroadcast(intent);
+			} catch (CitymapsException e) {
+				// TODO Error handling
+			} finally {
+				checkState();
+			}
+		}
+	}
+
+	private class StatusTask extends AsyncTask<Void, Void, Wrapper<ApiStatus>> {
+		@Override
+		protected Wrapper<ApiStatus> doInBackground(Void... params) {
+			return new GetApiStatusHttpRequest(mSessionBinder.getEnvironment()).execute();
+		}
+
+		@Override
+		protected void onPostExecute(Wrapper<ApiStatus> result) {
+			try {
+				// TODO start SessionService
+				ApiStatus status = result.getData();
+//				CitymapsIntent intent = new CitymapsIntent(StartupService.this, SessionService.class);
+//				CitymapsIntent.putApiStatus(intent, status);
+//				startService(intent);
+			} catch (CitymapsException e) {
+				// TODO Error handling
+			} finally {
+				checkState();
+			}
+		}
 	}
 }

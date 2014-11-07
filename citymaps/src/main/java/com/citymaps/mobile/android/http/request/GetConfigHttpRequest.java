@@ -17,13 +17,7 @@ import java.net.MalformedURLException;
  */
 public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 
-	private CitymapsResponseHandler<Config> mResponseHandler = new CitymapsResponseHandler<Config>() {
-		@Override
-		protected Wrapper<Config> wrapResult(JsonElement json) {
-			Config config = getGson().fromJson(json, Config.class);
-			return new DataWrapper<Config>(config);
-		}
-	};
+	private ConfigReponseHandler mResponseHandler;
 
 	/**
 	 * Creates a new GetConfigHttpRequest using the specified {@link Environment}.
@@ -47,6 +41,17 @@ public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 	 */
 	@Override
 	protected ResponseHandler<Wrapper<Config>> getResponseHandler() {
+		if (mResponseHandler == null) {
+			mResponseHandler = new ConfigReponseHandler();
+		}
 		return mResponseHandler;
+	}
+
+	private static class ConfigReponseHandler extends CitymapsResponseHandler<Config> {
+		@Override
+		protected Wrapper<Config> wrapResult(JsonElement json) {
+			Config config = getGson().fromJson(json, Config.class);
+			return new DataWrapper<Config>(config);
+		}
 	}
 }

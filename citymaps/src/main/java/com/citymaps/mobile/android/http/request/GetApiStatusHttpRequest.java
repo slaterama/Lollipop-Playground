@@ -17,13 +17,7 @@ import java.net.MalformedURLException;
  */
 public class GetApiStatusHttpRequest extends CitymapsHttpGet<ApiStatus> {
 
-	private CitymapsResponseHandler<ApiStatus> mResponseHandler = new CitymapsResponseHandler<ApiStatus>() {
-		@Override
-		protected Wrapper<ApiStatus> wrapResult(JsonElement json) {
-			ApiStatus apiStatus = getGson().fromJson(json, ApiStatus.class);
-			return new DataWrapper<ApiStatus>(apiStatus);
-		}
-	};
+	private ApiStatusResponseHandler mResponseHandler;
 
 	/**
 	 * Creates a new GetStatusHttpRequest using the specified {@link Environment}.
@@ -47,6 +41,17 @@ public class GetApiStatusHttpRequest extends CitymapsHttpGet<ApiStatus> {
 	 */
 	@Override
 	protected ResponseHandler<Wrapper<ApiStatus>> getResponseHandler() {
+		if (mResponseHandler == null) {
+			mResponseHandler = new ApiStatusResponseHandler();
+		}
 		return mResponseHandler;
+	}
+
+	private static class ApiStatusResponseHandler extends CitymapsResponseHandler<ApiStatus> {
+		@Override
+		protected Wrapper<ApiStatus> wrapResult(JsonElement json) {
+			ApiStatus apiStatus = getGson().fromJson(json, ApiStatus.class);
+			return new DataWrapper<ApiStatus>(apiStatus);
+		}
 	}
 }

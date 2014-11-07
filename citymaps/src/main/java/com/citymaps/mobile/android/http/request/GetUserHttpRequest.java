@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
  */
 public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 
-	private UserResponseHandler mResponseHandler = new UserResponseHandler();
+	private UserResponseHandler mResponseHandler;
 
 	/**
 	 * Creates a new GetUserHttpRequest using the specified {@link Environment} and arguments.
@@ -39,6 +39,9 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 */
 	@Override
 	protected ResponseHandler<Wrapper<User>> getResponseHandler() {
+		if (mResponseHandler == null) {
+			mResponseHandler = new UserResponseHandler();
+		}
 		return mResponseHandler;
 	}
 }

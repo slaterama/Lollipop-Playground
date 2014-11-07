@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.vo.ApiStatus;
+import com.citymaps.mobile.android.model.vo.Config;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
@@ -95,6 +96,11 @@ public class CitymapsIntent extends Intent {
 	public static final String ACTION_SETUP = makeAction("SETUP");
 
 	/**
+	 * BroadcastReceiver Action: Sent to inform about Android config information being loaded.
+	 */
+	public static final String ACTION_CONFIG_LOADED = makeAction("ACTION_LOADED");
+
+	/**
 	 * BroadcastReceiver Action: Attempt to log in to the Citymaps application.
 	 */
 	public static final String ACTION_LOG_IN = makeAction("LOG_IN");
@@ -110,9 +116,22 @@ public class CitymapsIntent extends Intent {
 	//public static final String EXTRA_SETUP_COMPLETE = makeExtra("SETUP_COMPLETE");
 
 	/**
+	 * The current Citymaps config information.
+	 */
+	public static final String EXTRA_CONFIG = makeExtra("CONFIG");
+
+	/**
 	 * The current Api status.
 	 */
 	public static final String EXTRA_API_STATUS = makeExtra("API_STATUS");
+
+	public static void putConfig(Intent intent, Config config) {
+		intent.putExtra(EXTRA_CONFIG, config);
+	}
+
+	public static Config getConfig(Intent intent) {
+		return intent.getParcelableExtra(EXTRA_CONFIG);
+	}
 
 	public static void putApiStatus(Intent intent, ApiStatus status) {
 		intent.putExtra(EXTRA_API_STATUS, status);

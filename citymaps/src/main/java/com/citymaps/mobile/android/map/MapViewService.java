@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.citymaps.citymapsengine.CitymapsMapView;
 import com.citymaps.citymapsengine.options.CitymapsMapViewOptions;
 import com.citymaps.mobile.android.util.ActivityUtils;
+import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.ObjectsCompat;
 import com.citymaps.mobile.android.util.ViewCompat;
 
@@ -42,6 +43,9 @@ public class MapViewService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		int retVal = super.onStartCommand(intent, flags, startId);
+		if (LogEx.isLoggable(LogEx.VERBOSE)) {
+			LogEx.v(String.format("intent=%s, flags=%d, startId=%d", intent, flags, startId));
+		}
 		return retVal;
 	}
 
@@ -54,12 +58,12 @@ public class MapViewService extends Service {
 	}
 
 	@Override
-    public IBinder onBind(Intent intent) {
+	public IBinder onBind(Intent intent) {
 		if (mMapViewBinder == null) {
 			mMapViewBinder = new MapViewBinder();
 		}
 		return mMapViewBinder;
-    }
+	}
 
 	private void updateMapOwner() {
 		ViewGroup highestResumedContainer = null;

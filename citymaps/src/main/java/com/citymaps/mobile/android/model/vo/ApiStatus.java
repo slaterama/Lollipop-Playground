@@ -21,13 +21,6 @@ public class ApiStatus implements Parcelable {
 		}
 	};
 
-	private ApiStatus(Parcel in) {
-		mCode = in.readInt();
-		mVersion = in.readInt();
-		mBuild = in.readString();
-		mTime = in.readInt();
-	}
-
 	/**
 	 * The return code associated with this API request.
 	 */
@@ -51,6 +44,13 @@ public class ApiStatus implements Parcelable {
 	 */
 	@SerializedName("time")
 	private int mTime;
+
+	private ApiStatus(Parcel in) {
+		mCode = in.readInt();
+		mVersion = in.readInt();
+		mBuild = in.readString();
+		mTime = in.readInt();
+	}
 
 	/**
 	 * Returns the return code associated with this API request.
