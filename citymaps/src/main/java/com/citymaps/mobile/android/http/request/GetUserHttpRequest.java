@@ -14,16 +14,22 @@ import java.net.MalformedURLException;
  */
 public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 
+	/**
+	 * A response handler for handling app config HTTP requests.
+	 */
 	private UserResponseHandler mResponseHandler;
 
 	/**
-	 * Creates a new GetUserHttpRequest using the specified {@link Environment} and arguments.
-	 * @param environment The environment that will be used to execute the request.
-	 * @param user The user that is currently logged in to the system, or null if no user is currently logged in.
-	 * @param userId The user Id to get.
+	 * Executes this User HTTPGet request.
+	 *
+	 * @param environment The {@link Environment} to use to build the HTTP request.
+	 * @param user The current user, or null if no user is currently logged in.
+	 * @param userId The id of the user you wish to get.
+	 * @return The data returned by the {@link ResponseHandler} associated with this request, which
+	 * is itself returned by {@link #getResponseHandler()}.
 	 */
-	public GetUserHttpRequest(Environment environment, User user, String userId) {
-		super(environment, user, userId);
+	public Wrapper<User> execute(Environment environment, User user, String userId) {
+		return super.execute(environment, user, userId);
 	}
 
 	/**
@@ -31,7 +37,7 @@ public class GetUserHttpRequest extends CitymapsHttpGet<User> {
 	 */
 	@Override
 	public String getUrlString(Environment environment, User user, Object... args) throws MalformedURLException {
-		return environment.buildUrlString(Endpoint.Type.USER, user, args[0]);
+		return environment.buildUrlString(Endpoint.Type.USER, user, args);
 	}
 
 	/**

@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
  */
 public interface CitymapsHttpRequest {
 
+	// TODO Add execute call here? (And not just CitymapsHttpGet)
+
 	/**
 	 * String constant used to instantiate the {@link android.net.http.AndroidHttpClient} used
 	 * to make the Citymaps HTTP request.

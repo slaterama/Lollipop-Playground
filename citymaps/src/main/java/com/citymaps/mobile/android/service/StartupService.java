@@ -89,7 +89,7 @@ public class StartupService extends Service
 
 		// Start other services
 		Context applicationContext = getApplicationContext();
-//		applicationContext.startService(new Intent(applicationContext, SessionService.class));
+		applicationContext.startService(new Intent(applicationContext, SessionService.class));
 		applicationContext.startService(new Intent(applicationContext, MapViewService.class));
 
 		return START_STICKY;
@@ -153,7 +153,7 @@ public class StartupService extends Service
 	private class ConfigTask extends AsyncTask<Void, Void, Wrapper<Config>> {
 		@Override
 		protected Wrapper<Config> doInBackground(Void... params) {
-			return new GetConfigHttpRequest(mSessionBinder.getEnvironment()).execute();
+			return new GetConfigHttpRequest().execute(mSessionBinder.getEnvironment());
 		}
 
 		@Override
@@ -174,13 +174,13 @@ public class StartupService extends Service
 	private class StatusTask extends AsyncTask<Void, Void, Wrapper<ApiStatus>> {
 		@Override
 		protected Wrapper<ApiStatus> doInBackground(Void... params) {
-			return new GetApiStatusHttpRequest(mSessionBinder.getEnvironment()).execute();
+			return new GetApiStatusHttpRequest().execute(mSessionBinder.getEnvironment());
 		}
 
 		@Override
 		protected void onPostExecute(Wrapper<ApiStatus> result) {
 			try {
-				// TODO start SessionService
+				// TODO bind to SessionService with api status intent -OR- send broadcast?
 				ApiStatus status = result.getData();
 //				CitymapsIntent intent = new CitymapsIntent(StartupService.this, SessionService.class);
 //				CitymapsIntent.putApiStatus(intent, status);

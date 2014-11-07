@@ -25,29 +25,6 @@ import java.net.URI;
 public abstract class CitymapsHttpGet<D> extends HttpGet
 		implements CitymapsHttpRequest {
 
-	private Environment mEnvironment;
-
-	/**
-	 * Creates a new instance of CitymapsHttpGet using the specified {@link Environment} and arguments.
-	 *
-	 * @param environment The environment that will be used to execute the request.
-	 * @param user The user that is currently logged in to the system, or null if no user is currently logged in.
-	 * @param args The arguments that will be used to get the URL string and http parameter object.
-	 */
-	public CitymapsHttpGet(Environment environment, User user, Object... args) {
-		super();
-		mEnvironment = environment;
-		try {
-			setURI(URI.create(getUrlString(environment, user, args)));
-			HttpParams params = getParams(args);
-			if (params != null) {
-				setParams(params);
-			}
-		} catch (MalformedURLException e) {
-			throw new CitymapsRuntimeException(e);
-		}
-	}
-
 	/**
 	 * Get the collection of parameters (if any) that will be sent along with the Citymaps http request.
 	 *
@@ -61,27 +38,31 @@ public abstract class CitymapsHttpGet<D> extends HttpGet
 	}
 
 	/**
-	 * Get the {@link Environment} used to create this CitymapsHttpGet instance. The context will be
-	 * used to check network connectivity.
+	 * Executes this Citymaps HTTP request.
 	 *
-	 * @return The Environment.
-	 */
-	public Environment getEnvironment() {
-		return mEnvironment;
-	}
-
-	/**
-	 * Executes this Citymaps http request.
-	 *
-	 * @return The data returned by the {@link ResponseHandler} associated with this Citymaps http request, which
+	 * @param environment The {@link Environment} to use to build the HTTP request.
+	 * @param user The current user, or null if no user is currently logged in.
+	 * @param args The arguments that will be used to build the HTTP request.
+	 * @return The data returned by the {@link ResponseHandler} associated with this Citymaps HTTP request, which
 	 * is itself returned by {@link #getResponseHandler()}.
 	 */
-	public Wrapper<D> execute() {
+	public Wrapper<D> execute(Environment environment, User user, Object... args) {
+		try {
+			setURI(URI.create(getUrlString(environment, user, args)));
+		} catch (MalformedURLException e) {
+			throw new CitymapsRuntimeException(e);
+		}
+
+		HttpParams params = getParams(args);
+		if (params != null) {
+			setParams(params);
+		}
+
 		if (LogEx.isLoggable(LogEx.VERBOSE)) {
 			LogEx.v(String.format("urlString=%s, params=%s", getURI(), ToStringBuilder.reflectionToString(getParams())));
 		}
 
-		Context context = mEnvironment.getContext();
+		Context context = environment.getContext();
 		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 		if (networkInfo == null || !networkInfo.isConnectedOrConnecting())

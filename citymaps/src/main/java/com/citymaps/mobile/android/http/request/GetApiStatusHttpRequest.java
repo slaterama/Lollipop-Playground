@@ -17,15 +17,20 @@ import java.net.MalformedURLException;
  */
 public class GetApiStatusHttpRequest extends CitymapsHttpGet<ApiStatus> {
 
+	/**
+	 * A response handler for handling API status HTTP requests.
+	 */
 	private ApiStatusResponseHandler mResponseHandler;
 
 	/**
-	 * Creates a new GetStatusHttpRequest using the specified {@link Environment}.
+	 * Executes this API status HTTPGet request.
 	 *
-	 * @param environment The environment that will be used to execute the request.
+	 * @param environment The {@link Environment} to use to build the HTTP request.
+	 * @return The data returned by the {@link ResponseHandler} associated with this request, which
+	 * is itself returned by {@link #getResponseHandler()}.
 	 */
-	public GetApiStatusHttpRequest(Environment environment) {
-		super(environment, null);
+	public Wrapper<ApiStatus> execute(Environment environment) {
+		return super.execute(environment, null);
 	}
 
 	/**
@@ -47,6 +52,9 @@ public class GetApiStatusHttpRequest extends CitymapsHttpGet<ApiStatus> {
 		return mResponseHandler;
 	}
 
+	/**
+	 * Class that defines a response handler for handling API status HTTP requests.
+	 */
 	private static class ApiStatusResponseHandler extends CitymapsResponseHandler<ApiStatus> {
 		@Override
 		protected Wrapper<ApiStatus> wrapResult(JsonElement json) {

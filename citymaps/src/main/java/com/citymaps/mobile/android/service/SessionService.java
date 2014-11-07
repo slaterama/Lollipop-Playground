@@ -22,13 +22,19 @@ public class SessionService extends Service {
 	private ApiStatus mApiStatus;
 
 	@Override
+	public void onCreate() {
+		super.onCreate();
+		mEnvironment = Environment.newInstance(this);
+	}
+
+	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		int result = super.onStartCommand(intent, flags, startId);
-		mApiStatus = CitymapsIntent.getApiStatus(intent);
+		if (intent != null) {
+			mApiStatus = CitymapsIntent.getApiStatus(intent); // ???
+		}
 
 		// TODO Set up mEnvironment HERE. Also write version & build to System Preferences to they're saved.
-
-		mEnvironment = Environment.newInstance(this);
 
 		return result;
 	}

@@ -17,15 +17,20 @@ import java.net.MalformedURLException;
  */
 public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 
+	/**
+	 * A response handler for handling app config HTTP requests.
+	 */
 	private ConfigReponseHandler mResponseHandler;
 
 	/**
-	 * Creates a new GetConfigHttpRequest using the specified {@link Environment}.
+	 * Executes this app config HTTPGet request.
 	 *
-	 * @param environment The environment that will be used to execute the request.
+	 * @param environment The {@link Environment} to use to build the HTTP request.
+	 * @return The data returned by the {@link ResponseHandler} associated with this request, which
+	 * is itself returned by {@link #getResponseHandler()}.
 	 */
-	public GetConfigHttpRequest(Environment environment) {
-		super(environment, null);
+	public Wrapper<Config> execute(Environment environment) {
+		return super.execute(environment, null);
 	}
 
 	/**
@@ -47,6 +52,9 @@ public class GetConfigHttpRequest extends CitymapsHttpGet<Config> {
 		return mResponseHandler;
 	}
 
+	/**
+	 * Class that defines a response handler for handling app config HTTP requests.
+	 */
 	private static class ConfigReponseHandler extends CitymapsResponseHandler<Config> {
 		@Override
 		protected Wrapper<Config> wrapResult(JsonElement json) {
