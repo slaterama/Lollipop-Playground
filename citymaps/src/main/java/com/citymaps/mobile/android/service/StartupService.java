@@ -135,6 +135,7 @@ public class StartupService extends Service {
 						@Override
 						public void onResponse(Status response) {
 							mStatus = response;
+
 							SessionManager.getInstance(StartupService.this).registerVersion(mStatus.getVersion(), mStatus.getBuild());
 							checkState();
 						}
