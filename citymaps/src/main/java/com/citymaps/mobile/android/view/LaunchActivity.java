@@ -2,17 +2,18 @@ package com.citymaps.mobile.android.view;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.SharedPreferenceManager;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.Timer;
@@ -20,7 +21,8 @@ import java.util.TimerTask;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
-public class LaunchActivity extends ActionBarActivity {
+public class LaunchActivity extends ActionBarActivity
+		implements SharedPreferences.OnSharedPreferenceChangeListener {
 
 	private static final String STATE_KEY_LAUNCH_FRAGMENT = "launchFragment";
 
@@ -34,7 +36,19 @@ public class LaunchActivity extends ActionBarActivity {
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
 				Config config = CitymapsIntent.getConfig(intent);
+
+				SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
+				SoftwareVersion appVersion = SoftwareVersion.parse(config.getAppVersion());
+				SoftwareVersion minVersion = SoftwareVersion.parse(config.getMinVersion());
+
 				LogEx.d(String.format("config=%s", config));
+
+				if (currentVersion.compareTo(minVersion) < 0) {
+					startActivity(new Intent(LaunchActivity.this, HardUpdateActivity.class));
+					finish();
+				} else if (currentVersion.compareTo(appVersion) < 0) {
+
+				}
 			}
 		}
 	};
@@ -55,18 +69,40 @@ public class LaunchActivity extends ActionBarActivity {
 		}
 
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+
     }
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+
+		SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
+		SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
+
 		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, new IntentFilter(ACTION_CONFIG_LOADED));
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
 		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		LogEx.d();
 	}
 
 	public static class LaunchFragment extends Fragment {

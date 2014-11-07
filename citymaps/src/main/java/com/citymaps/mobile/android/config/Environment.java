@@ -167,9 +167,6 @@ public abstract class Environment extends EndpointManager {
 			}
 		}
 		if (mApi == null) {
-			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-
 			mApi = Api.newInstance(version, build);
 		}
 		return mApi;

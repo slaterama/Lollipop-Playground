@@ -155,6 +155,15 @@ public class SoftwareVersion
 	}
 
 	/**
+	 * Convenience method to instantiate a new SoftwareVersion instance via a static method.
+	 * @param versionString The string representation of the version.
+	 * @return The new SoftwareVersion instance.
+	 */
+	public static SoftwareVersion parse(String versionString) {
+		return new SoftwareVersion(versionString);
+	}
+
+	/**
 	 * The prefix of this version, if any.
 	 */
 	private final String mPrefix;

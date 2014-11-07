@@ -16,6 +16,7 @@ import com.citymaps.mobile.android.app.SharedPreferenceManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
+import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.http.volley.GetConfigRequest;
 import com.citymaps.mobile.android.http.volley.GetVersionRequest;
 import com.citymaps.mobile.android.http.volley.GetUserRequest;
@@ -53,9 +54,9 @@ public class StartupService extends Service {
 
 	private Config mConfig;
 
-	private GetVersionRequest mGetStatusRequest;
+	private GetVersionRequest mGetVersionRequest;
 
-	private Version mStatus = null;
+	private Version mVersion = null;
 
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
@@ -111,44 +112,53 @@ public class StartupService extends Service {
 						@Override
 						public void onResponse(Config response) {
 							mConfig = response;
+
+							SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(StartupService.this);
+							sharedPreferenceManager.applyConfig(mConfig);
+
+							// TODO Might not need this if I monitor Shared Preference change ... ?
+
 							CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
 							CitymapsIntent.putConfig(intent, mConfig);
 							mLocalBroadcastManager.sendBroadcast(intent);
+							LogEx.d();
 							checkState();
 						}
 					}, new Response.ErrorListener() {
 						@Override
 						public void onErrorResponse(VolleyError error) {
 							if (LogEx.isLoggable(LogEx.ERROR)) {
-								LogEx.e(error.getMessage(), error);
+								CitymapsVolleyException e = new CitymapsVolleyException(error);
+								LogEx.e(e.getMessage(), e);
 							}
 						}
 					});
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetConfigRequest);
 				}
 
-				if (mGetStatusRequest == null) {
-					mGetStatusRequest = new GetVersionRequest(this, new Response.Listener<Version>() {
+				if (mGetVersionRequest == null) {
+					mGetVersionRequest = new GetVersionRequest(this, new Response.Listener<Version>() {
 						@Override
 						public void onResponse(Version response) {
-							mStatus = response;
+							mVersion = response;
 
 							SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(StartupService.this);
-							sharedPreferenceManager.applyApiVersion(mStatus.getVersion());
-							sharedPreferenceManager.applyApiBuild(mStatus.getBuild());
+							sharedPreferenceManager.applyApiVersion(mVersion.getVersion());
+							sharedPreferenceManager.applyApiBuild(mVersion.getBuild());
 
-							SessionManager.getInstance(StartupService.this).registerVersion(mStatus.getVersion(), mStatus.getBuild());
+							SessionManager.getInstance(StartupService.this).registerVersion(mVersion.getVersion(), mVersion.getBuild());
 							checkState();
 						}
 					}, new Response.ErrorListener() {
 						@Override
 						public void onErrorResponse(VolleyError error) {
 							if (LogEx.isLoggable(LogEx.ERROR)) {
-								LogEx.e(error.getMessage(), error);
+								CitymapsVolleyException e = new CitymapsVolleyException(error);
+								LogEx.e(e.getMessage(), e);
 							}
 						}
 					});
-					VolleyManager.getInstance(this).getRequestQueue().add(mGetStatusRequest);
+					VolleyManager.getInstance(this).getRequestQueue().add(mGetVersionRequest);
 				}
 
 				// TODO Temp
@@ -175,7 +185,7 @@ public class StartupService extends Service {
 				}
 			}
 
-			if (mConfig != null && mStatus != null) {
+			if (mConfig != null && mVersion != null) {
 				stopSelf();
 			}
 		}

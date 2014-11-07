@@ -1,25 +1,24 @@
 package com.citymaps.mobile.android.view;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.util.LogEx;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
 public class MainActivity extends ActionBarActivity
-		implements MainFragment.OnFragmentInteractionListener {
+		implements SharedPreferences.OnSharedPreferenceChangeListener, MainFragment.OnFragmentInteractionListener {
 
 	private LocalBroadcastManager mLocalBroadcastManager;
 
@@ -29,7 +28,18 @@ public class MainActivity extends ActionBarActivity
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
 				Config config = CitymapsIntent.getConfig(intent);
+
+				SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
+				SoftwareVersion appVersion = SoftwareVersion.parse(config.getAppVersion());
+				SoftwareVersion minVersion = SoftwareVersion.parse(config.getMinVersion());
+
 				LogEx.d(String.format("config=%s", config));
+				if (currentVersion.compareTo(minVersion) < 0) {
+					startActivity(new Intent(MainActivity.this, HardUpdateActivity.class));
+					finish();
+				} else if (currentVersion.compareTo(appVersion) < 0) {
+					// Show dialog
+				}
 			}
 		}
 	};
@@ -89,6 +99,11 @@ public class MainActivity extends ActionBarActivity
 		}
         return super.onOptionsItemSelected(item);
     }
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		LogEx.d();
+	}
 
 	@Override
 	public void onFragmentInteraction(Uri uri) {
