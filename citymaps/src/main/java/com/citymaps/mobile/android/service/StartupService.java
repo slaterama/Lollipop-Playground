@@ -89,7 +89,7 @@ public class StartupService extends Service
 
 		// Start other services
 		Context applicationContext = getApplicationContext();
-		applicationContext.startService(new Intent(applicationContext, SessionService.class));
+//		applicationContext.startService(new Intent(applicationContext, SessionService.class));
 		applicationContext.startService(new Intent(applicationContext, MapViewService.class));
 
 		return START_STICKY;

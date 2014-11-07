@@ -11,7 +11,6 @@ import com.citymaps.mobile.android.util.LogEx;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import java.io.IOException;
@@ -25,11 +24,6 @@ import java.net.URI;
  */
 public abstract class CitymapsHttpGet<D> extends HttpGet
 		implements CitymapsHttpRequest {
-
-	/**
-	 * The {@link android.content.Context} that will be used to check network connectivity.
-	 */
-	//private Context mContext;
 
 	private Environment mEnvironment;
 
