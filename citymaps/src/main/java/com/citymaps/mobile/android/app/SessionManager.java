@@ -1,3 +1,7 @@
+//  This singleton implements the "Parametric initialization-on-demand holder idiom" for singletons
+//  with immutable parameters in Java (in this case, the application context) as described here:
+//  http://unafbapune.blogspot.com/2007/09/parametric-initialization-on-demand.html
+
 package com.citymaps.mobile.android.app;
 
 import android.content.Context;

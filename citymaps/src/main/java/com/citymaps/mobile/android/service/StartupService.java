@@ -12,15 +12,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.SessionManager;
+import com.citymaps.mobile.android.app.SharedPreferenceManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.http.volley.GetConfigRequest;
-import com.citymaps.mobile.android.http.volley.GetStatusRequest;
+import com.citymaps.mobile.android.http.volley.GetVersionRequest;
 import com.citymaps.mobile.android.http.volley.GetUserRequest;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.model.vo.Status;
+import com.citymaps.mobile.android.model.vo.Version;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.LogEx;
 
@@ -52,9 +53,9 @@ public class StartupService extends Service {
 
 	private Config mConfig;
 
-	private GetStatusRequest mGetStatusRequest;
+	private GetVersionRequest mGetStatusRequest;
 
-	private Status mStatus = null;
+	private Version mStatus = null;
 
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
@@ -127,10 +128,14 @@ public class StartupService extends Service {
 				}
 
 				if (mGetStatusRequest == null) {
-					mGetStatusRequest = new GetStatusRequest(this, new Response.Listener<Status>() {
+					mGetStatusRequest = new GetVersionRequest(this, new Response.Listener<Version>() {
 						@Override
-						public void onResponse(Status response) {
+						public void onResponse(Version response) {
 							mStatus = response;
+
+							SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(StartupService.this);
+							sharedPreferenceManager.applyApiVersion(mStatus.getVersion());
+							sharedPreferenceManager.applyApiBuild(mStatus.getBuild());
 
 							SessionManager.getInstance(StartupService.this).registerVersion(mStatus.getVersion(), mStatus.getBuild());
 							checkState();

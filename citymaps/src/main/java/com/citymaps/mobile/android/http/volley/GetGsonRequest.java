@@ -63,8 +63,7 @@ public abstract class GetGsonRequest<T> extends Request<T> {
 		mListener.onResponse(response);
 	}
 
-	@Override
-	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+	protected <I> Response<I> parseNetworkResponse(NetworkResponse response, Class<I> clazz) {
 		try {
 			String json = new String(
 					response.data,
@@ -78,12 +77,17 @@ public abstract class GetGsonRequest<T> extends Request<T> {
 			}
 
 			return Response.success(
-					getGson().fromJson(json, mClass),
+					getGson().fromJson(json, clazz),
 					HttpHeaderParser.parseCacheHeaders(response));
 		} catch (UnsupportedEncodingException e) {
 			return Response.error(new ParseError(e));
 		} catch (JsonSyntaxException e) {
 			return Response.error(new ParseError(e));
 		}
+	}
+
+	@Override
+	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+		return parseNetworkResponse(response, mClass);
 	}
 }

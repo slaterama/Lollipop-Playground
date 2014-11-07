@@ -7,17 +7,17 @@ import com.google.gson.annotations.SerializedName;
 /**
  * A class representing information about the Citymaps API version.
  */
-public class Status implements Parcelable {
+public class Version implements Parcelable {
 
-	public static final Creator<Status> CREATOR = new Creator<Status>() {
+	public static final Creator<Version> CREATOR = new Creator<Version>() {
 		@Override
-		public Status createFromParcel(Parcel in) {
-			return new Status(in);
+		public Version createFromParcel(Parcel in) {
+			return new Version(in);
 		}
 
 		@Override
-		public Status[] newArray(int size) {
-			return new Status[size];
+		public Version[] newArray(int size) {
+			return new Version[size];
 		}
 	};
 
@@ -45,11 +45,11 @@ public class Status implements Parcelable {
 	@SerializedName("time")
 	private int mTime;
 
-	protected Status() {
+	protected Version() {
 
 	}
 
-	private Status(Parcel in) {
+	private Version(Parcel in) {
 		mCode = in.readInt();
 		mVersion = in.readInt();
 		mBuild = in.readString();

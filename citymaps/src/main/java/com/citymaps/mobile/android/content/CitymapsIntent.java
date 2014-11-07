@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import com.citymaps.mobile.android.BuildConfig;
-import com.citymaps.mobile.android.model.vo.Status;
+import com.citymaps.mobile.android.model.vo.Version;
 import com.citymaps.mobile.android.model.vo.Config;
 
 /**
@@ -27,7 +27,10 @@ public class CitymapsIntent extends Intent {
 	 */
 	private static final String EXTRA = "extra";
 
-	private static final String PACKAGE_NAME = BuildConfig.class.getPackage().getName();
+	/**
+	 * A static constant describing the application package name.
+	 */
+	private static final String PACKAGE_NAME = BuildConfig.PACKAGE_NAME; //BuildConfig.class.getPackage().getName();
 
 	/**
 	 * A convenience method used to build action intent strings.
@@ -128,11 +131,11 @@ public class CitymapsIntent extends Intent {
 		return intent.getParcelableExtra(EXTRA_CONFIG);
 	}
 
-	public static void putApiStatus(Intent intent, Status status) {
+	public static void putApiStatus(Intent intent, Version status) {
 		intent.putExtra(EXTRA_API_STATUS, status);
 	}
 
-	public static Status getApiStatus(Intent intent) {
+	public static Version getApiStatus(Intent intent) {
 		return intent.getParcelableExtra(EXTRA_API_STATUS);
 	}
 

@@ -5,7 +5,7 @@ import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.http.response.CitymapsResponseHandler;
-import com.citymaps.mobile.android.model.vo.Status;
+import com.citymaps.mobile.android.model.vo.Version;
 import com.citymaps.mobile.android.model.vo.User;
 import com.google.gson.JsonElement;
 import org.apache.http.client.ResponseHandler;
@@ -15,7 +15,7 @@ import java.net.MalformedURLException;
 /**
  * A CitymapsHttpGet class that returns the status (version and build) of the API currently being used.
  */
-public class GetApiStatusHttpRequest extends CitymapsHttpGet<Status> {
+public class GetApiStatusHttpRequest extends CitymapsHttpGet<Version> {
 
 	/**
 	 * A response handler for handling API status HTTP requests.
@@ -29,7 +29,7 @@ public class GetApiStatusHttpRequest extends CitymapsHttpGet<Status> {
 	 * @return The data returned by the {@link ResponseHandler} associated with this request, which
 	 * is itself returned by {@link #getResponseHandler()}.
 	 */
-	public Wrapper<Status> execute(Environment environment) {
+	public Wrapper<Version> execute(Environment environment) {
 		return super.execute(environment, null);
 	}
 
@@ -45,7 +45,7 @@ public class GetApiStatusHttpRequest extends CitymapsHttpGet<Status> {
 	 * @inheritDoc
 	 */
 	@Override
-	protected ResponseHandler<Wrapper<Status>> getResponseHandler() {
+	protected ResponseHandler<Wrapper<Version>> getResponseHandler() {
 		if (mResponseHandler == null) {
 			mResponseHandler = new ApiStatusResponseHandler();
 		}
@@ -55,11 +55,11 @@ public class GetApiStatusHttpRequest extends CitymapsHttpGet<Status> {
 	/**
 	 * Class that defines a response handler for handling API status HTTP requests.
 	 */
-	private static class ApiStatusResponseHandler extends CitymapsResponseHandler<Status> {
+	private static class ApiStatusResponseHandler extends CitymapsResponseHandler<Version> {
 		@Override
-		protected Wrapper<Status> wrapResult(JsonElement json) {
-			Status apiStatus = getGson().fromJson(json, Status.class);
-			return new DataWrapper<Status>(apiStatus);
+		protected Wrapper<Version> wrapResult(JsonElement json) {
+			Version apiStatus = getGson().fromJson(json, Version.class);
+			return new DataWrapper<Version>(apiStatus);
 		}
 	}
 }

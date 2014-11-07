@@ -1,8 +1,10 @@
 package com.citymaps.mobile.android.config;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import com.citymaps.mobile.android.BuildConfig;
@@ -165,6 +167,9 @@ public abstract class Environment extends EndpointManager {
 			}
 		}
 		if (mApi == null) {
+			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+
 			mApi = Api.newInstance(version, build);
 		}
 		return mApi;
