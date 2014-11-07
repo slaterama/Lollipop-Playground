@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import com.citymaps.mobile.android.BuildConfig;
+import com.citymaps.mobile.android.model.vo.ApiStatus;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
@@ -25,7 +26,6 @@ public class CitymapsIntent extends Intent {
 	 */
 	private static final String EXTRA = "extra";
 
-//	private static final String PACKAGE_NAME = BuildConfig.PACKAGE_NAME;
 	private static final String PACKAGE_NAME = BuildConfig.class.getPackage().getName();
 
 	/**
@@ -102,12 +102,25 @@ public class CitymapsIntent extends Intent {
 	/**
 	 * The status associated with a setup broadcast.
 	 */
-	public static final String EXTRA_SETUP_STATUS = makeExtra("SETUP_STATUS");
+	//public static final String EXTRA_SETUP_STATUS = makeExtra("SETUP_STATUS");
 
 	/**
 	 * A boolean indicating whether the setup process is complete.
 	 */
-	public static final String EXTRA_SETUP_COMPLETE = makeExtra("SETUP_COMPLETE");
+	//public static final String EXTRA_SETUP_COMPLETE = makeExtra("SETUP_COMPLETE");
+
+	/**
+	 * The current Api status.
+	 */
+	public static final String EXTRA_API_STATUS = makeExtra("API_STATUS");
+
+	public static void putApiStatus(Intent intent, ApiStatus status) {
+		intent.putExtra(EXTRA_API_STATUS, status);
+	}
+
+	public static ApiStatus getApiStatus(Intent intent) {
+		return intent.getParcelableExtra(EXTRA_API_STATUS);
+	}
 
 	/**
 	 * Create an empty intent.

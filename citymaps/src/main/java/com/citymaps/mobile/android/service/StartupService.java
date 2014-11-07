@@ -143,6 +143,9 @@ public class StartupService extends Service
 			protected void onPostExecute(Wrapper<Config> result) {
 				try {
 					Config config = result.getData();
+
+					// TODO Test some config stuff
+
 				} catch (CitymapsException e) {
 					// TODO Error handling
 				} finally {
@@ -164,6 +167,12 @@ public class StartupService extends Service
 			protected void onPostExecute(Wrapper<ApiStatus> result) {
 				try {
 					ApiStatus status = result.getData();
+
+					// TODO start SessionService
+					CitymapsIntent intent = new CitymapsIntent(StartupService.this, SessionService.class);
+					CitymapsIntent.putApiStatus(intent, status);
+					startService(intent);
+
 				} catch (CitymapsException e) {
 					// TODO Error handling
 				} finally {

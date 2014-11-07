@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import com.citymaps.mobile.android.config.Environment;
+import com.citymaps.mobile.android.content.CitymapsIntent;
+import com.citymaps.mobile.android.model.vo.ApiStatus;
 
 public class SessionService extends Service {
 
@@ -17,34 +19,18 @@ public class SessionService extends Service {
 
 	private Environment mEnvironment;
 
+	private ApiStatus mApiStatus;
+
 	@Override
-	public void onCreate() {
-		super.onCreate();
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		int result = super.onStartCommand(intent, flags, startId);
+		mApiStatus = CitymapsIntent.getApiStatus(intent);
 
-		/*
-		SoftwareVersion appVersion = PackageUtils.getAppVersion();
-		mEnvironment = Environment.newInstance(this);
-		int apiVersion = PackageUtils.getBaseApiVersion(this, 1);
-		SoftwareVersion apiBuild = PackageUtils.getBaseApiBuild(this, SoftwareVersion.DEFAULT_VERSION);
-		mApi = Api.newInstance(mEnvironment, apiVersion, apiBuild);
-		*/
+		// TODO Set up mEnvironment HERE. Also write version & build to System Preferences to they're saved.
 
 		mEnvironment = Environment.newInstance(this);
 
-		/*
-		try {
-			String urlString = mApi.buildUrlString(Endpoint.Type.USER);
-			LogEx.d(String.format("urlString=%s", urlString));
-
-			urlString = mApi.buildUrlString(Endpoint.Type.USER, mEnvironment.getGhostUserId());
-			LogEx.d(String.format("urlString=%s", urlString));
-
-			urlString = mApi.buildUrlString(Endpoint.Type.CONFIG);
-			LogEx.d(String.format("urlString=%s", urlString));
-		} catch (MalformedURLException e) {
-
-		}
-		*/
+		return result;
 	}
 
 	@Override
