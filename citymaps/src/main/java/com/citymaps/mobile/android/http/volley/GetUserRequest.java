@@ -6,8 +6,8 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.citymaps.mobile.android.model.vo.User;
-import com.citymaps.mobile.android.model.vo.Version;
 import com.google.gson.annotations.SerializedName;
 
 public class GetUserRequest extends GetGsonRequest<User> {
@@ -20,11 +20,11 @@ public class GetUserRequest extends GetGsonRequest<User> {
 
 	@Override
 	protected Response<User> parseNetworkResponse(NetworkResponse response) {
-		Response<WrappedUser> intermediateResponse = parseNetworkResponse(response, WrappedUser.class);
-		return Response.success(intermediateResponse.result.mUser, HttpHeaderParser.parseCacheHeaders(response));
+		Response<WrappedUser> parsedResponse = parseNetworkResponse(response, WrappedUser.class);
+		return Response.success(parsedResponse.result.mUser, HttpHeaderParser.parseCacheHeaders(response));
 	}
 
-	public static class WrappedUser extends Version {
+	public static class WrappedUser extends ResultWrapperV2 {
 
 		@SerializedName("user")
 		private User mUser;

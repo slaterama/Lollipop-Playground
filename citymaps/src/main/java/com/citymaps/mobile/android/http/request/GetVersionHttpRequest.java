@@ -15,7 +15,7 @@ import java.net.MalformedURLException;
 /**
  * A CitymapsHttpGet class that returns the status (version and build) of the API currently being used.
  */
-public class GetApiStatusHttpRequest extends CitymapsHttpGet<Version> {
+public class GetVersionHttpRequest extends CitymapsHttpGet<Version> {
 
 	/**
 	 * A response handler for handling API status HTTP requests.

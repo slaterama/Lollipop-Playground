@@ -2,6 +2,7 @@ package com.citymaps.mobile.android.model.vo;
 
 import android.text.TextUtils;
 
+import com.citymaps.mobile.android.model.CitymapsObject;
 import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
