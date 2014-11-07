@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.app;
+package com.citymaps.mobile.android.exception;
 
 /**
  * Base class for all HTTP-related exceptions thrown by the Citymaps app.

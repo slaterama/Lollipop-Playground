@@ -1,3 +1,4 @@
-include ':citymaps', ':mapenginelibrary', ':facebook'
-project(':mapenginelibrary').projectDir = new File('libraries/mapenginelibrary/MapEngineLibraryAndroid')
+include ':citymaps', ':volley', ':mapenginelibrary', ':facebook'
 project(':facebook').projectDir = new File('libraries/facebook')
+project(':mapenginelibrary').projectDir = new File('libraries/mapenginelibrary/MapEngineLibraryAndroid')
+project(':volley').projectDir = new File('libraries/volley');

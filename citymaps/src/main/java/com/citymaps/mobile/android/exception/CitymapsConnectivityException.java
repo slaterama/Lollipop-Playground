@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.app;
+package com.citymaps.mobile.android.exception;
 
 /**
  * Thrown when an api call (i.e. HTTP request) is attempted when there is no network connection available.

@@ -3,9 +3,11 @@ package com.citymaps.mobile.android.config;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Base64;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.PackageUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -46,25 +48,6 @@ public abstract class Environment extends EndpointManager {
 
 	private Api mApi;
 
-	/*
-	private AsyncTask<Void, Void, Wrapper<ApiStatus>> mGetVersionTask = new AsyncTask<Void, Void, Wrapper<ApiStatus>>() {
-		@Override
-		protected Wrapper<ApiStatus> doInBackground(Void... params) {
-			return new GetStatusHttpRequest(Environment.this).execute();
-		}
-
-		@Override
-		protected void onPostExecute(Wrapper<ApiStatus> result) {
-			try {
-				ApiStatus status = result.getData();
-				mApi = Api.newInstance(status.getVersion(), status.getBuild());
-			} catch (Exception e) {
-				// TODO Handle error
-			}
-		}
-	};
-	*/
-
 	protected Environment(Context context) {
 		super();
 		mContext = context.getApplicationContext();
@@ -73,30 +56,6 @@ public abstract class Environment extends EndpointManager {
 		addServer(new Server(Server.Type.BUSINESS_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.REGION_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addEndpoint(new Endpoint(Endpoint.Type.STATUS, Server.Type.API, "v2/status/version", 0));
-		onCreate();
-
-		// Create the Api
-		//mGetVersionTask.execute();
-	}
-
-	protected void onCreate() {
-
-	}
-
-	public Context getContext() {
-		return mContext;
-	}
-
-	protected void addServer(Server server) {
-		if (server == null) {
-			throw new IllegalArgumentException("server can not be null");
-		}
-
-		mServerMap.put(server.getType(), server);
-	}
-
-	protected Server getServer(Server.Type type) {
-		return mServerMap.get(type);
 	}
 
 	@Override
@@ -108,9 +67,17 @@ public abstract class Environment extends EndpointManager {
 		return endpoint;
 	}
 
-	public abstract String getGhostUserId();
+	protected void addServer(Server server) {
+		if (server != null) {
+			mServerMap.put(server.getType(), server);
+		}
+	}
 
-	public String buildUrlString(Endpoint.Type endpointType, User user, Object... args) throws MalformedURLException {
+	protected Server getServer(Server.Type type) {
+		return mServerMap.get(type);
+	}
+
+	public String buildUrlString(Endpoint.Type endpointType, User user, Object... args) {
 		Endpoint endpoint = getEndpoint(endpointType);
 		if (endpoint == null) {
 			throw new IllegalStateException(String.format("No endpoint defined for type '%s'", endpointType));
@@ -125,8 +92,17 @@ public abstract class Environment extends EndpointManager {
 		String file = endpoint.getFile();
 		String formattedFile = String.format(file, args);
 
-		URL url = new URL(server.getProtocol().getValue(), server.getHost(), server.getPort(), formattedFile);
-		Uri.Builder builder = Uri.parse(url.toString()).buildUpon();
+		String urlString;
+		try {
+			URL url = new URL(server.getProtocol().getValue(), server.getHost(), server.getPort(), formattedFile);
+			urlString = url.toString();
+		} catch (MalformedURLException e) {
+			if (LogEx.isLoggable(LogEx.ERROR)) {
+				LogEx.e(e.getMessage(), e);
+			}
+			urlString = "";
+		}
+		Uri.Builder builder = Uri.parse(urlString).buildUpon();
 
 		int flags = endpoint.getFlags();
 		if ((flags & APPEND_TIMESTAMP) == APPEND_TIMESTAMP) {
@@ -165,8 +141,33 @@ public abstract class Environment extends EndpointManager {
 		return builder.toString();
 	}
 
-	public String buildUrlString(Endpoint.Type endpointType) throws MalformedURLException {
+	public String buildUrlString(Endpoint.Type endpointType) {
 		return buildUrlString(endpointType, null);
+	}
+
+	public Context getContext() {
+		return mContext;
+	}
+
+	public Api getApi() {
+		return mApi;
+	}
+
+	public abstract String getGhostUserId();
+
+	public Api registerVersion(int version, String build) {
+		if (mApi != null) {
+			int currentApiVersion = mApi.getApiVersion();
+			String currentApiBuild = mApi.getApiBuild();
+			if (currentApiVersion != version
+					|| !TextUtils.equals(currentApiBuild, build)) {
+				mApi = null;
+			}
+		}
+		if (mApi == null) {
+			mApi = Api.newInstance(version, build);
+		}
+		return mApi;
 	}
 
 	public static enum Type {

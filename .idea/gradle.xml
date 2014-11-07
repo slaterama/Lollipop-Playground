@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/citymaps" />
             <option value="$PROJECT_DIR$/libraries/facebook" />
             <option value="$PROJECT_DIR$/libraries/mapenginelibrary/MapEngineLibraryAndroid" />
+            <option value="$PROJECT_DIR$/libraries/volley" />
           </set>
         </option>
       </GradleProjectSettings>

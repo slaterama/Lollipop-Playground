@@ -1,5 +1,7 @@
 package com.citymaps.mobile.android.app;
 
+import com.citymaps.mobile.android.exception.CitymapsException;
+
 /**
  * <p>An ExceptionWrapper object wraps a CitymapsException object.</p>
  * <p>Note that in this implementation, any call to getData will always result in a CitymapsException being thrown.</p>

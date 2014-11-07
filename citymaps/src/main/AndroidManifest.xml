@@ -66,17 +66,6 @@
 		</service>
 
 		<service
-				android:name=".service.SessionService"
-				android:enabled="true"
-				android:exported="false">
-			<intent-filter>
-				<action android:name="com.citymaps.mobile.android.action.SESSION_SERVICE" />
-
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-		</service>
-
-		<service
 				android:name=".map.MapViewService"
 				android:enabled="true"
 				android:exported="false">

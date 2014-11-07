@@ -1,13 +1,8 @@
 package com.citymaps.mobile.android.http.response;
 
-import com.citymaps.mobile.android.app.CitymapsExceptionWrapper;
-import com.citymaps.mobile.android.app.CitymapsHttpException;
-import com.citymaps.mobile.android.app.DataWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
-import com.citymaps.mobile.android.model.vo.ApiResult;
 import com.citymaps.mobile.android.model.vo.User;
 import com.google.gson.JsonElement;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A ResponseHandler class designed to handle a User HTTP response.
@@ -21,6 +16,8 @@ public class UserResponseHandler extends CitymapsResponseHandler<User> {
 	 */
 	@Override
 	protected Wrapper<User> wrapResult(JsonElement json) {
+		return null;
+		/*
 		UserResult userResult = getGson().fromJson(json, UserResult.class);
 		int code = userResult.getCode();
 		if (code == 0)
@@ -29,24 +26,25 @@ public class UserResponseHandler extends CitymapsResponseHandler<User> {
 			CitymapsHttpException e = new CitymapsHttpException(code, userResult.getError());
 			return new CitymapsExceptionWrapper<User>(e);
 		}
+		*/
 	}
 
 	/**
 	 * A convenience class that represents a user result.
 	 */
-	private static class UserResult extends ApiResult {
+//	private static class UserResult extends ApiResult {
 		/**
 		 * The user data contained in this result.
 		 */
-		@SerializedName("user")
-		private User mUser;
+//		@SerializedName("user")
+//		private User mUser;
 
 		/**
 		 * Gets the user data from this result.
 		 * @return The user data.
 		 */
-		public User getUser() {
-			return mUser;
-		}
-	}
+//		public User getUser() {
+//			return mUser;
+//		}
+//	}
 }

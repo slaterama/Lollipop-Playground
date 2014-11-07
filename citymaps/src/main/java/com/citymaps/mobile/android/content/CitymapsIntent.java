@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import com.citymaps.mobile.android.BuildConfig;
-import com.citymaps.mobile.android.model.vo.ApiStatus;
+import com.citymaps.mobile.android.model.vo.Status;
 import com.citymaps.mobile.android.model.vo.Config;
 
 /**
@@ -86,11 +86,6 @@ public class CitymapsIntent extends Intent {
 	//public static final String ACTION_CONFIGURATION_SERVICE = makeAction("CONFIGURATION_SERVICE");
 
 	/**
-	 * Service Action: Start or bind to Session Service.
-	 */
-	public static final String ACTION_SESSION_SERVICE = makeAction("SESSION_SERVICE");
-
-	/**
 	 * BroadcastReceiver Action: Sent to inform about the status of the setup process.
 	 */
 	public static final String ACTION_SETUP = makeAction("SETUP");
@@ -133,11 +128,11 @@ public class CitymapsIntent extends Intent {
 		return intent.getParcelableExtra(EXTRA_CONFIG);
 	}
 
-	public static void putApiStatus(Intent intent, ApiStatus status) {
+	public static void putApiStatus(Intent intent, Status status) {
 		intent.putExtra(EXTRA_API_STATUS, status);
 	}
 
-	public static ApiStatus getApiStatus(Intent intent) {
+	public static Status getApiStatus(Intent intent) {
 		return intent.getParcelableExtra(EXTRA_API_STATUS);
 	}
 

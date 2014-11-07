@@ -1,31 +1,39 @@
 package com.citymaps.mobile.android.service;
 
 import android.app.Service;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import com.citymaps.mobile.android.app.CitymapsException;
-import com.citymaps.mobile.android.app.Wrapper;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+import com.citymaps.mobile.android.app.SessionManager;
+import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
-import com.citymaps.mobile.android.http.request.GetApiStatusHttpRequest;
-import com.citymaps.mobile.android.http.request.GetConfigHttpRequest;
+import com.citymaps.mobile.android.http.volley.GetConfigRequest;
+import com.citymaps.mobile.android.http.volley.GetStatusRequest;
+import com.citymaps.mobile.android.http.volley.GetUserRequest;
 import com.citymaps.mobile.android.map.MapViewService;
-import com.citymaps.mobile.android.model.vo.ApiStatus;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.model.vo.Status;
+import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.LogEx;
+
+import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
+
 /*
 import com.citymaps.mobile.android.provider.ConfigDatabase;
 */
 
-import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
-
 // TODO Should this be an IntentService?
 
-public class StartupService extends Service
-		implements ServiceConnection {
+public class StartupService extends Service {
 
 	/*
 	This was a helpful site for integrating Facebook SDK using gradle
@@ -35,24 +43,19 @@ public class StartupService extends Service
 	protected static final IntentFilter CONNECTIVITY_FILTER =
 			new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 
-	// TODO I was unable to use this intent to start or bind to service
-	// once I started using build variants
-	protected static final CitymapsIntent SESSION_SERVICE_INTENT =
-			new CitymapsIntent(CitymapsIntent.ACTION_SESSION_SERVICE);
-
 	private LocalBroadcastManager mLocalBroadcastManager;
 
 	private ConnectivityManager mConnectivityManager;
 
 	private StartupBinder mBinder;
 
-	private SessionService.SessionBinder mSessionBinder;
-
-	private ConfigTask mConfigTask;
-
-	private StatusTask mStatusTask;
+	private GetConfigRequest mGetConfigRequest;
 
 	private Config mConfig;
+
+	private GetStatusRequest mGetStatusRequest;
+
+	private Status mStatus = null;
 
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
@@ -68,14 +71,12 @@ public class StartupService extends Service
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		checkState();
 		registerReceiver(mConnectivityReceiver, CONNECTIVITY_FILTER);
-		bindService(new Intent(this, SessionService.class), this, BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(mConnectivityReceiver);
-		unbindService(this);
 		LogEx.d("Byeeeeeeeee....");
 	}
 
@@ -89,7 +90,6 @@ public class StartupService extends Service
 
 		// Start other services
 		Context applicationContext = getApplicationContext();
-		applicationContext.startService(new Intent(applicationContext, SessionService.class));
 		applicationContext.startService(new Intent(applicationContext, MapViewService.class));
 
 		return START_STICKY;
@@ -103,34 +103,77 @@ public class StartupService extends Service
 		return mBinder;
 	}
 
-	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
-		mSessionBinder = (SessionService.SessionBinder) service;
-		checkState();
-	}
-
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		mSessionBinder = null;
-	}
-
 	private void checkState() {
 		synchronized (this) {
-			if (mSessionBinder != null
-					&& mConnectivityManager.getActiveNetworkInfo() != null) {
-				if (mConfigTask == null) {
-					mConfigTask = new ConfigTask();
-					mConfigTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			if (mConnectivityManager.getActiveNetworkInfo() != null) {
+
+				//SessionManager sessionManager = SessionManager.getInstance(this);
+
+				if (mGetConfigRequest == null) {
+					mGetConfigRequest = new GetConfigRequest(this, new Response.Listener<Config>() {
+						@Override
+						public void onResponse(Config response) {
+							mConfig = response;
+							CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
+							CitymapsIntent.putConfig(intent, mConfig);
+							mLocalBroadcastManager.sendBroadcast(intent);
+							checkState();
+						}
+					}, new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							if (LogEx.isLoggable(LogEx.ERROR)) {
+								LogEx.e(error.getMessage(), error);
+							}
+						}
+					});
+					VolleyManager.getInstance(this).getRequestQueue().add(mGetConfigRequest);
 				}
 
-				if (mStatusTask == null) {
-					mStatusTask = new StatusTask();
-					mStatusTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				if (mGetStatusRequest == null) {
+					mGetStatusRequest = new GetStatusRequest(this, new Response.Listener<Status>() {
+						@Override
+						public void onResponse(Status response) {
+							mStatus = response;
+							SessionManager.getInstance(StartupService.this).registerVersion(mStatus.getVersion(), mStatus.getBuild());
+							checkState();
+						}
+					}, new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							if (LogEx.isLoggable(LogEx.ERROR)) {
+								LogEx.e(error.getMessage(), error);
+							}
+						}
+					});
+					VolleyManager.getInstance(this).getRequestQueue().add(mGetStatusRequest);
+				}
+
+				// TODO Temp
+				Environment environment = SessionManager.getEnvironment(this);
+				if (environment.getApi() != null) {
+					User currentUser = new User();
+					currentUser.setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
+					currentUser.setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
+					GetUserRequest r = new GetUserRequest(this, currentUser, "8ad760c4-3eb5-42e8-aa23-8259856e7763", new Response.Listener<User>() {
+						@Override
+						public void onResponse(User response) {
+							User user = response;
+							LogEx.d(String.format("user=%s", user));
+						}
+					}, new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							if (LogEx.isLoggable(LogEx.ERROR)) {
+								LogEx.e(error.getMessage(), error);
+							}
+						}
+					});
+					VolleyManager.getInstance(this).getRequestQueue().add(r);
 				}
 			}
 
-			if (mConfigTask != null && mConfigTask.getStatus() == AsyncTask.Status.FINISHED
-					&& mStatusTask != null && mStatusTask.getStatus() == AsyncTask.Status.FINISHED) {
+			if (mConfig != null && mStatus != null) {
 				stopSelf();
 			}
 		}
@@ -146,50 +189,6 @@ public class StartupService extends Service
 
 		public Config getConfig() {
 			return mConfig;
-		}
-
-	}
-
-	private class ConfigTask extends AsyncTask<Void, Void, Wrapper<Config>> {
-		@Override
-		protected Wrapper<Config> doInBackground(Void... params) {
-			return new GetConfigHttpRequest().execute(mSessionBinder.getEnvironment());
-		}
-
-		@Override
-		protected void onPostExecute(Wrapper<Config> result) {
-			try {
-				mConfig = result.getData();
-				CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
-				CitymapsIntent.putConfig(intent, mConfig);
-				mLocalBroadcastManager.sendBroadcast(intent);
-			} catch (CitymapsException e) {
-				// TODO Error handling
-			} finally {
-				checkState();
-			}
-		}
-	}
-
-	private class StatusTask extends AsyncTask<Void, Void, Wrapper<ApiStatus>> {
-		@Override
-		protected Wrapper<ApiStatus> doInBackground(Void... params) {
-			return new GetApiStatusHttpRequest().execute(mSessionBinder.getEnvironment());
-		}
-
-		@Override
-		protected void onPostExecute(Wrapper<ApiStatus> result) {
-			try {
-				// TODO bind to SessionService with api status intent -OR- send broadcast?
-				ApiStatus status = result.getData();
-//				CitymapsIntent intent = new CitymapsIntent(StartupService.this, SessionService.class);
-//				CitymapsIntent.putApiStatus(intent, status);
-//				startService(intent);
-			} catch (CitymapsException e) {
-				// TODO Error handling
-			} finally {
-				checkState();
-			}
 		}
 	}
 }

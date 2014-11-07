@@ -1,5 +1,7 @@
 package com.citymaps.mobile.android.app;
 
+import com.citymaps.mobile.android.exception.CitymapsException;
+
 /**
  * A Wrapper object wraps either a data object or a CitymapsException.
  * @param <D> The type of the data this wrapper is wrapping.

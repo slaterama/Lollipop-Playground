@@ -1,7 +1,5 @@
 package com.citymaps.mobile.android.config;
 
-import com.citymaps.mobile.android.config.Endpoint;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,11 +26,9 @@ public abstract class EndpointManager {
 	}
 
 	protected void addEndpoint(Endpoint endpoint) {
-		if (endpoint == null) {
-			throw new IllegalArgumentException("endpoint can not be null");
+		if (endpoint != null) {
+			mEndpointMap.put(endpoint.getType(), endpoint);
 		}
-
-		mEndpointMap.put(endpoint.getType(), endpoint);
 	}
 
 	protected Endpoint getEndpoint(Endpoint.Type type) {
