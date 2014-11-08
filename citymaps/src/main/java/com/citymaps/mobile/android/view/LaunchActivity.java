@@ -10,7 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.app.SharedPreferenceManager;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.os.SoftwareVersion;
@@ -76,7 +76,7 @@ public class LaunchActivity extends ActionBarActivity
 	protected void onStart() {
 		super.onStart();
 
-		SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
+// TODO		SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(this);
 		SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
 
 		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, new IntentFilter(ACTION_CONFIG_LOADED));

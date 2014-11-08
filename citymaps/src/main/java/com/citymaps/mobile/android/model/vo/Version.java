@@ -33,7 +33,7 @@ public class Version extends ResultWrapperV2 {
 	public static class GetRequest extends GetGsonRequest<Version> {
 
 		public GetRequest(Context context, Response.Listener<Version> listener, Response.ErrorListener errorListener) {
-			super(SessionManager.getEnvironment(context).buildUrlString(Endpoint.Type.VERSION),
+			super(SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.VERSION),
 					Version.class, null, listener, errorListener);
 		}
 	}

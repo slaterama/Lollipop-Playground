@@ -137,7 +137,7 @@ public final class Config implements Parcelable {
 	public static class GetRequest extends GetGsonRequest<Config> {
 
 		public GetRequest(Context context, Response.Listener<Config> listener, Response.ErrorListener errorListener) {
-			super(SessionManager.getEnvironment(context).buildUrlString(Endpoint.Type.CONFIG),
+			super(SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.CONFIG),
 					Config.class, null, listener, errorListener);
 		}
 	}

@@ -2,6 +2,7 @@ package com.citymaps.mobile.android.model;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.*;
 
@@ -9,10 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 public abstract class GetGsonRequest<T> extends Request<T> {
-	/**
-	 * A {@link com.google.gson.Gson} instance used to generate the result.
-	 */
-	protected static Gson sGson;
 
 	protected static JsonParser sJsonParser;
 
@@ -24,12 +21,11 @@ public abstract class GetGsonRequest<T> extends Request<T> {
 	 * Convenience method to get the static {@link com.google.gson.Gson} instance.
 	 * @return The static Gson instance.
 	 */
-	protected Gson getGson() {
-		if (sGson == null)
-			sGson = new GsonBuilder()
-					.setPrettyPrinting()
-					.create();
-		return sGson;
+	protected static JsonParser getJsonParser() {
+		if (sJsonParser == null) {
+			sJsonParser = new JsonParser();
+		}
+		return sJsonParser;
 	}
 
 	/**
@@ -65,20 +61,12 @@ public abstract class GetGsonRequest<T> extends Request<T> {
 
 	protected <I> Response<I> parseNetworkResponse(NetworkResponse response, Class<I> clazz) {
 		try {
-			String json = new String(
-					response.data,
-					HttpHeaderParser.parseCharset(response.headers));
-
+			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+			Gson gson = GsonUtils.getGson();
 			if (LogEx.isLoggable(LogEx.VERBOSE)) {
-				if (sJsonParser == null) {
-					sJsonParser = new JsonParser();
-				}
-				LogEx.v(String.format("response=%s", getGson().toJson(sJsonParser.parse(json))));
+				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
 			}
-
-			return Response.success(
-					getGson().fromJson(json, clazz),
-					HttpHeaderParser.parseCacheHeaders(response));
+			return Response.success(gson.fromJson(json, clazz), HttpHeaderParser.parseCacheHeaders(response));
 		} catch (UnsupportedEncodingException e) {
 			return Response.error(new ParseError(e));
 		} catch (JsonSyntaxException e) {

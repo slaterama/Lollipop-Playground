@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view;
 
 import android.content.*;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -14,10 +15,8 @@ import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.os.SoftwareVersion;
-import com.citymaps.mobile.android.provider.ConfigProvider;
+import com.citymaps.mobile.android.provider.config.ConfigContract.Settings;
 import com.citymaps.mobile.android.util.LogEx;
-
-import java.net.URI;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
@@ -121,10 +120,16 @@ public class MainActivity extends ActionBarActivity
 		ContentResolver resolver = getContentResolver();
 
 		ContentValues values = new ContentValues();
-		values.put(ConfigProvider.KEY, "app_version_code");
-		values.put(ConfigProvider.VALUE, 6);
+		values.put(Settings.KEY, "app_version_code");
+		values.put(Settings.VALUE, 6);
 
-		Uri uri = resolver.insert(ConfigProvider.CONTENT_URI, values);
+		Uri uri = resolver.insert(Settings.CONTENT_URI, values);
 		Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+
+		Cursor cursor = resolver.query(Settings.CONTENT_URI,
+				new String[]{Settings.VALUE},
+				Settings.KEY + "=?",
+				new String[]{"app_version_code"},
+				null);
 	}
 }

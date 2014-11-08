@@ -236,7 +236,7 @@ public class User implements CitymapsObject {
 
 		public GetRequest(Context context, User currentUser, String userId,
 							  Response.Listener<User> listener, Response.ErrorListener errorListener) {
-			super(SessionManager.getEnvironment(context).buildUrlString(Endpoint.Type.USER, currentUser, userId),
+			super(SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER, currentUser, userId),
 					User.class, null, listener, errorListener);
 		}
 

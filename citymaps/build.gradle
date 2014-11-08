@@ -77,7 +77,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'commons-io:commons-io:2.4'
     compile 'commons-codec:commons-codec:1.9'
-    compile project(':volley')
     compile project(':mapenginelibrary')
+	compile project(':volley')
     compile project(':facebook')
 }

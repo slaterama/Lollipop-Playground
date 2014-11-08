@@ -75,7 +75,7 @@
         </service>
 
         <provider
-            android:name=".provider.ConfigProvider"
+            android:name=".provider.config.ConfigProvider"
             android:authorities="com.citymaps.mobile.android.provider.config"
             android:enabled="true"
             android:exported="false" >

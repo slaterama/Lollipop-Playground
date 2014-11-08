@@ -12,7 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.SessionManager;
-import com.citymaps.mobile.android.app.SharedPreferenceManager;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
@@ -110,8 +110,8 @@ public class StartupService extends Service {
 						public void onResponse(Config response) {
 							mConfig = response;
 
-							SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(StartupService.this);
-							sharedPreferenceManager.applyConfig(mConfig);
+//							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
+//							sharedPreferenceManager.applyConfig(mConfig);
 
 							// TODO Might not need this if I monitor Shared Preference change ... ?
 
@@ -139,9 +139,10 @@ public class StartupService extends Service {
 						public void onResponse(Version response) {
 							mVersion = response;
 
-							SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(StartupService.this);
-							sharedPreferenceManager.applyApiVersion(mVersion.getVersion());
-							sharedPreferenceManager.applyApiBuild(mVersion.getBuild());
+							// TODO
+//							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
+//							sharedPreferenceManager.applyApiVersion(mVersion.getVersion());
+//							sharedPreferenceManager.applyApiBuild(mVersion.getBuild());
 
 							checkState();
 						}
@@ -158,7 +159,7 @@ public class StartupService extends Service {
 				}
 
 				// TODO Temp
-				Environment environment = SessionManager.getEnvironment(this);
+				Environment environment = SessionManager.getInstance(this).getEnvironment();
 				if (environment.getApi() != null) {
 					User currentUser = new User();
 					currentUser.setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");

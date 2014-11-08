@@ -7,7 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/libraries/facebook/facebook.iml" filepath="$PROJECT_DIR$/libraries/facebook/facebook.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/mapenginelibrary/MapEngineLibraryAndroid/mapenginelibrary.iml" filepath="$PROJECT_DIR$/libraries/mapenginelibrary/MapEngineLibraryAndroid/mapenginelibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/volley/volley.iml" filepath="$PROJECT_DIR$/libraries/volley/volley.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libraries/volley/volley.iml" filepath="$PROJECT_DIR$/libraries/volley/volley.iml" />
     </modules>
   </component>
 </project>
