@@ -4,11 +4,15 @@
 
 package com.citymaps.mobile.android.app;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.view.HardUpdateActivity;
 
 public class SessionManager {
 
@@ -32,14 +36,24 @@ public class SessionManager {
 
 	private Environment mEnvironment;
 
-	private SharedPreferences mConfigPreferences;
-
 	private Config mConfig;
 
 	private SessionManager() {
 		mEnvironment = Environment.newInstance(sContext);
-		mConfigPreferences = getConfigPreferences(sContext);
-		mConfig = SharedPreferenceUtils.getConfig(mConfigPreferences);
+		mConfig = SharedPreferenceUtils.getConfig(sContext);
+	}
+
+	public boolean checkForHardUpgrade(Activity activity, Config config) {
+		int currentVersionCode = BuildConfig.VERSION_CODE;
+		int minVersionCode = config.getMinVersionCode();
+		if (currentVersionCode < minVersionCode) {
+			if (activity != null) {
+				activity.startActivity(new Intent(sContext, HardUpdateActivity.class));
+				activity.finish();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public Config getConfig() {

@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.util;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import com.citymaps.mobile.android.model.vo.Config;
 import org.json.JSONObject;
@@ -8,6 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SharedPreferenceUtils {
+
+	public static SharedPreferences getConfigSharedPreferences(Context context) {
+		Context applicationContext = context.getApplicationContext();
+		String name = String.format("%s_configPreferences", applicationContext.getPackageName());
+		return applicationContext.getSharedPreferences(name, Context.MODE_PRIVATE);
+	}
 
 	public static void applyApiVersion(SharedPreferences sharedPreferences, int apiVersion) {
 		sharedPreferences.edit().putInt(PreferenceType.API_VERSION.getKey(), apiVersion).apply();
@@ -33,29 +40,26 @@ public class SharedPreferenceUtils {
 		return sharedPreferences.getString(PreferenceType.API_BUILD.getKey(), defValue);
 	}
 
-	public static void applyConfig(SharedPreferences sharedPreferences, Config config) {
-		sharedPreferences.edit()
-				.putInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), config.getAppVersionCode())
-				.putString(PreferenceType.CONFIG_APP_VERSION.getKey(), config.getAppVersion())
-				.putInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), config.getAppVersionCode())
-				.putString(PreferenceType.CONFIG_MIN_VERSION.getKey(), config.getMinVersion())
-				.putLong(PreferenceType.CONFIG_TIMESTAMP.getKey(), config.getTimestamp())
-				.putString(PreferenceType.CONFIG_UPGRADE_PROMPT.getKey(), config.getUpgradePrompt())
-				.apply();
-	}
-
-	public static boolean commitConfig(SharedPreferences sharedPreferences, Config config) {
+	private static SharedPreferences.Editor configEditor(SharedPreferences sharedPreferences, Config config) {
 		return sharedPreferences.edit()
 				.putInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), config.getAppVersionCode())
 				.putString(PreferenceType.CONFIG_APP_VERSION.getKey(), config.getAppVersion())
-				.putInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), config.getAppVersionCode())
+				.putInt(PreferenceType.CONFIG_MIN_VERSION_CODE.getKey(), config.getMinVersionCode())
 				.putString(PreferenceType.CONFIG_MIN_VERSION.getKey(), config.getMinVersion())
 				.putLong(PreferenceType.CONFIG_TIMESTAMP.getKey(), config.getTimestamp())
-				.putString(PreferenceType.CONFIG_UPGRADE_PROMPT.getKey(), config.getUpgradePrompt())
-				.commit();
+				.putString(PreferenceType.CONFIG_UPGRADE_PROMPT.getKey(), config.getUpgradePrompt());
 	}
 
-	public static Config getConfig(SharedPreferences sharedPreferences) {
+	public static void applyConfig(Context context, Config config) {
+		configEditor(getConfigSharedPreferences(context), config).apply();
+	}
+
+	public static boolean commitConfig(Context context, Config config) {
+		return configEditor(getConfigSharedPreferences(context), config).commit();
+	}
+
+	public static Config getConfig(Context context) {
+		SharedPreferences sharedPreferences = getConfigSharedPreferences(context);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("app_version_code", sharedPreferences.getInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), 0));
 		map.put("min_version_code", sharedPreferences.getInt(PreferenceType.CONFIG_MIN_VERSION_CODE.getKey(), 0));

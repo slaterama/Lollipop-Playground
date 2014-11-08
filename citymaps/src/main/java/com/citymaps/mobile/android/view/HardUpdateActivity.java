@@ -6,22 +6,24 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 
 public class HardUpdateActivity extends Activity {
 
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hard_update);
     }
 
 	public void onUpgradeClick(View view) {
-		final String appPackageName = getApplicationContext().getPackageName();
 		try {
-			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+			String urlString = "market://details?id=" + BuildConfig.PLAY_STORE_ID;
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(urlString)));
 		} catch (ActivityNotFoundException e) {
-			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName)));
+			String urlString = "http://play.google.com/store/apps/details?id=" + BuildConfig.PLAY_STORE_ID;
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(urlString)));
 		}
 		finish();
 	}

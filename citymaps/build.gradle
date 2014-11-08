@@ -20,10 +20,11 @@ android {
         applicationId "com.citymaps.mobile.android"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 6
+        versionCode 2
         versionName "2.0"
         buildConfigField "String", "GHOST_USER_ID_PROD", "\"345a8d0a-922b-4ff7-81ba-3000c2d55e4d\""
         buildConfigField "String", "GHOST_USER_ID_DEV", "\"28e20039-9742-45b6-a565-07a7acd88908\""
+		buildConfigField "String", "PLAY_STORE_ID", "\"com.citymaps.mobile.android\""
     }
 
     signingConfigs {

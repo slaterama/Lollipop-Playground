@@ -10,11 +10,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,19 +37,7 @@ public class LaunchActivity extends ActionBarActivity
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
 				Config config = CitymapsIntent.getConfig(intent);
-
-				SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
-				SoftwareVersion appVersion = SoftwareVersion.parse(config.getAppVersion());
-				SoftwareVersion minVersion = SoftwareVersion.parse(config.getMinVersion());
-
-				LogEx.d(String.format("config=%s", config));
-
-				if (currentVersion.compareTo(minVersion) < 0) {
-					startActivity(new Intent(LaunchActivity.this, HardUpdateActivity.class));
-					finish();
-				} else if (currentVersion.compareTo(appVersion) < 0) {
-
-				}
+				SessionManager.getInstance(context).checkForHardUpgrade(LaunchActivity.this, config);
 			}
 		}
 	};
@@ -59,6 +48,12 @@ public class LaunchActivity extends ActionBarActivity
         setContentView(R.layout.activity_launch);
 
 		if (savedInstanceState == null) {
+			// The VERY first thing: Examine any saved config
+			Config config = SharedPreferenceUtils.getConfig(this);
+			if (SessionManager.getInstance(this).checkForHardUpgrade(this, config)) {
+				return;
+			}
+
 			mLaunchFragment = new LaunchFragment();
 			getSupportFragmentManager()
 					.beginTransaction()
@@ -138,7 +133,7 @@ public class LaunchActivity extends ActionBarActivity
 			final Activity activity = getActivity();
 			if (activity != null) {
 
-				// TODO
+				// TODO -- API problem
 
 				Bundle bundle = ActivityOptions
 						.makeCustomAnimation(activity, 0, android.R.anim.fade_out)

@@ -32,17 +32,6 @@ public class MainActivity extends ActionBarActivity
 			if (ACTION_CONFIG_LOADED.equals(action)) {
 				Config config = CitymapsIntent.getConfig(intent);
 
-				SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
-				SoftwareVersion appVersion = SoftwareVersion.parse(config.getAppVersion());
-				SoftwareVersion minVersion = SoftwareVersion.parse(config.getMinVersion());
-
-				LogEx.d(String.format("config=%s", config));
-				if (currentVersion.compareTo(minVersion) < 0) {
-					startActivity(new Intent(MainActivity.this, HardUpdateActivity.class));
-					finish();
-				} else if (currentVersion.compareTo(appVersion) < 0) {
-					// Show dialog
-				}
 			}
 		}
 	};

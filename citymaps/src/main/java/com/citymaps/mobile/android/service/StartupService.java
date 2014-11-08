@@ -109,6 +109,7 @@ public class StartupService extends Service {
 						@Override
 						public void onResponse(Config response) {
 							mConfig = response;
+							SharedPreferenceUtils.applyConfig(StartupService.this, mConfig);
 
 //							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
 //							sharedPreferenceManager.applyConfig(mConfig);
