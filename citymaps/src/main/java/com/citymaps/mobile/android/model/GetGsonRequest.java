@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.http.volley;
+package com.citymaps.mobile.android.model;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;

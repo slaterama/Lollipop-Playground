@@ -37,7 +37,6 @@ android {
 
     buildTypes {
         release {
-            debuggable true
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.releaseConfig
@@ -47,11 +46,18 @@ android {
         }
 
 		debug {
-            applicationIdSuffix ".dev"
-            versionNameSuffix "-dev"
-            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.VERBOSE"
-            resValue "string", "app_name", "Citymaps Dev"
-            resValue "string", "citymaps_engine_api_key", "2e4c9a9ee762475aac1fc69aab20f7ac"
+            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.DEBUG"
+            resValue "string", "app_name", "CitymapsDebug"
+			resValue "string", "citymaps_engine_api_key", "76b15e871173450fb41fb002b2fab463"
+		}
+
+		development.initWith(buildTypes.debug)
+		development {
+			applicationIdSuffix ".dev"
+			versionNameSuffix "-dev"
+			buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.VERBOSE"
+			resValue "string", "app_name", "CitymapsDev"
+			resValue "string", "citymaps_engine_api_key", "2e4c9a9ee762475aac1fc69aab20f7ac"
 		}
     }
 

@@ -1,11 +1,8 @@
 package com.citymaps.mobile.android.config;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Base64;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.vo.User;
@@ -19,9 +16,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Environment extends EndpointManager {
+import static com.citymaps.mobile.android.config.Endpoint.*;
 
-	private static final String BUILD_VARIANT_RELEASE = "release";
+public abstract class Environment {
+
+	private static final String BUILD_VARIANT_DEVELOPMENT = "development";
 
 	protected static String encodeSecret(String key) {
 		byte[] bytes = DigestUtils.sha1(key);
@@ -33,10 +32,10 @@ public abstract class Environment extends EndpointManager {
 	public static Environment newInstance(Context context, Type type) {
 		switch (type) {
 			case DEVELOPMENT:
-				return new EnvironmentDevelopment(context);
+				return new EnvironmentDev(context);
 			case PRODUCTION:
 			default:
-				return new EnvironmentProduction(context);
+				return new EnvironmentProd(context);
 		}
 	}
 
@@ -57,16 +56,10 @@ public abstract class Environment extends EndpointManager {
 		addServer(new Server(Server.Type.MAP_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.BUSINESS_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.REGION_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
-		addEndpoint(new Endpoint(Endpoint.Type.STATUS, Server.Type.API, "v2/status/version", 0));
-	}
-
-	@Override
-	protected Endpoint getEndpoint(Endpoint.Type type) {
-		Endpoint endpoint = super.getEndpoint(type);
-		if (endpoint == null && mApi != null) {
-			endpoint = mApi.getEndpoint(type);
+		mApi = onCreateApi();
+		if (mApi == null) {
+			throw new IllegalStateException("Descendants of Environment must create a valid Api");
 		}
-		return endpoint;
 	}
 
 	protected void addServer(Server server) {
@@ -80,7 +73,11 @@ public abstract class Environment extends EndpointManager {
 	}
 
 	public String buildUrlString(Endpoint.Type endpointType, User user, Object... args) {
-		Endpoint endpoint = getEndpoint(endpointType);
+		if (mApi == null) {
+			throw new IllegalStateException(String.format("No api is defined for %s", getClass().getSimpleName()));
+		}
+
+		Endpoint endpoint = mApi.getEndpoint(endpointType);
 		if (endpoint == null) {
 			throw new IllegalStateException(String.format("No endpoint defined for type '%s'", endpointType));
 		}
@@ -130,7 +127,8 @@ public abstract class Environment extends EndpointManager {
 		}
 
 		if ((flags & APPEND_ENDPOINT_VERSION) == APPEND_ENDPOINT_VERSION) {
-			builder.appendQueryParameter("ev", mApi.getApiBuild());
+			// TODO Get build from ... session manager?
+			//builder.appendQueryParameter("ev", mApi.getApiBuild());
 		}
 
 		if ((flags & APPEND_SECRET) == APPEND_SECRET) {
@@ -147,30 +145,19 @@ public abstract class Environment extends EndpointManager {
 		return buildUrlString(endpointType, null);
 	}
 
-	public Context getContext() {
-		return mContext;
-	}
-
 	public Api getApi() {
 		return mApi;
 	}
 
+	public Context getContext() {
+		return mContext;
+	}
+
 	public abstract String getGhostUserId();
 
-	public Api registerVersion(int version, String build) {
-		if (mApi != null) {
-			int currentApiVersion = mApi.getApiVersion();
-			String currentApiBuild = mApi.getApiBuild();
-			if (currentApiVersion != version
-					|| !TextUtils.equals(currentApiBuild, build)) {
-				mApi = null;
-			}
-		}
-		if (mApi == null) {
-			mApi = Api.newInstance(version, build);
-		}
-		return mApi;
-	}
+	public abstract Type getType();
+
+	protected abstract Api onCreateApi();
 
 	public static enum Type {
 		PRODUCTION,
@@ -179,10 +166,10 @@ public abstract class Environment extends EndpointManager {
 		public static Type defaultType() {
 			String buildType = BuildConfig.BUILD_TYPE;
 			//String flavor = BuildConfig.FLAVOR; <-- Unused for now
-			if (BUILD_VARIANT_RELEASE.equals(buildType)) {
-				return PRODUCTION;
-			} else {
+			if (BUILD_VARIANT_DEVELOPMENT.equals(buildType)) {
 				return DEVELOPMENT;
+			} else {
+				return PRODUCTION;
 			}
 		}
 	}

@@ -5,7 +5,6 @@
 package com.citymaps.mobile.android.app;
 
 import android.content.Context;
-import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Environment;
 
 public class SessionManager {
@@ -37,9 +36,5 @@ public class SessionManager {
 
 	public Environment getEnvironment() {
 		return mEnvironment;
-	}
-
-	public Api registerVersion(int version, String build) {
-		return mEnvironment.registerVersion(version, build);
 	}
 }

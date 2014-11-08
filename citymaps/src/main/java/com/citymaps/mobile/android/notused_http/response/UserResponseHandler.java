@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.http.response;
+package com.citymaps.mobile.android.notused_http.response;
 
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.model.vo.User;

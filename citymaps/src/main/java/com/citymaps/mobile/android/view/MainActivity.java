@@ -7,13 +7,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.os.SoftwareVersion;
+import com.citymaps.mobile.android.provider.ConfigProvider;
 import com.citymaps.mobile.android.util.LogEx;
+
+import java.net.URI;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
@@ -96,6 +100,9 @@ public class MainActivity extends ActionBarActivity
 			case R.id.action_profile:
 				startActivity(new Intent(this, ProfileActivity.class));
 				return true;
+			case R.id.action_friend_finder:
+				doTest();
+				return true;
 		}
         return super.onOptionsItemSelected(item);
     }
@@ -108,5 +115,16 @@ public class MainActivity extends ActionBarActivity
 	@Override
 	public void onFragmentInteraction(Uri uri) {
 
+	}
+
+	public void doTest() {
+		ContentResolver resolver = getContentResolver();
+
+		ContentValues values = new ContentValues();
+		values.put(ConfigProvider.KEY, "app_version_code");
+		values.put(ConfigProvider.VALUE, 6);
+
+		Uri uri = resolver.insert(ConfigProvider.CONTENT_URI, values);
+		Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
 	}
 }

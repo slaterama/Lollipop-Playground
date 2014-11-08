@@ -3,19 +3,32 @@ package com.citymaps.mobile.android.config;
 import android.content.Context;
 import com.citymaps.mobile.android.BuildConfig;
 
-public class EnvironmentDevelopment extends Environment {
+public class EnvironmentDev extends Environment {
 
-	protected EnvironmentDevelopment(Context context) {
+	private final static int API_VERSION = 2;
+	private final static String API_BUILD = "3.0.0";
+
+	protected EnvironmentDev(Context context) {
 		super(context);
 		addServer(new Server(Server.Type.API, "dev-coreapi.citymaps.com", Server.Protocol.STANDARD));
 		addServer(new Server(Server.Type.SEARCH, "dev-coresearch.citymaps.com", Server.Protocol.STANDARD));
 		addServer(new Server(Server.Type.MOBILE, "dev-m.citymaps.com", Server.Protocol.STANDARD));
 		addServer(new Server(Server.Type.ASSETS, "riak.citymaps.com", Server.Protocol.STANDARD, 8098));
-		addEndpoint(new Endpoint(Endpoint.Type.CONFIG, Server.Type.ASSETS, "riak/appconfig/android_config_dev.json", 0));
+
 	}
 
 	@Override
 	public String getGhostUserId() {
 		return BuildConfig.GHOST_USER_ID_DEV;
+	}
+
+	@Override
+	public Type getType() {
+		return Type.DEVELOPMENT;
+	}
+
+	@Override
+	protected Api onCreateApi() {
+		return Api.newInstance(this, API_VERSION, API_BUILD);
 	}
 }

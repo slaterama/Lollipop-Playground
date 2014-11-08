@@ -1,12 +1,11 @@
-package com.citymaps.mobile.android.http.request;
+package com.citymaps.mobile.android.notused_http.request;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.http.AndroidHttpClient;
-import com.android.volley.Request;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.citymaps.mobile.android.app.*;
+import com.citymaps.mobile.android.app.CitymapsExceptionWrapper;
+import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.exception.CitymapsConnectivityException;
 import com.citymaps.mobile.android.exception.CitymapsException;

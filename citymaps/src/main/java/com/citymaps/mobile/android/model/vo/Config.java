@@ -1,7 +1,12 @@
 package com.citymaps.mobile.android.model.vo;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.android.volley.Response;
+import com.citymaps.mobile.android.app.SessionManager;
+import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.model.GetGsonRequest;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -127,5 +132,13 @@ public final class Config implements Parcelable {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	public static class GetRequest extends GetGsonRequest<Config> {
+
+		public GetRequest(Context context, Response.Listener<Config> listener, Response.ErrorListener errorListener) {
+			super(SessionManager.getEnvironment(context).buildUrlString(Endpoint.Type.CONFIG),
+					Config.class, null, listener, errorListener);
+		}
 	}
 }

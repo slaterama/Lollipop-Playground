@@ -1,24 +1,41 @@
 package com.citymaps.mobile.android.config;
 
-public abstract class Api extends EndpointManager {
+import java.util.HashMap;
+import java.util.Map;
 
-	public static Api newInstance(int apiVersion, String apiBuild) {
+public abstract class Api {
+
+	public static Api newInstance(Environment environment, int apiVersion, String apiBuild) {
 		if (apiVersion >= 3) {
-			return new ApiVersion3(apiVersion, apiBuild);
+			return new ApiV3(environment, apiVersion, apiBuild);
 		} else {
-			return new ApiBase(apiVersion, apiBuild);
+			return new ApiBase(environment, apiVersion, apiBuild);
 		}
 	}
 
-	int mApiVersion;
+	private Environment mEnvironment;
 
-	String mApiBuild;
+	private int mApiVersion;
 
-	protected Api(int apiVersion, String apiBuild) {
-		super();
+	private String mApiBuild;
+
+	private Map<Endpoint.Type, Endpoint> mEndpointMap;
+
+	protected Api(Environment environment, int apiVersion, String apiBuild) {
+		mEnvironment = environment;
 		mApiVersion = apiVersion;
 		mApiBuild = apiBuild;
+		mEndpointMap = new HashMap<Endpoint.Type, Endpoint>(Endpoint.Type.values().length);
+		addEndpoints(environment, apiVersion, apiBuild);
 	}
+
+	protected void addEndpoint(Endpoint endpoint) {
+		if (endpoint != null) {
+			mEndpointMap.put(endpoint.getType(), endpoint);
+		}
+	}
+
+	abstract void addEndpoints(Environment environment, int apiVersion, String apiBuild);
 
 	public int getApiVersion() {
 		return mApiVersion;
@@ -26,5 +43,13 @@ public abstract class Api extends EndpointManager {
 
 	public String getApiBuild() {
 		return mApiBuild;
+	}
+
+	protected Endpoint getEndpoint(Endpoint.Type type) {
+		return mEndpointMap.get(type);
+	}
+
+	public Environment getEnvironment() {
+		return mEnvironment;
 	}
 }

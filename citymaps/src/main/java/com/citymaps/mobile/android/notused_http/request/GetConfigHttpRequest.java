@@ -1,10 +1,10 @@
-package com.citymaps.mobile.android.http.request;
+package com.citymaps.mobile.android.notused_http.request;
 
 import com.citymaps.mobile.android.app.DataWrapper;
 import com.citymaps.mobile.android.app.Wrapper;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.http.response.CitymapsResponseHandler;
+import com.citymaps.mobile.android.notused_http.response.CitymapsResponseHandler;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
 import com.google.gson.JsonElement;

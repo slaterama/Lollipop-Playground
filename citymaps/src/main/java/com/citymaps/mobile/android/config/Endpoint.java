@@ -72,7 +72,7 @@ public class Endpoint {
 
 	public static enum Type {
 		CONFIG,
-		STATUS,
+		VERSION,
 		USER,
 		PLACE,
 		COLLECTIONS,
