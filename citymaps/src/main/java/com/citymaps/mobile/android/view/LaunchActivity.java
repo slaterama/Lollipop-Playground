@@ -8,12 +8,9 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
@@ -47,9 +44,15 @@ public class LaunchActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+    }
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState == null) {
-			// The VERY first thing: Examine any saved config
+			// First of all, examine any saved config for hard/soft update
 			Config config = SharedPreferenceUtils.getConfig(this);
 			UpdateUtils.processConfig(this, config, false);
 			if (isFinishing()) {
@@ -64,18 +67,11 @@ public class LaunchActivity extends ActionBarActivity
 		} else {
 			mLaunchFragment = (LaunchFragment) getSupportFragmentManager().getFragment(savedInstanceState, STATE_KEY_LAUNCH_FRAGMENT);
 		}
-
-		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-
-    }
+	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-
-// TODO		SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(this);
-		SoftwareVersion currentVersion = SoftwareVersion.parse(BuildConfig.VERSION_NAME);
-
 		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, new IntentFilter(ACTION_CONFIG_LOADED));
 	}
 

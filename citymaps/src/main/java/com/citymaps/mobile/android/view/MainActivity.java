@@ -40,18 +40,22 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+    }
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState == null) {
-			// The VERY first thing: Examine any saved config
+			// First of all, examine any saved config for hard/soft update
 			Config config = SharedPreferenceUtils.getConfig(this);
 			UpdateUtils.processConfig(this, config, true);
 			if (isFinishing()) {
 				return;
 			}
 		}
-
-		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-    }
+	}
 
 	@Override
 	protected void onStart() {

@@ -109,6 +109,8 @@ public class StartupService extends Service {
 						@Override
 						public void onResponse(Config response) {
 							mConfig = response;
+
+							// TODO Only apply config & send broadcast if newer timestamp !!!
 							SharedPreferenceUtils.applyConfig(StartupService.this, mConfig);
 
 //							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
