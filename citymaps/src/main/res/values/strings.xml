@@ -26,5 +26,9 @@
 	<string name="update_hard_message">There is a new version of Citymaps.\nThis version is no longer supported.</string>
 	<string name="update_button_text">Upgrade Citymaps now</string>
 
+	<string name="update_soft_dialog_title">Upgrade Citymaps</string>
+	<string name="update_soft_dialog_message">A new version of Citymaps is available in the Google Play™ store.</string>
+	<string name="update_soft_dialog_negative_button">Later</string>
+	<string name="update_soft_dialog_positive_button">Update</string>
 
 </resources>

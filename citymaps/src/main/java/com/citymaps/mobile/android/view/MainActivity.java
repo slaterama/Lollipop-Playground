@@ -9,14 +9,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.provider.config.ConfigContract.Settings;
 import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.UpdateUtils;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
 				Config config = CitymapsIntent.getConfig(intent);
-
+				UpdateUtils.processConfig(MainActivity.this, config, true);
 			}
 		}
 	};
@@ -40,6 +40,16 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+		if (savedInstanceState == null) {
+			// The VERY first thing: Examine any saved config
+			Config config = SharedPreferenceUtils.getConfig(this);
+			UpdateUtils.processConfig(this, config, true);
+			if (isFinishing()) {
+				return;
+			}
+		}
+
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 

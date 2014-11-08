@@ -16,6 +16,7 @@ import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.os.SoftwareVersion;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.UpdateUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,7 +38,7 @@ public class LaunchActivity extends ActionBarActivity
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
 				Config config = CitymapsIntent.getConfig(intent);
-				SessionManager.getInstance(context).checkForHardUpgrade(LaunchActivity.this, config);
+				UpdateUtils.processConfig(LaunchActivity.this, config, false);
 			}
 		}
 	};
@@ -50,7 +51,8 @@ public class LaunchActivity extends ActionBarActivity
 		if (savedInstanceState == null) {
 			// The VERY first thing: Examine any saved config
 			Config config = SharedPreferenceUtils.getConfig(this);
-			if (SessionManager.getInstance(this).checkForHardUpgrade(this, config)) {
+			UpdateUtils.processConfig(this, config, false);
+			if (isFinishing()) {
 				return;
 			}
 

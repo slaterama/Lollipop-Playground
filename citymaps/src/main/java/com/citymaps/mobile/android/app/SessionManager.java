@@ -43,19 +43,6 @@ public class SessionManager {
 		mConfig = SharedPreferenceUtils.getConfig(sContext);
 	}
 
-	public boolean checkForHardUpgrade(Activity activity, Config config) {
-		int currentVersionCode = BuildConfig.VERSION_CODE;
-		int minVersionCode = config.getMinVersionCode();
-		if (currentVersionCode < minVersionCode) {
-			if (activity != null) {
-				activity.startActivity(new Intent(sContext, HardUpdateActivity.class));
-				activity.finish();
-			}
-			return true;
-		}
-		return false;
-	}
-
 	public Config getConfig() {
 		return mConfig;
 	}

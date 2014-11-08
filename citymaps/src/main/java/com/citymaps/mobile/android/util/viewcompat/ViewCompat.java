@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.util;
+package com.citymaps.mobile.android.util.viewcompat;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,22 +6,18 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewParent;
-import com.citymaps.mobile.android.util.viewcompat.ViewCompatImpl;
-import com.citymaps.mobile.android.util.viewcompat.ViewCompatBase;
-import com.citymaps.mobile.android.util.viewcompat.ViewCompatJellyBean;
-import com.citymaps.mobile.android.util.viewcompat.ViewCompatKitKat;
 
 /**
  * Class that allows for determining whether a view is attached to a window in pre-KitKat builds.
  * Though logic is accessed via static methods, this singleton implements the "Initialization-on-demand holder idiom"
  * for singletons in Java as described here: http://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
  */
-public class ViewCompat {
+public abstract class ViewCompat {
 	/**
 	 * Retrieves a singleton instance of ViewCompat.
 	 * @return ViewCompat instance.
 	 */
-	private static ViewCompatImpl getInstance() {
+	private static ViewCompat getInstance() {
 		return LazyHolder.INSTANCE;
 	}
 
@@ -29,7 +25,7 @@ public class ViewCompat {
 	 * Static class that creates the appropriate instance based on Android build version.
 	 */
 	private static class LazyHolder {
-		private static ViewCompatImpl createInstance() {
+		private static ViewCompat createInstance() {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 				return new ViewCompatKitKat();
 			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -39,7 +35,7 @@ public class ViewCompat {
 			}
 		}
 
-		private static final ViewCompatImpl INSTANCE = createInstance();
+		private static final ViewCompat INSTANCE = createInstance();
 	}
 
 	/**
@@ -89,7 +85,7 @@ public class ViewCompat {
 	 * Returns true if this view is currently attached to a window.
 	 */
 	public static boolean isAttachedToWindow(View view) {
-		return getInstance().isAttachedToWindow(view);
+		return getInstance().isAttachedToWindowImpl(view);
 	}
 
 	/**
@@ -101,9 +97,24 @@ public class ViewCompat {
 	 * @param background The Drawable to use as the background, or null to remove the background.
 	 */
 	public static void setBackground(View view, Drawable background) {
-		getInstance().setBackground(view, background);
+		getInstance().setBackgroundImpl(view, background);
 	}
 
-	private ViewCompat() {
+	protected ViewCompat() {
 	}
+
+	/**
+	 * Returns true if this view is currently attached to a window.
+	 */
+	public abstract boolean isAttachedToWindowImpl(View view);
+
+	/**
+	 * Set the background to a given Drawable, or remove the background. If the background has padding,
+	 * this View's padding is set to the background's padding. However, when a background is removed,
+	 * this View's padding isn't touched. If setting the padding is desired, please use
+	 * {@link View#setPadding(int, int, int, int)}.
+	 * @param view The view whose background you want to set.
+	 * @param background The Drawable to use as the background, or null to remove the background.
+	 */
+	public abstract void setBackgroundImpl(View view, Drawable background);
 }

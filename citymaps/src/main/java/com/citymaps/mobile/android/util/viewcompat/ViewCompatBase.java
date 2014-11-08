@@ -4,9 +4,9 @@ import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-public class ViewCompatBase implements ViewCompatImpl {
+public class ViewCompatBase extends ViewCompat {
 	@Override
-	public boolean isAttachedToWindow(View view) {
+	public boolean isAttachedToWindowImpl(View view) {
 		boolean attached = false;
 		if (view != null) {
 			View rootView = view.getRootView();
@@ -17,7 +17,7 @@ public class ViewCompatBase implements ViewCompatImpl {
 
 	@TargetApi(15)
 	@Override
-	public void setBackground(View view, Drawable background) {
+	public void setBackgroundImpl(View view, Drawable background) {
 		view.setBackgroundDrawable(background);
 	}
 }

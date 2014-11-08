@@ -3,7 +3,7 @@ package com.citymaps.mobile.android.util.objectscompat;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class ObjectsCompatBase implements ObjectsCompatImpl {
+public class ObjectsCompatBase extends ObjectsCompat {
 
 	static boolean deepEquals0(Object e1, Object e2) {
 		assert e1 != null;
@@ -52,7 +52,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see Comparator
 	 */
 	@Override
-	public <T> int compare(T a, T b, Comparator<? super T> c) {
+	public <T> int compareImpl(T a, T b, Comparator<? super T> c) {
 		return (a == b) ? 0 : c.compare(a, b);
 	}
 
@@ -74,7 +74,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see #equals(Object, Object)
 	 */
 	@Override
-	public boolean deepEquals(Object a, Object b) {
+	public boolean deepEqualsImpl(Object a, Object b) {
 		if (a == b)
 			return true;
 		else if (a == null || b == null)
@@ -99,7 +99,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see Object#equals(Object)
 	 */
 	@Override
-	public boolean equals(Object a, Object b) {
+	public boolean equalsImpl(Object a, Object b) {
 		return (a == b) || (a != null && a.equals(b));
 	}
 
@@ -130,7 +130,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see java.util.List#hashCode
 	 */
 	@Override
-	public int hash(Object... values) {
+	public int hashImpl(Object... values) {
 		return Arrays.hashCode(values);
 	}
 
@@ -144,7 +144,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see Object#hashCode
 	 */
 	@Override
-	public int hashCode(Object o) {
+	public int hashCodeImpl(Object o) {
 		return o != null ? o.hashCode() : 0;
 	}
 
@@ -168,7 +168,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @throws NullPointerException if {@code obj} is {@code null}
 	 */
 	@Override
-	public <T> T requireNonNull(T o, String message) {
+	public <T> T requireNonNullImpl(T o, String message) {
 		if (o == null)
 			throw new NullPointerException(message);
 		return o;
@@ -190,7 +190,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @throws NullPointerException if {@code obj} is {@code null}
 	 */
 	@Override
-	public <T> T requireNonNull(T o) {
+	public <T> T requireNonNullImpl(T o) {
 		if (o == null)
 			throw new NullPointerException();
 		return o;
@@ -210,7 +210,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see #toString(Object)
 	 */
 	@Override
-	public String toString(Object o, String nullString) {
+	public String toStringImpl(Object o, String nullString) {
 		return (o != null) ? o.toString() : nullString;
 	}
 
@@ -225,7 +225,7 @@ public class ObjectsCompatBase implements ObjectsCompatImpl {
 	 * @see String#valueOf(Object)
 	 */
 	@Override
-	public String toString(Object o) {
+	public String toStringImpl(Object o) {
 		return String.valueOf(o);
 	}
 }

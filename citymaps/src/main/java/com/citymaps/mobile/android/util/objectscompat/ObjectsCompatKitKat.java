@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 @TargetApi(19)
-public class ObjectsCompatKitKat implements ObjectsCompatImpl {
+public class ObjectsCompatKitKat extends ObjectsCompat {
 
 	/**
 	 * Returns 0 if the arguments are identical and {@code
@@ -29,7 +29,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see Comparator
 	 */
 	@Override
-	public <T> int compare(T a, T b, Comparator<? super T> c) {
+	public <T> int compareImpl(T a, T b, Comparator<? super T> c) {
 		return Objects.compare(a, b, c);
 	}
 
@@ -51,7 +51,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see #equals(Object, Object)
 	 */
 	@Override
-	public boolean deepEquals(Object a, Object b) {
+	public boolean deepEqualsImpl(Object a, Object b) {
 		return Objects.deepEquals(a, b);
 	}
 
@@ -71,7 +71,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see Object#equals(Object)
 	 */
 	@Override
-	public boolean equals(Object a, Object b) {
+	public boolean equalsImpl(Object a, Object b) {
 		return Objects.equals(a, b);
 	}
 
@@ -102,7 +102,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see java.util.List#hashCode
 	 */
 	@Override
-	public int hash(Object... values) {
+	public int hashImpl(Object... values) {
 		return Objects.hash(values);
 	}
 
@@ -116,7 +116,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see Object#hashCode
 	 */
 	@Override
-	public int hashCode(Object o) {
+	public int hashCodeImpl(Object o) {
 		return Objects.hashCode(o);
 	}
 
@@ -140,7 +140,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @throws NullPointerException if {@code obj} is {@code null}
 	 */
 	@Override
-	public <T> T requireNonNull(T o, String message) {
+	public <T> T requireNonNullImpl(T o, String message) {
 		return Objects.requireNonNull(o, message);
 	}
 
@@ -160,7 +160,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @throws NullPointerException if {@code obj} is {@code null}
 	 */
 	@Override
-	public <T> T requireNonNull(T o) {
+	public <T> T requireNonNullImpl(T o) {
 		return Objects.requireNonNull(o);
 	}
 
@@ -178,7 +178,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see #toString(Object)
 	 */
 	@Override
-	public String toString(Object o, String nullString) {
+	public String toStringImpl(Object o, String nullString) {
 		return Objects.toString(o, nullString);
 	}
 
@@ -193,7 +193,7 @@ public class ObjectsCompatKitKat implements ObjectsCompatImpl {
 	 * @see String#valueOf(Object)
 	 */
 	@Override
-	public String toString(Object o) {
+	public String toStringImpl(Object o) {
 		return Objects.toString(o);
 	}
 }

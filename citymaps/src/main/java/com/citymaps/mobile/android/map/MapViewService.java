@@ -11,8 +11,8 @@ import com.citymaps.citymapsengine.CitymapsMapView;
 import com.citymaps.citymapsengine.options.CitymapsMapViewOptions;
 import com.citymaps.mobile.android.util.ActivityUtils;
 import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.ObjectsCompat;
-import com.citymaps.mobile.android.util.ViewCompat;
+import com.citymaps.mobile.android.util.objectscompat.ObjectsCompat;
+import com.citymaps.mobile.android.util.viewcompat.ViewCompat;
 
 import java.util.IdentityHashMap;
 import java.util.Map;

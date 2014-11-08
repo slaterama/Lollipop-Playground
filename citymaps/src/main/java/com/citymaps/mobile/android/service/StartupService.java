@@ -119,7 +119,7 @@ public class StartupService extends Service {
 							CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
 							CitymapsIntent.putConfig(intent, mConfig);
 							mLocalBroadcastManager.sendBroadcast(intent);
-							LogEx.d();
+//							LogEx.d();
 							checkState();
 						}
 					}, new Response.ErrorListener() {
@@ -169,7 +169,7 @@ public class StartupService extends Service {
 						@Override
 						public void onResponse(User response) {
 							User user = response;
-							LogEx.d(String.format("user=%s", user));
+//							LogEx.d(String.format("user=%s", user));
 						}
 					}, new Response.ErrorListener() {
 						@Override
