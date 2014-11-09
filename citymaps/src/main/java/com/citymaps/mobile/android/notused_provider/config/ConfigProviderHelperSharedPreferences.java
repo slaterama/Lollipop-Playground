@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.provider.config;
+package com.citymaps.mobile.android.notused_provider.config;
 
 import android.content.Context;
 import android.content.SharedPreferences;

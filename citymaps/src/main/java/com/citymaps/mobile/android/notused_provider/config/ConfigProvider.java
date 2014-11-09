@@ -1,9 +1,9 @@
-package com.citymaps.mobile.android.provider.config;
+package com.citymaps.mobile.android.notused_provider.config;
 
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
-import com.citymaps.mobile.android.provider.config.ConfigContract.Settings;
+import com.citymaps.mobile.android.notused_provider.config.ConfigContract.Settings;
 
 public class ConfigProvider extends ContentProvider {
 

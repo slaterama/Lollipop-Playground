@@ -75,8 +75,8 @@
         </service>
 
         <provider
-            android:name=".provider.config.ConfigProvider"
-            android:authorities="com.citymaps.mobile.android.provider.config"
+            android:name=".notused_provider.config.ConfigProvider"
+            android:authorities="com.citymaps.mobile.android.notused_provider.config"
             android:enabled="true"
             android:exported="false" >
         </provider>

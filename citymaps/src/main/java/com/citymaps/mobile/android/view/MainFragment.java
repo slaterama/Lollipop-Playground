@@ -100,6 +100,9 @@ public class MainFragment extends Fragment {
 		@Override
 		public void onMapViewOwnershipGranted(ViewGroup parent, CitymapsMapView mapView) {
 			mMapView = mapView;
+			if (mMapPosition == null) {
+				mMapPosition = new ParcelableMapPosition();
+			}
 			mMapView.setMapPosition(mMapPosition);
 		}
 
