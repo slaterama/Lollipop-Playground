@@ -19,15 +19,16 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_hard_upgrade">HardUpgradeActivity</string>
 
-	<!-- Other -->
+	<!-- Other strings -->
 
-	<string name="update_hard_title">Time to upgrade</string>
+	<string name="update_hard_title">Time to update</string>
 	<string name="update_hard_message">There is a new version of Citymaps.\nThis version is no longer supported.</string>
-	<string name="update_button_text">Upgrade Citymaps now</string>
+	<string name="update_hard_button_text">Update Citymaps now</string>
 
-	<string name="update_soft_dialog_title">Upgrade Citymaps</string>
+	<string name="update_soft_dialog_title">Update Citymaps</string>
 	<string name="update_soft_dialog_message">A new version of Citymaps is available in the Google Play™ store.</string>
-	<string name="update_soft_dialog_negative_button">Later</string>
-	<string name="update_soft_dialog_positive_button">Update</string>
+	<string name="update_soft_dialog_button_later">Later</string>
+	<string name="update_soft_dialog_button_update">Update</string>
+	<string name="update_soft_dialog_button_skip">Skip</string>
 
 </resources>

@@ -4,15 +4,11 @@
 
 package com.citymaps.mobile.android.app;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
-import com.citymaps.mobile.android.view.HardUpdateActivity;
 
 public class SessionManager {
 
@@ -40,7 +36,8 @@ public class SessionManager {
 
 	private SessionManager() {
 		mEnvironment = Environment.newInstance(sContext);
-		mConfig = SharedPreferenceUtils.getConfig(sContext);
+		SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(sContext);
+		mConfig = SharedPreferenceUtils.getConfig(sp);
 	}
 
 	public Config getConfig() {

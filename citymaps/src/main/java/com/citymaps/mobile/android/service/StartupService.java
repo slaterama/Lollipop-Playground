@@ -1,10 +1,7 @@
 package com.citymaps.mobile.android.service;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
@@ -111,7 +108,8 @@ public class StartupService extends Service {
 							mConfig = response;
 
 							// TODO Only apply config & send broadcast if newer timestamp !!!
-							SharedPreferenceUtils.applyConfig(StartupService.this, mConfig);
+							SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(StartupService.this);
+							SharedPreferenceUtils.putConfig(sp, mConfig).apply();
 
 //							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
 //							sharedPreferenceManager.applyConfig(mConfig);

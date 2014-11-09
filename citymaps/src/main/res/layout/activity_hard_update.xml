@@ -9,7 +9,7 @@
 				android:gravity="center_horizontal"
 				android:orientation="vertical"
 				android:background="@android:color/white"
-				tools:context="com.citymaps.mobile.android.view.HardUpdateActivity">
+				tools:context="com.citymaps.mobile.android.view.upgrade.HardUpdateActivity">
 
 	<ImageView
 			android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
 			android:id="@+id/update_now_btn"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/update_button_text"
+			android:text="@string/update_hard_button_text"
 			style="?android:borderlessButtonStyle"
 			android:onClick="onUpgradeClick" />
 

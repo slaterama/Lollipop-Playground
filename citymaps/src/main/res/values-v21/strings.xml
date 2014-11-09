@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- Other strings -->
+
+	<string name="update_soft_dialog_later">Remind me later</string>
+	<string name="update_soft_dialog_update">Upgrade now</string>
+	<string name="update_soft_dialog_skip">Skip this update</string>
+
+</resources>

@@ -1,128 +1,162 @@
 package com.citymaps.mobile.android.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import com.citymaps.mobile.android.model.vo.Config;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class SharedPreferenceUtils {
 
 	public static SharedPreferences getConfigSharedPreferences(Context context) {
 		Context applicationContext = context.getApplicationContext();
-		String name = String.format("%s_configPreferences", applicationContext.getPackageName());
+		String name = applicationContext.getPackageName() + "_configPreferences";
 		return applicationContext.getSharedPreferences(name, Context.MODE_PRIVATE);
 	}
 
-	public static void applyApiVersion(SharedPreferences sharedPreferences, int apiVersion) {
-		sharedPreferences.edit().putInt(PreferenceType.API_VERSION.getKey(), apiVersion).apply();
+	public static boolean getBoolean(SharedPreferences sp, Key key, boolean defValue) {
+		return sp.getBoolean(key.toString(), defValue);
 	}
 
-	public static boolean commitApiVersion(SharedPreferences sharedPreferences, int apiVersion) {
-		return sharedPreferences.edit().putInt(PreferenceType.API_VERSION.getKey(), apiVersion).commit();
+	public static float getFloat(SharedPreferences sp, Key key, float defValue) {
+		return sp.getFloat(key.toString(), defValue);
 	}
 
-	public static int getApiVersion(SharedPreferences sharedPreferences, int defValue) {
-		return sharedPreferences.getInt(PreferenceType.API_VERSION.getKey(), defValue);
+	public static int getInt(SharedPreferences sp, Key key, int defValue) {
+		return sp.getInt(key.toString(), defValue);
 	}
 
-	public static void applyApiBuild(SharedPreferences sharedPreferences, String apiBuild) {
-		sharedPreferences.edit().putString(PreferenceType.API_BUILD.getKey(), apiBuild).apply();
+	public static long getLong(SharedPreferences sp, Key key, long defValue) {
+		return sp.getLong(key.toString(), defValue);
 	}
 
-	public static boolean commitApiBuild(SharedPreferences sharedPreferences, String apiBuild) {
-		return sharedPreferences.edit().putString(PreferenceType.API_BUILD.getKey(), apiBuild).commit();
+	public static String getString(SharedPreferences sp, Key key, String defValue) {
+		return sp.getString(key.toString(), defValue);
 	}
 
-	public static String getApiBuild(SharedPreferences sharedPreferences, String defValue) {
-		return sharedPreferences.getString(PreferenceType.API_BUILD.getKey(), defValue);
+	public static Set<String> getStringSet(SharedPreferences sp, Key key, Set<String> defValues) {
+		return sp.getStringSet(key.toString(), defValues);
 	}
 
-	private static SharedPreferences.Editor configEditor(Context context, Config config) {
-		return getConfigSharedPreferences(context).edit()
-				.putInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), config.getAppVersionCode())
-				.putString(PreferenceType.CONFIG_APP_VERSION.getKey(), config.getAppVersion())
-				.putInt(PreferenceType.CONFIG_MIN_VERSION_CODE.getKey(), config.getMinVersionCode())
-				.putString(PreferenceType.CONFIG_MIN_VERSION.getKey(), config.getMinVersion())
-				.putLong(PreferenceType.CONFIG_TIMESTAMP.getKey(), config.getTimestamp())
-				.putString(PreferenceType.CONFIG_UPGRADE_PROMPT.getKey(), config.getUpgradePrompt());
+	@SuppressLint("CommitPrefEdits")
+	public static Editor clear(SharedPreferences sp) {
+		return sp.edit().clear();
 	}
 
-	public static void applyConfig(Context context, Config config) {
-		configEditor(context, config).apply();
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putBoolean(SharedPreferences sp, Key key, boolean value) {
+		return sp.edit().putBoolean(key.toString(), value);
 	}
 
-	public static boolean commitConfig(Context context, Config config) {
-		return configEditor(context, config).commit();
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putFloat(SharedPreferences sp, Key key, float value) {
+		return sp.edit().putFloat(key.toString(), value);
 	}
 
-	public static Config getConfig(Context context) {
-		SharedPreferences sharedPreferences = getConfigSharedPreferences(context);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("app_version_code", sharedPreferences.getInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), 0));
-		map.put("min_version_code", sharedPreferences.getInt(PreferenceType.CONFIG_MIN_VERSION_CODE.getKey(), 0));
-		map.put("app_version", sharedPreferences.getString(PreferenceType.CONFIG_APP_VERSION.getKey(), ""));
-		map.put("min_version", sharedPreferences.getString(PreferenceType.CONFIG_MIN_VERSION.getKey(), ""));
-		map.put("timestamp", sharedPreferences.getLong(PreferenceType.CONFIG_TIMESTAMP.getKey(), 0));
-		map.put("upgradePrompt", sharedPreferences.getString(PreferenceType.CONFIG_UPGRADE_PROMPT.getKey(), ""));
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putInt(SharedPreferences sp, Key key, int value) {
+		return sp.edit().putInt(key.toString(), value);
+	}
+
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putLong(SharedPreferences sp, Key key, long value) {
+		return sp.edit().putLong(key.toString(), value);
+	}
+
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putString(SharedPreferences sp, Key key, String value) {
+		return sp.edit().putString(key.toString(), value);
+	}
+
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putStringSet(SharedPreferences sp, Key key, Set<String> values) {
+		return sp.edit().putStringSet(key.toString(), values);
+	}
+
+	@SuppressLint("CommitPrefEdits")
+	public static Editor remove(SharedPreferences sp, Key key) {
+		return sp.edit().remove(key.toString());
+	}
+
+	public static Editor putApiVersion(SharedPreferences sp, int apiVersion) {
+		return putInt(sp, Key.API_VERSION, apiVersion);
+	}
+
+	public static int getApiVersion(SharedPreferences sp, int defValue) {
+		return getInt(sp, Key.API_VERSION, defValue);
+	}
+
+	public static Editor putApiBuild(SharedPreferences sp, String apiBuild) {
+		return putString(sp, Key.API_BUILD, apiBuild);
+	}
+
+	public static String getApiBuild(SharedPreferences sp, String defValue) {
+		return getString(sp, Key.API_BUILD, defValue);
+	}
+
+	@SuppressLint("CommitPrefEdits")
+	public static Editor putConfig(SharedPreferences sp, Config config) {
+		return sp.edit().putInt(Key.CONFIG_APP_VERSION_CODE.toString(), config.getAppVersionCode())
+				.putString(Key.CONFIG_APP_VERSION.toString(), config.getAppVersion())
+				.putInt(Key.CONFIG_MIN_VERSION_CODE.toString(), config.getMinVersionCode())
+				.putString(Key.CONFIG_MIN_VERSION.toString(), config.getMinVersion())
+				.putLong(Key.CONFIG_TIMESTAMP.toString(), config.getTimestamp())
+				.putString(Key.CONFIG_UPGRADE_PROMPT.toString(), config.getUpgradePrompt());
+	}
+
+	public static Config getConfig(SharedPreferences sp) {
+		Map<String, Object> map = new HashMap<String, Object>(6);
+		map.put("app_version_code", sp.getInt(Key.CONFIG_APP_VERSION_CODE.toString(), 0));
+		map.put("min_version_code", sp.getInt(Key.CONFIG_MIN_VERSION_CODE.toString(), 0));
+		map.put("app_version", sp.getString(Key.CONFIG_APP_VERSION.toString(), ""));
+		map.put("min_version", sp.getString(Key.CONFIG_MIN_VERSION.toString(), ""));
+		map.put("timestamp", sp.getLong(Key.CONFIG_TIMESTAMP.toString(), 0));
+		map.put("upgradePrompt", sp.getString(Key.CONFIG_UPGRADE_PROMPT.toString(), ""));
 		String json = new JSONObject(map).toString();
 		return GsonUtils.getGson().fromJson(json, Config.class);
 	}
 
-	public static void applyLastDismissedVersionCode(Context context, int code) {
-		getConfigSharedPreferences(context).edit()
-				.putInt(PreferenceType.CONFIG_LAST_DISMISSED_VERSION_CODE.getKey(), code)
-				.apply();
+	public static Editor putLastDismissedVersionCode(SharedPreferences sp, int code) {
+		return putInt(sp, Key.CONFIG_LAST_DISMISSED_VERSION_CODE, code);
 	}
 
-	public static boolean commitLastDismissedVersionCode(Context context, int code) {
-		return getConfigSharedPreferences(context).edit()
-				.putInt(PreferenceType.CONFIG_LAST_DISMISSED_VERSION_CODE.getKey(), code)
-				.commit();
-	}
-
-	public static int getLastDismissedVersionCode(Context context, int defValue) {
-		return getConfigSharedPreferences(context)
-				.getInt(PreferenceType.CONFIG_LAST_DISMISSED_VERSION_CODE.getKey(), defValue);
+	public static int getLastDismissedVersionCode(SharedPreferences sp, int defValue) {
+		return getInt(sp, Key.CONFIG_LAST_DISMISSED_VERSION_CODE, defValue);
 	}
 
 	private SharedPreferenceUtils() {
 	}
 
-	public static enum PreferenceType {
-		API_VERSION("pref_api_version"),
-		API_BUILD("pref_api_build"),
-		CONFIG_APP_VERSION("pref_config_app_version"),
-		CONFIG_APP_VERSION_CODE("pref_config_app_version_code"),
-		CONFIG_MIN_VERSION("pref_config_min_version"),
-		CONFIG_MIN_VERSION_CODE("pref_config_min_version_code"),
-		CONFIG_TIMESTAMP("pref_config_timestamp"),
-		CONFIG_UPGRADE_PROMPT("pref_config_upgrade_prompt"),
-		CONFIG_LAST_DISMISSED_VERSION_CODE("pref_config_last_dismissed_version_code");
+	public static enum Key {
+		API_VERSION,
+		API_BUILD,
+		CONFIG_APP_VERSION,
+		CONFIG_APP_VERSION_CODE,
+		CONFIG_MIN_VERSION,
+		CONFIG_MIN_VERSION_CODE,
+		CONFIG_TIMESTAMP,
+		CONFIG_UPGRADE_PROMPT,
+		CONFIG_LAST_DISMISSED_VERSION_CODE;
 
-		private static Map<String, PreferenceType> mKeyMap;
+		private String mToString;
 
-		private static PreferenceType fromKey(String key) {
-			if (mKeyMap == null) {
-				PreferenceType[] values = PreferenceType.values();
-				mKeyMap = new HashMap<String, PreferenceType>(values.length);
-				for (PreferenceType preference : values) {
-					mKeyMap.put(preference.mKey, preference);
-				}
-			}
-			return mKeyMap.get(key);
+		private static Key fromString(String string) {
+			String name = string.replaceAll("^pref_", "").toUpperCase();
+			return Key.valueOf(name);
 		}
 
-		private String mKey;
-
-		private PreferenceType(String key) {
-			mKey = key;
+		private Key() {
+			mToString = String.format("pref_%s", name().toLowerCase());
 		}
 
-		public String getKey() {
-			return mKey;
+		@Override
+		public String toString() {
+			return mToString;
 		}
 	}
 }

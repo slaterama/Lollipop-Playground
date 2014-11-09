@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view;
+package com.citymaps.mobile.android.view.upgrade;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;

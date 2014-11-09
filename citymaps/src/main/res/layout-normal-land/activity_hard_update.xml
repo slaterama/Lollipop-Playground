@@ -7,7 +7,7 @@
 				android:paddingTop="@dimen/activity_vertical_margin"
 				android:paddingBottom="@dimen/activity_vertical_margin"
 				android:background="@android:color/white"
-				tools:context="com.citymaps.mobile.android.view.HardUpdateActivity">
+				tools:context="com.citymaps.mobile.android.view.upgrade.HardUpdateActivity">
 
 	<ImageView
 			android:id="@+id/update_citymaps_logo"
@@ -24,7 +24,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
-			android:text="@string/update_button_text"
+			android:text="@string/update_hard_button_text"
 			style="?android:borderlessButtonStyle"
 			android:onClick="onUpgradeClick"/>
 
