@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
@@ -125,7 +124,7 @@ public class MainActivity extends ActionBarActivity
 	}
 
 	private void processConfig(Config config) {
-		UpdateUtils.UpdateType updateType = UpdateUtils.getUpdateType(config);
+		UpdateUtils.UpdateType updateType = UpdateUtils.getUpdateType(this, config);
 		switch (updateType) {
 			case HARD:
 				startActivity(new Intent(this, HardUpdateActivity.class));
@@ -133,11 +132,8 @@ public class MainActivity extends ActionBarActivity
 				break;
 			case SOFT:
 				FragmentManager manager = getSupportFragmentManager();
-				SoftUpdateDialogFragment fragment = (SoftUpdateDialogFragment) manager.findFragmentByTag(
-						SoftUpdateDialogFragment.FRAGMENT_TAG);
-				if (fragment == null) {
-					fragment = SoftUpdateDialogFragment.newInstance(config);
-					fragment.show(manager, SoftUpdateDialogFragment.FRAGMENT_TAG);
+				if (manager.findFragmentByTag(SoftUpdateDialogFragment.FRAGMENT_TAG) == null) {
+					SoftUpdateDialogFragment.newInstance().show(manager, SoftUpdateDialogFragment.FRAGMENT_TAG);
 				}
 		}
 	}

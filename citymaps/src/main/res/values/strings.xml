@@ -31,4 +31,6 @@
 	<string name="update_soft_dialog_button_update">Update</string>
 	<string name="update_soft_dialog_button_skip">Skip</string>
 
+	<string name="update_soft_dialog_reminder">You will be reminded again in two days.</string>
+
 </resources>

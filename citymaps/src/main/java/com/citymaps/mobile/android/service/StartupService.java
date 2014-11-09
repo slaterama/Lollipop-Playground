@@ -9,16 +9,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.SessionManager;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.model.vo.Version;
 import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.model.vo.Version;
 import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
@@ -107,19 +107,18 @@ public class StartupService extends Service {
 						public void onResponse(Config response) {
 							mConfig = response;
 
-							// TODO Only apply config & send broadcast if newer timestamp !!!
 							SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(StartupService.this);
-							SharedPreferenceUtils.putConfig(sp, mConfig).apply();
-
-//							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
-//							sharedPreferenceManager.applyConfig(mConfig);
-
-							// TODO Might not need this if I monitor Shared Preference change ... ?
+							long configTimestamp = SharedPreferenceUtils.getConfigTimestamp(sp, 0);
+							if (mConfig.getTimestamp() > configTimestamp) {
+								SharedPreferenceUtils.putConfig(sp, mConfig).apply();
+								sp.edit().remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString())
+										.remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString())
+										.apply();
+							}
 
 							CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
 							CitymapsIntent.putConfig(intent, mConfig);
 							mLocalBroadcastManager.sendBroadcast(intent);
-//							LogEx.d();
 							checkState();
 						}
 					}, new Response.ErrorListener() {

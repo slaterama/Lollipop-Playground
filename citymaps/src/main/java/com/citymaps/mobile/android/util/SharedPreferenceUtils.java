@@ -121,6 +121,10 @@ public class SharedPreferenceUtils {
 		return GsonUtils.getGson().fromJson(json, Config.class);
 	}
 
+	public static long getConfigTimestamp(SharedPreferences sp, long defValue) {
+		return getLong(sp, Key.CONFIG_TIMESTAMP, defValue);
+	}
+
 	public static Editor putProcessedAction(SharedPreferences sp, int action) {
 		return putInt(sp, Key.CONFIG_PROCESSED_ACTION, action);
 	}

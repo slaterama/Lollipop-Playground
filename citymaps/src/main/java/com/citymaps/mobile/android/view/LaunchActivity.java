@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
@@ -101,7 +100,7 @@ public class LaunchActivity extends ActionBarActivity
 	}
 
 	private void processConfig(Config config) {
-		UpdateType updateType = UpdateUtils.getUpdateType(config);
+		UpdateType updateType = UpdateUtils.getUpdateType(this, config);
 		switch (updateType) {
 			case HARD:
 				startActivity(new Intent(this, HardUpdateActivity.class));
