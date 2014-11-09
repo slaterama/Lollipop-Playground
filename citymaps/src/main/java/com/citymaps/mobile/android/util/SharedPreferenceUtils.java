@@ -40,8 +40,8 @@ public class SharedPreferenceUtils {
 		return sharedPreferences.getString(PreferenceType.API_BUILD.getKey(), defValue);
 	}
 
-	private static SharedPreferences.Editor configEditor(SharedPreferences sharedPreferences, Config config) {
-		return sharedPreferences.edit()
+	private static SharedPreferences.Editor configEditor(Context context, Config config) {
+		return getConfigSharedPreferences(context).edit()
 				.putInt(PreferenceType.CONFIG_APP_VERSION_CODE.getKey(), config.getAppVersionCode())
 				.putString(PreferenceType.CONFIG_APP_VERSION.getKey(), config.getAppVersion())
 				.putInt(PreferenceType.CONFIG_MIN_VERSION_CODE.getKey(), config.getMinVersionCode())
@@ -51,11 +51,11 @@ public class SharedPreferenceUtils {
 	}
 
 	public static void applyConfig(Context context, Config config) {
-		configEditor(getConfigSharedPreferences(context), config).apply();
+		configEditor(context, config).apply();
 	}
 
 	public static boolean commitConfig(Context context, Config config) {
-		return configEditor(getConfigSharedPreferences(context), config).commit();
+		return configEditor(context, config).commit();
 	}
 
 	public static Config getConfig(Context context) {
@@ -71,6 +71,23 @@ public class SharedPreferenceUtils {
 		return GsonUtils.getGson().fromJson(json, Config.class);
 	}
 
+	public static void applyLastDismissedVersionCode(Context context, int code) {
+		getConfigSharedPreferences(context).edit()
+				.putInt(PreferenceType.CONFIG_LAST_DISMISSED_VERSION_CODE.getKey(), code)
+				.apply();
+	}
+
+	public static boolean commitLastDismissedVersionCode(Context context, int code) {
+		return getConfigSharedPreferences(context).edit()
+				.putInt(PreferenceType.CONFIG_LAST_DISMISSED_VERSION_CODE.getKey(), code)
+				.commit();
+	}
+
+	public static int getLastDismissedVersionCode(Context context, int defValue) {
+		return getConfigSharedPreferences(context)
+				.getInt(PreferenceType.CONFIG_LAST_DISMISSED_VERSION_CODE.getKey(), defValue);
+	}
+
 	private SharedPreferenceUtils() {
 	}
 
@@ -82,7 +99,8 @@ public class SharedPreferenceUtils {
 		CONFIG_MIN_VERSION("pref_config_min_version"),
 		CONFIG_MIN_VERSION_CODE("pref_config_min_version_code"),
 		CONFIG_TIMESTAMP("pref_config_timestamp"),
-		CONFIG_UPGRADE_PROMPT("pref_config_upgrade_prompt");
+		CONFIG_UPGRADE_PROMPT("pref_config_upgrade_prompt"),
+		CONFIG_LAST_DISMISSED_VERSION_CODE("pref_config_last_dismissed_version_code");
 
 		private static Map<String, PreferenceType> mKeyMap;
 
