@@ -14,7 +14,9 @@ import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
-import com.citymaps.mobile.android.view.upgrade.HardUpdateActivity;
+import com.citymaps.mobile.android.util.UpdateUtils;
+import com.citymaps.mobile.android.util.UpdateUtils.UpdateType;
+import com.citymaps.mobile.android.view.update.HardUpdateActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -99,9 +101,11 @@ public class LaunchActivity extends ActionBarActivity
 	}
 
 	private void processConfig(Config config) {
-		if (BuildConfig.VERSION_CODE < config.getMinVersionCode()) {
-			startActivity(new Intent(this, HardUpdateActivity.class));
-			finish();
+		UpdateType updateType = UpdateUtils.getUpdateType(config);
+		switch (updateType) {
+			case HARD:
+				startActivity(new Intent(this, HardUpdateActivity.class));
+				finish();
 		}
 	}
 

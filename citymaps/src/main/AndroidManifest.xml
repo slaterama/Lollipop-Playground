@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.upgrade.HardUpdateActivity"
+            android:name=".view.update.HardUpdateActivity"
             android:noHistory="true"
             android:theme="@style/AppTheme.NoTitleOrActionBar" >
         </activity>

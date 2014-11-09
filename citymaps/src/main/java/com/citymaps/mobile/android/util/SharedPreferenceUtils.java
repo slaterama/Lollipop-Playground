@@ -121,12 +121,20 @@ public class SharedPreferenceUtils {
 		return GsonUtils.getGson().fromJson(json, Config.class);
 	}
 
-	public static Editor putLastDismissedVersionCode(SharedPreferences sp, int code) {
-		return putInt(sp, Key.CONFIG_LAST_DISMISSED_VERSION_CODE, code);
+	public static Editor putProcessedAction(SharedPreferences sp, int action) {
+		return putInt(sp, Key.CONFIG_PROCESSED_ACTION, action);
 	}
 
-	public static int getLastDismissedVersionCode(SharedPreferences sp, int defValue) {
-		return getInt(sp, Key.CONFIG_LAST_DISMISSED_VERSION_CODE, defValue);
+	public static int getProcessedAction(SharedPreferences sp, int defValue) {
+		return getInt(sp, Key.CONFIG_PROCESSED_ACTION, defValue);
+	}
+
+	public static Editor putProcessedTimestamp(SharedPreferences sp, long timestamp) {
+		return putLong(sp, Key.CONFIG_PROCESSED_TIMESTAMP, timestamp);
+	}
+
+	public static long getProcessedTimestamp(SharedPreferences sp, int defValue) {
+		return getLong(sp, Key.CONFIG_PROCESSED_TIMESTAMP, defValue);
 	}
 
 	private SharedPreferenceUtils() {
@@ -141,7 +149,8 @@ public class SharedPreferenceUtils {
 		CONFIG_MIN_VERSION_CODE,
 		CONFIG_TIMESTAMP,
 		CONFIG_UPGRADE_PROMPT,
-		CONFIG_LAST_DISMISSED_VERSION_CODE;
+		CONFIG_PROCESSED_ACTION,
+		CONFIG_PROCESSED_TIMESTAMP;
 
 		private String mToString;
 

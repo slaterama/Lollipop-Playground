@@ -1,17 +1,22 @@
-package com.citymaps.mobile.android.view.upgrade;
+package com.citymaps.mobile.android.view.update;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.UpdateUtils;
 
 /**
  * A simple {@link DialogFragment} subclass.
@@ -50,15 +55,18 @@ public class SoftUpdateDialogFragment extends DialogFragment {
 	private OnClickListener mOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
+			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(getActivity());
+			SharedPreferenceUtils.putProcessedAction(sp, which);
+			SharedPreferenceUtils.putProcessedTimestamp(sp, System.currentTimeMillis());
 			switch (which) {
-				case DialogInterface.BUTTON_POSITIVE:
-					LogEx.d("Update");
+				case DialogInterface.BUTTON_POSITIVE: // Update
+					UpdateUtils.goToPlayStore(getActivity());
 					break;
-				case DialogInterface.BUTTON_NEGATIVE:
-					LogEx.d("Skip");
+				case DialogInterface.BUTTON_NEGATIVE: // Skip
+					// No additional action needed
 					break;
-				case DialogInterface.BUTTON_NEUTRAL:
-					LogEx.d("Later");
+				case DialogInterface.BUTTON_NEUTRAL: // Later
+					// No additional action needed
 					break;
 			}
 		}
