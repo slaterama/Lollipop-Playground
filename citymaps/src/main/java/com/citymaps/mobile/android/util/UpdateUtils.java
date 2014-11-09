@@ -30,8 +30,7 @@ public class UpdateUtils {
 				break;
 			case SOFT:
 				if (activity != null && showDialogIfSoft) {
-					SoftUpdateCompat softUpdateCompat = SoftUpdateCompat.newInstance(activity, config);
-					softUpdateCompat.showSoftUpdateDialogFragment();
+					SoftUpdateCompat.newInstance(activity).showSoftUpdateDialogFragment(config);
 				}
 				break;
 			case NONE:

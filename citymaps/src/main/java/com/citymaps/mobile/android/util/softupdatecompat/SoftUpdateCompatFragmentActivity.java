@@ -12,19 +12,19 @@ public class SoftUpdateCompatFragmentActivity extends SoftUpdateCompat {
 
 	private FragmentActivity mActivity;
 
-	public SoftUpdateCompatFragmentActivity(FragmentActivity activity, Config config) {
-		super(config);
+	public SoftUpdateCompatFragmentActivity(FragmentActivity activity) {
+		super();
 		mActivity = activity;
 	}
 
 	@Override
-	public void showSoftUpdateDialogFragment() {
+	public void showSoftUpdateDialogFragment(Config config) {
 		FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
 		DialogFragment fragment = (DialogFragment) fragmentManager.findFragmentByTag(DIALOG_FRAGMENT_TAG);
 		if (fragment == null) {
 			fragment = new SoftUpdateDialogFragment();
 			Bundle args = new Bundle();
-			args.putParcelable(ARG_CONFIG, mConfig);
+			args.putParcelable(ARG_CONFIG, config);
 			fragment.setArguments(args);
 			fragment.show(fragmentManager, DIALOG_FRAGMENT_TAG);
 		}

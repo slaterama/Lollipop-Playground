@@ -18,43 +18,43 @@ public abstract class SoftUpdateCompat {
 	protected final static String ARG_CONFIG = "config";
 
 	protected static Dialog buildDialog(final Context context, final Config config) {
-		return new AlertDialog.Builder(context)
-				.setTitle(R.string.update_soft_dialog_title)
-				.setMessage(R.string.update_soft_dialog_message)
-				.setNegativeButton(R.string.update_soft_dialog_negative_button, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						int appVersionCode = config.getAppVersionCode();
-						SharedPreferenceUtils.applyLastDismissedVersionCode(context, appVersionCode);
-						LogEx.d(String.format("%s: %d",
-								context.getString(R.string.update_soft_dialog_negative_button), appVersionCode));
-					}
-				})
-				.setPositiveButton(R.string.update_soft_dialog_positive_button, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						int appVersionCode = config.getAppVersionCode();
+		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int which) {
+				int appVersionCode = config.getAppVersionCode();
+				switch (which) {
+					case DialogInterface.BUTTON_POSITIVE:
 						SharedPreferenceUtils.applyLastDismissedVersionCode(context, appVersionCode);
 						LogEx.d(String.format("%s: %d",
 								context.getString(R.string.update_soft_dialog_positive_button), appVersionCode));
-					}
-				})
+						break;
+					case DialogInterface.BUTTON_NEUTRAL:
+						SharedPreferenceUtils.applyLastDismissedVersionCode(context, appVersionCode);
+						LogEx.d(String.format("%s: %d",
+								context.getString(R.string.update_soft_dialog_negative_button), appVersionCode));
+						break;
+				}
+			}
+		};
+
+		return new AlertDialog.Builder(context)
+				.setTitle(R.string.update_soft_dialog_title)
+				.setMessage(R.string.update_soft_dialog_message)
+				.setNegativeButton(R.string.update_soft_dialog_negative_button, listener)
+				.setPositiveButton(R.string.update_soft_dialog_positive_button, listener)
 				.create();
 	}
 
-	public static SoftUpdateCompat newInstance(Activity activity, Config config) {
+	public static SoftUpdateCompat newInstance(Activity activity) {
 		if (activity instanceof FragmentActivity) {
-			return new SoftUpdateCompatFragmentActivity((FragmentActivity) activity, config);
+			return new SoftUpdateCompatFragmentActivity((FragmentActivity) activity);
 		} else {
-			return new SoftUpdateCompatActivity(activity, config);
+			return new SoftUpdateCompatActivity(activity);
 		}
 	}
 
-	protected Config mConfig;
-
-	protected SoftUpdateCompat(Config config) {
-		mConfig = config;
+	protected SoftUpdateCompat() {
 	}
 
-	public abstract void showSoftUpdateDialogFragment();
+	public abstract void showSoftUpdateDialogFragment(Config config);
 }
