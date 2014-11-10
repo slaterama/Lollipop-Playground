@@ -83,6 +83,14 @@ public class SharedPreferenceUtils {
 		return sp.edit().remove(key.toString());
 	}
 
+	public static Editor putFirstRunComplete(SharedPreferences sp, boolean firstRunComplete) {
+		return putBoolean(sp, Key.FIRST_RUN_COMPLETE, firstRunComplete);
+	}
+
+	public static boolean isFirstRunComplete(SharedPreferences sp, boolean defValue) {
+		return getBoolean(sp, Key.FIRST_RUN_COMPLETE, defValue);
+	}
+
 	public static Editor putApiVersion(SharedPreferences sp, int apiVersion) {
 		return putInt(sp, Key.API_VERSION, apiVersion);
 	}
@@ -145,6 +153,7 @@ public class SharedPreferenceUtils {
 	}
 
 	public static enum Key {
+		FIRST_RUN_COMPLETE,
 		API_VERSION,
 		API_BUILD,
 		CONFIG_APP_VERSION,

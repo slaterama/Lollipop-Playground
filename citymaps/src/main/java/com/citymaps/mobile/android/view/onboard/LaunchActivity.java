@@ -9,8 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
-import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
@@ -20,7 +20,7 @@ import com.citymaps.mobile.android.view.MainActivity;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
+import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
 public class LaunchActivity extends TrackedActionBarActivity
 		implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -36,7 +36,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
-				processConfig(CitymapsIntent.getConfig(intent));
+				processConfig(IntentUtils.getConfig(intent));
 			}
 		}
 	};
@@ -57,9 +57,6 @@ public class LaunchActivity extends TrackedActionBarActivity
 		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState == null) {
-			// Is the user launching for the first time?
-			// TODO
-
 			// First of all, examine any saved config for hard/soft update
 			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
 			processConfig(SharedPreferenceUtils.getConfig(sp));
@@ -148,15 +145,24 @@ public class LaunchActivity extends TrackedActionBarActivity
 			final Activity activity = getActivity();
 			if (activity != null) {
 
-				// TODO -- API problem
+				// TODO -- API problem with this type of animation
 
 //				Bundle bundle = ActivityOptions
 //						.makeCustomAnimation(activity, 0, android.R.anim.fade_out)
 //						.toBundle();
 //				activity.startActivity(new Intent(activity, MainActivity.class), bundle);
 
-				activity.startActivity(new Intent(activity, MainActivity.class));
-//				activity.startActivity(new Intent(activity, EnableLocationActivity.class));
+				Intent intent;
+
+				// Has the user completed "first run" processing?
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
+				boolean firstRunComplete = SharedPreferenceUtils.isFirstRunComplete(sp, false);
+				if (firstRunComplete) {
+					intent = new Intent(activity, MainActivity.class);
+				} else {
+					intent = new Intent(activity, TourActivity.class);
+				}
+				activity.startActivity(intent);
 				activity.finish();
 			}
 		}

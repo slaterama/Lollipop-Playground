@@ -4,6 +4,7 @@ import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
@@ -11,17 +12,17 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
-import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.notused_provider.config.ConfigContract.Settings;
+import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.view.onboard.HardUpdateActivity;
 import com.citymaps.mobile.android.view.onboard.SoftUpdateDialogFragment;
 
-import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
+import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
 public class MainActivity extends TrackedActionBarActivity
 		implements SharedPreferences.OnSharedPreferenceChangeListener, MainFragment.OnFragmentInteractionListener {
@@ -33,7 +34,7 @@ public class MainActivity extends TrackedActionBarActivity
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			if (ACTION_CONFIG_LOADED.equals(action)) {
-				processConfig(CitymapsIntent.getConfig(intent));
+				processConfig(IntentUtils.getConfig(intent));
 			}
 		}
 	};
@@ -50,8 +51,16 @@ public class MainActivity extends TrackedActionBarActivity
 		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState == null) {
+			// If we've reached this point, we've made it through first run
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+			boolean firstRunComplete = SharedPreferenceUtils.isFirstRunComplete(sp, false);
+			LogEx.d(String.format("firstRunComplete=%b", firstRunComplete));
+			if (!firstRunComplete) {
+				SharedPreferenceUtils.putFirstRunComplete(sp, true).apply();
+			}
+
 			// First of all, examine any saved config for hard/soft update
-			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
+			sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
 			processConfig(SharedPreferenceUtils.getConfig(sp));
 			/*
 			if (isFinishing()) {

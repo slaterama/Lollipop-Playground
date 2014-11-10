@@ -1,16 +1,14 @@
-package com.citymaps.mobile.android.content;
+package com.citymaps.mobile.android.util;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import com.citymaps.mobile.android.BuildConfig;
-import com.citymaps.mobile.android.model.vo.Version;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.model.vo.Version;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
  */
-public class CitymapsIntent extends Intent {
+public class IntentUtils {
 
 	/**
 	 * A static constant used to build action intent strings.
@@ -123,13 +121,10 @@ public class CitymapsIntent extends Intent {
 	 */
 	public static final String EXTRA_API_STATUS = makeExtra("API_STATUS");
 
-	public static void putConfig(Intent intent, Config config) {
-		intent.putExtra(EXTRA_CONFIG, config);
-	}
-
-	public static Config getConfig(Intent intent) {
-		return intent.getParcelableExtra(EXTRA_CONFIG);
-	}
+	/**
+	 * Whether the app is currently completing "first run" processing.
+	 */
+	public static final String EXTRA_IN_FIRST_RUN = makeExtra("IN_FIRST_RUN");
 
 	public static void putApiStatus(Intent intent, Version status) {
 		intent.putExtra(EXTRA_API_STATUS, status);
@@ -139,74 +134,22 @@ public class CitymapsIntent extends Intent {
 		return intent.getParcelableExtra(EXTRA_API_STATUS);
 	}
 
-	/**
-	 * Create an empty intent.
-	 */
-	public CitymapsIntent() {
-		super();
+	public static void putConfig(Intent intent, Config config) {
+		intent.putExtra(EXTRA_CONFIG, config);
 	}
 
-	/**
-	 * Copy constructor.
-	 */
-	public CitymapsIntent(Intent o) {
-		super(o);
+	public static Config getConfig(Intent intent) {
+		return intent.getParcelableExtra(EXTRA_CONFIG);
 	}
 
-	/**
-	 * Create an intent with a given action. All other fields (data, type, class) are null.
-	 * Note that the action must be in a namespace because Intents are used globally in the system --
-	 * for example the system VIEW action is android.intent.action.VIEW; an application's custom
-	 * action would be something like com.google.app.myapp.CUSTOM_ACTION.
-	 * @param action The Intent action, such as ACTION_VIEW.
-	 */
-	public CitymapsIntent(String action) {
-		super(action);
+	public static void putInFirstRun(Intent intent, boolean inFirstRun) {
+		intent.putExtra(EXTRA_IN_FIRST_RUN, inFirstRun);
 	}
 
-	/**
-	 * <p>Create an intent with a given action and for a given data url. Note that the action must be
-	 * in a namespace because Intents are used globally in the system -- for example the system VIEW
-	 * action is android.intent.action.VIEW; an application's custom action would be something like
-	 * com.google.app.myapp.CUSTOM_ACTION.</p>
-	 * <p><i>Note: scheme and host name matching in the Android framework is case-sensitive, unlike
-	 * the formal RFC. As a result, you should always ensure that you write your Uri with these
-	 * elements using lower case letters, and normalize any Uris you receive from outside of Android
-	 * to ensure the scheme and host is lower case.</i></p>
-	 * @param action The Intent action, such as ACTION_VIEW.
-	 * @param uri The Intent data URI.
-	 */
-	public CitymapsIntent(String action, Uri uri) {
-		super(action, uri);
+	public static boolean isInFirstRun(Intent intent, boolean defaultValue) {
+		return intent.getBooleanExtra(EXTRA_IN_FIRST_RUN, defaultValue);
 	}
 
-	/**
-	 * Create an intent for a specific component. All other fields (action, data, type, class) are
-	 * null, though they can be modified later with explicit calls. This provides a convenient way
-	 * to create an intent that is intended to execute a hard-coded class name, rather than relying
-	 * on the system to find an appropriate class for you; see setComponent(ComponentName) for more
-	 * information on the repercussions of this.
-	 * @param packageContext A Context of the application package implementing this class.
-	 * @param cls The component class that is to be used for the intent.
-	 */
-	public CitymapsIntent(Context packageContext, Class<?> cls) {
-		super(packageContext, cls);
-	}
-
-	/**
-	 * <p>Create an intent for a specific component with a specified action and data. This is equivalent
-	 * using Intent(String, android.net.Uri) to construct the Intent and then calling setClass(Context, Class)
-	 * to set its class.</p>
-	 * <p><i>Note: scheme and host name matching in the Android framework is case-sensitive, unlike
-	 * the formal RFC. As a result, you should always ensure that you write your Uri with these elements
-	 * using lower case letters, and normalize any Uris you receive from outside of Android to ensure
-	 * the scheme and host is lower case.</i></p>
-	 * @param action The Intent action, such as ACTION_VIEW.
-	 * @param uri The Intent data URI.
-	 * @param packageContext A Context of the application package implementing this class.
-	 * @param cls The component class that is to be used for the intent.
-	 */
-	public CitymapsIntent(String action, Uri uri, Context packageContext, Class<?> cls) {
-		super(action, uri, packageContext, cls);
+	private IntentUtils() {
 	}
 }

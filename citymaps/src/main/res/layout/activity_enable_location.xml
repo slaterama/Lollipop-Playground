@@ -54,14 +54,16 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/loc_settings_button_text"
-				android:onClick="onButtonClick" />
+				android:onClick="onButtonClick"
+				style="?android:buttonStyle"/>
 
 		<Button
 				android:id="@+id/loc_skip_button"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/loc_skip_button_text"
-				android:onClick="onButtonClick" />
+				android:onClick="onButtonClick"
+				style="?android:borderlessButtonStyle"/>
 
 	</LinearLayout>
 

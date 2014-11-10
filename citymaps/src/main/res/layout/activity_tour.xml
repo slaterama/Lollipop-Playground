@@ -9,12 +9,13 @@
 				tools:context="com.citymaps.mobile.android.view.onboard.TourActivity">
 
 	<Button
+			android:id="@+id/tour_skip_button"
 			android:text="@string/tour_skip"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
 			android:layout_alignParentBottom="true"
 			style="?android:borderlessButtonStyle"
-			android:onClick="onSkip" />
+			android:onClick="onButtonClick" />
 
 </RelativeLayout>

@@ -11,16 +11,16 @@ import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.model.vo.Version;
+import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
-import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
+import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
 /*
 import com.citymaps.mobile.android.provider.ConfigDatabase;
@@ -116,8 +116,8 @@ public class StartupService extends Service {
 										.apply();
 							}
 
-							CitymapsIntent intent = new CitymapsIntent(ACTION_CONFIG_LOADED);
-							CitymapsIntent.putConfig(intent, mConfig);
+							Intent intent = new Intent(ACTION_CONFIG_LOADED);
+							IntentUtils.putConfig(intent, mConfig);
 							mLocalBroadcastManager.sendBroadcast(intent);
 							checkState();
 						}

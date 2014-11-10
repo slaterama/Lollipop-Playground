@@ -31,7 +31,7 @@
 	<string name="loc_activity_title">Enable Location</string>
 	<string name="loc_header_title">Enable location</string>
 	<string name="loc_message">Citymaps uses your GPS location to display places and activity on the map. We will never share your location with third parties. It\'s completely private and secure.</string>
-	<string name="loc_settings_button_text">Ok, get my location</string>
+	<string name="loc_settings_button_text">Settings</string>
 	<string name="loc_skip_button_text">Skip</string>
 	<string name="loc_dialog_title">Enable Location</string>
 	<string name="loc_dialog_message">Citymaps uses your GPS location to display places and activity on the map. We will never share your location with third parties. It\'s completely private and secure.</string>
