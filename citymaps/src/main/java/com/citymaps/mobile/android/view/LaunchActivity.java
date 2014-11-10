@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.util.LogEx;
@@ -22,7 +22,7 @@ import java.util.TimerTask;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
-public class LaunchActivity extends ActionBarActivity
+public class LaunchActivity extends TrackedActionBarActivity
 		implements SharedPreferences.OnSharedPreferenceChangeListener {
 
 	private static final String STATE_KEY_LAUNCH_FRAGMENT = "launchFragment";

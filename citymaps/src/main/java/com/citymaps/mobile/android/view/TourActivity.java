@@ -3,22 +3,23 @@ package com.citymaps.mobile.android.view;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 
-public class ProfileActivity extends TrackedActionBarActivity {
+public class TourActivity extends TrackedActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_tour);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.test, menu);
+        getMenuInflater().inflate(R.menu.tour, menu);
         return true;
     }
 
@@ -33,4 +34,8 @@ public class ProfileActivity extends TrackedActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+	public void onSkip(View view) {
+
+	}
 }

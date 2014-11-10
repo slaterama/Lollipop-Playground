@@ -3,6 +3,7 @@
 
     <!-- App strings -->
 
+
     <!-- <string name="app_name">Citymaps</string> -->
     <string name="hello_world">Hello world!</string>
 
@@ -17,20 +18,20 @@
 
     <string name="title_activity_profile">Profile</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_hard_upgrade">HardUpgradeActivity</string>
 
-	<!-- Other strings -->
+    <!-- Other strings -->
 
-	<string name="update_hard_title">Time to update</string>
-	<string name="update_hard_message">There is a new version of Citymaps.\nThis version is no longer supported.</string>
-	<string name="update_hard_button_text">Update Citymaps now</string>
-
-	<string name="update_soft_dialog_title">Update Citymaps</string>
-	<string name="update_soft_dialog_message">A new version of Citymaps is available in the Google Play™ store.</string>
-	<string name="update_soft_dialog_button_later">Later</string>
-	<string name="update_soft_dialog_button_update">Update</string>
-	<string name="update_soft_dialog_button_skip">Skip</string>
-
-	<string name="update_soft_dialog_reminder">You will be reminded again in a few days.</string>
+    <string name="tour_activity_title">Tour</string>
+    <string name="tour_skip">Skip</string>
+    <string name="update_hard_title">Time to update</string>
+    <string name="update_hard_message">There is a new version of Citymaps.\nThis version is no longer supported.</string>
+    <string name="update_hard_button_text">Update Citymaps now</string>
+    <string name="update_soft_dialog_title">Update Citymaps</string>
+    <string name="update_soft_dialog_message">A new version of Citymaps is available in the Google Play™ store.</string>
+    <string name="update_soft_dialog_button_later">Later</string>
+    <string name="update_soft_dialog_button_update">Update</string>
+    <string name="update_soft_dialog_button_skip">Skip</string>
+    <string name="update_soft_dialog_reminder">You will be reminded again in a few days.</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 
 </resources>

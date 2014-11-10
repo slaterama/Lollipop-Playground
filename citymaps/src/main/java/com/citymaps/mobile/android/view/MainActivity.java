@@ -6,11 +6,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.content.CitymapsIntent;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.vo.Config;
@@ -23,7 +23,7 @@ import com.citymaps.mobile.android.view.update.SoftUpdateDialogFragment;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends TrackedActionBarActivity
 		implements SharedPreferences.OnSharedPreferenceChangeListener, MainFragment.OnFragmentInteractionListener {
 
 	private LocalBroadcastManager mLocalBroadcastManager;

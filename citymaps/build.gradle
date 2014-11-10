@@ -16,12 +16,18 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.0.2"
 
+    lintOptions {
+        disable 'GradleDynamicVersion'
+    }
+
     defaultConfig {
         applicationId "com.citymaps.mobile.android"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 6
         versionName "2.0"
+        resValue "string", "segmentio_write_key", "\"th6suo70cr\""
+        resValue "string", "segmentio_read_key", "\"gam986n7go\""
         buildConfigField "String", "GHOST_USER_ID_PROD", "\"345a8d0a-922b-4ff7-81ba-3000c2d55e4d\""
         buildConfigField "String", "GHOST_USER_ID_DEV", "\"28e20039-9742-45b6-a565-07a7acd88908\""
 		buildConfigField "String", "PLAY_STORE_ID", "\"com.citymaps.mobile.android\""
@@ -41,24 +47,24 @@ android {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.releaseConfig
-            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.ERROR"
             resValue "string", "app_name", "Citymaps"
             resValue "string", "citymaps_engine_api_key", "76b15e871173450fb41fb002b2fab463"
+            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.ERROR"
         }
 
 		debug {
-            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.DEBUG"
             resValue "string", "app_name", "CitymapsDebug"
-			resValue "string", "citymaps_engine_api_key", "76b15e871173450fb41fb002b2fab463"
+            resValue "string", "citymaps_engine_api_key", "76b15e871173450fb41fb002b2fab463"
+            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.DEBUG"
 		}
 
 		development.initWith(buildTypes.debug)
 		development {
 			applicationIdSuffix ".dev"
 			versionNameSuffix "-dev"
-			buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.VERBOSE"
 			resValue "string", "app_name", "CitymapsDev"
 			resValue "string", "citymaps_engine_api_key", "2e4c9a9ee762475aac1fc69aab20f7ac"
+            buildConfigField "int", "LOG_LEVEL", "com.citymaps.mobile.android.util.LogEx.VERBOSE"
 		}
     }
 
@@ -71,13 +77,16 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:21.0.+'
+    //noinspection GradleDependency
     compile 'com.android.support:appcompat-v7:21.0.+'
     compile 'com.android.support:cardview-v7:21.0.+'
     compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.google.android.gms:play-services:6.1.+'
     compile 'com.google.code.gson:gson:2.3'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'commons-io:commons-io:2.4'
     compile 'commons-codec:commons-codec:1.9'
+    compile('io.segment.analytics.android:all:+@aar') { transitive = true }
     compile project(':mapenginelibrary')
 	compile project(':volley')
     compile project(':facebook')
