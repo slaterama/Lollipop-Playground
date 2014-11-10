@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view;
+package com.citymaps.mobile.android.view.onboard;
 
 import android.os.Bundle;
 import android.view.Menu;

@@ -1,6 +1,8 @@
 package com.citymaps.mobile.android.util;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.os.Build;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

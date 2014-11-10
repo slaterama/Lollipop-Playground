@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="color_primary">@color/material_blue_grey_500</color>
-	<color name="color_primary_dark">@color/material_blue_grey_700</color>
+	<color name="color_primary">@color/material_light_blue_500</color>
+	<color name="color_primary_dark">@color/material_light_blue_700</color>
 	<color name="color_accent">@color/material_pink_A200</color>
+
+	<!-- Equivalent to @color/material_blue_grey_500 with 50% alpha -->
+	<color name="material_blue_grey_500_translucent">#80607d8b</color>
 
 	<color name="citymaps_red">#EA3425</color>
 	<color name="citymaps_dark_gray">#333237</color>

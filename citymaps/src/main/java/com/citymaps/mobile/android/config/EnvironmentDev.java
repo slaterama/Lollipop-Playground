@@ -10,9 +10,9 @@ public class EnvironmentDev extends Environment {
 
 	protected EnvironmentDev(Context context) {
 		super(context);
-		addServer(new Server(Server.Type.API, "dev-coreapi.citymaps.com", Server.Protocol.STANDARD));
-		addServer(new Server(Server.Type.SEARCH, "dev-coresearch.citymaps.com", Server.Protocol.STANDARD));
-		addServer(new Server(Server.Type.MOBILE, "dev-m.citymaps.com", Server.Protocol.STANDARD));
+		addServer(new Server(Server.Type.API, "ndev-coreapi.citymaps.com", Server.Protocol.STANDARD));
+		addServer(new Server(Server.Type.SEARCH, "ndev-coresearch.citymaps.com", Server.Protocol.STANDARD));
+		addServer(new Server(Server.Type.MOBILE, "ndev-coreweb.citymaps.com", Server.Protocol.STANDARD));
 		addServer(new Server(Server.Type.ASSETS, "riak.citymaps.com", Server.Protocol.STANDARD, 8098));
 
 	}

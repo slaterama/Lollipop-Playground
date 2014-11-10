@@ -9,12 +9,12 @@
 				android:gravity="center_horizontal"
 				android:orientation="vertical"
 				android:background="@android:color/white"
-				tools:context="com.citymaps.mobile.android.view.update.HardUpdateActivity">
+				tools:context="com.citymaps.mobile.android.view.onboard.HardUpdateActivity">
 
 	<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:src="@drawable/logo_citymaps_horizontal_120dp"
+			android:src="@drawable/cm_logo_horizontal_120dp"
 			android:contentDescription="@null"/>
 
 	<Space
@@ -25,20 +25,22 @@
 	<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:src="@drawable/ic_citymaps_144dp"
+			android:src="@drawable/cm_icon_144dp"
 			android:alpha="0.4"
 			android:contentDescription="@null"/>
 
 	<TextView
 			android:layout_width="wrap_content"
-			android:layout_height="48dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/component_baseline_grid"
 			android:gravity="center_vertical"
 			android:textAppearance="?android:textAppearanceLarge"
-			android:text="@string/update_hard_title"/>
+			android:text="@string/update_hard_header_title"/>
 
 	<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/component_baseline_grid"
 			android:gravity="center_vertical"
 			android:textAppearance="?android:textAppearanceMedium"
 			android:text="@string/update_hard_message"/>

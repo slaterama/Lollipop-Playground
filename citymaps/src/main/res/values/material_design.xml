@@ -3,6 +3,12 @@
 
 	<!-- Material Design metrics -->
 
+	<dimen name="component_baseline_grid">8dp</dimen>
+	<dimen name="type_baseline_grid">4dp</dimen>
+	<dimen name="iconography_in_toolbar_baseline_grid">4dp</dimen>
+
+	<dimen name="touch_target">48dp</dimen>
+
 	<dimen name="vertical_keyline">16dp</dimen>
 
 	<!-- Material Design colors -->

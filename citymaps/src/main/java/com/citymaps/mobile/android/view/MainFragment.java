@@ -66,8 +66,10 @@ public class MainFragment extends Fragment {
 
 	private Intent mMapViewServiceIntent;
 
+	/*
 	private Drawable mAppBarBackgroundDrawable;
 	private int mAppBarBackgroundAlpha;
+	*/
 
 	private RelativeLayout mRelativeLayout;
 
@@ -150,14 +152,17 @@ public class MainFragment extends Fragment {
 			mMapPosition = savedInstanceState.getParcelable(STATE_KEY_MAP_POSITION);
 		}
 
+		Activity activity = getActivity();
+
+		/*
 		Resources resources = getResources();
 		mAppBarBackgroundDrawable = resources.getDrawable(R.drawable.ab_background);
 		mAppBarBackgroundAlpha = resources.getInteger(R.integer.ab_alpha);
 		mAppBarBackgroundDrawable.setAlpha(mAppBarBackgroundAlpha);
-		Activity activity = getActivity();
 		if (activity instanceof ActionBarActivity) {
 			((ActionBarActivity) activity).getSupportActionBar().setBackgroundDrawable(mAppBarBackgroundDrawable);
 		}
+		*/
 
 		// Ensure map view service is running
 		activity.startService(mMapViewServiceIntent);

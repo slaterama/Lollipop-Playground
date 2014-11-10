@@ -2,13 +2,13 @@
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
-			 tools:context="com.citymaps.mobile.android.view.LaunchActivity"
+			 tools:context="com.citymaps.mobile.android.view.onboard.LaunchActivity"
 			 android:background="@android:color/white">
 
 	<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
-			android:src="@drawable/ic_citymaps_144dp" />
+			android:src="@drawable/cm_icon_144dp" />
 
 </FrameLayout>

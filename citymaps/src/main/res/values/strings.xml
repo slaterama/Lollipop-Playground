@@ -6,6 +6,7 @@
 
     <!-- <string name="app_name">Citymaps</string> -->
     <string name="hello_world">Hello world!</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Action (menu) strings -->
 
@@ -13,25 +14,39 @@
     <string name="action_profile">Profile</string>
     <string name="action_friend_finder">Friend Finder</string>
     <string name="action_search">Search</string>
+    <string name="action_explore">Explore</string>
 
     <!-- Profile strings -->
 
-    <string name="title_activity_profile">Profile</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile_activity_title">Profile</string>
 
-    <!-- Other strings -->
+    <!-- Settings strings -->
+
+    <string name="settings_activity_title">Settings</string>
+
+    <!-- Onboarding strings -->
 
     <string name="tour_activity_title">Tour</string>
     <string name="tour_skip">Skip</string>
-    <string name="update_hard_title">Time to update</string>
+	<string name="loc_activity_title">Enable Location</string>
+	<string name="loc_header_title">Enable location</string>
+	<string name="loc_message">Citymaps uses your GPS location to display places and activity on the map. We will never share your location with third parties. It\'s completely private and secure.</string>
+	<string name="loc_settings_button_text">Ok, get my location</string>
+	<string name="loc_skip_button_text">Skip</string>
+	<string name="loc_dialog_title">Enable Location</string>
+	<string name="loc_dialog_message">Citymaps uses your GPS location to display places and activity on the map. We will never share your location with third parties. It\'s completely private and secure.</string>
+	<string name="loc_dialog_settings_button_text">Settings</string>
+	<string name="loc_dialog_skip_button_text">Skip</string>
+    <string name="update_hard_header_title">Time to update</string>
     <string name="update_hard_message">There is a new version of Citymaps.\nThis version is no longer supported.</string>
     <string name="update_hard_button_text">Update Citymaps now</string>
     <string name="update_soft_dialog_title">Update Citymaps</string>
     <string name="update_soft_dialog_message">A new version of Citymaps is available in the Google Play™ store.</string>
-    <string name="update_soft_dialog_button_later">Later</string>
-    <string name="update_soft_dialog_button_update">Update</string>
-    <string name="update_soft_dialog_button_skip">Skip</string>
+    <string name="update_soft_dialog_later_button_text">Later</string>
+    <string name="update_soft_dialog_udpate_button_text">Update</string>
+    <string name="update_soft_dialog_skip_button_text">Skip</string>
     <string name="update_soft_dialog_reminder">You will be reminded again in a few days.</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="login_authenticate_activity_title">Authenticate</string>
+    <string name="login_activity_title">Login</string>
 
 </resources>

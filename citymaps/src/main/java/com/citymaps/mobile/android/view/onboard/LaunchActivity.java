@@ -1,8 +1,8 @@
-package com.citymaps.mobile.android.view;
+package com.citymaps.mobile.android.view.onboard;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.*;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -15,7 +15,7 @@ import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.util.UpdateUtils.UpdateType;
-import com.citymaps.mobile.android.view.update.HardUpdateActivity;
+import com.citymaps.mobile.android.view.MainActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,7 +44,11 @@ public class LaunchActivity extends TrackedActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launch);
+		if (!getResources().getBoolean(R.bool.launch_allow_orientation_change)) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
+		setContentView(R.layout.activity_launch);
+
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
@@ -53,6 +57,9 @@ public class LaunchActivity extends TrackedActionBarActivity
 		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState == null) {
+			// Is the user launching for the first time?
+			// TODO
+
 			// First of all, examine any saved config for hard/soft update
 			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
 			processConfig(SharedPreferenceUtils.getConfig(sp));
@@ -143,10 +150,13 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				// TODO -- API problem
 
-				Bundle bundle = ActivityOptions
-						.makeCustomAnimation(activity, 0, android.R.anim.fade_out)
-						.toBundle();
-				activity.startActivity(new Intent(activity, MainActivity.class), bundle);
+//				Bundle bundle = ActivityOptions
+//						.makeCustomAnimation(activity, 0, android.R.anim.fade_out)
+//						.toBundle();
+//				activity.startActivity(new Intent(activity, MainActivity.class), bundle);
+
+				activity.startActivity(new Intent(activity, MainActivity.class));
+//				activity.startActivity(new Intent(activity, EnableLocationActivity.class));
 				activity.finish();
 			}
 		}

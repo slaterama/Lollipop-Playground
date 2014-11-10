@@ -4,6 +4,10 @@
 		<item name="background">@drawable/ab_background</item>
 	</style>
 
+	<style name="Widget.AppBar.Translucent">
+		<item name="background">@color/material_blue_grey_500_translucent</item>
+	</style>
+
 	<style name="Widget.AppBar.Transparent">
 		<item name="background">@android:color/transparent</item>
 	</style>

@@ -18,8 +18,8 @@ import com.citymaps.mobile.android.notused_provider.config.ConfigContract.Settin
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
-import com.citymaps.mobile.android.view.update.HardUpdateActivity;
-import com.citymaps.mobile.android.view.update.SoftUpdateDialogFragment;
+import com.citymaps.mobile.android.view.onboard.HardUpdateActivity;
+import com.citymaps.mobile.android.view.onboard.SoftUpdateDialogFragment;
 
 import static com.citymaps.mobile.android.content.CitymapsIntent.ACTION_CONFIG_LOADED;
 

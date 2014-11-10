@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.update;
+package com.citymaps.mobile.android.view.onboard;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,7 +18,8 @@ import com.citymaps.mobile.android.util.UpdateUtils;
  * Use the {@link SoftUpdateDialogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SoftUpdateDialogFragment extends DialogFragment {
+public class SoftUpdateDialogFragment extends DialogFragment
+		implements OnClickListener {
 
 	public static final String FRAGMENT_TAG = "softUpgrade";
 
@@ -32,23 +33,21 @@ public class SoftUpdateDialogFragment extends DialogFragment {
 		return new SoftUpdateDialogFragment();
 	}
 
-	private OnClickListener mOnClickListener = new OnClickListener() {
-		@Override
-		public void onClick(DialogInterface dialog, int which) {
-			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(getActivity());
-			sp.edit().putInt(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString(), which)
-					.putLong(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString(), System.currentTimeMillis())
-					.apply();
-			switch (which) {
-				case DialogInterface.BUTTON_POSITIVE: // Update
-					UpdateUtils.goToPlayStore(getActivity());
-					break;
-				case DialogInterface.BUTTON_NEUTRAL: // Later
-					Toast.makeText(getActivity(), R.string.update_soft_dialog_reminder, Toast.LENGTH_LONG).show();
-					break;
-			}
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(getActivity());
+		sp.edit().putInt(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString(), which)
+				.putLong(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString(), System.currentTimeMillis())
+				.apply();
+		switch (which) {
+			case DialogInterface.BUTTON_POSITIVE: // Update
+				UpdateUtils.goToPlayStore(getActivity());
+				break;
+			case DialogInterface.BUTTON_NEUTRAL: // Later
+				Toast.makeText(getActivity(), R.string.update_soft_dialog_reminder, Toast.LENGTH_LONG).show();
+				break;
 		}
-	};
+	}
 
 	@NonNull
 	@Override
@@ -56,9 +55,9 @@ public class SoftUpdateDialogFragment extends DialogFragment {
 		return new AlertDialog.Builder(getActivity())
 				.setTitle(R.string.update_soft_dialog_title)
 				.setMessage(R.string.update_soft_dialog_message)
-				.setPositiveButton(R.string.update_soft_dialog_button_update, mOnClickListener)
-				.setNegativeButton(R.string.update_soft_dialog_button_skip, mOnClickListener)
-				.setNeutralButton(R.string.update_soft_dialog_button_later, mOnClickListener)
+				.setPositiveButton(R.string.update_soft_dialog_udpate_button_text, this)
+				.setNegativeButton(R.string.update_soft_dialog_skip_button_text, this)
+				.setNeutralButton(R.string.update_soft_dialog_later_button_text, this)
 				.create();
 	}
 }
