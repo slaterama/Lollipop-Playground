@@ -6,17 +6,17 @@ public class Endpoint {
 
 	public static final int APPEND_TIMESTAMP = 0x00000001;
 	public static final int APPEND_ANDROID_VERSION = 0x00000002;
-	public static final int APPEND_USER_ID = 0x00000004;
 	public static final int APPEND_DEVICE_ID = 0x00000008;
 	public static final int APPEND_SECRET = 0x00000010;
 
+	public static final int APPEND_USER_ID = 0x00000004;
 	public static final int APPEND_CITYMAPS_TOKEN = 0x00000020;
+
 	public static final int APPEND_ENDPOINT_VERSION = 0x00000040;
 
-	public static final int APPEND_DEFAULT_WITHOUT_TOKEN = APPEND_TIMESTAMP|APPEND_ANDROID_VERSION|
-			APPEND_USER_ID|APPEND_DEVICE_ID|APPEND_SECRET;
-
-	public static final int APPEND_DEFAULT = APPEND_DEFAULT_WITHOUT_TOKEN|APPEND_CITYMAPS_TOKEN;
+	public static final int APPEND_DEFAULT = APPEND_TIMESTAMP|APPEND_ANDROID_VERSION|APPEND_DEVICE_ID|APPEND_SECRET;
+	public static final int APPEND_USER = APPEND_USER_ID|APPEND_CITYMAPS_TOKEN;
+	public static final int APPEND_ALL = APPEND_DEFAULT|APPEND_USER;
 
 	private Type mType;
 
@@ -43,6 +43,18 @@ public class Endpoint {
 		mServerType = serverType;
 		mFile = file;
 		mFlags = flags;
+	}
+
+	public Endpoint(Type type, String file, int flags) {
+		this(type, Server.Type.API, file, flags);
+	}
+
+	public Endpoint(Type type, Server.Type serverType, String file) {
+		this(type, serverType, file, APPEND_ALL);
+	}
+
+	public Endpoint(Type type, String file) {
+		this(type, Server.Type.API, file, APPEND_ALL);
 	}
 
 	public Type getType() {
@@ -74,6 +86,7 @@ public class Endpoint {
 		CONFIG,
 		VERSION,
 		USER,
+		USER_LOGIN,
 		PLACE,
 		COLLECTIONS,
 		COLLECTIONS_FOR_USER

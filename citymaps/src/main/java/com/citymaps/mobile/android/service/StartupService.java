@@ -13,6 +13,9 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.map.MapViewService;
+import com.citymaps.mobile.android.model.request.MiscRequests.GetConfigRequest;
+import com.citymaps.mobile.android.model.request.MiscRequests.GetVersionRequest;
+import com.citymaps.mobile.android.model.request.UserRequests;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.model.vo.Version;
@@ -44,11 +47,11 @@ public class StartupService extends Service {
 
 	private StartupBinder mBinder;
 
-	private Config.GetRequest mGetConfigRequest;
+	private GetConfigRequest mGetConfigRequest;
 
 	private Config mConfig;
 
-	private Version.GetRequest mGetVersionRequest;
+	private GetVersionRequest mGetVersionRequest;
 
 	private Version mVersion = null;
 
@@ -102,7 +105,7 @@ public class StartupService extends Service {
 		synchronized (this) {
 			if (mConnectivityManager.getActiveNetworkInfo() != null) {
 				if (mGetConfigRequest == null) {
-					mGetConfigRequest = new Config.GetRequest(this, new Response.Listener<Config>() {
+					mGetConfigRequest = new GetConfigRequest(this, new Response.Listener<Config>() {
 						@Override
 						public void onResponse(Config response) {
 							mConfig = response;
@@ -134,7 +137,7 @@ public class StartupService extends Service {
 				}
 
 				if (mGetVersionRequest == null) {
-					mGetVersionRequest = new Version.GetRequest(this, new Response.Listener<Version>() {
+					mGetVersionRequest = new GetVersionRequest(this, new Response.Listener<Version>() {
 						@Override
 						public void onResponse(Version response) {
 							mVersion = response;
@@ -164,7 +167,7 @@ public class StartupService extends Service {
 					User currentUser = new User();
 					currentUser.setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
 					currentUser.setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
-					User.GetRequest r = new User.GetRequest(this, currentUser, "8ad760c4-3eb5-42e8-aa23-8259856e7763", new Response.Listener<User>() {
+					UserRequests.GetRequest r = new UserRequests.GetRequest(this, currentUser, "8ad760c4-3eb5-42e8-aa23-8259856e7763", new Response.Listener<User>() {
 						@Override
 						public void onResponse(User response) {
 							User user = response;

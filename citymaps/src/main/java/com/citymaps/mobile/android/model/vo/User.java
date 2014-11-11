@@ -9,11 +9,13 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.model.CitymapsObject;
-import com.citymaps.mobile.android.model.GetGsonRequest;
+import com.citymaps.mobile.android.model.GsonRequest;
 import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.util.Map;
 
 /**
  * A user of the Citymaps application.
@@ -225,25 +227,5 @@ public class User implements CitymapsObject {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
-	}
-
-	public static class UserWrapper extends ResultWrapperV2 {
-		@SerializedName("user")
-		private User mUser;
-	}
-
-	public static class GetRequest extends GetGsonRequest<User> {
-
-		public GetRequest(Context context, User currentUser, String userId,
-							  Response.Listener<User> listener, Response.ErrorListener errorListener) {
-			super(SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER, currentUser, userId),
-					User.class, null, listener, errorListener);
-		}
-
-		@Override
-		protected Response<User> parseNetworkResponse(NetworkResponse response) {
-			Response<UserWrapper> parsedResponse = parseNetworkResponse(response, UserWrapper.class);
-			return Response.success(parsedResponse.result.mUser, HttpHeaderParser.parseCacheHeaders(response));
-		}
 	}
 }

@@ -9,7 +9,7 @@ import com.google.gson.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-public abstract class GetGsonRequest<T> extends Request<T> {
+public abstract class GsonRequest<T> extends Request<T> {
 
 	protected static JsonParser sJsonParser;
 
@@ -31,13 +31,14 @@ public abstract class GetGsonRequest<T> extends Request<T> {
 	/**
 	 * Make a GET request and return a parsed object from JSON.
 	 *
-	 * @param url URL of the request to make
-	 * @param clazz Relevant class object, for Gson's reflection
-	 * @param headers Map of request headers
+	 * @param method The method of the request to make.
+	 * @param url URL of the request to make.
+	 * @param clazz Relevant class object, for Gson's reflection.
+	 * @param headers Map of request headers.
 	 */
-	public GetGsonRequest(String url, Class<T> clazz, Map<String, String> headers,
-						  Response.Listener<T> listener, Response.ErrorListener errorListener) {
-		super(Method.GET, url, errorListener);
+	public GsonRequest(int method, String url, Class<T> clazz, Map<String, String> headers,
+					   Response.Listener<T> listener, Response.ErrorListener errorListener) {
+		super(method, url, errorListener);
 		setShouldCache(false);
 
 		if (LogEx.isLoggable(LogEx.VERBOSE)) {
