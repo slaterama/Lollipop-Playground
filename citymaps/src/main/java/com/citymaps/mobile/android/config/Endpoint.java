@@ -4,15 +4,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Endpoint {
 
-	public static final int APPEND_TIMESTAMP = 0x00000001;
-	public static final int APPEND_ANDROID_VERSION = 0x00000002;
-	public static final int APPEND_DEVICE_ID = 0x00000008;
-	public static final int APPEND_SECRET = 0x00000010;
+	public static final int APPEND_NONE = 0x0000;
+	public static final int APPEND_TIMESTAMP = 0x0001;
+	public static final int APPEND_ANDROID_VERSION = 0x0002;
+	public static final int APPEND_DEVICE_ID = 0x0008;
+	public static final int APPEND_SECRET = 0x0010;
 
-	public static final int APPEND_USER_ID = 0x00000004;
-	public static final int APPEND_CITYMAPS_TOKEN = 0x00000020;
+	public static final int APPEND_USER_ID = 0x0004;
+	public static final int APPEND_CITYMAPS_TOKEN = 0x0020;
 
-	public static final int APPEND_ENDPOINT_VERSION = 0x00000040;
+	public static final int APPEND_ENDPOINT_VERSION = 0x0040;
 
 	public static final int APPEND_DEFAULT = APPEND_TIMESTAMP|APPEND_ANDROID_VERSION|APPEND_DEVICE_ID|APPEND_SECRET;
 	public static final int APPEND_USER = APPEND_USER_ID|APPEND_CITYMAPS_TOKEN;
@@ -80,6 +81,8 @@ public class Endpoint {
 	}
 
 	public static enum Type {
+		TERMS_OF_SERVICE,
+		PRIVACY_POLICY,
 		CONFIG,
 		VERSION,
 		COLLECTIONS,

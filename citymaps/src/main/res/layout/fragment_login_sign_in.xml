@@ -1,13 +1,41 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.citymaps.mobile.android.view.housekeeping.LoginSignInFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  xmlns:tools="http://schemas.android.com/tools"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:paddingLeft="@dimen/activity_horizontal_margin"
+			  android:paddingRight="@dimen/activity_horizontal_margin"
+			  android:paddingTop="@dimen/activity_vertical_margin"
+			  android:paddingBottom="@dimen/activity_vertical_margin"
+			  android:orientation="vertical"
+			  android:gravity="center_horizontal"
+			  tools:context="com.citymaps.mobile.android.view.housekeeping.LoginSignInFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+	<EditText
+			android:id="@+id/login_sign_in_username"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="text"
+			android:hint="@string/login_sign_in_username_hint" />
 
-</FrameLayout>
+	<EditText
+			android:id="@+id/login_sign_in_password"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"
+			android:hint="@string/login_sign_in_password_hint" />
+
+	<Button
+			android:id="@+id/login_sign_in_create_account_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/login_sign_in_create_account"
+			style="?android:borderlessButtonStyle" />
+
+	<Button
+			android:id="@+id/login_sign_in_reset_password_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/login_sign_in_reset_password"
+			style="?android:borderlessButtonStyle" />
+
+</LinearLayout>

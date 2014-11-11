@@ -3,23 +3,27 @@ package com.citymaps.mobile.android.view.housekeeping;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import com.citymaps.mobile.android.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginSignInFragment.OnFragmentInteractionListener} interface
+ * {@link LoginSignInFragment.OnSignInListener} interface
  * to handle interaction events.
  * Use the {@link LoginSignInFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
-public class LoginSignInFragment extends Fragment {
+public class LoginSignInFragment extends Fragment
+		implements View.OnClickListener {
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,7 +33,7 @@ public class LoginSignInFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnSignInListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -48,6 +52,7 @@ public class LoginSignInFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public LoginSignInFragment() {
         // Required empty public constructor
     }
@@ -68,21 +73,21 @@ public class LoginSignInFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_login_sign_in, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		view.findViewById(R.id.login_sign_in_create_account_button).setOnClickListener(this);
+		view.findViewById(R.id.login_sign_in_reset_password_button).setOnClickListener(this);
+	}
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnSignInListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnSignInListener");
         }
     }
 
@@ -92,7 +97,24 @@ public class LoginSignInFragment extends Fragment {
         mListener = null;
     }
 
-    /**
+	@Override
+	public void onClick(View view) {
+		int id = view.getId();
+		switch (id) {
+			case R.id.login_sign_in_create_account_button:
+				if (mListener != null) {
+					mListener.onSignInCreateAccount();
+				}
+				break;
+			case R.id.login_sign_in_reset_password_button:
+				if (mListener != null) {
+					mListener.onSignInResetPassword();
+				}
+				break;
+		}
+	}
+
+	/**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
@@ -102,9 +124,9 @@ public class LoginSignInFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    public interface OnSignInListener {
+		public void onSignInCreateAccount();
+		public void onSignInResetPassword();
     }
 
 }

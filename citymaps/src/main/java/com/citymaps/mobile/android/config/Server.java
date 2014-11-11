@@ -65,6 +65,7 @@ public class Server {
 	}
 
 	public static enum Type {
+		CITYMAPS,
 		API,
 		SEARCH,
 		MOBILE,

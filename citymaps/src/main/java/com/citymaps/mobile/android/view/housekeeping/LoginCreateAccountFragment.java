@@ -3,17 +3,21 @@ package com.citymaps.mobile.android.view.housekeeping;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.TextView;
 import com.citymaps.mobile.android.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginCreateAccountFragment.OnFragmentInteractionListener} interface
+ * {@link LoginCreateAccountFragment.OnCreateAccountListener} interface
  * to handle interaction events.
  * Use the {@link LoginCreateAccountFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -29,7 +33,7 @@ public class LoginCreateAccountFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnCreateAccountListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -68,10 +72,18 @@ public class LoginCreateAccountFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_login_create_account, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		TextView disclaimerView = (TextView) view.findViewById(R.id.login_create_account_disclaimer);
+		disclaimerView.setText(Html.fromHtml(getString(R.string.login_create_account_disclaimer)));
+		disclaimerView.setMovementMethod(LinkMovementMethod.getInstance());
+	}
+
+	// TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onCreateAccountInteraction(uri);
         }
     }
 
@@ -79,10 +91,10 @@ public class LoginCreateAccountFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnCreateAccountListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnCreateAccountListener");
         }
     }
 
@@ -102,9 +114,9 @@ public class LoginCreateAccountFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnCreateAccountListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onCreateAccountInteraction(Uri uri);
     }
 
 }

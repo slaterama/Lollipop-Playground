@@ -54,6 +54,7 @@ public abstract class Environment {
 		super();
 		mContext = context.getApplicationContext();
 		mServerMap = new HashMap<Server.Type, Server>(Server.Type.values().length);
+		addServer(new Server(Server.Type.CITYMAPS, "www.citymaps.com", Server.Protocol.STANDARD));
 		addServer(new Server(Server.Type.MAP_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.BUSINESS_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.REGION_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));

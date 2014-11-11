@@ -1,13 +1,63 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.citymaps.mobile.android.view.housekeeping.LoginCreateAccountFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  xmlns:tools="http://schemas.android.com/tools"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:paddingLeft="@dimen/activity_horizontal_margin"
+			  android:paddingRight="@dimen/activity_horizontal_margin"
+			  android:paddingTop="@dimen/activity_vertical_margin"
+			  android:paddingBottom="@dimen/activity_vertical_margin"
+			  android:orientation="vertical"
+			  android:gravity="center_horizontal"
+			  tools:context="com.citymaps.mobile.android.view.housekeeping.LoginCreateAccountFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+	<EditText
+			android:id="@+id/login_create_account_first_name"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textCapWords"
+			android:hint="@string/login_create_account_first_name_hint" />
 
-</FrameLayout>
+	<EditText
+			android:id="@+id/login_create_account_last_name"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textCapWords"
+			android:hint="@string/login_create_account_last_name_hint" />
+
+	<EditText
+			android:id="@+id/login_create_account_username"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="text"
+			android:hint="@string/login_create_account_username_hint" />
+
+	<EditText
+			android:id="@+id/login_create_account_email"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textEmailAddress"
+			android:hint="@string/login_create_account_email_hint" />
+
+	<EditText
+			android:id="@+id/login_create_account_password"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"
+			android:hint="@string/login_create_account_password_hint" />
+
+	<EditText
+			android:id="@+id/login_create_account_confirm_password"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"
+			android:hint="@string/login_create_account_confirm_password_hint" />
+
+	<TextView
+			android:id="@+id/login_create_account_disclaimer"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/component_baseline_grid"
+			android:gravity="center_horizontal"
+			tools:text="By creating an account, I accept Citymaps\'\nTerms of Service and Privacy Policy"/>
+
+</LinearLayout>
