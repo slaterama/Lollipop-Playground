@@ -27,7 +27,7 @@ public class UserRequests {
 
 	protected abstract static class BaseRequest extends GsonRequest<User> {
 
-		public BaseRequest(int method, String url, Class<User> clazz,
+		protected BaseRequest(int method, String url, Class<User> clazz,
 						   Response.Listener<User> listener, Response.ErrorListener errorListener) {
 			super(method, url, clazz, listener, errorListener);
 		}
@@ -41,7 +41,12 @@ public class UserRequests {
 
 	public static class GetRequest extends BaseRequest {
 
-		public GetRequest(Context context, String userId,
+		public static GetRequest newInstance(Context context, String userId,
+											 Response.Listener<User> listener, Response.ErrorListener errorListener) {
+			return new GetRequest(context, userId, listener, errorListener);
+		}
+
+		private GetRequest(Context context, String userId,
 						  Response.Listener<User> listener, Response.ErrorListener errorListener) {
 			super(Method.GET, SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER, userId),
 					User.class, listener, errorListener);
