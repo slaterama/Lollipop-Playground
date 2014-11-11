@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<attr name="centeredDrawableButtonStyle" format="reference" />
+	<attr name="facebookButtonStyle" format="reference" />
+	<attr name="googleButtonStyle" format="reference" />
+	<attr name="citymapsGreyButtonStyle" format="reference" />
+
 	<attr name="ratio" format="float" />
 
 	<declare-styleable name="RatioFrameLayout">

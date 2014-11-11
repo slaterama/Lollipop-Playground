@@ -10,6 +10,12 @@
 		<item name="colorPrimary">@color/color_primary</item>
 		<item name="colorPrimaryDark">@color/color_primary_dark</item>
 		<item name="colorAccent">@color/color_accent</item>
+		<item name="colorButtonNormal">@color/color_button_normal</item>
+
+		<item name="centeredDrawableButtonStyle">@style/Widget.Holo.CenteredDrawableButton</item>
+		<item name="facebookButtonStyle">@style/Widget.Holo.FacebookButton</item>
+		<item name="googleButtonStyle">@style/Widget.Holo.GoogleButton</item>
+		<item name="citymapsGreyButtonStyle">@style/Widget.Holo.CitymapsGreyButton</item>
 	</style>
 
 	<!-- Theme with no title/action/app bar -->

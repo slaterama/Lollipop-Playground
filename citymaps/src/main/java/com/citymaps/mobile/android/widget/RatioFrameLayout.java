@@ -13,20 +13,20 @@ public class RatioFrameLayout extends FrameLayout {
 
 	private float mRatio;
 
-    public RatioFrameLayout(Context context) {
-        super(context);
-        init(null, 0);
-    }
+	public RatioFrameLayout(Context context) {
+		super(context);
+		init(null, 0);
+	}
 
-    public RatioFrameLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(attrs, 0);
-    }
+	public RatioFrameLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(attrs, 0);
+	}
 
-    public RatioFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(attrs, defStyleAttr);
-    }
+	public RatioFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		init(attrs, defStyleAttr);
+	}
 
 	/*
 	public RatioFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -36,12 +36,12 @@ public class RatioFrameLayout extends FrameLayout {
 	*/
 
 	private void init(AttributeSet attrs, int defStyle) {
-        // Load attributes
-        final TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.RatioFrameLayout, defStyle, 0);
+		// Load attributes
+		final TypedArray a = getContext().obtainStyledAttributes(
+				attrs, R.styleable.RatioFrameLayout, defStyle, 0);
 		setRatio(a.getFloat(R.styleable.RatioFrameLayout_ratio, 0.0f));
-        a.recycle();
-    }
+		a.recycle();
+	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -75,16 +75,18 @@ public class RatioFrameLayout extends FrameLayout {
 	}
 
 	/**
-     * Gets the ratio value.
-     * @return The ratio value.
-     */
-    public float getRatio() {
-        return mRatio;
-    }
+	 * Gets the ratio value.
+	 *
+	 * @return The ratio value.
+	 */
+	public float getRatio() {
+		return mRatio;
+	}
 
 	/**
 	 * Sets the view's example string attribute value. In the example view, this string
 	 * is the text to draw.
+	 *
 	 * @param ratio The example string attribute value to use.
 	 */
 	public void setRatio(float ratio) {

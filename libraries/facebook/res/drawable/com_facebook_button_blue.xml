@@ -5,6 +5,7 @@
       android:drawable="@drawable/com_facebook_button_blue_pressed"
       android:state_focused="true"
       android:state_pressed="true"
+
       />
   <item
       android:drawable="@drawable/com_facebook_button_blue_pressed"

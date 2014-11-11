@@ -1,82 +1,84 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:tools="http://schemas.android.com/tools"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:paddingLeft="@dimen/activity_horizontal_margin"
-				android:paddingRight="@dimen/activity_horizontal_margin"
-				android:paddingTop="@dimen/activity_vertical_margin"
-				android:paddingBottom="@dimen/activity_vertical_margin"
-				android:gravity="center_horizontal"
-				android:orientation="vertical"
-				tools:context="com.citymaps.mobile.android.view.onboard.AuthenticateActivity">
-	
+			  xmlns:tools="http://schemas.android.com/tools"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:gravity="center_horizontal"
+			  android:paddingBottom="@dimen/activity_vertical_margin"
+			  android:orientation="vertical"
+			  tools:context="com.citymaps.mobile.android.view.onboard.AuthenticateActivity">
+
 	<ImageView
+			android:id="@+id/login_authenticate_header_image"
 			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="2"
-			android:src="@drawable/cm_logo_160dp"
-			android:scaleType="centerInside"/>
-
-	<Space
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/component_baseline_grid"
-			android:visibility="invisible"/>
-
-	<Space
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/component_baseline_grid"
-			android:visibility="invisible"/>
-
-	<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center"
-			android:textAppearance="?android:textAppearanceLarge"
-			android:text="@string/login_authenticate_tagline"/>
-
-	<Space
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/component_baseline_grid"
-			android:visibility="invisible"/>
-
-	<Space
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/component_baseline_grid"
-			android:visibility="invisible"/>
-
-	<Button
-			android:id="@+id/login_authenticate_facebook_button"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:text="Login with Facebook"
-			android:onClick="onButtonClick"/>
-
-	<Button
-			android:id="@+id/login_authenticate_google_button"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:text="Sign in with Google"
-			android:onClick="onButtonClick"/>
-
-	<Button
-			android:id="@+id/login_authenticate_create_button"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:text="Create an account"
-			android:onClick="onButtonClick"/>
-
-	<LinearLayout
-			android:layout_width="wrap_content"
 			android:layout_height="0dp"
 			android:layout_weight="1"
-			android:gravity="bottom"
-			android:orientation="horizontal">
+			android:src="@drawable/cm_logo_160dp"
+			android:scaleType="centerInside" />
+
+	<LinearLayout
+			android:layout_width="@dimen/login_authenticate_button_width"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:gravity="center_horizontal"
+			android:orientation="vertical"
+			android:showDividers="middle"
+			android:divider="@drawable/divider_padding_small">
+
+		<TextView
+				android:id="@+id/login_authenticate_tagline"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:textAppearance="?android:textAppearanceLarge"
+				android:text="@string/login_authenticate_tagline" />
+
+		<Space
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/component_baseline_grid"
+				android:visibility="invisible" />
+
+		<com.citymaps.mobile.android.widget.CenteredDrawableButton
+				android:id="@+id/login_authenticate_facebook_button"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:drawableLeft="@drawable/com_facebook_inverse_icon"
+				android:drawableStart="@drawable/com_facebook_inverse_icon"
+				android:text="@string/login_authenticate_facebook"
+				style="?facebookButtonStyle"
+				android:onClick="onButtonClick" />
+
+		<com.citymaps.mobile.android.widget.CenteredDrawableButton
+				android:id="@+id/login_authenticate_google_button"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:drawableLeft="@drawable/gplus_inverse_icon"
+				android:drawableStart="@drawable/gplus_inverse_icon"
+				android:text="@string/login_authenticate_google"
+				style="?googleButtonStyle"
+				android:onClick="onButtonClick" />
+
+		<com.citymaps.mobile.android.widget.CenteredDrawableButton
+				android:id="@+id/login_authenticate_create_account_button"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/login_authenticate_create_account"
+				style="?citymapsGreyButtonStyle"
+				android:onClick="onButtonClick" />
+
+	</LinearLayout>
+
+	<LinearLayout
+			android:id="@+id/login_authenticate_login_container"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layoutDirection="locale">
 
 		<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:textAppearance="?android:textAppearanceMedium"
-				android:text="@string/login_authenticate_have_an_account"/>
+				android:text="@string/login_authenticate_have_an_account" />
 
 		<Button
 				android:id="@+id/login_authenticate_login_button"
@@ -85,12 +87,12 @@
 				android:textStyle="bold"
 				android:text="@string/login_authenticate_login"
 				style="?android:borderlessButtonStyle"
-				android:onClick="onButtonClick"/>
+				android:onClick="onButtonClick" />
 
 		<View
 				android:layout_width="1dp"
 				android:layout_height="@dimen/touch_target"
-				android:background="@drawable/divider_vertical_grey"/>
+				android:background="@drawable/divider_vertical_grey" />
 
 		<Button
 				android:id="@+id/login_authenticate_skip_button"
@@ -98,7 +100,7 @@
 				android:layout_height="wrap_content"
 				android:text="@string/login_authenticate_skip"
 				style="?android:borderlessButtonStyle"
-				android:onClick="onButtonClick"/>
+				android:onClick="onButtonClick" />
 
 	</LinearLayout>
 

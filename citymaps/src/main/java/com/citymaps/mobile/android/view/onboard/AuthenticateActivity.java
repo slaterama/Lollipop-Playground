@@ -28,7 +28,7 @@ public class AuthenticateActivity extends Activity {
 			case R.id.login_authenticate_google_button:
 				LogEx.d(((Button) view).getText().toString());
 				break;
-			case R.id.login_authenticate_create_button:
+			case R.id.login_authenticate_create_account_button:
 				LogEx.d(((Button) view).getText().toString());
 				break;
 			case R.id.login_authenticate_login_button:

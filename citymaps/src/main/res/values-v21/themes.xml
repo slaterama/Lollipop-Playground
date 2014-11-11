@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+	<style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+		<!-- Customize your theme here. -->
+
+		<!-- Customize the color palette -->
+		<item name="colorPrimary">@color/color_primary</item>
+		<item name="colorPrimaryDark">@color/color_primary_dark</item>
+		<item name="colorAccent">@color/color_accent</item>
+		<item name="colorButtonNormal">@color/color_button_normal</item>
+
+		<item name="centeredDrawableButtonStyle">@style/Widget.Material.CenteredDrawableButton</item>
+		<item name="facebookButtonStyle">@style/Widget.Material.FacebookButton</item>
+		<item name="googleButtonStyle">@style/Widget.Material.GoogleButton</item>
+		<item name="citymapsGreyButtonStyle">@style/Widget.Material.CitymapsGreyButton</item>
+	</style>
+
 </resources>

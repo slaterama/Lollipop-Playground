@@ -9,11 +9,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.map.MapViewService;
-import com.citymaps.mobile.android.model.request.MiscRequests;
-import com.citymaps.mobile.android.model.request.MiscRequests.ConfigRequest;
-import com.citymaps.mobile.android.model.request.MiscRequests.VersionRequest;
+import com.citymaps.mobile.android.model.request.ConfigRequest;
+import com.citymaps.mobile.android.model.request.VersionRequest;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
@@ -111,13 +109,13 @@ public class StartupService extends Service {
 		synchronized (this) {
 			if (mConnectivityManager.getActiveNetworkInfo() != null) {
 				if (mGetConfigRequest == null) {
-					mGetConfigRequest = MiscRequests.newGetConfigRequest(this,
+					mGetConfigRequest = ConfigRequest.newGetRequest(this,
 							mListeners.mConfigListener, mListeners.mErrorListener);
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetConfigRequest);
 				}
 
 				if (mGetVersionRequest == null) {
-					mGetVersionRequest = MiscRequests.newGetVersionRequest(this,
+					mGetVersionRequest = VersionRequest.newGetRequest(this,
 							mListeners.mVersionListener, mListeners.mErrorListener);
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetVersionRequest);
 				}
