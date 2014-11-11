@@ -11,9 +11,10 @@ import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.map.MapViewService;
-import com.citymaps.mobile.android.model.request.MiscRequests.GetConfigRequest;
-import com.citymaps.mobile.android.model.request.MiscRequests.GetVersionRequest;
-import com.citymaps.mobile.android.model.request.UserRequests;
+import com.citymaps.mobile.android.model.request.MiscRequests;
+import com.citymaps.mobile.android.model.request.MiscRequests.ConfigRequest;
+import com.citymaps.mobile.android.model.request.MiscRequests.VersionRequest;
+import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.model.vo.Version;
@@ -45,16 +46,16 @@ public class StartupService extends Service {
 
 	private StartupBinder mBinder;
 
-	private GetConfigRequest mGetConfigRequest;
+	private ConfigRequest mGetConfigRequest;
 
 	private Config mConfig;
 
-	private GetVersionRequest mGetVersionRequest;
+	private VersionRequest mGetVersionRequest;
 
 	private Version mVersion = null;
 
 	// TODO TEMP
-	private UserRequests.LoginRequest mUserLoginRequest;
+	private UserRequest mUserLoginRequest;
 	private User mCurrentUser;
 	// END TEMP
 
@@ -108,7 +109,7 @@ public class StartupService extends Service {
 		synchronized (this) {
 			if (mConnectivityManager.getActiveNetworkInfo() != null) {
 				if (mGetConfigRequest == null) {
-					mGetConfigRequest = GetConfigRequest.newInstance(this, new Response.Listener<Config>() {
+					mGetConfigRequest = MiscRequests.newGetConfigRequest(this, new Response.Listener<Config>() {
 						@Override
 						public void onResponse(Config response) {
 							mConfig = response;
@@ -140,7 +141,7 @@ public class StartupService extends Service {
 				}
 
 				if (mGetVersionRequest == null) {
-					mGetVersionRequest = GetVersionRequest.newInstance(this, new Response.Listener<Version>() {
+					mGetVersionRequest = MiscRequests.newGetVersionRequest(this, new Response.Listener<Version>() {
 						@Override
 						public void onResponse(Version response) {
 							mVersion = response;
@@ -168,10 +169,10 @@ public class StartupService extends Service {
 				if (mUserLoginRequest == null) {
 
 					// This version is username/password
-					// mUserLoginRequest = UserRequests.LoginRequest.newInstance(this, "slaterama", "",
+					// mUserLoginRequest = UserRequest.newUserLoginRequest(this, "slaterama", "",
 
 					// This version is Citymaps token
-					mUserLoginRequest = UserRequests.LoginRequest.newInstance(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
+					mUserLoginRequest = UserRequest.newUserLoginRequest(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
 							new Response.Listener<User>() {
 								@Override
 								public void onResponse(User response) {

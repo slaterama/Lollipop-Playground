@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class GsonRequest<T> extends Request<T> {
+public class GsonRequest<T> extends Request<T> {
 
 	protected static JsonParser sJsonParser;
 

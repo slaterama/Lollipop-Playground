@@ -1,21 +1,11 @@
 package com.citymaps.mobile.android.model.vo;
 
-import android.content.Context;
 import android.text.TextUtils;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.citymaps.mobile.android.app.SessionManager;
-import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.model.CitymapsObject;
-import com.citymaps.mobile.android.model.GsonRequest;
-import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import java.util.Map;
 
 /**
  * A user of the Citymaps application.
