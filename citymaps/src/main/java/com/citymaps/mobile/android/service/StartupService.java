@@ -55,6 +55,11 @@ public class StartupService extends Service {
 
 	private Version mVersion = null;
 
+	// TODO TEMP
+	private UserRequests.LoginRequest mUserLoginRequest;
+	private User mCurrentUser;
+	// END TEMP
+
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -161,28 +166,27 @@ public class StartupService extends Service {
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetVersionRequest);
 				}
 
-				// TODO Temp
-				Environment environment = SessionManager.getInstance(this).getEnvironment();
-				if (environment.getApi() != null) {
-					User currentUser = new User();
-					currentUser.setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
-					currentUser.setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
-					UserRequests.GetRequest r = new UserRequests.GetRequest(this, currentUser, "8ad760c4-3eb5-42e8-aa23-8259856e7763", new Response.Listener<User>() {
-						@Override
-						public void onResponse(User response) {
-							User user = response;
-//							LogEx.d(String.format("user=%s", user));
-						}
-					}, new Response.ErrorListener() {
-						@Override
-						public void onErrorResponse(VolleyError error) {
-							if (LogEx.isLoggable(LogEx.ERROR)) {
-								LogEx.e(error.getMessage(), error);
-							}
-						}
-					});
-					VolleyManager.getInstance(this).getRequestQueue().add(r);
+				// TODO TEMP
+				if (mUserLoginRequest == null) {
+					mUserLoginRequest = UserRequests.LoginRequest.newInstance(this, "slaterama", "r3stlandC",
+							new Response.Listener<User>() {
+								@Override
+								public void onResponse(User response) {
+									mCurrentUser = response;
+									LogEx.v(String.format("mCurrentUser=%s", mCurrentUser));
+								}
+							}, new Response.ErrorListener() {
+								@Override
+								public void onErrorResponse(VolleyError error) {
+									if (LogEx.isLoggable(LogEx.ERROR)) {
+										String data = new String(error.networkResponse.data);
+										LogEx.e(data, error);
+									}
+								}
+							});
+					VolleyManager.getInstance(this).getRequestQueue().add(mUserLoginRequest);
 				}
+				// END TEMP
 			}
 
 			if (mConfig != null && mVersion != null) {

@@ -15,6 +15,7 @@ public abstract class GsonRequest<T> extends Request<T> {
 
 	protected final Class<T> mClass;
 	private final Map<String, String> mHeaders;
+	private final Map<String, String> mParams;
 	private final Response.Listener<T> mListener;
 
 	/**
@@ -36,7 +37,8 @@ public abstract class GsonRequest<T> extends Request<T> {
 	 * @param clazz Relevant class object, for Gson's reflection.
 	 * @param headers Map of request headers.
 	 */
-	public GsonRequest(int method, String url, Class<T> clazz, Map<String, String> headers,
+	public GsonRequest(int method, String url, Class<T> clazz,
+					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<T> listener, Response.ErrorListener errorListener) {
 		super(method, url, errorListener);
 		setShouldCache(false);
@@ -47,12 +49,18 @@ public abstract class GsonRequest<T> extends Request<T> {
 
 		mClass = clazz;
 		mHeaders = headers;
+		mParams = params;
 		mListener = listener;
 	}
 
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError {
 		return mHeaders != null ? mHeaders : super.getHeaders();
+	}
+
+	@Override
+	protected Map<String, String> getParams() throws AuthFailureError {
+		return mParams != null ? mParams : super.getParams();
 	}
 
 	@Override

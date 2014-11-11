@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
 import com.citymaps.mobile.android.BuildConfig;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.PackageUtils;
@@ -72,7 +73,7 @@ public abstract class Environment {
 		return mServerMap.get(type);
 	}
 
-	public String buildUrlString(Endpoint.Type endpointType, User user, Object... args) {
+	public String buildUrlString(Endpoint.Type endpointType, Object... args) {
 		if (mApi == null) {
 			throw new IllegalStateException(String.format("No api is defined for %s", getClass().getSimpleName()));
 		}
@@ -114,12 +115,13 @@ public abstract class Environment {
 			builder.appendQueryParameter("device_id", Build.SERIAL);
 		}
 
-		if (user != null) {
+		User currentUser = SessionManager.getInstance(mContext).getCurrentUser();
+		if (currentUser != null) {
 			if ((flags & APPEND_USER_ID) == APPEND_USER_ID) {
-				builder.appendQueryParameter("user_id", user.getId());
+				builder.appendQueryParameter("user_id", currentUser.getId());
 			}
 			if ((flags & APPEND_CITYMAPS_TOKEN) == APPEND_CITYMAPS_TOKEN) {
-				String citymapsToken = user.getCitymapsToken();
+				String citymapsToken = currentUser.getCitymapsToken();
 				if (citymapsToken != null) {
 					builder.appendQueryParameter("citymaps_token", citymapsToken);
 				}

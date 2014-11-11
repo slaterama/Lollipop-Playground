@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 public class SessionManager {
@@ -34,10 +35,18 @@ public class SessionManager {
 
 	private Config mConfig;
 
+	private User mCurrentUser;
+
 	private SessionManager() {
 		mEnvironment = Environment.newInstance(sContext);
 		SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(sContext);
 		mConfig = SharedPreferenceUtils.getConfig(sp);
+
+		// TODO TEMP
+		mCurrentUser = new User();
+		mCurrentUser .setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
+		mCurrentUser .setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
+		// END TEMP
 	}
 
 	public Config getConfig() {
@@ -46,6 +55,15 @@ public class SessionManager {
 
 	public Context getContext() {
 		return sContext;
+	}
+
+	public User getCurrentUser() {
+		return mCurrentUser;
+	}
+
+	public void setCurrentUser(User user) {
+		mCurrentUser = user;
+		// TODO send broadcast?
 	}
 
 	public Environment getEnvironment() {

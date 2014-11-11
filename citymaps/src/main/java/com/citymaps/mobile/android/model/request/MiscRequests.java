@@ -14,7 +14,7 @@ public class MiscRequests {
 
 		public GetConfigRequest(Context context, Response.Listener<Config> listener, Response.ErrorListener errorListener) {
 			super(Method.GET, SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.CONFIG),
-					Config.class, null, listener, errorListener);
+					Config.class, null, null, listener, errorListener);
 		}
 	}
 
@@ -22,7 +22,7 @@ public class MiscRequests {
 
 		public GetVersionRequest(Context context, Response.Listener<Version> listener, Response.ErrorListener errorListener) {
 			super(Method.GET, SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.VERSION),
-					Version.class, null, listener, errorListener);
+					Version.class, null, null, listener, errorListener);
 		}
 	}
 
