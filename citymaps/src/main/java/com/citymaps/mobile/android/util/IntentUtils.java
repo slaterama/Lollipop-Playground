@@ -52,64 +52,26 @@ public class IntentUtils {
 	}
 
 	/**
-	 * Activity Action: Show main activity for the Citymaps application.
-	 */
-	public static final String ACTION_MAIN = makeAction("MAIN");
-
-	/**
-	 * Activity Action: Show settings for the Citymaps application.
-	 */
-	public static final String ACTION_APP_PREFERENCES = makeAction("APP_PREFERENCES");
-
-	/**
-	 * Activity Action: Show developer settings for the Citymaps application.
-	 */
-	public static final String ACTION_DEVELOPER_PREFERENCES = makeAction("DEVELOPER_PREFERENCES");
-
-	/**
-	 * Activity Action: Show Android-specific developer settings for the Citymaps application.
-	 */
-	public static final String ACTION_ANDROID_PREFERENCES = makeAction("ANDROID_PREFERENCES");
-
-	/**
-	 * Service Action: Start or bind to Setup Service.
-	 */
-	public static final String ACTION_SETUP_SERVICE = makeAction("SETUP_SERVICE");
-
-	/**
-	 * Service Action: Start or bind to Setup Service.
-	 */
-	public static final String ACTION_CITYMAPS_SETUP_SERVICE = makeAction("CITYMAPS_SETUP_SERVICE");
-
-	/**
-	 * Service Action: Start or bind to Configuration Service.
-	 */
-	//public static final String ACTION_CONFIGURATION_SERVICE = makeAction("CONFIGURATION_SERVICE");
-
-	/**
-	 * BroadcastReceiver Action: Sent to inform about the status of the setup process.
-	 */
-	public static final String ACTION_SETUP = makeAction("SETUP");
-
-	/**
 	 * BroadcastReceiver Action: Sent to inform about Android config information being loaded.
 	 */
 	public static final String ACTION_CONFIG_LOADED = makeAction("ACTION_LOADED");
 
 	/**
-	 * BroadcastReceiver Action: Attempt to log in to the Citymaps application.
+	 * Whether the app is currently in "startup mode" (i.e. walking the user through
+	 * a series of initial screens including LaunchActivity, TourActivity, etc.)
 	 */
-	public static final String ACTION_LOG_IN = makeAction("LOG_IN");
+	public static final String EXTRA_STARTUP_MODE = makeExtra("STARTUP_MODE");
 
 	/**
-	 * The status associated with a setup broadcast.
+	 * An integer that specifies in what mode the Login activity should open.
+	 * <p>Values are:
+	 * <ul>
+	 *     <li>{@code LoginActivity.SIGN_IN_MODE}</li>
+	 *     <li>{@code LoginActivity.CREATE_ACCOUNT_MODE}</li>
+	 *     <li>{@code LoginActivity.RESET_PASSWORD_MODE}</li>
+	 * </ul>
 	 */
-	//public static final String EXTRA_SETUP_STATUS = makeExtra("SETUP_STATUS");
-
-	/**
-	 * A boolean indicating whether the setup process is complete.
-	 */
-	//public static final String EXTRA_SETUP_COMPLETE = makeExtra("SETUP_COMPLETE");
+	public static final String EXTRA_LOGIN_MODE = makeExtra("LOGIN_MODE");
 
 	/**
 	 * The current Citymaps config information.
@@ -124,7 +86,25 @@ public class IntentUtils {
 	/**
 	 * Whether the app is currently completing "first run" processing.
 	 */
+	/*
 	public static final String EXTRA_IN_FIRST_RUN = makeExtra("IN_FIRST_RUN");
+	*/
+
+	public static void putStartupMode(Intent intent, boolean startupMode) {
+		intent.putExtra(EXTRA_STARTUP_MODE, startupMode);
+	}
+
+	public static boolean isStartupMode(Intent intent, boolean defaultValue) {
+		return intent.getBooleanExtra(EXTRA_STARTUP_MODE, defaultValue);
+	}
+
+	public static void putLoginMode(Intent intent, int loginMode) {
+		intent.putExtra(EXTRA_LOGIN_MODE, loginMode);
+	}
+
+	public static int getLoginMode(Intent intent, int defaultValue) {
+		return intent.getIntExtra(EXTRA_LOGIN_MODE, defaultValue);
+	}
 
 	public static void putApiStatus(Intent intent, Version status) {
 		intent.putExtra(EXTRA_API_STATUS, status);
@@ -142,6 +122,7 @@ public class IntentUtils {
 		return intent.getParcelableExtra(EXTRA_CONFIG);
 	}
 
+	/*
 	public static void putInFirstRun(Intent intent, boolean inFirstRun) {
 		intent.putExtra(EXTRA_IN_FIRST_RUN, inFirstRun);
 	}
@@ -149,6 +130,7 @@ public class IntentUtils {
 	public static boolean isInFirstRun(Intent intent, boolean defaultValue) {
 		return intent.getBooleanExtra(EXTRA_IN_FIRST_RUN, defaultValue);
 	}
+	*/
 
 	private IntentUtils() {
 	}

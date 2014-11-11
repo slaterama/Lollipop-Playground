@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.onboard;
+package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

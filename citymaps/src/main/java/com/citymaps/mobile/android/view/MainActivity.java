@@ -4,7 +4,6 @@ import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
@@ -19,8 +18,8 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
-import com.citymaps.mobile.android.view.onboard.HardUpdateActivity;
-import com.citymaps.mobile.android.view.onboard.SoftUpdateDialogFragment;
+import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
+import com.citymaps.mobile.android.view.housekeeping.SoftUpdateDialogFragment;
 
 import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
@@ -51,16 +50,8 @@ public class MainActivity extends TrackedActionBarActivity
 		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState == null) {
-			// If we've reached this point, we've made it through first run
-			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-			boolean firstRunComplete = SharedPreferenceUtils.isFirstRunComplete(sp, false);
-			LogEx.d(String.format("firstRunComplete=%b", firstRunComplete));
-			if (!firstRunComplete) {
-				SharedPreferenceUtils.putFirstRunComplete(sp, true).apply();
-			}
-
 			// First of all, examine any saved config for hard/soft update
-			sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
+			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
 			processConfig(SharedPreferenceUtils.getConfig(sp));
 			/*
 			if (isFinishing()) {

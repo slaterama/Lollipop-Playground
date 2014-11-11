@@ -17,7 +17,7 @@
 		<!-- Launch/Onboarding Activities -->
 
 		<activity
-				android:name=".view.onboard.LaunchActivity"
+				android:name=".view.housekeeping.LaunchActivity"
 				android:launchMode="standard"
 				android:noHistory="true"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
@@ -28,28 +28,28 @@
 			</intent-filter>
 		</activity>
 		<activity
-				android:name=".view.onboard.TourActivity"
+				android:name=".view.housekeeping.TourActivity"
 				android:label="@string/tour_activity_title">
 		</activity>
 		<activity
-				android:name=".view.onboard.EnableLocationActivity"
+				android:name=".view.housekeeping.EnableLocationActivity"
 				android:label="@string/loc_activity_title">
 		</activity>
 		<activity
-				android:name=".view.onboard.HardUpdateActivity"
+				android:name=".view.housekeeping.HardUpdateActivity"
 				android:noHistory="true"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
-				android:name=".view.onboard.AuthenticateActivity"
+				android:name=".view.housekeeping.AuthenticateActivity"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
-				android:name=".view.onboard.AuthenticateActivity_NotUsed"
+				android:name=".view.housekeeping.AuthenticateActivity_NotUsed"
 				android:windowSoftInputMode="adjustResize|stateHidden">
 		</activity>
 		<activity
-				android:name=".view.onboard.LoginActivity"
+				android:name=".view.housekeeping.LoginActivity"
 				android:label="@string/login_activity_title">
 		</activity>
 

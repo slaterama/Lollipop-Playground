@@ -4,7 +4,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:orientation="vertical"
-				tools:context="com.citymaps.mobile.android.view.onboard.EnableLocationActivity">
+				tools:context="com.citymaps.mobile.android.view.housekeeping.EnableLocationActivity">
 
 	<com.citymaps.mobile.android.widget.RatioImageView
 			android:id="@+id/loc_header_image"

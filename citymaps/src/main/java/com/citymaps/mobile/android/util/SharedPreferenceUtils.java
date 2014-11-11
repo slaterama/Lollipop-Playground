@@ -83,6 +83,7 @@ public class SharedPreferenceUtils {
 		return sp.edit().remove(key.toString());
 	}
 
+	/*
 	public static Editor putFirstRunComplete(SharedPreferences sp, boolean firstRunComplete) {
 		return putBoolean(sp, Key.FIRST_RUN_COMPLETE, firstRunComplete);
 	}
@@ -90,17 +91,42 @@ public class SharedPreferenceUtils {
 	public static boolean isFirstRunComplete(SharedPreferences sp, boolean defValue) {
 		return getBoolean(sp, Key.FIRST_RUN_COMPLETE, defValue);
 	}
+	*/
 
-	public static Editor putApiVersion(SharedPreferences sp, int apiVersion) {
-		return putInt(sp, Key.API_VERSION, apiVersion);
+	public static Editor putCitymapsToken(SharedPreferences sp, String value) {
+		return putString(sp, Key.CITYMAPS_TOKEN, value);
+	}
+
+	public static String getCitymapsToken(SharedPreferences sp, String defValue) {
+		return getString(sp, Key.CITYMAPS_TOKEN, defValue);
+	}
+
+	public static Editor putTourProcessed(SharedPreferences sp, boolean value) {
+		return putBoolean(sp, Key.TOUR_PROCESSED, value);
+	}
+
+	public static boolean isTourProcessed(SharedPreferences sp, boolean defValue) {
+		return getBoolean(sp, Key.TOUR_PROCESSED, defValue);
+	}
+
+	public static Editor putEnableLocationProcessed(SharedPreferences sp, boolean value) {
+		return putBoolean(sp, Key.ENABLE_LOCATION_PROCESSED, value);
+	}
+
+	public static boolean isEnableLocationProcessed(SharedPreferences sp, boolean defValue) {
+		return getBoolean(sp, Key.ENABLE_LOCATION_PROCESSED, defValue);
+	}
+
+	public static Editor putApiVersion(SharedPreferences sp, int value) {
+		return putInt(sp, Key.API_VERSION, value);
 	}
 
 	public static int getApiVersion(SharedPreferences sp, int defValue) {
 		return getInt(sp, Key.API_VERSION, defValue);
 	}
 
-	public static Editor putApiBuild(SharedPreferences sp, String apiBuild) {
-		return putString(sp, Key.API_BUILD, apiBuild);
+	public static Editor putApiBuild(SharedPreferences sp, String value) {
+		return putString(sp, Key.API_BUILD, value);
 	}
 
 	public static String getApiBuild(SharedPreferences sp, String defValue) {
@@ -153,7 +179,15 @@ public class SharedPreferenceUtils {
 	}
 
 	public static enum Key {
+		/*
 		FIRST_RUN_COMPLETE,
+		*/
+
+		CITYMAPS_TOKEN,
+
+		TOUR_PROCESSED,
+		ENABLE_LOCATION_PROCESSED,
+
 		API_VERSION,
 		API_BUILD,
 		CONFIG_APP_VERSION,

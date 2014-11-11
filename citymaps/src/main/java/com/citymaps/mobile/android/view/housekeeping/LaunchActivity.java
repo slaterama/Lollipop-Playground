@@ -1,15 +1,21 @@
-package com.citymaps.mobile.android.view.onboard;
+package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
 import android.content.*;
 import android.content.pm.ActivityInfo;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
@@ -152,22 +158,67 @@ public class LaunchActivity extends TrackedActionBarActivity
 //						.toBundle();
 //				activity.startActivity(new Intent(activity, MainActivity.class), bundle);
 
-				Intent intent;
+				// If we have never processed the Tour activity, start it now
 
-				// Has the user completed "first run" processing?
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
-				boolean firstRunComplete = SharedPreferenceUtils.isFirstRunComplete(sp, false);
-				if (firstRunComplete) {
-					intent = new Intent(activity, MainActivity.class);
-				} else {
-					intent = new Intent(activity, TourActivity.class);
+				boolean tourProcessed = SharedPreferenceUtils.isTourProcessed(sp, false);
+				if (!tourProcessed) {
+					Intent intent = new Intent(activity, TourActivity.class);
+					IntentUtils.putStartupMode(intent, true);
+					activity.startActivity(intent);
+					activity.finish();
+					return;
 				}
 
-				// TODO TEMP
-				intent = new Intent(activity, AuthenticateActivity.class);
+				// If we have never processed the Enable Location activity:
+				// If Location Services are enabled, mark the Enable Location activity as processed and continue
+				// Otherwise, start the Enable Location activity now
 
-				activity.startActivity(intent);
-				activity.finish();
+				boolean enableLocationProcessed = SharedPreferenceUtils.isEnableLocationProcessed(sp, false);
+				if (!enableLocationProcessed) {
+					LocationManager manager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+					boolean gpsEnabled = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+					if (gpsEnabled) {
+						SharedPreferenceUtils.putEnableLocationProcessed(sp, true);
+					} else {
+						Intent intent = new Intent(activity, EnableLocationActivity.class);
+						IntentUtils.putStartupMode(intent, true);
+						activity.startActivity(intent);
+						activity.finish();
+						return;
+					}
+				}
+
+				// Get the saved Citymaps Token from SharedPreferences (if any)
+
+				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
+				if (TextUtils.isEmpty(citymapsToken)) {
+					Intent intent = new Intent(activity, AuthenticateActivity.class);
+					activity.startActivity(intent);
+					activity.finish();
+					return;
+				}
+
+				// Try to log in silently. If successful, start Main activity
+				// If unsuccessful, start Authenticate activity
+
+				UserRequest request = UserRequest.newLoginRequest(activity, citymapsToken,
+						new Response.Listener<User>() {
+							@Override
+							public void onResponse(User response) {
+								Intent intent = new Intent(activity, MainActivity.class);
+								activity.startActivity(intent);
+								activity.finish();
+							}
+						},
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Intent intent = new Intent(activity, AuthenticateActivity.class);
+								activity.startActivity(intent);
+								activity.finish();
+							}
+						});
 			}
 		}
 	}

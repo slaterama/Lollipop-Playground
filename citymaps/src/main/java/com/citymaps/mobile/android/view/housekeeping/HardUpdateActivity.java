@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.onboard;
+package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;

@@ -1,15 +1,17 @@
-package com.citymaps.mobile.android.view.onboard;
+package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.View;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
-import com.citymaps.mobile.android.view.MainActivity;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 public class EnableLocationActivity extends TrackedActionBarActivity {
 
@@ -32,10 +34,14 @@ public class EnableLocationActivity extends TrackedActionBarActivity {
 	}
 
 	private void onContinue() {
-		// TODO Try to authenticate ?? What about StartupService?
-		// Also what to do if connected to the internet vs. not connected?
 
-		startActivity(new Intent(this, MainActivity.class));
+		// TODO Some sort of logic to choose Authenticate vs. Main?
+
+		startActivity(new Intent(this, AuthenticateActivity.class));
+
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferenceUtils.putEnableLocationProcessed(sp, true).apply();
+
 		finish();
 	}
 

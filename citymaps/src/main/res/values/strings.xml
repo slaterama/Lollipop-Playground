@@ -67,7 +67,7 @@
 	<string name="login_authenticate_google">Sign in with Google</string>
 	<string name="login_authenticate_create_account">Create account</string>
 	<string name="login_authenticate_have_an_account">Have an account?</string>
-	<string name="login_authenticate_login">Login</string>
+	<string name="login_authenticate_signin">Sign in</string>
 	<string name="login_authenticate_skip">Skip</string>
     <string name="login_activity_title">Login</string>
 

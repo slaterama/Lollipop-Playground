@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.onboard;
+package com.citymaps.mobile.android.view.housekeeping;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +13,10 @@ import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 
 public class LoginActivity extends TrackedActionBarActivity {
 
+	public static final int SIGN_IN_MODE = 0;
+	public static final int CREATE_ACCOUNT_MODE = 1;
+	public static final int RESET_PASSWORD_MODE = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +27,6 @@ public class LoginActivity extends TrackedActionBarActivity {
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
