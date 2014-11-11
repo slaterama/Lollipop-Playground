@@ -36,13 +36,10 @@ public class Endpoint {
 		if (file == null) {
 			throw new IllegalArgumentException("file can not be null");
 		}
-		if (flags < 0) {
-			throw new IllegalArgumentException("flags can not be < 0");
-		}
 		mType = type;
 		mServerType = serverType;
 		mFile = file;
-		mFlags = flags;
+		mFlags = Math.max(flags, 0);
 	}
 
 	public Endpoint(Type type, String file, int flags) {
