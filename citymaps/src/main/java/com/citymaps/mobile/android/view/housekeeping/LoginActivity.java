@@ -125,7 +125,8 @@ public class LoginActivity extends TrackedActionBarActivity
 		FragmentManager manager = getSupportFragmentManager();
 		FragmentTransaction transaction = manager.beginTransaction();
 		if (animate) {
-			// TODO
+			transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
+					android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 		}
 		transaction.replace(R.id.login_fragment_container, fragment);
 		if (addToBackStack) {
