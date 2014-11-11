@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.util.ViewUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,7 +77,8 @@ public class LoginCreateAccountFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		TextView disclaimerView = (TextView) view.findViewById(R.id.login_create_account_disclaimer);
 		disclaimerView.setText(Html.fromHtml(getString(R.string.login_create_account_disclaimer)));
-		disclaimerView.setMovementMethod(LinkMovementMethod.getInstance());
+		Spannable spannable = (Spannable) Html.fromHtml(getString(R.string.login_create_account_disclaimer));
+		ViewUtils.setSpannableText(disclaimerView, spannable);
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
