@@ -2,7 +2,6 @@ package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import android.text.TextUtils;
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -11,7 +10,6 @@ import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.model.GsonRequest;
 import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.citymaps.mobile.android.model.vo.User;
-import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
@@ -30,9 +28,8 @@ public class UserRequests {
 	protected abstract static class BaseRequest extends GsonRequest<User> {
 
 		public BaseRequest(int method, String url, Class<User> clazz,
-						   Map<String, String> headers, Map<String, String> params,
 						   Response.Listener<User> listener, Response.ErrorListener errorListener) {
-			super(method, url, clazz, headers, params, listener, errorListener);
+			super(method, url, clazz, listener, errorListener);
 		}
 
 		@Override
@@ -44,12 +41,10 @@ public class UserRequests {
 
 	public static class GetRequest extends BaseRequest {
 
-
-
 		public GetRequest(Context context, String userId,
 						  Response.Listener<User> listener, Response.ErrorListener errorListener) {
 			super(Method.GET, SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER, userId),
-					User.class, null, null, listener, errorListener);
+					User.class, listener, errorListener);
 		}
 	}
 
@@ -57,31 +52,32 @@ public class UserRequests {
 
 		public static LoginRequest newInstance(Context context, String citymapsToken,
 											   Response.Listener<User> listener, Response.ErrorListener errorListener) {
-			return newInstance(context, citymapsToken, null, null, null, null, null, listener, errorListener);
+			String urlString = SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER_LOGIN_WITH_TOKEN, citymapsToken);
+			return new LoginRequest(Method.POST, urlString, User.class, listener, errorListener);
 		}
 
 		public static LoginRequest newInstance(Context context, String username, String password,
 											   Response.Listener<User> listener, Response.ErrorListener errorListener) {
-			return newInstance(context, null, username, password, null, null, null, listener, errorListener);
+			return newInstance(context, username, password, null, null, null, listener, errorListener);
 		}
 
-		public static LoginRequest newInstance(Context context, String citymapsToken,
-											   String username, String password,
+		public static LoginRequest newInstance(Context context, String username, String password,
 											   String thirdPartyName, String thirdPartyId, String thirdPartyToken,
 											   Response.Listener<User> listener, Response.ErrorListener errorListener) {
 			String urlString = SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER_LOGIN);
+			LoginRequest request = new LoginRequest(Method.POST, urlString, User.class, listener, errorListener);
 			Map<String, String> params = new HashMap<String, String>(8);
 			if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
 				params.put(KEY_USERNAME, username);
 				params.put(KEY_PASSWORD, password);
 			}
-			return new LoginRequest(Method.POST, urlString, User.class, null, params, listener, errorListener);
+			request.putParams(params);
+			return request;
 		}
 
 		public LoginRequest(int method, String url, Class<User> clazz,
-							Map<String, String> headers, Map<String, String> params,
 							Response.Listener<User> listener, Response.ErrorListener errorListener) {
-			super(method, url, clazz, headers, params, listener, errorListener);
+			super(method, url, clazz, listener, errorListener);
 		}
 	}
 

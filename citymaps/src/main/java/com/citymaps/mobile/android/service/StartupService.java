@@ -8,9 +8,7 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.request.MiscRequests.GetConfigRequest;
@@ -110,7 +108,7 @@ public class StartupService extends Service {
 		synchronized (this) {
 			if (mConnectivityManager.getActiveNetworkInfo() != null) {
 				if (mGetConfigRequest == null) {
-					mGetConfigRequest = new GetConfigRequest(this, new Response.Listener<Config>() {
+					mGetConfigRequest = GetConfigRequest.newInstance(this, new Response.Listener<Config>() {
 						@Override
 						public void onResponse(Config response) {
 							mConfig = response;
@@ -142,7 +140,7 @@ public class StartupService extends Service {
 				}
 
 				if (mGetVersionRequest == null) {
-					mGetVersionRequest = new GetVersionRequest(this, new Response.Listener<Version>() {
+					mGetVersionRequest = GetVersionRequest.newInstance(this, new Response.Listener<Version>() {
 						@Override
 						public void onResponse(Version response) {
 							mVersion = response;
@@ -168,7 +166,12 @@ public class StartupService extends Service {
 
 				// TODO TEMP
 				if (mUserLoginRequest == null) {
-					mUserLoginRequest = UserRequests.LoginRequest.newInstance(this, "slaterama", "r3stlandC",
+
+					// This version is username/password
+					// mUserLoginRequest = UserRequests.LoginRequest.newInstance(this, "slaterama", "",
+
+					// This version is Citymaps token
+					mUserLoginRequest = UserRequests.LoginRequest.newInstance(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
 							new Response.Listener<User>() {
 								@Override
 								public void onResponse(User response) {

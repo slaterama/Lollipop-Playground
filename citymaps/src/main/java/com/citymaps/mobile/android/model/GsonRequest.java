@@ -7,6 +7,7 @@ import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class GsonRequest<T> extends Request<T> {
@@ -14,8 +15,8 @@ public abstract class GsonRequest<T> extends Request<T> {
 	protected static JsonParser sJsonParser;
 
 	protected final Class<T> mClass;
-	private final Map<String, String> mHeaders;
-	private final Map<String, String> mParams;
+	private Map<String, String> mHeaders;
+	private Map<String, String> mParams;
 	private final Response.Listener<T> mListener;
 
 	/**
@@ -30,32 +31,45 @@ public abstract class GsonRequest<T> extends Request<T> {
 	}
 
 	/**
+	 /**
 	 * Make a GET request and return a parsed object from JSON.
 	 *
 	 * @param method The method of the request to make.
 	 * @param url URL of the request to make.
 	 * @param clazz Relevant class object, for Gson's reflection.
-	 * @param headers Map of request headers.
+	 * @param listener
+	 * @param errorListener
 	 */
 	public GsonRequest(int method, String url, Class<T> clazz,
-					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<T> listener, Response.ErrorListener errorListener) {
 		super(method, url, errorListener);
 		setShouldCache(false);
 
 		if (LogEx.isLoggable(LogEx.VERBOSE)) {
-			LogEx.v(String.format("url=%s, headers=%s", url, headers));
+			LogEx.v(String.format("url=%s", url));
 		}
 
 		mClass = clazz;
-		mHeaders = headers;
-		mParams = params;
 		mListener = listener;
+	}
+
+	public void putHeaders(Map<String, String> headers) {
+		if (mHeaders == null) {
+			mHeaders = new HashMap<String, String>(headers.size());
+		}
+		mParams.putAll(headers);
 	}
 
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError {
 		return mHeaders != null ? mHeaders : super.getHeaders();
+	}
+
+	public void putParams(Map<String, String> params) {
+		if (mParams == null) {
+			mParams = new HashMap<String, String>(params.size());
+		}
+		mParams.putAll(params);
 	}
 
 	@Override

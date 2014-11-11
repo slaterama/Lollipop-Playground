@@ -20,12 +20,13 @@ public class ApiBase extends Api {
 
 	@Override
 	void addEndpoints(Environment environment, int apiVersion, String apiBuild) {
-		addEndpoint(new Endpoint(Endpoint.Type.CONFIG, Server.Type.ASSETS, getConfigEndpoint(environment), 0));
-		addEndpoint(new Endpoint(Endpoint.Type.VERSION, "v2/status/version", 0));
-		addEndpoint(new Endpoint(Endpoint.Type.COLLECTIONS, "maps/%s"));
-		addEndpoint(new Endpoint(Endpoint.Type.COLLECTIONS_FOR_USER, "v2/maps/user/%s"));
-		addEndpoint(new Endpoint(Endpoint.Type.PLACE, "business/%s"));
-		addEndpoint(new Endpoint(Endpoint.Type.USER, "v2/user/%s"));
-		addEndpoint(new Endpoint(Endpoint.Type.USER_LOGIN, "v2/user/login", APPEND_DEFAULT));
+		addEndpoint(new Endpoint(Type.CONFIG, Server.Type.ASSETS, getConfigEndpoint(environment), 0));
+		addEndpoint(new Endpoint(Type.VERSION, "v2/status/version", 0));
+		addEndpoint(new Endpoint(Type.COLLECTIONS, "maps/%s"));
+		addEndpoint(new Endpoint(Type.COLLECTIONS_FOR_USER, "v2/maps/user/%s"));
+		addEndpoint(new Endpoint(Type.PLACE, "business/%s"));
+		addEndpoint(new Endpoint(Type.USER, "v2/user/%s"));
+		addEndpoint(new Endpoint(Type.USER_LOGIN, "v2/user/login", APPEND_DEFAULT));
+		addEndpoint(new Endpoint(Type.USER_LOGIN_WITH_TOKEN, "v2/user/login?citymaps_token=%s", APPEND_DEFAULT));
 	}
 }
