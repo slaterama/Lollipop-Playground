@@ -8,6 +8,10 @@
 	<color name="material_blue_grey_500_translucent">#80607d8b</color>
 
 	<color name="citymaps_red">#EA3425</color>
-	<color name="citymaps_dark_gray">#333237</color>
+	<color name="citymaps_dark_grey">#333237</color>
+
+	<!-- Divider colors -->
+
+	<color name="divider_light_grey">#CCC</color>
 
 </resources>

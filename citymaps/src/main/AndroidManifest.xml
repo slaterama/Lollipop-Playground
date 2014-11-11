@@ -42,7 +42,10 @@
 		</activity>
 		<activity
 				android:name=".view.onboard.AuthenticateActivity"
-				android:label="@string/title_activity_authenticate"
+				android:theme="@style/AppTheme.NoTitleOrActionBar">
+		</activity>
+		<activity
+				android:name=".view.onboard.AuthenticateActivity_NotUsed"
 				android:windowSoftInputMode="adjustResize|stateHidden">
 		</activity>
 		<activity

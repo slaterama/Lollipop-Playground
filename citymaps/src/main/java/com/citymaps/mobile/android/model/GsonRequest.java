@@ -2,6 +2,7 @@ package com.citymaps.mobile.android.model;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.*;
@@ -100,5 +101,13 @@ public class GsonRequest<T> extends Request<T> {
 	@Override
 	protected Response<T> parseNetworkResponse(NetworkResponse response) {
 		return parseNetworkResponse(response, mClass);
+	}
+
+	@Override
+	public void deliverError(VolleyError error) {
+		if (LogEx.isLoggable(LogEx.ERROR)) {
+			LogEx.e(error.getMessage(), new CitymapsVolleyException(error));
+		}
+		super.deliverError(error);
 	}
 }

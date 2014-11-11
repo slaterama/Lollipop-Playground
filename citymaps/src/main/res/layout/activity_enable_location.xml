@@ -32,7 +32,7 @@
 				android:layout_marginTop="@dimen/component_baseline_grid"
 				android:padding="@dimen/type_baseline_grid"
 				android:gravity="center"
-				android:text="@string/loc_header_title"
+				android:text="@string/loc_tagline"
 				android:textAppearance="?android:textAppearanceLarge" />
 
 		<TextView

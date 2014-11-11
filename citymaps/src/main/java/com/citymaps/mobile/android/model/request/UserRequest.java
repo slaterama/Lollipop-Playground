@@ -7,6 +7,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.GsonRequest;
 import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.citymaps.mobile.android.model.vo.User;
@@ -20,27 +21,30 @@ public class UserRequest extends GsonRequest<User> {
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_PASSWORD = "password";
 
-	private static UserRequest newGetUserRequest(Context context, String userId,
+	private static UserRequest newGetRequest(Context context, String userId,
 											 Response.Listener<User> listener, Response.ErrorListener errorListener) {
-		String urlString = SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER, userId);
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER, userId);
 		return new UserRequest(Method.POST, urlString, User.class, listener, errorListener);
 	}
 
-	public static UserRequest newUserLoginRequest(Context context, String citymapsToken,
+	public static UserRequest newLoginRequest(Context context, String citymapsToken,
 										   Response.Listener<User> listener, Response.ErrorListener errorListener) {
-		String urlString = SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER_LOGIN_WITH_TOKEN, citymapsToken);
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER_LOGIN_WITH_TOKEN, citymapsToken);
 		return new UserRequest(Method.POST, urlString, User.class, listener, errorListener);
 	}
 
-	public static UserRequest newUserLoginRequest(Context context, String username, String password,
+	public static UserRequest newLoginRequest(Context context, String username, String password,
 										   Response.Listener<User> listener, Response.ErrorListener errorListener) {
-		return newUserLoginRequest(context, username, password, null, null, null, listener, errorListener);
+		return newLoginRequest(context, username, password, null, null, null, listener, errorListener);
 	}
 
-	public static UserRequest newUserLoginRequest(Context context, String username, String password,
+	public static UserRequest newLoginRequest(Context context, String username, String password,
 										   String thirdPartyName, String thirdPartyId, String thirdPartyToken,
 										   Response.Listener<User> listener, Response.ErrorListener errorListener) {
-		String urlString = SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.USER_LOGIN);
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER_LOGIN);
 		UserRequest request = new UserRequest(Method.POST, urlString, User.class, listener, errorListener);
 		Map<String, String> params = new HashMap<String, String>(8);
 		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {

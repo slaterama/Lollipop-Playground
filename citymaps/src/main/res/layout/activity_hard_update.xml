@@ -35,7 +35,7 @@
 			android:layout_marginTop="@dimen/component_baseline_grid"
 			android:gravity="center_vertical"
 			android:textAppearance="?android:textAppearanceLarge"
-			android:text="@string/update_hard_header_title"/>
+			android:text="@string/update_hard_tagline"/>
 
 	<TextView
 			android:layout_width="wrap_content"

@@ -54,6 +54,8 @@ public class StartupService extends Service {
 
 	private Version mVersion = null;
 
+	private VolleyListeners mListeners = new VolleyListeners();
+
 	// TODO TEMP
 	private UserRequest mUserLoginRequest;
 	private User mCurrentUser;
@@ -109,85 +111,26 @@ public class StartupService extends Service {
 		synchronized (this) {
 			if (mConnectivityManager.getActiveNetworkInfo() != null) {
 				if (mGetConfigRequest == null) {
-					mGetConfigRequest = MiscRequests.newGetConfigRequest(this, new Response.Listener<Config>() {
-						@Override
-						public void onResponse(Config response) {
-							mConfig = response;
-
-							SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(StartupService.this);
-							long configTimestamp = SharedPreferenceUtils.getConfigTimestamp(sp, 0);
-							if (mConfig.getTimestamp() > configTimestamp) {
-								SharedPreferenceUtils.putConfig(sp, mConfig).apply();
-								sp.edit().remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString())
-										.remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString())
-										.apply();
-							}
-
-							Intent intent = new Intent(ACTION_CONFIG_LOADED);
-							IntentUtils.putConfig(intent, mConfig);
-							mLocalBroadcastManager.sendBroadcast(intent);
-							checkState();
-						}
-					}, new Response.ErrorListener() {
-						@Override
-						public void onErrorResponse(VolleyError error) {
-							if (LogEx.isLoggable(LogEx.ERROR)) {
-								CitymapsVolleyException e = new CitymapsVolleyException(error);
-								LogEx.e(e.getMessage(), e);
-							}
-						}
-					});
+					mGetConfigRequest = MiscRequests.newGetConfigRequest(this,
+							mListeners.mConfigListener, mListeners.mErrorListener);
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetConfigRequest);
 				}
 
 				if (mGetVersionRequest == null) {
-					mGetVersionRequest = MiscRequests.newGetVersionRequest(this, new Response.Listener<Version>() {
-						@Override
-						public void onResponse(Version response) {
-							mVersion = response;
-
-							// TODO
-//							SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
-//							sharedPreferenceManager.applyApiVersion(mVersion.getVersion());
-//							sharedPreferenceManager.applyApiBuild(mVersion.getBuild());
-
-							checkState();
-						}
-					}, new Response.ErrorListener() {
-						@Override
-						public void onErrorResponse(VolleyError error) {
-							if (LogEx.isLoggable(LogEx.ERROR)) {
-								CitymapsVolleyException e = new CitymapsVolleyException(error);
-								LogEx.e(e.getMessage(), e);
-							}
-						}
-					});
+					mGetVersionRequest = MiscRequests.newGetVersionRequest(this,
+							mListeners.mVersionListener, mListeners.mErrorListener);
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetVersionRequest);
 				}
 
 				// TODO TEMP
 				if (mUserLoginRequest == null) {
-
 					// This version is username/password
-					// mUserLoginRequest = UserRequest.newUserLoginRequest(this, "slaterama", "",
+					// mUserLoginRequest = UserRequest.newUserLoginRequest(this, "slaterama", "abc123",
+					// 		mListeners.mUserListener, mListeners.mErrorListener);
 
 					// This version is Citymaps token
-					mUserLoginRequest = UserRequest.newUserLoginRequest(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
-							new Response.Listener<User>() {
-								@Override
-								public void onResponse(User response) {
-									mCurrentUser = response;
-									LogEx.v(String.format("mCurrentUser=%s", mCurrentUser));
-								}
-							}, new Response.ErrorListener() {
-								@Override
-								public void onErrorResponse(VolleyError error) {
-									if (LogEx.isLoggable(LogEx.ERROR)) {
-										String data = new String(error.networkResponse.data);
-										LogEx.e(data, error);
-									}
-								}
-							});
+					mUserLoginRequest = UserRequest.newLoginRequest(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
+							mListeners.mUserListener, mListeners.mErrorListener);
 					VolleyManager.getInstance(this).getRequestQueue().add(mUserLoginRequest);
 				}
 				// END TEMP
@@ -197,6 +140,59 @@ public class StartupService extends Service {
 				stopSelf();
 			}
 		}
+	}
+
+	protected class VolleyListeners {
+
+		public Response.Listener<Config> mConfigListener = new Response.Listener<Config>() {
+			@Override
+			public void onResponse(Config response) {
+				mConfig = response;
+
+				SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(StartupService.this);
+				long configTimestamp = SharedPreferenceUtils.getConfigTimestamp(sp, 0);
+				if (mConfig.getTimestamp() > configTimestamp) {
+					SharedPreferenceUtils.putConfig(sp, mConfig).apply();
+					sp.edit().remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString())
+							.remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString())
+							.apply();
+				}
+
+				Intent intent = new Intent(ACTION_CONFIG_LOADED);
+				IntentUtils.putConfig(intent, mConfig);
+				mLocalBroadcastManager.sendBroadcast(intent);
+				checkState();
+			}
+		};
+
+		public Response.Listener<Version> mVersionListener = new Response.Listener<Version>() {
+			@Override
+			public void onResponse(Version response) {
+				mVersion = response;
+
+				// TODO
+				// SharedPreferenceUtils sharedPreferenceManager = SharedPreferenceUtils.getInstance(StartupService.this);
+				// sharedPreferenceManager.applyApiVersion(mVersion.getVersion());
+				// sharedPreferenceManager.applyApiBuild(mVersion.getBuild());
+
+				checkState();
+			}
+		};
+
+		public Response.Listener<User> mUserListener = new Response.Listener<User>() {
+			@Override
+			public void onResponse(User response) {
+				mCurrentUser = response;
+				LogEx.v(String.format("mCurrentUser=%s", mCurrentUser));
+			}
+		};
+
+		public Response.ErrorListener mErrorListener = new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				// No action right now
+			}
+		};
 	}
 
 	public class StartupBinder extends Binder {

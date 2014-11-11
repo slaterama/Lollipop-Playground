@@ -162,6 +162,10 @@ public class LaunchActivity extends TrackedActionBarActivity
 				} else {
 					intent = new Intent(activity, TourActivity.class);
 				}
+
+				// TODO TEMP
+				intent = new Intent(activity, AuthenticateActivity.class);
+
 				activity.startActivity(intent);
 				activity.finish();
 			}
