@@ -50,6 +50,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:inputType="textPassword"
+			android:imeOptions="actionGo"
 			android:hint="@string/login_create_account_confirm_password_hint" />
 
 	<TextView

@@ -15,6 +15,7 @@ import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.LogEx;
 
 public class LoginActivity extends TrackedActionBarActivity
 		implements LoginSignInFragment.OnSignInListener,
@@ -82,7 +83,8 @@ public class LoginActivity extends TrackedActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_go) {
+			LogEx.d();
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -1,16 +1,19 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.util.LogEx;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,7 +25,7 @@ import com.citymaps.mobile.android.R;
  *
  */
 public class LoginSignInFragment extends Fragment
-		implements View.OnClickListener {
+		implements TextView.OnEditorActionListener, View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,8 +79,12 @@ public class LoginSignInFragment extends Fragment
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		view.findViewById(R.id.login_sign_in_create_account_button).setOnClickListener(this);
-		view.findViewById(R.id.login_sign_in_reset_password_button).setOnClickListener(this);
+		Button createAccountBtn = (Button) view.findViewById(R.id.login_sign_in_create_account_button);
+		createAccountBtn.setOnClickListener(this);
+		Button resetPasswordBtn = (Button) view.findViewById(R.id.login_sign_in_reset_password_button);
+		resetPasswordBtn.setOnClickListener(this);
+		EditText passwordView = (EditText) view.findViewById(R.id.login_sign_in_password);
+		passwordView.setOnEditorActionListener(this);
 	}
 
     @Override
@@ -96,6 +103,14 @@ public class LoginSignInFragment extends Fragment
         super.onDetach();
         mListener = null;
     }
+
+	@Override
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		if (actionId == EditorInfo.IME_ACTION_GO) {
+			LogEx.d(String.format("actionId=%d, event=%s", actionId, event));
+		}
+		return false;
+	}
 
 	@Override
 	public void onClick(View view) {
