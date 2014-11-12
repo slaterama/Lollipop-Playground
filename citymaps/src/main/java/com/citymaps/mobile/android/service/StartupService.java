@@ -11,8 +11,8 @@ import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.request.ConfigRequest;
-import com.citymaps.mobile.android.model.request.VersionRequest;
 import com.citymaps.mobile.android.model.request.UserRequest;
+import com.citymaps.mobile.android.model.request.VersionRequest;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.model.vo.Version;
@@ -188,7 +188,7 @@ public class StartupService extends Service {
 		public Response.ErrorListener mErrorListener = new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
-				// No action right now
+				LogEx.v(error.getMessage(), error);
 			}
 		};
 	}

@@ -23,6 +23,7 @@ public class GsonRequest<T> extends Request<T> {
 
 	/**
 	 * Convenience method to get the static {@link com.google.gson.Gson} instance.
+	 *
 	 * @return The static Gson instance.
 	 */
 	protected static JsonParser getJsonParser() {
@@ -33,12 +34,12 @@ public class GsonRequest<T> extends Request<T> {
 	}
 
 	/**
-	 /**
+	 * /**
 	 * Make a GET request and return a parsed object from JSON.
 	 *
-	 * @param method The method of the request to make.
-	 * @param url URL of the request to make.
-	 * @param clazz Relevant class object, for Gson's reflection.
+	 * @param method        The method of the request to make.
+	 * @param url           URL of the request to make.
+	 * @param clazz         Relevant class object, for Gson's reflection.
 	 * @param listener
 	 * @param errorListener
 	 */
@@ -103,41 +104,22 @@ public class GsonRequest<T> extends Request<T> {
 
 	@Override
 	protected VolleyError parseNetworkError(VolleyError volleyError) {
-		try {
-			NetworkResponse response = volleyError.networkResponse;
-			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-			Gson gson = GsonUtils.getGson();
-			if (LogEx.isLoggable(LogEx.VERBOSE)) {
-				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
-			}
-			return super.parseNetworkError(volleyError);
-		} catch (UnsupportedEncodingException e) {
-			return super.parseNetworkError(volleyError);
-		} catch (JsonSyntaxException e) {
-			return super.parseNetworkError(volleyError);
-		}
-	}
-
-	protected <W> VolleyError parseNetworkError(VolleyError volleyError, Class<W> clazz) {
-		try {
-			NetworkResponse response = volleyError.networkResponse;
-			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-			Gson gson = GsonUtils.getGson();
-			if (LogEx.isLoggable(LogEx.VERBOSE)) {
-				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
-			}
-			W error = gson.fromJson(json, clazz);
-			if (error instanceof ResultWrapper) {
-				ResultWrapper wrapper = (ResultWrapper) error;
-				return new VolleyError(wrapper.getMessage(), volleyError);
-			} else {
+		if (volleyError instanceof ServerError && volleyError.networkResponse != null) {
+			try {
+				String json = new String(volleyError.networkResponse.data,
+						HttpHeaderParser.parseCharset(volleyError.networkResponse.headers));
+				Gson gson = GsonUtils.getGson();
+				if (LogEx.isLoggable(LogEx.VERBOSE)) {
+					LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
+				}
+				return super.parseNetworkError(volleyError);
+			} catch (UnsupportedEncodingException e) {
+				return super.parseNetworkError(volleyError);
+			} catch (JsonSyntaxException e) {
 				return super.parseNetworkError(volleyError);
 			}
-		} catch (UnsupportedEncodingException e) {
-			return super.parseNetworkError(volleyError);
-		} catch (JsonSyntaxException e) {
+		} else {
 			return super.parseNetworkError(volleyError);
 		}
 	}
-
 }

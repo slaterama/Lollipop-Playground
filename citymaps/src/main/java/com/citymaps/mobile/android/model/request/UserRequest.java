@@ -23,27 +23,27 @@ public class UserRequest extends GsonWrappedRequest<User, UserRequest.UserWrappe
 											 Response.Listener<User> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER, userId);
-		return new UserRequest(Method.POST, urlString, User.class, listener, errorListener);
+		return new UserRequest(Method.POST, urlString, listener, errorListener);
 	}
 
 	public static UserRequest newLoginRequest(Context context, String citymapsToken,
-										   Response.Listener<User> listener, Response.ErrorListener errorListener) {
+											  Response.Listener<User> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_LOGIN_WITH_TOKEN, citymapsToken);
-		return new UserRequest(Method.POST, urlString, User.class, listener, errorListener);
+		return new UserRequest(Method.POST, urlString, listener, errorListener);
 	}
 
 	public static UserRequest newLoginRequest(Context context, String username, String password,
-										   Response.Listener<User> listener, Response.ErrorListener errorListener) {
+											  Response.Listener<User> listener, Response.ErrorListener errorListener) {
 		return newLoginRequest(context, username, password, null, null, null, listener, errorListener);
 	}
 
 	public static UserRequest newLoginRequest(Context context, String username, String password,
-										   String thirdPartyName, String thirdPartyId, String thirdPartyToken,
-										   Response.Listener<User> listener, Response.ErrorListener errorListener) {
+											  String thirdPartyName, String thirdPartyId, String thirdPartyToken,
+											  Response.Listener<User> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_LOGIN);
-		UserRequest request = new UserRequest(Method.POST, urlString, User.class, listener, errorListener);
+		UserRequest request = new UserRequest(Method.POST, urlString, listener, errorListener);
 		Map<String, String> params = new HashMap<String, String>(8);
 		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
 			params.put(KEY_USERNAME, username);
@@ -52,18 +52,11 @@ public class UserRequest extends GsonWrappedRequest<User, UserRequest.UserWrappe
 		request.putParams(params);
 		return request;
 	}
-
-	private UserRequest(int method, String url, Class<User> clazz,
-						Response.Listener<User> listener, Response.ErrorListener errorListener) {
-		super(method, url, clazz, UserWrapper.class, listener, errorListener);
+	
+	public UserRequest(int method, String url,
+					   Response.Listener<User> listener, Response.ErrorListener errorListener) {
+		super(method, url, User.class, UserWrapper.class, listener, errorListener);
 	}
-
-	/*
-	@Override
-	protected User getData(UserWrapper result) {
-		return result.mUser;
-	}
-	*/
 
 	public static class UserWrapper extends ResultWrapperV2<User> {
 		@SerializedName("user")

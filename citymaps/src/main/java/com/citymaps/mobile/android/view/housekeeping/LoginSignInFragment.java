@@ -10,11 +10,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.VolleyCallbacks;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.LogEx;
@@ -29,7 +32,7 @@ import com.citymaps.mobile.android.util.LogEx;
  *
  */
 public class LoginSignInFragment extends Fragment
-		implements TextView.OnEditorActionListener, View.OnClickListener {
+		implements TextView.OnEditorActionListener, View.OnClickListener, VolleyCallbacks<User> {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -155,6 +158,26 @@ public class LoginSignInFragment extends Fragment
 		}
 	}
 
+	@Override
+	public void onResponse(User response) {
+		LogEx.d("Logged In!!!!");
+	}
+
+	@Override
+	public void onErrorResponse(VolleyError error) {
+		if (error instanceof NoConnectionError) {
+			Toast.makeText(getActivity(), R.string.app_error_message_no_connection, Toast.LENGTH_SHORT).show();
+		} else {
+			String message = error.getLocalizedMessage();
+			if (TextUtils.isEmpty(message)) {
+				message = getString(R.string.app_error_message_generic);
+			}
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+		}
+	}
+
 	protected void signIn() {
 		// Validate input
 		String username = mUsernameView.getText().toString();
@@ -190,18 +213,7 @@ public class LoginSignInFragment extends Fragment
 
 		LogEx.d();
 		// Try to sign in
-		UserRequest loginRequest = UserRequest.newLoginRequest(getActivity(),
-				username, password, new Response.Listener<User>() {
-					@Override
-					public void onResponse(User response) {
-						LogEx.d("Logged In!!!!");
-					}
-				}, new Response.ErrorListener() {
-					@Override
-					public void onErrorResponse(VolleyError error) {
-						LogEx.d("Error: " + error.getMessage());
-					}
-				});
+		UserRequest loginRequest = UserRequest.newLoginRequest(getActivity(), username, password, this, this);
 		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
 	}
 

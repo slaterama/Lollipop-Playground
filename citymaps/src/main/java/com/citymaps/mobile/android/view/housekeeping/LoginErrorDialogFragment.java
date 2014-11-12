@@ -33,7 +33,7 @@ public class LoginErrorDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Bundle args = getArguments();
 		CharSequence title = args.getCharSequence(ARG_TITLE, getString(R.string.app_name));
-		CharSequence message = args.getCharSequence(ARG_MESSAGE, getString(R.string.app_generic_error_message));
+		CharSequence message = args.getCharSequence(ARG_MESSAGE, getString(R.string.app_error_message_generic));
 		return new AlertDialog.Builder(getActivity())
 				.setTitle(title)
 				.setMessage(message)

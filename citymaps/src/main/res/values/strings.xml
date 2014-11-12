@@ -8,7 +8,8 @@
 	<!-- <string name="app_name">Citymaps</string> -->
 	<string name="hello_world">Hello world!</string>
 	<string name="hello_blank_fragment">Hello blank fragment</string>
-	<string name="app_generic_error_message">An unknown error occurred.</string>
+	<string name="app_error_message_generic">An unknown error occurred.</string>
+	<string name="app_error_message_no_connection">You are not connected to the Internet.</string>
 
 	<!-- ================================================================
 	Action (menu) strings
