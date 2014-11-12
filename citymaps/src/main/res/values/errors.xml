@@ -18,5 +18,6 @@
 	<string name="error_login_valid_email_message">Please enter a valid email.</string>
 	<string name="error_login_valid_password_message">Please enter a valid password. Passwords must be between %1$d and %2$d characters long.</string>
 	<string name="error_login_passwords_do_not_match">Passwords do not match.</string>
+	<string name="error_login_emails_do_not_match">Confirmation email does not match.</string>
 
 </resources>

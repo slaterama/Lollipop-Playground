@@ -85,15 +85,14 @@ public class GsonRequest<T> extends Request<T> {
 		mListener.onResponse(response);
 	}
 
-	@Override
-	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+	protected <W> Response<W> parseNetworkResponse(NetworkResponse response, Class<W> clazz) {
 		try {
 			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 			Gson gson = GsonUtils.getGson();
 			if (LogEx.isLoggable(LogEx.VERBOSE)) {
 				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
 			}
-			T result = gson.fromJson(json, mClass);
+			W result = gson.fromJson(json, clazz);
 			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 		} catch (UnsupportedEncodingException e) {
 			return Response.error(new ParseError(e));
@@ -103,7 +102,11 @@ public class GsonRequest<T> extends Request<T> {
 	}
 
 	@Override
-	protected VolleyError parseNetworkError(VolleyError volleyError) {
+	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+		return parseNetworkResponse(response, mClass);
+	}
+
+	protected <W> VolleyError parseNetworkError(VolleyError volleyError, Class<W> clazz) {
 		if (volleyError instanceof ServerError && volleyError.networkResponse != null) {
 			try {
 				String json = new String(volleyError.networkResponse.data,
@@ -121,5 +124,10 @@ public class GsonRequest<T> extends Request<T> {
 		} else {
 			return super.parseNetworkError(volleyError);
 		}
+	}
+
+	@Override
+	protected VolleyError parseNetworkError(VolleyError volleyError) {
+		return parseNetworkError(volleyError, mClass);
 	}
 }

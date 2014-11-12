@@ -112,7 +112,7 @@ public class LoginActivity extends TrackedActionBarActivity
 	}
 
 	@Override
-	public void onResetPasswordInteraction(Uri uri) {
+	public void onResetPasswordSuccess() {
 
 	}
 

@@ -189,26 +189,20 @@ public class LoginSignInFragment extends Fragment
 	}
 
 	@Override
-	public void onErrorResponse(final VolleyError error) {
+	public void onErrorResponse(VolleyError error) {
 //		mActivity.setSupportProgressBarIndeterminateVisibility(false);
 
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (error instanceof NoConnectionError) {
-					Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
-				} else {
-					String message = error.getLocalizedMessage();
-					if (TextUtils.isEmpty(message)) {
-						message = getString(R.string.error_message_generic);
-					}
-					LoginErrorDialogFragment fragment =
-							LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-					fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
-				}
+		if (error instanceof NoConnectionError) {
+			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+		} else {
+			String message = error.getLocalizedMessage();
+			if (TextUtils.isEmpty(message)) {
+				message = getString(R.string.error_message_generic);
 			}
-		}, 3000);
-
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+		}
 	}
 
 	private boolean validateFields() {
@@ -248,41 +242,41 @@ public class LoginSignInFragment extends Fragment
 		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
 	}
 
-	/**
-	 * This interface must be implemented by activities that contain this
-	 * fragment to allow an interaction in this fragment to be communicated
-	 * to the activity and potentially other fragments contained in that
-	 * activity.
-	 * <p/>
-	 * See the Android Training lesson <a href=
-	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-	 * >Communicating with Other Fragments</a> for more information.
-	 */
-	public interface OnSignInListener {
-		public void onSignInSuccess(User currentUser);
+/**
+ * This interface must be implemented by activities that contain this
+ * fragment to allow an interaction in this fragment to be communicated
+ * to the activity and potentially other fragments contained in that
+ * activity.
+ * <p/>
+ * See the Android Training lesson <a href=
+ * "http://developer.android.com/training/basics/fragments/communicating.html"
+ * >Communicating with Other Fragments</a> for more information.
+ */
+public interface OnSignInListener {
+	public void onSignInSuccess(User currentUser);
 
-		public void onSignInCreateAccount();
+	public void onSignInCreateAccount();
 
-		public void onSignInResetPassword();
+	public void onSignInResetPassword();
+}
+
+private static enum FieldValidator {
+	USERNAME(CitymapsPatterns.USERNAME, R.string.error_login_enter_your_username,
+			R.string.error_login_valid_username_message, BuildConfig.USERNAME_MIN_LENGTH, BuildConfig.USERNAME_MAX_LENGTH),
+	PASSWORD(CitymapsPatterns.PASSWORD, R.string.error_login_enter_your_password,
+			R.string.error_login_valid_password_message, BuildConfig.PASSWORD_MIN_LENGTH, BuildConfig.PASSWORD_MAX_LENGTH);
+
+	private Pattern mPattern;
+	private int mMissingFieldMessageResId;
+	private int mInvalidFieldMessageResId;
+	private Object[] mInvalidFieldMessageArgs;
+
+	private FieldValidator(Pattern pattern, int missingFieldMessageResId,
+						   int invalidFieldMessageResId, Object... invalidFieldMessageArgs) {
+		mPattern = pattern;
+		mMissingFieldMessageResId = missingFieldMessageResId;
+		mInvalidFieldMessageResId = invalidFieldMessageResId;
+		mInvalidFieldMessageArgs = invalidFieldMessageArgs;
 	}
-
-	private static enum FieldValidator {
-		USERNAME(CitymapsPatterns.USERNAME, R.string.error_login_enter_your_username,
-				R.string.error_login_valid_username_message, BuildConfig.USERNAME_MIN_LENGTH, BuildConfig.USERNAME_MAX_LENGTH),
-		PASSWORD(CitymapsPatterns.PASSWORD, R.string.error_login_enter_your_password,
-				R.string.error_login_valid_password_message, BuildConfig.PASSWORD_MIN_LENGTH, BuildConfig.PASSWORD_MAX_LENGTH);
-
-		private Pattern mPattern;
-		private int mMissingFieldMessageResId;
-		private int mInvalidFieldMessageResId;
-		private Object[] mInvalidFieldMessageArgs;
-
-		private FieldValidator(Pattern pattern, int missingFieldMessageResId,
-							   int invalidFieldMessageResId, Object... invalidFieldMessageArgs) {
-			mPattern = pattern;
-			mMissingFieldMessageResId = missingFieldMessageResId;
-			mInvalidFieldMessageResId = invalidFieldMessageResId;
-			mInvalidFieldMessageArgs = invalidFieldMessageArgs;
-		}
-	}
+}
 }

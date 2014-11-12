@@ -28,8 +28,8 @@ public class WrappedRequest<T, W extends ResultWrapper<T>> extends GsonRequest<T
 			if (LogEx.isLoggable(LogEx.VERBOSE)) {
 				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
 			}
-			W resultWrapper = gson.fromJson(json, mWrapperClass);
-			return Response.success(resultWrapper.getResult(), HttpHeaderParser.parseCacheHeaders(response));
+			W wrapper = gson.fromJson(json, mWrapperClass);
+			return Response.success(wrapper.getResult(), HttpHeaderParser.parseCacheHeaders(response));
 		} catch (UnsupportedEncodingException e) {
 			return Response.error(new ParseError(e));
 		} catch (JsonSyntaxException e) {
@@ -47,8 +47,8 @@ public class WrappedRequest<T, W extends ResultWrapper<T>> extends GsonRequest<T
 				if (LogEx.isLoggable(LogEx.VERBOSE)) {
 					LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
 				}
-				W errorWrapper = gson.fromJson(json, mWrapperClass);
-				String message = errorWrapper.getMessage();
+				W wrapper = gson.fromJson(json, mWrapperClass);
+				String message = wrapper.getMessage();
 				return new VolleyError(message, volleyError);
 			} catch (UnsupportedEncodingException e) {
 				return super.parseNetworkError(volleyError);
