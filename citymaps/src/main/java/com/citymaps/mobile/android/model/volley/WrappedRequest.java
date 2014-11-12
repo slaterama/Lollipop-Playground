@@ -1,7 +1,8 @@
-package com.citymaps.mobile.android.model;
+package com.citymaps.mobile.android.model.volley;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.citymaps.mobile.android.model.vo.ResultWrapper;
 import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.Gson;

@@ -90,6 +90,7 @@ public class Endpoint {
 		PLACE,
 		USER,
 		USER_LOGIN,
-		USER_LOGIN_WITH_TOKEN
+		USER_LOGIN_WITH_TOKEN,
+		USER_REGISTER
 	}
 }

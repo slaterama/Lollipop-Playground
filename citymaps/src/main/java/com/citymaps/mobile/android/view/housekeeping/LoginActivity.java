@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
@@ -106,12 +105,10 @@ public class LoginActivity extends TrackedActionBarActivity
 
 	@Override
 	public void onCreateAccountSuccess(User currentUser) {
-
-	}
-
-	@Override
-	public void onCreateAccountInteraction(Uri uri) {
-
+		Intent data = new Intent();
+		// data.putExtra("currentUser", currentUser); TODO Once User is Parcelable
+		setResult(RESULT_OK, data);
+		finish();
 	}
 
 	@Override

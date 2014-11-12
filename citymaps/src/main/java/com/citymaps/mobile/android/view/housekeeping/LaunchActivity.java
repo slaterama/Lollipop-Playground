@@ -14,7 +14,7 @@ import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.request.UserRequest;
+import com.citymaps.mobile.android.model.volley.UserRequest;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.IntentUtils;

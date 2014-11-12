@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model;
+package com.citymaps.mobile.android.model.vo;
 
 import android.os.Parcel;
 import android.os.Parcelable;

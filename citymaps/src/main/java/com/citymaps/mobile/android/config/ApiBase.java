@@ -30,5 +30,6 @@ public class ApiBase extends Api {
 		addEndpoint(new Endpoint(Type.USER, "v2/user/%s"));
 		addEndpoint(new Endpoint(Type.USER_LOGIN, "v2/user/login", APPEND_DEFAULT));
 		addEndpoint(new Endpoint(Type.USER_LOGIN_WITH_TOKEN, "v2/user/login?citymaps_token=%s", APPEND_DEFAULT));
+		addEndpoint(new Endpoint(Type.USER_REGISTER, "v2/user/register?login=1", APPEND_DEFAULT));
 	}
 }

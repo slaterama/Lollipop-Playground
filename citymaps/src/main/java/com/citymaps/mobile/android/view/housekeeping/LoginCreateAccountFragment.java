@@ -1,7 +1,6 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,15 +12,17 @@ import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+import com.android.volley.NoConnectionError;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.VolleyCallbacks;
-import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.model.volley.UserRequest;
+import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CitymapsPatterns;
-import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.ViewUtils;
 
 import java.util.LinkedHashMap;
@@ -174,12 +175,29 @@ public class LoginCreateAccountFragment extends Fragment
 
 	@Override
 	public void onResponse(User response) {
+//		mActivity.setSupportProgressBarIndeterminateVisibility(false);
 
+		SessionManager.getInstance(getActivity()).setCurrentUser(response);
+		if (mListener != null) {
+			mListener.onCreateAccountSuccess(response);
+		}
 	}
 
 	@Override
 	public void onErrorResponse(VolleyError error) {
+//		mActivity.setSupportProgressBarIndeterminateVisibility(false);
 
+		if (error instanceof NoConnectionError) {
+			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+		} else {
+			String message = error.getLocalizedMessage();
+			if (TextUtils.isEmpty(message)) {
+				message = getString(R.string.error_message_generic);
+			}
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+		}
 	}
 
 	private boolean validateFields() {
@@ -222,14 +240,13 @@ public class LoginCreateAccountFragment extends Fragment
 			return;
 		}
 
-		LogEx.d("All fields valid!");
 		String firstName = mFirstNameView.getText().toString();
 		String lastName = mLastNameView.getText().toString();
 		String username = mUsernameView.getText().toString();
 		String email = mEmailView.getText().toString();
 		String password = mPasswordView.getText().toString();
-//		UserRequest loginRequest = UserRequest.newLoginRequest(mActivity, username, password, this, this);
-//		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
+		UserRequest registerRequest = UserRequest.newRegisterRequest(getActivity(), username, password, firstName, lastName, email, this, this);
+		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);
 	}
 
 	/**
@@ -245,7 +262,6 @@ public class LoginCreateAccountFragment extends Fragment
     public interface OnCreateAccountListener {
         // TODO: Update argument type and name
 		public void onCreateAccountSuccess(User currentUser);
-        public void onCreateAccountInteraction(Uri uri);
     }
 
 	private static enum FieldValidator {

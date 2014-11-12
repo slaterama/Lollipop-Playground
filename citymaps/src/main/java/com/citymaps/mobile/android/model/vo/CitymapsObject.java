@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model;
+package com.citymaps.mobile.android.model.vo;
 
 import android.content.Context;
 import android.util.SparseArray;

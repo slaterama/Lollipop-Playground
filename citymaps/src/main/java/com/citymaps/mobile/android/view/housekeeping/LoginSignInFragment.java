@@ -2,10 +2,10 @@ package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -19,11 +19,10 @@ import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.VolleyCallbacks;
-import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.model.volley.UserRequest;
+import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CitymapsPatterns;
-import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -190,20 +189,26 @@ public class LoginSignInFragment extends Fragment
 	}
 
 	@Override
-	public void onErrorResponse(VolleyError error) {
+	public void onErrorResponse(final VolleyError error) {
 //		mActivity.setSupportProgressBarIndeterminateVisibility(false);
 
-		if (error instanceof NoConnectionError) {
-			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
-		} else {
-			String message = error.getLocalizedMessage();
-			if (TextUtils.isEmpty(message)) {
-				message = getString(R.string.error_message_generic);
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (error instanceof NoConnectionError) {
+					Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+				} else {
+					String message = error.getLocalizedMessage();
+					if (TextUtils.isEmpty(message)) {
+						message = getString(R.string.error_message_generic);
+					}
+					LoginErrorDialogFragment fragment =
+							LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+					fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+				}
 			}
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
-		}
+		}, 3000);
+
 	}
 
 	private boolean validateFields() {
