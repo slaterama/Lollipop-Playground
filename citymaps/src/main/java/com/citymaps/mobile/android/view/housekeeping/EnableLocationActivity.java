@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.view.View;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 public class EnableLocationActivity extends TrackedActionBarActivity {
@@ -37,7 +38,9 @@ public class EnableLocationActivity extends TrackedActionBarActivity {
 
 		// TODO Some sort of logic to choose Authenticate vs. Main?
 
-		startActivity(new Intent(this, AuthenticateActivity.class));
+		Intent intent = new Intent(this, AuthenticateActivity.class);
+		IntentUtils.putStartupMode(intent, true);
+		startActivity(intent);
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferenceUtils.putEnableLocationProcessed(sp, true).apply();

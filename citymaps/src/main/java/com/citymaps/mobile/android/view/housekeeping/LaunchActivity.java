@@ -13,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
@@ -194,6 +195,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
 					Intent intent = new Intent(activity, AuthenticateActivity.class);
+					IntentUtils.putStartupMode(intent, true);
 					activity.startActivity(intent);
 					activity.finish();
 					return;
@@ -215,10 +217,12 @@ public class LaunchActivity extends TrackedActionBarActivity
 							@Override
 							public void onErrorResponse(VolleyError error) {
 								Intent intent = new Intent(activity, AuthenticateActivity.class);
+								IntentUtils.putStartupMode(intent, true);
 								activity.startActivity(intent);
 								activity.finish();
 							}
 						});
+				VolleyManager.getInstance(getActivity()).getRequestQueue().add(request);
 			}
 		}
 	}

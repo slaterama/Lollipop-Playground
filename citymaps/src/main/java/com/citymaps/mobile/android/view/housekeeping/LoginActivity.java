@@ -1,24 +1,22 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
+import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
 
 public class LoginActivity extends TrackedActionBarActivity
 		implements LoginSignInFragment.OnSignInListener,
@@ -89,6 +87,14 @@ public class LoginActivity extends TrackedActionBarActivity
     }
 
 	@Override
+	public void onSignInSuccess(User currentUser) {
+		Intent data = new Intent();
+		// data.putExtra("currentUser", currentUser); TODO Once User is Parcelable
+		setResult(RESULT_OK, data);
+		finish();
+	}
+
+	@Override
 	public void onSignInCreateAccount() {
 		showFragment(CREATE_ACCOUNT_MODE, true, true);
 	}
@@ -96,6 +102,11 @@ public class LoginActivity extends TrackedActionBarActivity
 	@Override
 	public void onSignInResetPassword() {
 		showFragment(RESET_PASSWORD_MODE, true, true);
+	}
+
+	@Override
+	public void onCreateAccountSuccess(User currentUser) {
+
 	}
 
 	@Override

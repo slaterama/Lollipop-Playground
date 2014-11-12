@@ -8,8 +8,6 @@
 	<!-- <string name="app_name">Citymaps</string> -->
 	<string name="hello_world">Hello world!</string>
 	<string name="hello_blank_fragment">Hello blank fragment</string>
-	<string name="app_error_message_generic">An unknown error occurred.</string>
-	<string name="app_error_message_no_connection">You are not connected to the Internet.</string>
 
 	<!-- ================================================================
 	Action (menu) strings
@@ -93,13 +91,5 @@
 	<string name="login_reset_password_email_address_hint">Email address</string>
 	<string name="login_reset_password_confirm_email_hint">Confirm email</string>
 	<string name="login_reset_password_instructions">Please provide your email address and we will send you a link to reset your Citymaps password.</string>
-
-	<!-- ================================================================
-	Error strings
-	===================================================================== -->
-
-	<string name="error_login_missing_username">Please enter a username.</string>
-	<string name="error_login_missing_password">Please enter a password.</string>
-	<string name="error_login_password_length_message">Password must be between %1$d and %2$d characters.</string>
 
 </resources>

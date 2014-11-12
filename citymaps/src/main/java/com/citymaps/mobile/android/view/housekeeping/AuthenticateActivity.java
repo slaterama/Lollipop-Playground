@@ -13,6 +13,9 @@ import com.citymaps.mobile.android.view.MainActivity;
 
 public class AuthenticateActivity extends Activity {
 
+	private static final int REQUEST_CODE_LOGIN = 1;
+	private static final int REQUEST_CODE_CREATE_ACCOUNT = 2;
+
 	boolean mStartupMode;
 
     @Override
@@ -24,6 +27,20 @@ public class AuthenticateActivity extends Activity {
         setContentView(R.layout.activity_authenticate);
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
     }
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_CREATE_ACCOUNT:
+			case REQUEST_CODE_LOGIN:
+				if (resultCode == RESULT_OK) {
+					onContinue();
+				}
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
 
 	public void onButtonClick(View view) {
 		int id = view.getId();
@@ -39,23 +56,27 @@ public class AuthenticateActivity extends Activity {
 			case R.id.login_authenticate_create_account_button: {
 				Intent intent = new Intent(this, LoginActivity.class);
 				IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
-				startActivity(intent);
+				startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
 				break;
 			}
 			case R.id.login_authenticate_signin_button: {
 				Intent intent = new Intent(this, LoginActivity.class);
 				IntentUtils.putLoginMode(intent, LoginActivity.SIGN_IN_MODE);
-				startActivity(intent);
+				startActivityForResult(intent, REQUEST_CODE_LOGIN);
 				break;
 			}
 			case R.id.login_authenticate_skip_button: {
-				if (mStartupMode) {
-					startActivity(new Intent(this, MainActivity.class));
-				} else {
-					finish();
-				}
+				onContinue();
 				break;
 			}
+		}
+	}
+
+	public void onContinue() {
+		if (mStartupMode) {
+			startActivity(new Intent(this, MainActivity.class));
+		} else {
+			finish();
 		}
 	}
 }

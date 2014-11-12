@@ -36,6 +36,7 @@ public class TourActivity extends TrackedActionBarActivity {
 						// TODO Some sort of logic to choose Authenticate vs. Main?
 
 						intent = new Intent(this, AuthenticateActivity.class);
+						IntentUtils.putStartupMode(intent, true);
 					} else {
 						intent = new Intent(this, EnableLocationActivity.class);
 					}

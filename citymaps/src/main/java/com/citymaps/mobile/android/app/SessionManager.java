@@ -6,6 +6,7 @@ package com.citymaps.mobile.android.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.vo.Config;
 import com.citymaps.mobile.android.model.vo.User;
@@ -62,8 +63,18 @@ public class SessionManager {
 	}
 
 	public void setCurrentUser(User user) {
-		mCurrentUser = user;
-		// TODO send broadcast?
+		if (user != mCurrentUser) {
+			mCurrentUser = user;
+
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(sContext);
+			if (user == null) {
+				SharedPreferenceUtils.remove(sp, SharedPreferenceUtils.Key.CITYMAPS_TOKEN).apply();
+			} else {
+				SharedPreferenceUtils.putCitymapsToken(sp, user.getCitymapsToken()).apply();
+			}
+
+			// TODO Send broadcast?
+		}
 	}
 
 	public Environment getEnvironment() {

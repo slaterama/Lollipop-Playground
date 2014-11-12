@@ -2,6 +2,7 @@ package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import android.text.TextUtils;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
@@ -9,6 +10,7 @@ import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.WrappedRequest;
 import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;

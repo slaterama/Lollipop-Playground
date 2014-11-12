@@ -32,7 +32,11 @@ android {
         buildConfigField "String", "GHOST_USER_ID_DEV", "\"28e20039-9742-45b6-a565-07a7acd88908\""
         buildConfigField "String", "PLAY_STORE_ID", "\"com.citymaps.mobile.android\""
 		buildConfigField "int", "PASSWORD_MIN_LENGTH", "6"
-		buildConfigField "int", "PASSWORD_MAX_LENGTH", "16"
+		buildConfigField "int", "PASSWORD_MAX_LENGTH", "25"
+        buildConfigField "int", "USERNAME_MIN_LENGTH", "3"
+        buildConfigField "int", "USERNAME_MAX_LENGTH", "25"
+        buildConfigField "int", "NAME_MIN_LENGTH", "1"
+        buildConfigField "int", "NAME_MAX_LENGTH", "25"
     }
 
     signingConfigs {
