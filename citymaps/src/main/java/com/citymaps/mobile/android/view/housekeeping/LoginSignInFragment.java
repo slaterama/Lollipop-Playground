@@ -199,7 +199,7 @@ public class LoginSignInFragment extends Fragment
 				}, new Response.ErrorListener() {
 					@Override
 					public void onErrorResponse(VolleyError error) {
-						LogEx.d("Error!!!!");
+						LogEx.d("Error: " + error.getMessage());
 					}
 				});
 		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
