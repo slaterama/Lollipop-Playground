@@ -6,7 +6,7 @@ import com.android.volley.Response;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.GsonWrappedRequest;
+import com.citymaps.mobile.android.model.WrappedRequest;
 import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.citymaps.mobile.android.model.vo.User;
 import com.google.gson.annotations.SerializedName;
@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserRequest extends GsonWrappedRequest<User, UserRequest.UserWrapper> {
+public class UserRequest extends WrappedRequest<User, UserRequest.UserWrapper> {
 
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_PASSWORD = "password";

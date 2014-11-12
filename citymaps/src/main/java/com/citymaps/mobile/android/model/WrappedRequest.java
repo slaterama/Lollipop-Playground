@@ -9,12 +9,12 @@ import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
 
-public class GsonWrappedRequest<T, W extends ResultWrapper<T>> extends GsonRequest<T> {
+public class WrappedRequest<T, W extends ResultWrapper<T>> extends GsonRequest<T> {
 
 	private Class<W> mWrapperClass;
 
-	public GsonWrappedRequest(int method, String url, Class<T> clazz, Class<W> wrapperClass,
-							  Response.Listener<T> listener, Response.ErrorListener errorListener) {
+	public WrappedRequest(int method, String url, Class<T> clazz, Class<W> wrapperClass,
+						  Response.Listener<T> listener, Response.ErrorListener errorListener) {
 		super(method, url, clazz, listener, errorListener);
 		mWrapperClass = wrapperClass;
 	}
