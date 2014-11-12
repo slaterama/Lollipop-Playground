@@ -56,7 +56,18 @@ public class LoginCreateAccountFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @Override
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mListener = (OnCreateAccountListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnCreateAccountListener");
+		}
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -81,31 +92,26 @@ public class LoginCreateAccountFragment extends Fragment {
 		ViewUtils.setSpannableText(disclaimerView, spannable);
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onCreateAccountInteraction(uri);
-        }
-    }
+	@Override
+	public void onResume() {
+		super.onResume();
+		getActivity().setTitle(R.string.login_create_account_activity_title);
+	}
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnCreateAccountListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnCreateAccountListener");
-        }
-    }
-
-    @Override
+	@Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
 
-    /**
+	// TODO: Rename method, update argument and hook method into UI event
+	public void onButtonPressed(Uri uri) {
+		if (mListener != null) {
+			mListener.onCreateAccountInteraction(uri);
+		}
+	}
+
+	/**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that

@@ -76,6 +76,7 @@
 	<string name="login_sign_in_password_hint">Password</string>
 	<string name="login_sign_in_create_account">Create Account</string>
 	<string name="login_sign_in_reset_password">Reset Password</string>
+	<string name="login_create_account_activity_title">Create Account</string>
 	<string name="login_create_account_first_name_hint">First Name</string>
 	<string name="login_create_account_last_name_hint">Last Name</string>
 	<string name="login_create_account_username_hint">Username</string>
@@ -87,6 +88,7 @@
 		<b><a href="citymaps.internal://com.citymaps.mobile.android/login?q=terms_of_service">Terms of Service</a></b> and
 		<b><a href="citymaps.internal://com.citymaps.mobile.android/login?q=privacy_policy">Privacy Policy</a></b>
 	]]></string>
+	<string name="login_reset_password_activity_title">Reset Password</string>
 	<string name="login_reset_password_email_address_hint">Email address</string>
 	<string name="login_reset_password_confirm_email_hint">Confirm email</string>
 	<string name="login_reset_password_instructions">Please provide your email address and we will send you a link to reset your Citymaps password.</string>

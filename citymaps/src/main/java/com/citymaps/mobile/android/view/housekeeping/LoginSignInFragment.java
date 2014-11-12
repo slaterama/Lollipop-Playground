@@ -60,7 +60,18 @@ public class LoginSignInFragment extends Fragment
         // Required empty public constructor
     }
 
-    @Override
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mListener = (OnSignInListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnSignInListener");
+		}
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -87,18 +98,13 @@ public class LoginSignInFragment extends Fragment
 		passwordView.setOnEditorActionListener(this);
 	}
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnSignInListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnSignInListener");
-        }
-    }
+	@Override
+	public void onResume() {
+		super.onResume();
+		getActivity().setTitle(R.string.login_sign_in_activity_title);
+	}
 
-    @Override
+	@Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
