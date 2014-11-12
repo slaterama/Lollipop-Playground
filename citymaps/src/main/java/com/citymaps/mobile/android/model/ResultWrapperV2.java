@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
-public abstract class ResultWrapperV2 implements ResultWrapper, Parcelable {
+public abstract class ResultWrapperV2<T> implements ResultWrapper<T>, Parcelable {
 
 	/**
 	 * The return code associated with this API request.
@@ -25,6 +25,18 @@ public abstract class ResultWrapperV2 implements ResultWrapper, Parcelable {
 	private String mBuild;
 
 	/**
+	 * The Citymaps API error message (if an error occurred).
+	 */
+	@SerializedName("message")
+	private String mMessage;
+
+	/**
+	 * The Citymaps API error reason (if an error occurred).
+	 */
+	@SerializedName("reason")
+	private String mReason;
+
+	/**
 	 * The time it took this request to run.
 	 */
 	@SerializedName("time")
@@ -37,6 +49,8 @@ public abstract class ResultWrapperV2 implements ResultWrapper, Parcelable {
 		mCode = in.readInt();
 		mVersion = in.readInt();
 		mBuild = in.readString();
+		mMessage = in.readString();
+		mReason = in.readString();
 		mTime = in.readLong();
 	}
 
@@ -62,6 +76,20 @@ public abstract class ResultWrapperV2 implements ResultWrapper, Parcelable {
 	}
 
 	/**
+	 * Returns the Citymaps API error message.
+	 */
+	public String getMessage() {
+		return mMessage;
+	}
+
+	/**
+	 * Returns the Citymaps API error reason.
+	 */
+	public String getReason() {
+		return mReason;
+	}
+
+	/**
 	 * Returns the time it took this request to run.
 	 */
 	public long getTime() {
@@ -78,6 +106,8 @@ public abstract class ResultWrapperV2 implements ResultWrapper, Parcelable {
 		out.writeInt(mCode);
 		out.writeInt(mVersion);
 		out.writeString(mBuild);
+		out.writeString(mMessage);
+		out.writeString(mReason);
 		out.writeLong(mTime);
 	}
 }

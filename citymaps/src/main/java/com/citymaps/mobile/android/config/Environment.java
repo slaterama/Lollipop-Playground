@@ -144,9 +144,11 @@ public abstract class Environment {
 		return builder.toString();
 	}
 
+	/*
 	public String buildUrlString(Endpoint.Type endpointType) {
-		return buildUrlString(endpointType, null);
+		return buildUrlString(endpointType);
 	}
+	*/
 
 	public Api getApi() {
 		return mApi;

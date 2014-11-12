@@ -4,15 +4,19 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.text.TextUtils;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.request.UserRequest;
+import com.citymaps.mobile.android.model.vo.User;
 import com.citymaps.mobile.android.util.LogEx;
 
 /**
@@ -37,6 +41,9 @@ public class LoginSignInFragment extends Fragment
     private String mParam2;
 
     private OnSignInListener mListener;
+
+	private EditText mUsernameView;
+	private EditText mPasswordView;
 
     /**
      * Use this factory method to create a new instance of
@@ -74,6 +81,7 @@ public class LoginSignInFragment extends Fragment
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -90,12 +98,13 @@ public class LoginSignInFragment extends Fragment
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		mUsernameView = (EditText) view.findViewById(R.id.login_sign_in_username);
+		mPasswordView = (EditText) view.findViewById(R.id.login_sign_in_password);
+		mPasswordView.setOnEditorActionListener(this);
 		Button createAccountBtn = (Button) view.findViewById(R.id.login_sign_in_create_account_button);
 		createAccountBtn.setOnClickListener(this);
 		Button resetPasswordBtn = (Button) view.findViewById(R.id.login_sign_in_reset_password_button);
 		resetPasswordBtn.setOnClickListener(this);
-		EditText passwordView = (EditText) view.findViewById(R.id.login_sign_in_password);
-		passwordView.setOnEditorActionListener(this);
 	}
 
 	@Override
@@ -111,9 +120,20 @@ public class LoginSignInFragment extends Fragment
     }
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		switch (id) {
+			case R.id.action_submit:
+				signIn();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 		if (actionId == EditorInfo.IME_ACTION_GO) {
-			LogEx.d(String.format("actionId=%d, event=%s", actionId, event));
+			signIn();
+			return true;
 		}
 		return false;
 	}
@@ -135,6 +155,56 @@ public class LoginSignInFragment extends Fragment
 		}
 	}
 
+	protected void signIn() {
+		// Validate input
+		String username = mUsernameView.getText().toString();
+		if (TextUtils.isEmpty(username)) {
+			CharSequence message = getString(R.string.error_login_missing_username);
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			mUsernameView.requestFocus();
+			return;
+		}
+
+		String password = mPasswordView.getText().toString();
+		if (TextUtils.isEmpty(password)) {
+			CharSequence message = getString(R.string.error_login_missing_password);
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			mPasswordView.requestFocus();
+			return;
+		}
+
+		int length = password.length();
+		if (length < BuildConfig.PASSWORD_MIN_LENGTH || length > BuildConfig.PASSWORD_MAX_LENGTH) {
+			CharSequence message = getString(R.string.error_login_password_length_message,
+					BuildConfig.PASSWORD_MIN_LENGTH, BuildConfig.PASSWORD_MAX_LENGTH);
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			mPasswordView.requestFocus();
+			return;
+		}
+
+		LogEx.d();
+		// Try to sign in
+		UserRequest loginRequest = UserRequest.newLoginRequest(getActivity(),
+				username, password, new Response.Listener<User>() {
+					@Override
+					public void onResponse(User response) {
+						LogEx.d("Logged In!!!!");
+					}
+				}, new Response.ErrorListener() {
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						LogEx.d("Error!!!!");
+					}
+				});
+		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
+	}
+
 	/**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -149,5 +219,4 @@ public class LoginSignInFragment extends Fragment
 		public void onSignInCreateAccount();
 		public void onSignInResetPassword();
     }
-
 }

@@ -2,13 +2,11 @@ package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import android.text.TextUtils;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.GsonRequest;
+import com.citymaps.mobile.android.model.GsonWrappedRequest;
 import com.citymaps.mobile.android.model.ResultWrapperV2;
 import com.citymaps.mobile.android.model.vo.User;
 import com.google.gson.annotations.SerializedName;
@@ -16,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserRequest extends GsonRequest<User> {
+public class UserRequest extends GsonWrappedRequest<User, UserRequest.UserWrapper> {
 
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_PASSWORD = "password";
@@ -54,19 +52,26 @@ public class UserRequest extends GsonRequest<User> {
 		request.putParams(params);
 		return request;
 	}
+
 	private UserRequest(int method, String url, Class<User> clazz,
 						Response.Listener<User> listener, Response.ErrorListener errorListener) {
-		super(method, url, clazz, listener, errorListener);
+		super(method, url, clazz, UserWrapper.class, listener, errorListener);
 	}
 
+	/*
 	@Override
-	protected Response<User> parseNetworkResponse(NetworkResponse response) {
-		Response<UserWrapper> parsedResponse = parseNetworkResponse(response, UserWrapper.class);
-		return Response.success(parsedResponse.result.mUser, HttpHeaderParser.parseCacheHeaders(response));
+	protected User getData(UserWrapper result) {
+		return result.mUser;
 	}
+	*/
 
-	public static class UserWrapper extends ResultWrapperV2 {
+	public static class UserWrapper extends ResultWrapperV2<User> {
 		@SerializedName("user")
 		private User mUser;
+
+		@Override
+		public User getResult() {
+			return mUser;
+		}
 	}
 }

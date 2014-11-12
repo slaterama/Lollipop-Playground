@@ -2,10 +2,11 @@ package com.citymaps.mobile.android.model;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.citymaps.mobile.android.exception.CitymapsVolleyException;
 import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -83,14 +84,16 @@ public class GsonRequest<T> extends Request<T> {
 		mListener.onResponse(response);
 	}
 
-	protected <I> Response<I> parseNetworkResponse(NetworkResponse response, Class<I> clazz) {
+	@Override
+	protected Response<T> parseNetworkResponse(NetworkResponse response) {
 		try {
 			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 			Gson gson = GsonUtils.getGson();
 			if (LogEx.isLoggable(LogEx.VERBOSE)) {
 				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
 			}
-			return Response.success(gson.fromJson(json, clazz), HttpHeaderParser.parseCacheHeaders(response));
+			T result = gson.fromJson(json, mClass);
+			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 		} catch (UnsupportedEncodingException e) {
 			return Response.error(new ParseError(e));
 		} catch (JsonSyntaxException e) {
@@ -99,15 +102,42 @@ public class GsonRequest<T> extends Request<T> {
 	}
 
 	@Override
-	protected Response<T> parseNetworkResponse(NetworkResponse response) {
-		return parseNetworkResponse(response, mClass);
+	protected VolleyError parseNetworkError(VolleyError volleyError) {
+		try {
+			NetworkResponse response = volleyError.networkResponse;
+			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+			Gson gson = GsonUtils.getGson();
+			if (LogEx.isLoggable(LogEx.VERBOSE)) {
+				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
+			}
+			return super.parseNetworkError(volleyError);
+		} catch (UnsupportedEncodingException e) {
+			return super.parseNetworkError(volleyError);
+		} catch (JsonSyntaxException e) {
+			return super.parseNetworkError(volleyError);
+		}
 	}
 
-	@Override
-	public void deliverError(VolleyError error) {
-		if (LogEx.isLoggable(LogEx.ERROR)) {
-			LogEx.e(error.getMessage(), new CitymapsVolleyException(error));
+	protected <W> VolleyError parseNetworkError(VolleyError volleyError, Class<W> clazz) {
+		try {
+			NetworkResponse response = volleyError.networkResponse;
+			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+			Gson gson = GsonUtils.getGson();
+			if (LogEx.isLoggable(LogEx.VERBOSE)) {
+				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
+			}
+			W error = gson.fromJson(json, clazz);
+			if (error instanceof ResultWrapper) {
+				ResultWrapper wrapper = (ResultWrapper) error;
+				return new VolleyError(wrapper.getMessage(), volleyError);
+			} else {
+				return super.parseNetworkError(volleyError);
+			}
+		} catch (UnsupportedEncodingException e) {
+			return super.parseNetworkError(volleyError);
+		} catch (JsonSyntaxException e) {
+			return super.parseNetworkError(volleyError);
 		}
-		super.deliverError(error);
 	}
+
 }

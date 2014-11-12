@@ -1,8 +1,11 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -82,11 +85,6 @@ public class LoginActivity extends TrackedActionBarActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_go) {
-			LogEx.d();
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 

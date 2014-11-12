@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
-public abstract class ResultWrapperV1 implements ResultWrapper, Parcelable {
+public abstract class ResultWrapperV1<T> implements ResultWrapper<T>, Parcelable {
 
 	/**
 	 * The return code associated with this result.
@@ -13,16 +13,16 @@ public abstract class ResultWrapperV1 implements ResultWrapper, Parcelable {
 	private int mCode;
 
 	/**
-	 * The error string associated with this result if an error occurred.
-	 */
-	@SerializedName("error")
-	private String mError;
-
-	/**
 	 * The number of elements returned.
 	 */
 	@SerializedName("count")
 	private int mCount;
+
+	/**
+	 * The error string associated with this result if an error occurred.
+	 */
+	@SerializedName("error")
+	private String mError;
 
 	/**
 	 * Any metadata associated with this result.
@@ -38,8 +38,8 @@ public abstract class ResultWrapperV1 implements ResultWrapper, Parcelable {
 
 	private ResultWrapperV1(Parcel in) {
 		mCode = in.readInt();
-		mError = in.readString();
 		mCount = in.readInt();
+		mError = in.readString();
 		mMeta = in.readParcelable(Meta.class.getClassLoader());
 		mTime = in.readLong();
 	}
@@ -52,17 +52,17 @@ public abstract class ResultWrapperV1 implements ResultWrapper, Parcelable {
 	}
 
 	/**
-	 * Returns the error string associated with this result if an error occurred.
-	 */
-	public String getError() {
-		return mError;
-	}
-
-	/**
 	 * Returns the number of elements returned with this result.
 	 */
 	public int getCount() {
 		return mCount;
+	}
+
+	/**
+	 * Returns the error string associated with this result if an error occurred.
+	 */
+	public String getError() {
+		return mError;
 	}
 
 	/**
@@ -101,6 +101,16 @@ public abstract class ResultWrapperV1 implements ResultWrapper, Parcelable {
 	}
 
 	@Override
+	public String getMessage() {
+		return mError;
+	}
+
+	@Override
+	public String getReason() {
+		return null;
+	}
+
+	@Override
 	public int describeContents() {
 		return 0;
 	}
@@ -108,8 +118,8 @@ public abstract class ResultWrapperV1 implements ResultWrapper, Parcelable {
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeInt(mCode);
-		out.writeString(mError);
 		out.writeInt(mCount);
+		out.writeString(mError);
 		out.writeParcelable(mMeta, flags);
 		out.writeLong(mTime);
 	}
