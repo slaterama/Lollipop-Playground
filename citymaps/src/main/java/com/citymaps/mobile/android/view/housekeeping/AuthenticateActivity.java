@@ -10,13 +10,18 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
 
-public class AuthenticateActivity extends Activity {
+public class AuthenticateActivity extends Activity implements Session.StatusCallback {
 
 	private static final int REQUEST_CODE_LOGIN = 1;
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 2;
 
 	boolean mStartupMode;
+
+	UiLifecycleHelper mUiLifecycleHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +31,33 @@ public class AuthenticateActivity extends Activity {
 		}
         setContentView(R.layout.activity_authenticate);
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
+		mUiLifecycleHelper = new UiLifecycleHelper(this, this);
+		mUiLifecycleHelper.onCreate(savedInstanceState);
     }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mUiLifecycleHelper.onResume();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		mUiLifecycleHelper.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mUiLifecycleHelper.onPause();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mUiLifecycleHelper.onDestroy();
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -38,8 +69,14 @@ public class AuthenticateActivity extends Activity {
 				}
 				break;
 			default:
+				mUiLifecycleHelper.onActivityResult(requestCode, resultCode, data);
 				super.onActivityResult(requestCode, resultCode, data);
 		}
+	}
+
+	@Override
+	public void call(Session session, SessionState state, Exception exception) {
+
 	}
 
 	public void onButtonClick(View view) {

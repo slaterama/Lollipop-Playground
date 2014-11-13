@@ -26,6 +26,7 @@ android {
         targetSdkVersion 21
         versionCode 6
         versionName "2.0"
+		resValue "string", "facebook_app_id", "\"102833083180718\""
         resValue "string", "segmentio_write_key", "\"th6suo70cr\""
         resValue "string", "segmentio_read_key", "\"gam986n7go\""
         buildConfigField "String", "GHOST_USER_ID_PROD", "\"345a8d0a-922b-4ff7-81ba-3000c2d55e4d\""

@@ -133,18 +133,14 @@
 				android:name="com.citymaps.mobile.android.CITYMAPS_SECRET"
 				android:value="4e1546ddc0de4e9db622dac75da14ac0" />
 		<meta-data
-				android:name="com.citymaps.mobile.android.BASE_API_VERSION_NUMBER"
-				android:value="2" />
-		<meta-data
-				android:name="com.citymaps.mobile.android.BASE_API_BUILD_STRING"
-				android:value="2.0.0" />
+				android:name="com.google.android.gms.version"
+				android:value="@integer/google_play_services_version" />
 		<meta-data
 				android:name="com.citymaps.citymapsengine.API_KEY"
 				android:value="@string/citymaps_engine_api_key" />
 		<meta-data
-				android:name="com.google.android.gms.version"
-				android:value="@integer/google_play_services_version" />
-
+				android:name="com.facebook.sdk.ApplicationId"
+				android:value="@string/facebook_app_id" />
 	</application>
 
 </manifest>
