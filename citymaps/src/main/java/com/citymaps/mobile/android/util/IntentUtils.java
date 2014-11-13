@@ -2,8 +2,8 @@ package com.citymaps.mobile.android.util;
 
 import android.content.Intent;
 import com.citymaps.mobile.android.BuildConfig;
-import com.citymaps.mobile.android.modelnew.Config;
-import com.citymaps.mobile.android.modelnew.Version;
+import com.citymaps.mobile.android.model.Config;
+import com.citymaps.mobile.android.model.Version;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.

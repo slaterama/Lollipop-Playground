@@ -1,10 +1,10 @@
-package com.citymaps.mobile.android.modelnew.volley;
+package com.citymaps.mobile.android.model.volley;
 
 import android.content.Context;
 import com.android.volley.Response;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.modelnew.Version;
+import com.citymaps.mobile.android.model.Version;
 
 public class VersionRequest extends GsonRequest<Version> {
 

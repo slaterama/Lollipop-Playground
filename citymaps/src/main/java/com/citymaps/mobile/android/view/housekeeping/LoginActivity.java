@@ -14,7 +14,7 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.modelnew.User;
+import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.IntentUtils;
 
 public class LoginActivity extends TrackedActionBarActivity

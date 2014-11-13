@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.modelnew.volley;
+package com.citymaps.mobile.android.model.volley;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -11,8 +11,8 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.modelnew.User;
-import com.citymaps.mobile.android.modelnew.ThirdParty;
+import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.Gson;
