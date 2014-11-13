@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import com.citymaps.mobile.android.R;
@@ -42,7 +43,7 @@ public class AuthenticateActivity extends Activity implements Session.StatusCall
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		mUiLifecycleHelper.onSaveInstanceState(outState);
 	}
