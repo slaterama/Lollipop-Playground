@@ -91,5 +91,7 @@
 	<string name="login_reset_password_email_address_hint">Email address</string>
 	<string name="login_reset_password_confirm_email_hint">Confirm email</string>
 	<string name="login_reset_password_instructions">Please provide your email address and we will send you a link to reset your Citymaps password.</string>
+	<string name="login_reset_password_success">An email has been sent to %s with instructions for resetting your password.</string>
+	<string name="login_reset_password_failure">Unable to reset password: User not found.</string>
 
 </resources>

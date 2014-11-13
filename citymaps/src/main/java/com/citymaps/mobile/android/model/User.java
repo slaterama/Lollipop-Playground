@@ -48,6 +48,7 @@ public class User implements CitymapsObject {
 	/**
 	 * The user's email address.
 	 */
+	@SerializedName("email_address")
 	protected String mEmail;
 
 	/**

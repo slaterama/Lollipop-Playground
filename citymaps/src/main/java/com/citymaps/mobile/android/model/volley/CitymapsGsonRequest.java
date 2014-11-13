@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 
+	protected static final String MEMBER_NAME_CODE_V1 = "code";
+
 	Api.Version mVersion;
 
 	public CitymapsGsonRequest(Api.Version version, int method, String url, Class<T> clazz,
@@ -36,7 +38,7 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 				String message = result.getMessage();
 				String reason = result.getReason();
 				String error = (TextUtils.isEmpty(reason)
-						? message
+						? String.format("%s.", message)
 						: String.format("%s: %s", message, reason));
 				return new VolleyError(error, volleyError);
 		}

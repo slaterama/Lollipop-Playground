@@ -11,10 +11,9 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.ThirdParty;
+import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.GsonUtils;
-import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
@@ -91,6 +90,15 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 		return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
 	}
 
+	public static UserRequest newResetPasswordRequest(Context context, String email,
+													  Response.Listener<User> listener, Response.ErrorListener errorListener) {
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER_RESET_PASSWORD);
+		Map<String, String> params = new HashMap<String, String>(1);
+		params.put(KEY_EMAIL, email);
+		return new UserRequest(Api.Version.V1, Method.POST, urlString, null, params, listener, errorListener);
+	}
+
 	public UserRequest(Api.Version version, int method, String url,
 					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<User> listener, Response.ErrorListener errorListener) {
@@ -105,12 +113,11 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 
 	@Override
 	protected Response<User> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
-		LogEx.d(String.format("mVersion=%s", mVersion));
 		Gson gson = GsonUtils.getGson();
 		switch (mVersion) {
 			case V1:
 				// V1 api calls return "successful" responses with a code != 0 if there was an error
-				int code = jsonObject.get("code").getAsInt();
+				int code = jsonObject.get(MEMBER_NAME_CODE_V1).getAsInt();
 				if (code == 0) {
 					// Parse into a success result
 					UserWrapperV1 result = gson.fromJson(jsonObject, UserWrapperV1.class);

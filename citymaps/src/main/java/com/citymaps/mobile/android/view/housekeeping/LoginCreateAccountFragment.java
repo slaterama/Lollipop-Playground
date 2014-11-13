@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -239,6 +241,9 @@ public class LoginCreateAccountFragment extends Fragment
 		if (!validateFields()) {
 			return;
 		}
+
+		InputMethodManager manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		manager.hideSoftInputFromWindow(mFirstNameView.getWindowToken(), 0);
 
 		String firstName = mFirstNameView.getText().toString();
 		String lastName = mLastNameView.getText().toString();

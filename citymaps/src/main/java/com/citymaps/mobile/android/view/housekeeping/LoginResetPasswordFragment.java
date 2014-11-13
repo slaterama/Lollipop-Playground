@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,14 +9,19 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.NoConnectionError;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
+import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.volley.UserRequest;
 import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
 
 import java.util.LinkedHashMap;
@@ -30,48 +36,47 @@ import java.util.regex.Pattern;
  * to handle interaction events.
  * Use the {@link LoginResetPasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
 public class LoginResetPasswordFragment extends Fragment
 		implements TextView.OnEditorActionListener, VolleyCallbacks<User> {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+	// TODO: Rename parameter arguments, choose names that match
+	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+	private static final String ARG_PARAM1 = "param1";
+	private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+	// TODO: Rename and change types of parameters
+	private String mParam1;
+	private String mParam2;
 
-    private OnResetPasswordListener mListener;
+	private OnResetPasswordListener mListener;
 
 	private EditText mEmailView;
 	private EditText mConfirmEmailView;
 
 	private Map<EditText, FieldValidator> mFieldValidatorMap;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginResetPasswordFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginResetPasswordFragment newInstance(String param1, String param2) {
-        LoginResetPasswordFragment fragment = new LoginResetPasswordFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+	/**
+	 * Use this factory method to create a new instance of
+	 * this fragment using the provided parameters.
+	 *
+	 * @param param1 Parameter 1.
+	 * @param param2 Parameter 2.
+	 * @return A new instance of fragment LoginResetPasswordFragment.
+	 */
+	// TODO: Rename and change types and number of parameters
+	public static LoginResetPasswordFragment newInstance(String param1, String param2) {
+		LoginResetPasswordFragment fragment = new LoginResetPasswordFragment();
+		Bundle args = new Bundle();
+		args.putString(ARG_PARAM1, param1);
+		args.putString(ARG_PARAM2, param2);
+		fragment.setArguments(args);
+		return fragment;
+	}
 
-    public LoginResetPasswordFragment() {
-        // Required empty public constructor
-    }
+	public LoginResetPasswordFragment() {
+		// Required empty public constructor
+	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -85,21 +90,21 @@ public class LoginResetPasswordFragment extends Fragment
 	}
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+		if (getArguments() != null) {
+			mParam1 = getArguments().getString(ARG_PARAM1);
+			mParam2 = getArguments().getString(ARG_PARAM2);
+		}
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login_reset_password, container, false);
-    }
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		return inflater.inflate(R.layout.fragment_login_reset_password, container, false);
+	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -119,10 +124,10 @@ public class LoginResetPasswordFragment extends Fragment
 	}
 
 	@Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+	public void onDetach() {
+		super.onDetach();
+		mListener = null;
+	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -153,11 +158,16 @@ public class LoginResetPasswordFragment extends Fragment
 	public void onResponse(User response) {
 //		mActivity.setSupportProgressBarIndeterminateVisibility(false);
 
-		// TODO User ?
+		if (response == null) {
+			String message = getString(R.string.login_reset_password_failure);
+			onErrorResponse(new VolleyError(message, new ServerError()));
+		} else {
+			String message = getString(R.string.login_reset_password_success, response.getEmail());
+			Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
 
-		SessionManager.getInstance(getActivity()).setCurrentUser(response);
-		if (mListener != null) {
-			mListener.onResetPasswordSuccess();
+			if (mListener != null) {
+				mListener.onResetPasswordSuccess();
+			}
 		}
 	}
 
@@ -218,40 +228,43 @@ public class LoginResetPasswordFragment extends Fragment
 			return;
 		}
 
+		InputMethodManager manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		manager.hideSoftInputFromWindow(mEmailView.getWindowToken(), 0);
+
 		String email = mEmailView.getText().toString();
-//		UserRequest registerRequest = UserRequest.newResetPasswordRequest(getActivity(), email, this, this);
-//		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);
+		UserRequest registerRequest = UserRequest.newResetPasswordRequest(getActivity(), email, this, this);
+		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);
 	}
 
-	/**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnResetPasswordListener {
-		public void onResetPasswordSuccess();
-    }
+/**
+ * This interface must be implemented by activities that contain this
+ * fragment to allow an interaction in this fragment to be communicated
+ * to the activity and potentially other fragments contained in that
+ * activity.
+ * <p/>
+ * See the Android Training lesson <a href=
+ * "http://developer.android.com/training/basics/fragments/communicating.html"
+ * >Communicating with Other Fragments</a> for more information.
+ */
+public interface OnResetPasswordListener {
+	public void onResetPasswordSuccess();
+}
 
-	private static enum FieldValidator {
-		EMAIL(Patterns.EMAIL_ADDRESS, R.string.error_login_enter_your_email,
-				R.string.error_login_valid_email_message);
+private static enum FieldValidator {
+	EMAIL(Patterns.EMAIL_ADDRESS, R.string.error_login_enter_your_email,
+			R.string.error_login_valid_email_message);
 
-		private Pattern mPattern;
-		private int mMissingFieldMessageResId;
-		private int mInvalidFieldMessageResId;
-		private Object[] mInvalidFieldMessageArgs;
+	private Pattern mPattern;
+	private int mMissingFieldMessageResId;
+	private int mInvalidFieldMessageResId;
+	private Object[] mInvalidFieldMessageArgs;
 
-		private FieldValidator(Pattern pattern, int missingFieldMessageResId,
-							   int invalidFieldMessageResId, Object... invalidFieldMessageArgs) {
-			mPattern = pattern;
-			mMissingFieldMessageResId = missingFieldMessageResId;
-			mInvalidFieldMessageResId = invalidFieldMessageResId;
-			mInvalidFieldMessageArgs = invalidFieldMessageArgs;
-		}
+	private FieldValidator(Pattern pattern, int missingFieldMessageResId,
+						   int invalidFieldMessageResId, Object... invalidFieldMessageArgs) {
+		mPattern = pattern;
+		mMissingFieldMessageResId = missingFieldMessageResId;
+		mInvalidFieldMessageResId = invalidFieldMessageResId;
+		mInvalidFieldMessageArgs = invalidFieldMessageArgs;
 	}
+}
 }
