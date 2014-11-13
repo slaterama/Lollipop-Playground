@@ -2,7 +2,6 @@ package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -19,9 +18,9 @@ import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.vo.User;
-import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
+import com.citymaps.mobile.android.modelnew.User;
+import com.citymaps.mobile.android.modelnew.volley.UserRequest;
+import com.citymaps.mobile.android.modelnew.volley.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CitymapsPatterns;
 
 import java.util.LinkedHashMap;

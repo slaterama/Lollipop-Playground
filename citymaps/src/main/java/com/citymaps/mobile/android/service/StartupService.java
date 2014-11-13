@@ -6,16 +6,17 @@ import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.MapViewService;
-import com.citymaps.mobile.android.model.volley.ConfigRequest;
-import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.model.volley.VersionRequest;
-import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.model.vo.User;
-import com.citymaps.mobile.android.model.vo.Version;
+import com.citymaps.mobile.android.modelnew.Config;
+import com.citymaps.mobile.android.modelnew.User;
+import com.citymaps.mobile.android.modelnew.Version;
+import com.citymaps.mobile.android.modelnew.volley.ConfigRequest;
+import com.citymaps.mobile.android.modelnew.volley.UserRequest;
+import com.citymaps.mobile.android.modelnew.volley.VersionRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
@@ -55,8 +56,7 @@ public class StartupService extends Service {
 	private VolleyListeners mListeners = new VolleyListeners();
 
 	// TODO TEMP
-	private UserRequest mUserLoginRequest;
-	private User mCurrentUser;
+	private boolean mAttemptedLoginTests = false;
 	// END TEMP
 
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
@@ -121,15 +121,18 @@ public class StartupService extends Service {
 				}
 
 				// TODO TEMP
-				if (mUserLoginRequest == null) {
+				if (!mAttemptedLoginTests) {
+					mAttemptedLoginTests = true;
+
 					// This version is username/password
-					// mUserLoginRequest = UserRequest.newUserLoginRequest(this, "slaterama", "abc123",
-					// 		mListeners.mUserListener, mListeners.mErrorListener);
+					UserRequest loginRequest = UserRequest.newLoginRequest(this, "slaterama", "r3stlandC",
+							mListeners.mUserListener, mListeners.mErrorListener);
 
 					// This version is Citymaps token
-					mUserLoginRequest = UserRequest.newLoginRequest(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
-							mListeners.mUserListener, mListeners.mErrorListener);
-					VolleyManager.getInstance(this).getRequestQueue().add(mUserLoginRequest);
+//					mUserLoginRequest = UserRequest.newLoginRequest(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
+//							mListeners.mUserListener, mListeners.mErrorListener);
+					RequestQueue q = VolleyManager.getInstance(this).getRequestQueue();
+					q.add(loginRequest);
 				}
 				// END TEMP
 			}
@@ -177,11 +180,13 @@ public class StartupService extends Service {
 			}
 		};
 
+
 		public Response.Listener<User> mUserListener = new Response.Listener<User>() {
 			@Override
 			public void onResponse(User response) {
-				mCurrentUser = response;
-				LogEx.v(String.format("mCurrentUser=%s", mCurrentUser));
+
+//				mCurrentUser = response;
+				LogEx.v(String.format("response=%s", response));
 			}
 		};
 

@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model;
+package com.citymaps.mobile.android.modelnew;
 
 import java.util.HashMap;
 import java.util.Map;

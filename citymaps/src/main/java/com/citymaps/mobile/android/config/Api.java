@@ -5,28 +5,30 @@ import java.util.Map;
 
 public abstract class Api {
 
-	public static Api newInstance(Environment environment, int apiVersion, String apiBuild) {
-		if (apiVersion >= 3) {
-			return new ApiV3(environment, apiVersion, apiBuild);
-		} else {
-			return new ApiBase(environment, apiVersion, apiBuild);
+	public static Api newInstance(Environment environment, Version version) {
+		switch (version) {
+			case V3:
+				return new ApiV3(environment, version);
+			case V2:
+			case V1:
+			default:
+				return new ApiBase(environment, version);
 		}
 	}
 
 	private Environment mEnvironment;
 
-	private int mApiVersion;
+	private Version mVersion;
 
 	private String mApiBuild;
 
 	private Map<Endpoint.Type, Endpoint> mEndpointMap;
 
-	protected Api(Environment environment, int apiVersion, String apiBuild) {
+	protected Api(Environment environment, Version version) {
 		mEnvironment = environment;
-		mApiVersion = apiVersion;
-		mApiBuild = apiBuild;
+		mVersion = version;
 		mEndpointMap = new HashMap<Endpoint.Type, Endpoint>(Endpoint.Type.values().length);
-		addEndpoints(environment, apiVersion, apiBuild);
+		addEndpoints(environment, version);
 	}
 
 	protected void addEndpoint(Endpoint endpoint) {
@@ -35,10 +37,10 @@ public abstract class Api {
 		}
 	}
 
-	abstract void addEndpoints(Environment environment, int apiVersion, String apiBuild);
+	abstract void addEndpoints(Environment environment, Version version);
 
-	public int getApiVersion() {
-		return mApiVersion;
+	public Version getVersion() {
+		return mVersion;
 	}
 
 	public String getApiBuild() {
@@ -51,5 +53,19 @@ public abstract class Api {
 
 	public Environment getEnvironment() {
 		return mEnvironment;
+	}
+
+	public static enum Version {
+		V1("v1", "1.0.0"),
+		V2("v2", "3.0.0"),
+		V3("v3", "3.0.0-unknown");
+
+		String mName;
+		String mBuild;
+
+		private Version(String name, String build) {
+			mName = name;
+			mBuild = build;
+		}
 	}
 }

@@ -4,7 +4,7 @@ import android.content.*;
 import android.net.Uri;
 import android.util.SparseArray;
 import com.citymaps.mobile.android.BuildConfig;
-import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.modelnew.Config;
 
 public class UpdateUtils {
 

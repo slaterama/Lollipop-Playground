@@ -6,7 +6,7 @@ import android.os.Build;
 import android.util.Base64;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.app.SessionManager;
-import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.modelnew.User;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.PackageUtils;
 import org.apache.commons.codec.binary.Hex;

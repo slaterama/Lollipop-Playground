@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model.vo;
+package com.citymaps.mobile.android.modelnew;
 
 import android.text.TextUtils;
 

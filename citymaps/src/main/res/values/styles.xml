@@ -18,19 +18,19 @@
 
 	<style name="Widget.FacebookButton" parent="@style/Widget.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_facebook_default_holo_light</item>
 	</style>
 
 	<style name="Widget.GoogleButton" parent="@style/Widget.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_google_default_holo_light</item>
 	</style>
 
 	<style name="Widget.CitymapsGreyButton" parent="@style/Widget.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_citymaps_grey_default_holo_light</item>
 	</style>
 
@@ -40,19 +40,19 @@
 
 	<style name="Widget.Holo.FacebookButton" parent="@style/Widget.Holo.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_facebook_default_holo_light</item>
 	</style>
 
 	<style name="Widget.Holo.GoogleButton" parent="@style/Widget.Holo.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_google_default_holo_light</item>
 	</style>
 
 	<style name="Widget.Holo.CitymapsGreyButton" parent="@style/Widget.Holo.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_citymaps_grey_default_holo_light</item>
 	</style>
 

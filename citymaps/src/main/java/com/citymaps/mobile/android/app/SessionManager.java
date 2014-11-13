@@ -8,8 +8,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.vo.Config;
-import com.citymaps.mobile.android.model.vo.User;
+import com.citymaps.mobile.android.modelnew.Config;
+import com.citymaps.mobile.android.modelnew.User;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 public class SessionManager {

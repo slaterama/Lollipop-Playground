@@ -5,9 +5,6 @@ import com.citymaps.mobile.android.BuildConfig;
 
 public class EnvironmentDev extends Environment {
 
-	private final static int API_VERSION = 2;
-	private final static String API_BUILD = "3.0.0";
-
 	protected EnvironmentDev(Context context) {
 		super(context);
 		addServer(new Server(Server.Type.API, "ndev-coreapi.citymaps.com", Server.Protocol.STANDARD));
@@ -29,6 +26,6 @@ public class EnvironmentDev extends Environment {
 
 	@Override
 	protected Api onCreateApi() {
-		return Api.newInstance(this, API_VERSION, API_BUILD);
+		return Api.newInstance(this, Api.Version.V2);
 	}
 }

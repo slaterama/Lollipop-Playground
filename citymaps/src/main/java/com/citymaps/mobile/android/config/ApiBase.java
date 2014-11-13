@@ -14,12 +14,12 @@ public class ApiBase extends Api {
 		}
 	}
 
-	protected ApiBase(Environment environment, int apiVersion, String apiBuild) {
-		super(environment, apiVersion, apiBuild);
+	protected ApiBase(Environment environment, Version version) {
+		super(environment, version);
 	}
 
 	@Override
-	void addEndpoints(Environment environment, int apiVersion, String apiBuild) {
+	void addEndpoints(Environment environment, Version version) {
 		addEndpoint(new Endpoint(Type.TERMS_OF_SERVICE, Server.Type.CITYMAPS, "terms", APPEND_NONE));
 		addEndpoint(new Endpoint(Type.PRIVACY_POLICY, Server.Type.CITYMAPS, "privacy", APPEND_NONE));
 		addEndpoint(new Endpoint(Type.CONFIG, Server.Type.ASSETS, getConfigEndpoint(environment), APPEND_NONE));

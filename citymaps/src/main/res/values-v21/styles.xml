@@ -7,19 +7,19 @@
 
 	<style name="Widget.Material.FacebookButton" parent="@style/Widget.Material.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_facebook_default_holo_light</item>
 	</style>
 
 	<style name="Widget.Material.GoogleButton" parent="@style/Widget.Material.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_google_default_holo_light</item>
 	</style>
 
 	<style name="Widget.Material.CitymapsGreyButton" parent="@style/Widget.Material.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
-		<item name="android:textStyle">bold</item>
+		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_citymaps_grey_default_holo_light</item>
 	</style>
 

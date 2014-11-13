@@ -19,9 +19,9 @@ import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.vo.User;
-import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
+import com.citymaps.mobile.android.modelnew.User;
+import com.citymaps.mobile.android.modelnew.volley.UserRequest;
+import com.citymaps.mobile.android.modelnew.volley.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CitymapsPatterns;
 import com.citymaps.mobile.android.util.ViewUtils;
 

@@ -1,10 +1,22 @@
-package com.citymaps.mobile.android.model.vo;
+package com.citymaps.mobile.android.modelnew;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
-public abstract class ResultWrapperV2<T> implements ResultWrapper<T>, Parcelable {
+public class Version implements Parcelable {
+
+	public static final Parcelable.Creator<Version> CREATOR = new Parcelable.Creator<Version>() {
+		@Override
+		public Version createFromParcel(Parcel in) {
+			return new Version(in);
+		}
+
+		@Override
+		public Version[] newArray(int size) {
+			return new Version[size];
+		}
+	};
 
 	/**
 	 * The return code associated with this API request.
@@ -25,32 +37,18 @@ public abstract class ResultWrapperV2<T> implements ResultWrapper<T>, Parcelable
 	private String mBuild;
 
 	/**
-	 * The Citymaps API error message (if an error occurred).
-	 */
-	@SerializedName("message")
-	private String mMessage;
-
-	/**
-	 * The Citymaps API error reason (if an error occurred).
-	 */
-	@SerializedName("reason")
-	private String mReason;
-
-	/**
 	 * The time it took this request to run.
 	 */
 	@SerializedName("time")
 	private long mTime;
 
-	public ResultWrapperV2() {
+	public Version() {
 	}
 
-	protected ResultWrapperV2(Parcel in) {
+	protected Version(Parcel in) {
 		mCode = in.readInt();
 		mVersion = in.readInt();
 		mBuild = in.readString();
-		mMessage = in.readString();
-		mReason = in.readString();
 		mTime = in.readLong();
 	}
 
@@ -76,20 +74,6 @@ public abstract class ResultWrapperV2<T> implements ResultWrapper<T>, Parcelable
 	}
 
 	/**
-	 * Returns the Citymaps API error message.
-	 */
-	public String getMessage() {
-		return mMessage;
-	}
-
-	/**
-	 * Returns the Citymaps API error reason.
-	 */
-	public String getReason() {
-		return mReason;
-	}
-
-	/**
 	 * Returns the time it took this request to run.
 	 */
 	public long getTime() {
@@ -106,8 +90,6 @@ public abstract class ResultWrapperV2<T> implements ResultWrapper<T>, Parcelable
 		out.writeInt(mCode);
 		out.writeInt(mVersion);
 		out.writeString(mBuild);
-		out.writeString(mMessage);
-		out.writeString(mReason);
 		out.writeLong(mTime);
 	}
 }

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.modelnew.Config;
 import org.json.JSONObject;
 
 import java.util.HashMap;

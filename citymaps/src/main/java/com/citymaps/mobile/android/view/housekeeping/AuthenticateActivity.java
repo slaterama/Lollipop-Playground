@@ -75,8 +75,7 @@ public class AuthenticateActivity extends Activity {
 	public void onContinue() {
 		if (mStartupMode) {
 			startActivity(new Intent(this, MainActivity.class));
-		} else {
-			finish();
 		}
+		finish();
 	}
 }

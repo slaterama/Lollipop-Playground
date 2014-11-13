@@ -1,10 +1,10 @@
-package com.citymaps.mobile.android.model.volley;
+package com.citymaps.mobile.android.modelnew.volley;
 
 import android.content.Context;
 import com.android.volley.Response;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
-import com.citymaps.mobile.android.model.vo.Config;
+import com.citymaps.mobile.android.modelnew.Config;
 
 public class ConfigRequest extends GsonRequest<Config> {
 
@@ -12,11 +12,11 @@ public class ConfigRequest extends GsonRequest<Config> {
 											  Response.Listener<Config> listener,
 											  Response.ErrorListener errorListener) {
 		String urlString = SessionManager.getInstance(context).getEnvironment().buildUrlString(Endpoint.Type.CONFIG);
-		return new ConfigRequest(Method.GET, urlString, Config.class, listener, errorListener);
+		return new ConfigRequest(Method.GET, urlString, listener, errorListener);
 	}
 
-	public ConfigRequest(int method, String url, Class<Config> clazz,
+	public ConfigRequest(int method, String url,
 						 Response.Listener<Config> listener, Response.ErrorListener errorListener) {
-		super(method, url, clazz, listener, errorListener);
+		super(method, url, Config.class, null, null, listener, errorListener);
 	}
 }

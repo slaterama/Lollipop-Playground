@@ -15,8 +15,8 @@ import com.android.volley.NoConnectionError;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
-import com.citymaps.mobile.android.model.vo.User;
-import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
+import com.citymaps.mobile.android.modelnew.User;
+import com.citymaps.mobile.android.modelnew.volley.VolleyCallbacks;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

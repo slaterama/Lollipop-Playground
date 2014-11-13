@@ -1,15 +1,15 @@
-package com.citymaps.mobile.android.model.volley;
+package com.citymaps.mobile.android.modelnew.volley;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class GsonRequest<T> extends Request<T> {
@@ -33,6 +33,12 @@ public class GsonRequest<T> extends Request<T> {
 		return sJsonParser;
 	}
 
+	protected static JsonObject newJsonObject(NetworkResponse response)
+			throws UnsupportedEncodingException, JsonSyntaxException {
+		String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+		return getJsonParser().parse(json).getAsJsonObject();
+	}
+
 	/**
 	 * /**
 	 * Make a GET request and return a parsed object from JSON.
@@ -44,6 +50,7 @@ public class GsonRequest<T> extends Request<T> {
 	 * @param errorListener
 	 */
 	public GsonRequest(int method, String url, Class<T> clazz,
+					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<T> listener, Response.ErrorListener errorListener) {
 		super(method, url, errorListener);
 		setShouldCache(false);
@@ -53,26 +60,14 @@ public class GsonRequest<T> extends Request<T> {
 		}
 
 		mClass = clazz;
+		mHeaders = headers;
+		mParams = params;
 		mListener = listener;
-	}
-
-	public void putHeaders(Map<String, String> headers) {
-		if (mHeaders == null) {
-			mHeaders = new HashMap<String, String>(headers.size());
-		}
-		mParams.putAll(headers);
 	}
 
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError {
 		return mHeaders != null ? mHeaders : super.getHeaders();
-	}
-
-	public void putParams(Map<String, String> params) {
-		if (mParams == null) {
-			mParams = new HashMap<String, String>(params.size());
-		}
-		mParams.putAll(params);
 	}
 
 	@Override
@@ -85,15 +80,14 @@ public class GsonRequest<T> extends Request<T> {
 		mListener.onResponse(response);
 	}
 
-	protected <W> Response<W> parseNetworkResponse(NetworkResponse response, Class<W> clazz) {
+	@Override
+	protected Response<T> parseNetworkResponse(NetworkResponse response) {
 		try {
-			String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-			Gson gson = GsonUtils.getGson();
+			JsonObject jsonObject = newJsonObject(response);
 			if (LogEx.isLoggable(LogEx.VERBOSE)) {
-				LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
+				LogEx.v(String.format("response=%s", GsonUtils.getGson().toJson(jsonObject)));
 			}
-			W result = gson.fromJson(json, clazz);
-			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+			return processParsedNetworkResponse(response, jsonObject);
 		} catch (UnsupportedEncodingException e) {
 			return Response.error(new ParseError(e));
 		} catch (JsonSyntaxException e) {
@@ -102,32 +96,33 @@ public class GsonRequest<T> extends Request<T> {
 	}
 
 	@Override
-	protected Response<T> parseNetworkResponse(NetworkResponse response) {
-		return parseNetworkResponse(response, mClass);
-	}
-
-	protected <W> VolleyError parseNetworkError(VolleyError volleyError, Class<W> clazz) {
-		if (volleyError instanceof ServerError && volleyError.networkResponse != null) {
-			try {
-				String json = new String(volleyError.networkResponse.data,
-						HttpHeaderParser.parseCharset(volleyError.networkResponse.headers));
-				Gson gson = GsonUtils.getGson();
-				if (LogEx.isLoggable(LogEx.VERBOSE)) {
-					LogEx.v(String.format("response=%s", gson.toJson(getJsonParser().parse(json))));
-				}
-				return super.parseNetworkError(volleyError);
-			} catch (UnsupportedEncodingException e) {
-				return super.parseNetworkError(volleyError);
-			} catch (JsonSyntaxException e) {
-				return super.parseNetworkError(volleyError);
-			}
-		} else {
+	protected VolleyError parseNetworkError(VolleyError volleyError) {
+		if (volleyError.networkResponse == null || !(volleyError instanceof ServerError)) {
 			return super.parseNetworkError(volleyError);
+		} else try {
+			JsonObject jsonObject = newJsonObject(volleyError.networkResponse);
+			if (LogEx.isLoggable(LogEx.ERROR)) {
+				LogEx.e(String.format("error=%s", GsonUtils.getGson().toJson(jsonObject)));
+			}
+			return processParsedNetworkError(volleyError, jsonObject);
+		} catch (UnsupportedEncodingException e) {
+			return new ParseError(e);
+		} catch (JsonSyntaxException e) {
+			return new ParseError(e);
 		}
 	}
 
-	@Override
-	protected VolleyError parseNetworkError(VolleyError volleyError) {
-		return parseNetworkError(volleyError, mClass);
+	protected Response<T> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
+		try {
+			Gson gson = GsonUtils.getGson();
+			T result = gson.fromJson(jsonObject, mClass);
+			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+		} catch (JsonSyntaxException e) {
+			return Response.error(new ParseError(e));
+		}
+	}
+
+	protected VolleyError processParsedNetworkError(VolleyError volleyError, JsonObject jsonObject) {
+		return volleyError;
 	}
 }
