@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
@@ -17,6 +20,7 @@ import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.MaterialHelper;
 
 public class LoginActivity extends TrackedActionBarActivity
 		implements LoginSignInFragment.OnSignInListener,
@@ -36,6 +40,11 @@ public class LoginActivity extends TrackedActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+		// Since headerView is a "RatioImageView", we want the width to be the smaller of decorView's dimensions
+		View headerView = findViewById(R.id.login_header_image);
+		MaterialHelper.constrainWidthToShorterDimension(getWindow(), headerView);
+
         if (savedInstanceState == null) {
 			Intent intent = getIntent();
 			mLoginMode = IntentUtils.getLoginMode(intent, SIGN_IN_MODE);

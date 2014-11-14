@@ -17,8 +17,10 @@
 				android:orientation="vertical">
 
 			<com.citymaps.mobile.android.widget.RatioImageView
+					android:id="@+id/login_header_image"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_gravity="center_horizontal"
 					citymaps:ratio="1.77777778"
 					android:src="@drawable/cm_logo_160dp"
 					android:scaleType="centerInside" />

@@ -150,14 +150,16 @@ public class LoginCreateAccountFragment extends LoginFragment
 		mConfirmPasswordView = (EditText) view.findViewById(R.id.login_create_account_confirm_password);
 		mConfirmPasswordView.setOnEditorActionListener(this);
 
-		Bundle args = getArguments();
-		if (args != null) {
-			ThirdParty thirdParty = (ThirdParty) args.getSerializable(ARG_THIRD_PARTY);
-			if (thirdParty != null) {
-				if (getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG) == null) {
-					UseThirdPartyInfoDialogFragment fragment = UseThirdPartyInfoDialogFragment.newInstance(thirdParty);
-					fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
-					fragment.show(getFragmentManager(), UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
+		if (savedInstanceState == null) {
+			Bundle args = getArguments();
+			if (args != null) {
+				ThirdParty thirdParty = (ThirdParty) args.getSerializable(ARG_THIRD_PARTY);
+				if (thirdParty != null) {
+					if (getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG) == null) {
+						UseThirdPartyInfoDialogFragment fragment = UseThirdPartyInfoDialogFragment.newInstance(thirdParty);
+						fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
+						fragment.show(getFragmentManager(), UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
+					}
 				}
 			}
 		}
@@ -273,14 +275,6 @@ public class LoginCreateAccountFragment extends LoginFragment
 			return fragment;
 		}
 
-		private ThirdParty mThirdParty;
-
-		@Override
-		public void setArguments(Bundle args) {
-			super.setArguments(args);
-			mThirdParty = (ThirdParty) args.getSerializable(ARG_THIRD_PARTY);
-		}
-
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			Fragment targetFragment = getTargetFragment();
@@ -299,9 +293,10 @@ public class LoginCreateAccountFragment extends LoginFragment
 		@NonNull
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			ThirdParty thirdParty = (ThirdParty) getArguments().getSerializable(ARG_THIRD_PARTY);
 			return new AlertDialog.Builder(getActivity())
 					.setTitle(getActivity().getTitle())
-					.setMessage(getString(R.string.login_create_account_use_third_party_info, mThirdParty.getProperName()))
+					.setMessage(getString(R.string.login_create_account_use_third_party_info, thirdParty.getProperName()))
 					.setPositiveButton(android.R.string.yes, this)
 					.setNegativeButton(android.R.string.no, this)
 					.show();
