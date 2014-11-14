@@ -15,7 +15,7 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 
-public class AuthenticateActivity extends Activity implements Session.StatusCallback {
+public class AuthenticateActivity extends Activity {
 
 	private static final int REQUEST_CODE_LOGIN = 1;
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 2;
@@ -23,6 +23,15 @@ public class AuthenticateActivity extends Activity implements Session.StatusCall
 	boolean mStartupMode;
 
 	UiLifecycleHelper mUiLifecycleHelper;
+
+	Session mSession;
+
+	Session.StatusCallback mStatusCallback = new Session.StatusCallback() {
+		@Override
+		public void call(Session session, SessionState state, Exception exception) {
+			onSessionStateChange(session, state, exception);
+		}
+	};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +41,21 @@ public class AuthenticateActivity extends Activity implements Session.StatusCall
 		}
         setContentView(R.layout.activity_authenticate);
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
-		mUiLifecycleHelper = new UiLifecycleHelper(this, this);
+		mUiLifecycleHelper = new UiLifecycleHelper(this, mStatusCallback);
 		mUiLifecycleHelper.onCreate(savedInstanceState);
     }
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		// For scenarios where the main activity is launched and user
+		// session is not null, the session state change notification
+		// may not be triggered. Trigger it if it's open/closed.
+		Session session = Session.getActiveSession();
+		if (session != null && (session.isOpened() || session.isClosed()) ) {
+			onSessionStateChange(session, session.getState(), null);
+		}
 		mUiLifecycleHelper.onResume();
 	}
 
@@ -75,16 +92,23 @@ public class AuthenticateActivity extends Activity implements Session.StatusCall
 		}
 	}
 
-	@Override
-	public void call(Session session, SessionState state, Exception exception) {
-
+	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+		if (LogEx.isLoggable(LogEx.INFO)) {
+			if (state.isOpened()) {
+				LogEx.i("Logged in to Facebook");
+			} else {
+				LogEx.i("Logged out of Facebook");
+			}
+		}
 	}
 
 	public void onButtonClick(View view) {
 		int id = view.getId();
 		switch (id) {
 			case R.id.login_authenticate_facebook_button: {
-				LogEx.d(((Button) view).getText().toString());
+				if (mSession == null || !mSession.isOpened()) {
+					mSession = Session.openActiveSession(this, true, mStatusCallback);
+				}
 				break;
 			}
 			case R.id.login_authenticate_google_button: {

@@ -38,8 +38,8 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 				String message = result.getMessage();
 				String reason = result.getReason();
 				String error = (TextUtils.isEmpty(reason)
-						? String.format("%s.", message)
-						: String.format("%s: %s", message, reason));
+						? message
+						: String.format("%s: %s", message.replaceAll("\\.\\S*$", ""), reason));
 				return new VolleyError(error, volleyError);
 		}
 	}
