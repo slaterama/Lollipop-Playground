@@ -1,8 +1,14 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spannable;
@@ -18,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
 import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
@@ -35,14 +42,16 @@ import com.citymaps.mobile.android.util.ViewUtils;
 public class LoginCreateAccountFragment extends LoginFragment
 		implements VolleyCallbacks<User> {
 
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
+	private static final int REQUEST_CODE_USE_THIRD_PARTY_INFO = 1001;
 
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
+	private static final String ARG_THIRD_PARTY = "thirdParty";
+	private static final String ARG_THIRD_PARTY_ID = "thirdPartyId";
+	private static final String ARG_THIRD_PARTY_TOKEN = "thirdPartyToken";
+	private static final String ARG_THIRD_PARTY_FIRST_NAME = "thirdPartyFirstName";
+	private static final String ARG_THIRD_PARTY_LAST_NAME = "thirdPartyLastName";
+	private static final String ARG_THIRD_PARTY_USERNAME = "thirdPartyUsername";
+	private static final String ARG_THIRD_PARTY_EMAIL = "thirdPartyEmail";
+	private static final String ARG_THIRD_PARTY_AVATAR_URL = "thirdPartyAvatarUrl";
 
 	private OnCreateAccountListener mListener;
 
@@ -57,16 +66,39 @@ public class LoginCreateAccountFragment extends LoginFragment
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
 	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
 	 * @return A new instance of fragment LoginCreateAccountFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static LoginCreateAccountFragment newInstance(String param1, String param2) {
+	public static LoginCreateAccountFragment newInstance() {
+		LoginCreateAccountFragment fragment = new LoginCreateAccountFragment();
+		return fragment;
+	}
+
+	/**
+	 *
+	 * @param thirdParty
+	 * @param thirdPartyId
+	 * @param thirdPartyToken
+	 * @param thirdPartyFirstName
+	 * @param thirdPartyLastName
+	 * @param thirdPartyUsername
+	 * @param thirdPartyEmail
+	 * @param thirdPartyAvatarUrl
+	 * @return
+	 */
+	public static LoginCreateAccountFragment newInstance(ThirdParty thirdParty, String thirdPartyId, String thirdPartyToken,
+														 String thirdPartyFirstName, String thirdPartyLastName,
+														 String thirdPartyUsername, String thirdPartyEmail, String thirdPartyAvatarUrl) {
 		LoginCreateAccountFragment fragment = new LoginCreateAccountFragment();
 		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
+		args.putSerializable(ARG_THIRD_PARTY, thirdParty);
+		args.putString(ARG_THIRD_PARTY_ID, thirdPartyId);
+		args.putString(ARG_THIRD_PARTY_TOKEN, thirdPartyToken);
+		args.putString(ARG_THIRD_PARTY_FIRST_NAME, thirdPartyFirstName);
+		args.putString(ARG_THIRD_PARTY_LAST_NAME, thirdPartyLastName);
+		args.putString(ARG_THIRD_PARTY_USERNAME, thirdPartyUsername);
+		args.putString(ARG_THIRD_PARTY_EMAIL, thirdPartyEmail);
+		args.putString(ARG_THIRD_PARTY_AVATAR_URL, thirdPartyAvatarUrl);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -89,9 +121,9 @@ public class LoginCreateAccountFragment extends LoginFragment
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
+		Fragment fragment = getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
+		if (fragment != null) {
+			fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
 		}
 	}
 
@@ -117,6 +149,18 @@ public class LoginCreateAccountFragment extends LoginFragment
 		mPasswordView = (EditText) view.findViewById(R.id.login_create_account_password);
 		mConfirmPasswordView = (EditText) view.findViewById(R.id.login_create_account_confirm_password);
 		mConfirmPasswordView.setOnEditorActionListener(this);
+
+		Bundle args = getArguments();
+		if (args != null) {
+			ThirdParty thirdParty = (ThirdParty) args.getSerializable(ARG_THIRD_PARTY);
+			if (thirdParty != null) {
+				if (getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG) == null) {
+					UseThirdPartyInfoDialogFragment fragment = UseThirdPartyInfoDialogFragment.newInstance(thirdParty);
+					fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
+					fragment.show(getFragmentManager(), UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -129,6 +173,25 @@ public class LoginCreateAccountFragment extends LoginFragment
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_USE_THIRD_PARTY_INFO:
+				if (resultCode == Activity.RESULT_OK) {
+					Bundle args = getArguments();
+					if (args != null) {
+						mFirstNameView.setText(args.getString(ARG_THIRD_PARTY_FIRST_NAME, ""));
+						mLastNameView.setText(args.getString(ARG_THIRD_PARTY_LAST_NAME, ""));
+						mUsernameView.setText(args.getString(ARG_THIRD_PARTY_USERNAME, ""));
+						mEmailView.setText(args.getString(ARG_THIRD_PARTY_EMAIL, ""));
+					}
+				}
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+		}
 	}
 
 	@Override
@@ -193,6 +256,55 @@ public class LoginCreateAccountFragment extends LoginFragment
 			LoginErrorDialogFragment fragment =
 					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
 			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+		}
+	}
+
+	public static class UseThirdPartyInfoDialogFragment extends DialogFragment
+			implements DialogInterface.OnClickListener {
+		public static final String FRAGMENT_TAG = "useThirdPartyInfo";
+
+		public static final String ARG_THIRD_PARTY = "thirdParty";
+
+		public static UseThirdPartyInfoDialogFragment newInstance(ThirdParty thirdParty) {
+			UseThirdPartyInfoDialogFragment fragment = new UseThirdPartyInfoDialogFragment();
+			Bundle args = new Bundle();
+			args.putSerializable(ARG_THIRD_PARTY, thirdParty);
+			fragment.setArguments(args);
+			return fragment;
+		}
+
+		private ThirdParty mThirdParty;
+
+		@Override
+		public void setArguments(Bundle args) {
+			super.setArguments(args);
+			mThirdParty = (ThirdParty) args.getSerializable(ARG_THIRD_PARTY);
+		}
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			Fragment targetFragment = getTargetFragment();
+			if (targetFragment != null) {
+				switch (which) {
+					case DialogInterface.BUTTON_POSITIVE:
+						targetFragment.onActivityResult(REQUEST_CODE_USE_THIRD_PARTY_INFO, Activity.RESULT_OK, null);
+						break;
+					case DialogInterface.BUTTON_NEGATIVE:
+					default:
+						targetFragment.onActivityResult(REQUEST_CODE_USE_THIRD_PARTY_INFO, Activity.RESULT_CANCELED, null);
+				}
+			}
+		}
+
+		@NonNull
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return new AlertDialog.Builder(getActivity())
+					.setTitle(getActivity().getTitle())
+					.setMessage(getString(R.string.login_create_account_use_third_party_info, mThirdParty.getProperName()))
+					.setPositiveButton(android.R.string.yes, this)
+					.setNegativeButton(android.R.string.no, this)
+					.show();
 		}
 	}
 

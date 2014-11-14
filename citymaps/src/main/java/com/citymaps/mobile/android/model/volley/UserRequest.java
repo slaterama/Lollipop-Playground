@@ -51,6 +51,11 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 		return newLoginRequest(context, username, password, null, null, null, listener, errorListener);
 	}
 
+	public static UserRequest newLoginRequest(Context context, ThirdParty thirdParty, String thirdPartyId, String thirdPartyToken,
+											  Response.Listener<User> listener, Response.ErrorListener errorListener) {
+		return newLoginRequest(context, null, null, thirdParty, thirdPartyId, thirdPartyToken, listener, errorListener);
+	}
+
 	public static UserRequest newLoginRequest(Context context, String username, String password,
 											  ThirdParty thirdParty, String thirdPartyId, String thirdPartyToken,
 											  Response.Listener<User> listener, Response.ErrorListener errorListener) {

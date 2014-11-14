@@ -87,6 +87,7 @@
 		<b><a href="citymaps.internal://com.citymaps.mobile.android/login?q=terms_of_service">Terms of Service</a></b> and
 		<b><a href="citymaps.internal://com.citymaps.mobile.android/login?q=privacy_policy">Privacy Policy</a></b>
 	]]></string>
+	<string name="login_create_account_use_third_party_info">Would you like to fill this form with information from your %s profile?</string>
 	<string name="login_reset_password_activity_title">Reset Password</string>
 	<string name="login_reset_password_email_address_hint">Email address</string>
 	<string name="login_reset_password_confirm_email_hint">Confirm email</string>

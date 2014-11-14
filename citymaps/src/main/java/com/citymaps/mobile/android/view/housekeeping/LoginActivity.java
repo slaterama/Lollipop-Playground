@@ -14,6 +14,7 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
+import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.IntentUtils;
 
@@ -120,7 +121,22 @@ public class LoginActivity extends TrackedActionBarActivity
 		Fragment fragment;
 		switch (loginMode) {
 			case CREATE_ACCOUNT_MODE:
-				fragment = LoginCreateAccountFragment.newInstance("", "");
+				Intent intent = getIntent();
+				ThirdParty thirdParty = IntentUtils.getThirdParty(intent);
+				if (thirdParty == null) {
+					fragment = LoginCreateAccountFragment.newInstance();
+				} else {
+					String thirdPartyId = IntentUtils.getThirdPartyId(intent);
+					String thirdPartyToken = IntentUtils.getThirdPartyToken(intent);
+					String thirdPartyFirstName = IntentUtils.getThirdPartyFirstName(intent);
+					String thirdPartyLastName = IntentUtils.getThirdPartyLastName(intent);
+					String thirdPartyUsername = IntentUtils.getThirdPartyUsername(intent);
+					String thirdPartyEmail = IntentUtils.getThirdPartyEmail(intent);
+					String thirdPartyAvatarUrl = IntentUtils.getThirdPartyAvatarUrl(intent);
+					fragment = LoginCreateAccountFragment.newInstance(thirdParty,
+							thirdPartyId, thirdPartyToken, thirdPartyFirstName, thirdPartyLastName,
+							thirdPartyUsername, thirdPartyEmail, thirdPartyAvatarUrl);
+				}
 				break;
 			case RESET_PASSWORD_MODE:
 				fragment = LoginResetPasswordFragment.newInstance("", "");

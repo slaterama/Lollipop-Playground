@@ -101,8 +101,8 @@ public class GsonRequest<T> extends Request<T> {
 			return super.parseNetworkError(volleyError);
 		} else try {
 			JsonObject jsonObject = newJsonObject(volleyError.networkResponse);
-			if (LogEx.isLoggable(LogEx.ERROR)) {
-				LogEx.e(String.format("error=%s", GsonUtils.getGson().toJson(jsonObject)));
+			if (LogEx.isLoggable(LogEx.WARN)) {
+				LogEx.w(String.format("error=%s", GsonUtils.getGson().toJson(jsonObject)));
 			}
 			return processParsedNetworkError(volleyError, jsonObject);
 		} catch (UnsupportedEncodingException e) {

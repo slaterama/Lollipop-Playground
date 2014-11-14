@@ -3,12 +3,16 @@ package com.citymaps.mobile.android.util;
 import android.content.Intent;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.Config;
-import com.citymaps.mobile.android.model.Version;
+import com.citymaps.mobile.android.model.ThirdParty;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
  */
 public class IntentUtils {
+
+	private static final String PROPERTY_NAME_EMAIL = "email";
 
 	/**
 	 * A static constant used to build action intent strings.
@@ -57,10 +61,9 @@ public class IntentUtils {
 	public static final String ACTION_CONFIG_LOADED = makeAction("ACTION_LOADED");
 
 	/**
-	 * Whether the app is currently in "startup mode" (i.e. walking the user through
-	 * a series of initial screens including LaunchActivity, TourActivity, etc.)
+	 * The current Citymaps config information.
 	 */
-	public static final String EXTRA_STARTUP_MODE = makeExtra("STARTUP_MODE");
+	public static final String EXTRA_CONFIG = makeExtra("CONFIG");
 
 	/**
 	 * An integer that specifies in what mode the Login activity should open.
@@ -74,28 +77,26 @@ public class IntentUtils {
 	public static final String EXTRA_LOGIN_MODE = makeExtra("LOGIN_MODE");
 
 	/**
-	 * The current Citymaps config information.
+	 * Whether the app is currently in "startup mode" (i.e. walking the user through
+	 * a series of initial screens including LaunchActivity, TourActivity, etc.)
 	 */
-	public static final String EXTRA_CONFIG = makeExtra("CONFIG");
+	public static final String EXTRA_STARTUP_MODE = makeExtra("STARTUP_MODE");
 
-	/**
-	 * The current Api status.
-	 */
-	public static final String EXTRA_API_STATUS = makeExtra("API_STATUS");
+	public static final String EXTRA_THIRD_PARTY = makeExtra("THIRD_PARTY");
+	public static final String EXTRA_THIRD_PARTY_ID = makeExtra("THIRD_PARTY_ID");
+	public static final String EXTRA_THIRD_PARTY_TOKEN = makeExtra("THIRD_PARTY_TOKEN");
+	public static final String EXTRA_THIRD_PARTY_FIRST_NAME = makeExtra("THIRD_PARTY_FIRST_NAME");
+	public static final String EXTRA_THIRD_PARTY_LAST_NAME = makeExtra("THIRD_PARTY_LAST_NAME");
+	public static final String EXTRA_THIRD_PARTY_USERNAME = makeExtra("THIRD_PARTY_USERNAME");
+	public static final String EXTRA_THIRD_PARTY_EMAIL = makeExtra("THIRD_PARTY_EMAIL");
+	public static final String EXTRA_THIRD_PARTY_AVATAR_URL = makeExtra("THIRD_PARTY_AVATAR_URL");
 
-	/**
-	 * Whether the app is currently completing "first run" processing.
-	 */
-	/*
-	public static final String EXTRA_IN_FIRST_RUN = makeExtra("IN_FIRST_RUN");
-	*/
-
-	public static void putStartupMode(Intent intent, boolean startupMode) {
-		intent.putExtra(EXTRA_STARTUP_MODE, startupMode);
+	public static void putConfig(Intent intent, Config config) {
+		intent.putExtra(EXTRA_CONFIG, config);
 	}
 
-	public static boolean isStartupMode(Intent intent, boolean defaultValue) {
-		return intent.getBooleanExtra(EXTRA_STARTUP_MODE, defaultValue);
+	public static Config getConfig(Intent intent) {
+		return intent.getParcelableExtra(EXTRA_CONFIG);
 	}
 
 	public static void putLoginMode(Intent intent, int loginMode) {
@@ -106,31 +107,63 @@ public class IntentUtils {
 		return intent.getIntExtra(EXTRA_LOGIN_MODE, defaultValue);
 	}
 
-	public static void putApiStatus(Intent intent, Version status) {
-		intent.putExtra(EXTRA_API_STATUS, status);
+	public static void putStartupMode(Intent intent, boolean startupMode) {
+		intent.putExtra(EXTRA_STARTUP_MODE, startupMode);
 	}
 
-	public static Version getApiStatus(Intent intent) {
-		return intent.getParcelableExtra(EXTRA_API_STATUS);
+	public static boolean isStartupMode(Intent intent, boolean defaultValue) {
+		return intent.getBooleanExtra(EXTRA_STARTUP_MODE, defaultValue);
 	}
 
-	public static void putConfig(Intent intent, Config config) {
-		intent.putExtra(EXTRA_CONFIG, config);
+	public static void putThirdPartyUser(Intent intent, Session session, GraphUser user) {
+		if (session == null || user == null) {
+			return;
+		}
+
+		intent.putExtra(EXTRA_THIRD_PARTY, ThirdParty.FACEBOOK);
+		intent.putExtra(EXTRA_THIRD_PARTY_ID, user.getId());
+		intent.putExtra(EXTRA_THIRD_PARTY_TOKEN, session.getAccessToken());
+		intent.putExtra(EXTRA_THIRD_PARTY_FIRST_NAME, user.getFirstName());
+		intent.putExtra(EXTRA_THIRD_PARTY_LAST_NAME, user.getLastName());
+		intent.putExtra(EXTRA_THIRD_PARTY_USERNAME, user.getUsername());
+		Object email = user.getProperty(PROPERTY_NAME_EMAIL);
+		if (email != null) {
+			intent.putExtra(EXTRA_THIRD_PARTY_EMAIL, email.toString());
+		}
+		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, FacebookUtils.getAvatarUrl(user.getId(), FacebookUtils.PictureType.LARGE, true));
 	}
 
-	public static Config getConfig(Intent intent) {
-		return intent.getParcelableExtra(EXTRA_CONFIG);
+	public static ThirdParty getThirdParty(Intent intent) {
+		return (ThirdParty) intent.getSerializableExtra(EXTRA_THIRD_PARTY);
 	}
 
-	/*
-	public static void putInFirstRun(Intent intent, boolean inFirstRun) {
-		intent.putExtra(EXTRA_IN_FIRST_RUN, inFirstRun);
+	public static String getThirdPartyId(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_ID);
 	}
 
-	public static boolean isInFirstRun(Intent intent, boolean defaultValue) {
-		return intent.getBooleanExtra(EXTRA_IN_FIRST_RUN, defaultValue);
+	public static String getThirdPartyToken(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_TOKEN);
 	}
-	*/
+
+	public static String getThirdPartyFirstName(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_FIRST_NAME);
+	}
+
+	public static String getThirdPartyLastName(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_LAST_NAME);
+	}
+
+	public static String getThirdPartyUsername(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_USERNAME);
+	}
+
+	public static String getThirdPartyEmail(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_EMAIL);
+	}
+
+	public static String getThirdPartyAvatarUrl(Intent intent) {
+		return intent.getStringExtra(EXTRA_THIRD_PARTY_AVATAR_URL);
+	}
 
 	private IntentUtils() {
 	}
