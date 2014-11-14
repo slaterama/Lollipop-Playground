@@ -1,34 +1,25 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.view.*;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.NoConnectionError;
 import com.android.volley.VolleyError;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
-import com.citymaps.mobile.android.util.CitymapsPatterns;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
+import com.citymaps.mobile.android.util.Validator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,8 +29,8 @@ import java.util.regex.Pattern;
  * Use the {@link LoginSignInFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginSignInFragment extends Fragment
-		implements TextView.OnEditorActionListener, View.OnClickListener, VolleyCallbacks<User> {
+public class LoginSignInFragment extends LoginFragment
+		implements View.OnClickListener {
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,8 +46,6 @@ public class LoginSignInFragment extends Fragment
 
 	private EditText mUsernameView;
 	private EditText mPasswordView;
-
-	private Map<EditText, FieldValidator> mFieldValidatorMap;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -95,7 +84,6 @@ public class LoginSignInFragment extends Fragment
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		if (getArguments() != null) {
 			mParam1 = getArguments().getString(ARG_PARAM1);
 			mParam2 = getArguments().getString(ARG_PARAM2);
@@ -119,10 +107,6 @@ public class LoginSignInFragment extends Fragment
 		createAccountBtn.setOnClickListener(this);
 		Button resetPasswordBtn = (Button) view.findViewById(R.id.login_sign_in_reset_password_button);
 		resetPasswordBtn.setOnClickListener(this);
-
-		mFieldValidatorMap = new LinkedHashMap<EditText, FieldValidator>(2);
-		mFieldValidatorMap.put(mUsernameView, FieldValidator.USERNAME);
-		mFieldValidatorMap.put(mPasswordView, FieldValidator.PASSWORD);
 	}
 
 	@Override
@@ -138,28 +122,49 @@ public class LoginSignInFragment extends Fragment
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
+	protected boolean validateForm() {
+		if (!processInput(mUsernameView.getText(), Validator.USERNAME, true, true)) {
+			return false;
+		}
+
+		if (!processInput(mPasswordView.getText(), Validator.PASSWORD, true, true)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		switch (id) {
-			case R.id.action_submit:
-				signIn();
-				return true;
-		}
-		return super.onOptionsItemSelected(item);
+	protected void onSubmitForm() {
+		String username = mUsernameView.getText().toString();
+		String password = mPasswordView.getText().toString();
+		UserRequest loginRequest = UserRequest.newLoginRequest(mActivity, username, password, this, this);
+		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
 	}
 
 	@Override
-	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		if (actionId == EditorInfo.IME_ACTION_GO) {
-			signIn();
-			return true;
+	public void onResponse(User response) {
+		super.onResponse(response);
+		SessionManager.getInstance(getActivity()).setCurrentUser(response);
+		if (mListener != null) {
+			mListener.onSignInSuccess(response);
 		}
-		return false;
+	}
+
+	@Override
+	public void onErrorResponse(VolleyError error) {
+		super.onErrorResponse(error);
+		if (error instanceof NoConnectionError) {
+			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+		} else {
+			String message = error.getLocalizedMessage();
+			if (TextUtils.isEmpty(message)) {
+				message = getString(R.string.error_message_generic);
+			}
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+		}
 	}
 
 	@Override
@@ -179,108 +184,21 @@ public class LoginSignInFragment extends Fragment
 		}
 	}
 
-	@Override
-	public void onResponse(User response) {
-//		mActivity.setSupportProgressBarIndeterminateVisibility(false);
+	/**
+	 * This interface must be implemented by activities that contain this
+	 * fragment to allow an interaction in this fragment to be communicated
+	 * to the activity and potentially other fragments contained in that
+	 * activity.
+	 * <p/>
+	 * See the Android Training lesson <a href=
+	 * "http://developer.android.com/training/basics/fragments/communicating.html"
+	 * >Communicating with Other Fragments</a> for more information.
+	 */
+	public interface OnSignInListener {
+		public void onSignInSuccess(User currentUser);
 
-		SessionManager.getInstance(getActivity()).setCurrentUser(response);
-		if (mListener != null) {
-			mListener.onSignInSuccess(response);
-		}
+		public void onSignInCreateAccount();
+
+		public void onSignInResetPassword();
 	}
-
-	@Override
-	public void onErrorResponse(VolleyError error) {
-//		mActivity.setSupportProgressBarIndeterminateVisibility(false);
-
-		if (error instanceof NoConnectionError) {
-			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
-		} else {
-			String message = error.getLocalizedMessage();
-			if (TextUtils.isEmpty(message)) {
-				message = getString(R.string.error_message_generic);
-			}
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
-		}
-	}
-
-	private boolean validateFields() {
-		CharSequence message = null;
-
-		Set<EditText> keySet = mFieldValidatorMap.keySet();
-		for (EditText editText : keySet) {
-			FieldValidator validator = mFieldValidatorMap.get(editText);
-			String input = editText.getText().toString();
-			if (TextUtils.isEmpty(input)) {
-				message = getString(validator.mMissingFieldMessageResId);
-				break;
-			} else if (!validator.mPattern.matcher(input).matches()) {
-				message = getString(validator.mInvalidFieldMessageResId, validator.mInvalidFieldMessageArgs);
-				break;
-			}
-		}
-
-		if (!TextUtils.isEmpty(message)) {
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
-			return false;
-		}
-
-		return true;
-	}
-
-	protected void signIn() {
-		if (!validateFields()) {
-			return;
-		}
-
-		InputMethodManager manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		manager.hideSoftInputFromWindow(mUsernameView.getWindowToken(), 0);
-
-		String username = mUsernameView.getText().toString();
-		String password = mPasswordView.getText().toString();
-		UserRequest loginRequest = UserRequest.newLoginRequest(mActivity, username, password, this, this);
-		VolleyManager.getInstance(getActivity()).getRequestQueue().add(loginRequest);
-	}
-
-/**
- * This interface must be implemented by activities that contain this
- * fragment to allow an interaction in this fragment to be communicated
- * to the activity and potentially other fragments contained in that
- * activity.
- * <p/>
- * See the Android Training lesson <a href=
- * "http://developer.android.com/training/basics/fragments/communicating.html"
- * >Communicating with Other Fragments</a> for more information.
- */
-public interface OnSignInListener {
-	public void onSignInSuccess(User currentUser);
-
-	public void onSignInCreateAccount();
-
-	public void onSignInResetPassword();
-}
-
-private static enum FieldValidator {
-	USERNAME(CitymapsPatterns.USERNAME, R.string.error_login_enter_your_username,
-			R.string.error_login_valid_username_message, BuildConfig.USERNAME_MIN_LENGTH, BuildConfig.USERNAME_MAX_LENGTH),
-	PASSWORD(CitymapsPatterns.PASSWORD, R.string.error_login_enter_your_password,
-			R.string.error_login_valid_password_message, BuildConfig.PASSWORD_MIN_LENGTH, BuildConfig.PASSWORD_MAX_LENGTH);
-
-	private Pattern mPattern;
-	private int mMissingFieldMessageResId;
-	private int mInvalidFieldMessageResId;
-	private Object[] mInvalidFieldMessageArgs;
-
-	private FieldValidator(Pattern pattern, int missingFieldMessageResId,
-						   int invalidFieldMessageResId, Object... invalidFieldMessageArgs) {
-		mPattern = pattern;
-		mMissingFieldMessageResId = missingFieldMessageResId;
-		mInvalidFieldMessageResId = invalidFieldMessageResId;
-		mInvalidFieldMessageArgs = invalidFieldMessageArgs;
-	}
-}
 }

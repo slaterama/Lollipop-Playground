@@ -1,36 +1,28 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.TextUtils;
-import android.util.Patterns;
-import android.view.*;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.NoConnectionError;
 import com.android.volley.VolleyError;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
 import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
-import com.citymaps.mobile.android.util.CitymapsPatterns;
+import com.citymaps.mobile.android.util.Validator;
 import com.citymaps.mobile.android.util.ViewUtils;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,21 +31,20 @@ import java.util.regex.Pattern;
  * to handle interaction events.
  * Use the {@link LoginCreateAccountFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
-public class LoginCreateAccountFragment extends Fragment
-		implements TextView.OnEditorActionListener, VolleyCallbacks<User> {
+public class LoginCreateAccountFragment extends LoginFragment
+		implements VolleyCallbacks<User> {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+	// TODO: Rename parameter arguments, choose names that match
+	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+	private static final String ARG_PARAM1 = "param1";
+	private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+	// TODO: Rename and change types of parameters
+	private String mParam1;
+	private String mParam2;
 
-    private OnCreateAccountListener mListener;
+	private OnCreateAccountListener mListener;
 
 	private EditText mFirstNameView;
 	private EditText mLastNameView;
@@ -62,29 +53,27 @@ public class LoginCreateAccountFragment extends Fragment
 	private EditText mPasswordView;
 	private EditText mConfirmPasswordView;
 
-	private Map<EditText, FieldValidator> mFieldValidatorMap;
+	/**
+	 * Use this factory method to create a new instance of
+	 * this fragment using the provided parameters.
+	 *
+	 * @param param1 Parameter 1.
+	 * @param param2 Parameter 2.
+	 * @return A new instance of fragment LoginCreateAccountFragment.
+	 */
+	// TODO: Rename and change types and number of parameters
+	public static LoginCreateAccountFragment newInstance(String param1, String param2) {
+		LoginCreateAccountFragment fragment = new LoginCreateAccountFragment();
+		Bundle args = new Bundle();
+		args.putString(ARG_PARAM1, param1);
+		args.putString(ARG_PARAM2, param2);
+		fragment.setArguments(args);
+		return fragment;
+	}
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginCreateAccountFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginCreateAccountFragment newInstance(String param1, String param2) {
-        LoginCreateAccountFragment fragment = new LoginCreateAccountFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public LoginCreateAccountFragment() {
-        // Required empty public constructor
-    }
+	public LoginCreateAccountFragment() {
+		// Required empty public constructor
+	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -98,21 +87,20 @@ public class LoginCreateAccountFragment extends Fragment
 	}
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null) {
+			mParam1 = getArguments().getString(ARG_PARAM1);
+			mParam2 = getArguments().getString(ARG_PARAM2);
+		}
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login_create_account, container, false);
-    }
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		return inflater.inflate(R.layout.fragment_login_create_account, container, false);
+	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -129,13 +117,6 @@ public class LoginCreateAccountFragment extends Fragment
 		mPasswordView = (EditText) view.findViewById(R.id.login_create_account_password);
 		mConfirmPasswordView = (EditText) view.findViewById(R.id.login_create_account_confirm_password);
 		mConfirmPasswordView.setOnEditorActionListener(this);
-
-		mFieldValidatorMap = new LinkedHashMap<EditText, FieldValidator>(5);
-		mFieldValidatorMap.put(mFirstNameView, FieldValidator.FIRST_NAME);
-		mFieldValidatorMap.put(mLastNameView, FieldValidator.LAST_NAME);
-		mFieldValidatorMap.put(mUsernameView, FieldValidator.USERNAME);
-		mFieldValidatorMap.put(mEmailView, FieldValidator.EMAIL);
-		mFieldValidatorMap.put(mPasswordView, FieldValidator.PASSWORD);
 	}
 
 	@Override
@@ -145,40 +126,54 @@ public class LoginCreateAccountFragment extends Fragment
 	}
 
 	@Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
+	public void onDetach() {
+		super.onDetach();
+		mListener = null;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		switch (id) {
-			case R.id.action_submit:
-				createAccount();
-				return true;
+	protected boolean validateForm() {
+		if (!processInput(mFirstNameView.getText(), Validator.FIRST_NAME, true, true)) {
+			return false;
 		}
-		return super.onOptionsItemSelected(item);
+
+		if (!processInput(mLastNameView.getText(), Validator.LAST_NAME, true, true)) {
+			return false;
+		}
+
+		if (!processInput(mUsernameView.getText(), Validator.USERNAME, true, false)) {
+			return false;
+		}
+
+		if (!processInput(mEmailView.getText(), Validator.EMAIL, true, true)) {
+			return false;
+		}
+
+		if (!processInput(mPasswordView.getText(), Validator.PASSWORD, true, false)) {
+			return false;
+		}
+
+		if (!processInput(mPasswordView.getText(), mConfirmPasswordView.getText(), Validator.PASSWORD)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
-	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		if (actionId == EditorInfo.IME_ACTION_GO) {
-			createAccount();
-			return true;
-		}
-		return false;
+	protected void onSubmitForm() {
+		String firstName = mFirstNameView.getText().toString();
+		String lastName = mLastNameView.getText().toString();
+		String username = mUsernameView.getText().toString();
+		String email = mEmailView.getText().toString();
+		String password = mPasswordView.getText().toString();
+		UserRequest registerRequest = UserRequest.newRegisterRequest(getActivity(), username, password, firstName, lastName, email, this, this);
+		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);
 	}
 
 	@Override
 	public void onResponse(User response) {
-//		mActivity.setSupportProgressBarIndeterminateVisibility(false);
-
+		super.onResponse(response);
 		SessionManager.getInstance(getActivity()).setCurrentUser(response);
 		if (mListener != null) {
 			mListener.onCreateAccountSuccess(response);
@@ -187,8 +182,7 @@ public class LoginCreateAccountFragment extends Fragment
 
 	@Override
 	public void onErrorResponse(VolleyError error) {
-//		mActivity.setSupportProgressBarIndeterminateVisibility(false);
-
+		super.onErrorResponse(error);
 		if (error instanceof NoConnectionError) {
 			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 		} else {
@@ -202,95 +196,18 @@ public class LoginCreateAccountFragment extends Fragment
 		}
 	}
 
-	private boolean validateFields() {
-		CharSequence message = null;
-
-		Set<EditText> keySet = mFieldValidatorMap.keySet();
-		for (EditText editText : keySet) {
-			FieldValidator validator = mFieldValidatorMap.get(editText);
-			String input = editText.getText().toString();
-			if (TextUtils.isEmpty(input)) {
-				message = getString(validator.mMissingFieldMessageResId);
-				break;
-			} else if (!validator.mPattern.matcher(input).matches()) {
-				message = getString(validator.mInvalidFieldMessageResId, validator.mInvalidFieldMessageArgs);
-				break;
-			}
-		}
-
-		// Make sure passwords match
-		if (TextUtils.isEmpty(message)) {
-			String password = mPasswordView.getText().toString();
-			String confirmPassword = mConfirmPasswordView.getText().toString();
-			if (!TextUtils.equals(password, confirmPassword)) {
-				message = getString(R.string.error_login_passwords_do_not_match);
-			}
-		}
-
-		if (!TextUtils.isEmpty(message)) {
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
-			return false;
-		}
-
-		return true;
-	}
-
-	private void createAccount() {
-		if (!validateFields()) {
-			return;
-		}
-
-		InputMethodManager manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		manager.hideSoftInputFromWindow(mFirstNameView.getWindowToken(), 0);
-
-		String firstName = mFirstNameView.getText().toString();
-		String lastName = mLastNameView.getText().toString();
-		String username = mUsernameView.getText().toString();
-		String email = mEmailView.getText().toString();
-		String password = mPasswordView.getText().toString();
-		UserRequest registerRequest = UserRequest.newRegisterRequest(getActivity(), username, password, firstName, lastName, email, this, this);
-		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);
-	}
-
 	/**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnCreateAccountListener {
-        // TODO: Update argument type and name
+	 * This interface must be implemented by activities that contain this
+	 * fragment to allow an interaction in this fragment to be communicated
+	 * to the activity and potentially other fragments contained in that
+	 * activity.
+	 * <p/>
+	 * See the Android Training lesson <a href=
+	 * "http://developer.android.com/training/basics/fragments/communicating.html"
+	 * >Communicating with Other Fragments</a> for more information.
+	 */
+	public interface OnCreateAccountListener {
+		// TODO: Update argument type and name
 		public void onCreateAccountSuccess(User currentUser);
-    }
-
-	private static enum FieldValidator {
-		FIRST_NAME(CitymapsPatterns.NAME, R.string.error_login_enter_your_first_name,
-				R.string.error_login_valid_first_name_message, BuildConfig.NAME_MIN_LENGTH, BuildConfig.NAME_MAX_LENGTH),
-		LAST_NAME(CitymapsPatterns.NAME, R.string.error_login_enter_your_last_name,
-				R.string.error_login_valid_last_name_message, BuildConfig.NAME_MIN_LENGTH, BuildConfig.NAME_MAX_LENGTH),
-		USERNAME(CitymapsPatterns.USERNAME, R.string.error_login_enter_a_username,
-				R.string.error_login_valid_username_message, BuildConfig.USERNAME_MIN_LENGTH, BuildConfig.USERNAME_MAX_LENGTH),
-		EMAIL(Patterns.EMAIL_ADDRESS, R.string.error_login_enter_your_email,
-				R.string.error_login_valid_email_message),
-		PASSWORD(CitymapsPatterns.PASSWORD, R.string.error_login_enter_a_password,
-				R.string.error_login_valid_password_message, BuildConfig.PASSWORD_MIN_LENGTH, BuildConfig.PASSWORD_MAX_LENGTH);
-
-		private Pattern mPattern;
-		private int mMissingFieldMessageResId;
-		private int mInvalidFieldMessageResId;
-		private Object[] mInvalidFieldMessageArgs;
-
-		private FieldValidator(Pattern pattern, int missingFieldMessageResId, int invalidFieldMessageResId, Object... invalidFieldMessageArgs) {
-			mPattern = pattern;
-			mMissingFieldMessageResId = missingFieldMessageResId;
-			mInvalidFieldMessageResId = invalidFieldMessageResId;
-			mInvalidFieldMessageArgs = invalidFieldMessageArgs;
-		}
 	}
 }

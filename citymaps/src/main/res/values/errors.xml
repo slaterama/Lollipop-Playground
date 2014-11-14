@@ -4,18 +4,24 @@
 	<string name="error_message_generic">An unknown error occurred.</string>
 	<string name="error_message_no_connection">You are not connected to the Internet.</string>
 
-	<string name="error_login_missing_first_name_message">Please enter your first name.</string>
-	<string name="error_login_missing_last_name_message">Please enter your last name.</string>
-	<string name="error_login_missing_username_message">Please enter your username.</string>
-	<string name="error_login_missing_email_message">Please enter your email.</string>
-	<string name="error_login_missing_password_message">Please enter your password.</string>
+	<string name="validator_missing_generic">Please enter a value.</string>
+	<string name="validator_missing_your_first_name">Please enter your first name.</string>
+	<string name="validator_missing_your_last_name">Please enter your last name.</string>
+	<string name="validator_missing_a_username">Please enter a username.</string>
+	<string name="validator_missing_your_username">Please enter your username.</string>
+	<string name="validator_missing_your_email">Please enter your email.</string>
+	<string name="validator_missing_a_password">Please enter a password.</string>
+	<string name="validator_missing_your_password">Please enter your password.</string>
 
-	<string name="error_login_invalid_first_name_message">Please enter a valid first name. Names must be between %1$d and %2$d characters long and can only contain letters, dashes, and underscores.</string>
-	<string name="error_login_invalid_last_name_message">Please enter a valid last name. Names must be between %1$d and %2$d characters long and can only contain letters, dashes, and underscores.</string>
-	<string name="error_login_invalid_username_message">Please enter a valid username. Usernames must be between %1$d and %2$d characters long, must start with a letter, and can only contain letters, numbers, dashes, underscores, and periods.</string>
-	<string name="error_login_invalid_email_message">Please enter a valid email.</string>
-	<string name="error_login_invalid_password_message">Please enter a valid password. Passwords must be between %1$d and %2$d characters long.</string>
-	<string name="error_login_passwords_do_not_match_message">Passwords do not match.</string>
-	<string name="error_login_emails_do_not_match_message">Confirmation email does not match.</string>
+	<string name="validator_invalid_generic">\'%s\' is not valid.</string>
+	<string name="validator_invalid_first_name">Please enter a valid first name. Names must be between %1$d and %2$d characters long and can only contain letters, dashes, and underscores.</string>
+	<string name="validator_invalid_last_name">Please enter a valid last name. Names must be between %1$d and %2$d characters long and can only contain letters, dashes, and underscores.</string>
+	<string name="validator_invalid_username">Please enter a valid username. Usernames must be between %1$d and %2$d characters long, must start with a letter, and can only contain letters, numbers, dashes, underscores, and periods.</string>
+	<string name="validator_invalid_email">Please enter a valid email.</string>
+	<string name="validator_invalid_password">Please enter a valid password. Passwords must be between %1$d and %2$d characters long.</string>
+
+	<string name="validator_no_match_generic">Values do not match.</string>
+	<string name="validator_no_match_password">Passwords do not match.</string>
+	<string name="validator_no_match_email">Confirmation email does not match.</string>
 
 </resources>
