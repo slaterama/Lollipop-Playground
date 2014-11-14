@@ -103,6 +103,8 @@ public class LoginCreateAccountFragment extends LoginFragment
 		return fragment;
 	}
 
+	private ThirdParty mThirdParty;
+
 	public LoginCreateAccountFragment() {
 		// Required empty public constructor
 	}
@@ -124,6 +126,10 @@ public class LoginCreateAccountFragment extends LoginFragment
 		Fragment fragment = getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
 		if (fragment != null) {
 			fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
+		}
+
+		if (getArguments() != null) {
+			mThirdParty = (ThirdParty) getArguments().getSerializable(ARG_THIRD_PARTY);
 		}
 	}
 
@@ -151,15 +157,11 @@ public class LoginCreateAccountFragment extends LoginFragment
 		mConfirmPasswordView.setOnEditorActionListener(this);
 
 		if (savedInstanceState == null) {
-			Bundle args = getArguments();
-			if (args != null) {
-				ThirdParty thirdParty = (ThirdParty) args.getSerializable(ARG_THIRD_PARTY);
-				if (thirdParty != null) {
-					if (getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG) == null) {
-						UseThirdPartyInfoDialogFragment fragment = UseThirdPartyInfoDialogFragment.newInstance(thirdParty);
-						fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
-						fragment.show(getFragmentManager(), UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
-					}
+			if (mThirdParty != null) {
+				if (getFragmentManager().findFragmentByTag(UseThirdPartyInfoDialogFragment.FRAGMENT_TAG) == null) {
+					UseThirdPartyInfoDialogFragment fragment = UseThirdPartyInfoDialogFragment.newInstance(mThirdParty);
+					fragment.setTargetFragment(this, REQUEST_CODE_USE_THIRD_PARTY_INFO);
+					fragment.show(getFragmentManager(), UseThirdPartyInfoDialogFragment.FRAGMENT_TAG);
 				}
 			}
 		}
@@ -232,7 +234,16 @@ public class LoginCreateAccountFragment extends LoginFragment
 		String username = mUsernameView.getText().toString();
 		String email = mEmailView.getText().toString();
 		String password = mPasswordView.getText().toString();
-		UserRequest registerRequest = UserRequest.newRegisterRequest(getActivity(), username, password, firstName, lastName, email, this, this);
+		String thirdPartyId = null;
+		String thirdPartyToken = null;
+		String thirdPartyAvatarUrl = null;
+		if (mThirdParty != null && getArguments() != null) {
+			thirdPartyId = getArguments().getString(ARG_THIRD_PARTY_ID);
+			thirdPartyToken = getArguments().getString(ARG_THIRD_PARTY_TOKEN);
+			thirdPartyAvatarUrl = getArguments().getString(ARG_THIRD_PARTY_AVATAR_URL);
+		}
+		UserRequest registerRequest = UserRequest.newRegisterRequest(getActivity(), username, password,
+				firstName, lastName, email, mThirdParty, thirdPartyId, thirdPartyToken, thirdPartyAvatarUrl, this, this);
 		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);
 	}
 
@@ -251,6 +262,9 @@ public class LoginCreateAccountFragment extends LoginFragment
 		if (error instanceof NoConnectionError) {
 			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 		} else {
+
+			// TODO Why is localized message empty here?
+
 			String message = error.getLocalizedMessage();
 			if (TextUtils.isEmpty(message)) {
 				message = getString(R.string.error_message_generic);

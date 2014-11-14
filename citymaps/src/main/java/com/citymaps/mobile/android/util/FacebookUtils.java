@@ -2,10 +2,22 @@ package com.citymaps.mobile.android.util;
 
 import android.net.Uri;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class FacebookUtils {
 
+	public static final String[] FACEBOOK_READ_PERMISSIONS = new String[] {
+			"public_profile", "email", "user_friends"
+	};
+
+	public static final List<String> FACEBOOK_READ_PERMISSIONS_LIST;
+	static {
+		FACEBOOK_READ_PERMISSIONS_LIST = Arrays.asList(FACEBOOK_READ_PERMISSIONS);
+	}
+
 	private static String getAvatarUrl(String id, int width, int height, PictureType type, boolean invalidate) {
-		Uri.Builder builder = Uri.parse(String.format("http://graph.facebook.com/%s", id)).buildUpon();
+		Uri.Builder builder = Uri.parse(String.format("http://graph.facebook.com/%s/picture", id)).buildUpon();
 		if (width > 0 && height > 0) {
 			builder.appendQueryParameter("width", String.valueOf(width))
 					.appendQueryParameter("height", String.valueOf(height));

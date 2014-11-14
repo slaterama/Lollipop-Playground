@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ThirdParty {
-	FACEBOOK("facebook", "Facebook"),
-	GOOGLE("google", "Google");
+	FACEBOOK("facebook", "Facebook", 1),
+	GOOGLE("google", "Google", 2);
 
 	private static Map<String, ThirdParty> mValueMap;
 
@@ -24,13 +24,20 @@ public enum ThirdParty {
 
 	private String mProperName;
 
-	private ThirdParty(String value, String properName) {
+	private int mAvatarProvider;
+
+	private ThirdParty(String value, String properName, int avatarProvider) {
 		mValue = value;
 		mProperName = properName;
+		mAvatarProvider = avatarProvider;
 	}
 
 	public String getProperName() {
 		return mProperName;
+	}
+
+	public int getAvatarProvider() {
+		return mAvatarProvider;
 	}
 
 	@Override

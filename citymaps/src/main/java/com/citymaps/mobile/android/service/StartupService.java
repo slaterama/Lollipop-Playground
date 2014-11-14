@@ -55,10 +55,6 @@ public class StartupService extends Service {
 
 	private VolleyListeners mListeners = new VolleyListeners();
 
-	// TODO TEMP
-	private boolean mAttemptedLoginTests = false;
-	// END TEMP
-
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -119,22 +115,6 @@ public class StartupService extends Service {
 							mListeners.mVersionListener, mListeners.mErrorListener);
 					VolleyManager.getInstance(this).getRequestQueue().add(mGetVersionRequest);
 				}
-
-				// TODO TEMP
-				if (!mAttemptedLoginTests) {
-					mAttemptedLoginTests = true;
-
-					// This version is username/password
-					UserRequest loginRequest = UserRequest.newLoginRequest(this, "slaterama", "r3stlandC",
-							mListeners.mUserListener, mListeners.mErrorListener);
-
-					// This version is Citymaps token
-//					mUserLoginRequest = UserRequest.newLoginRequest(this, "N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ",
-//							mListeners.mUserListener, mListeners.mErrorListener);
-					RequestQueue q = VolleyManager.getInstance(this).getRequestQueue();
-					q.add(loginRequest);
-				}
-				// END TEMP
 			}
 
 			if (mConfig != null && mVersion != null) {
@@ -180,15 +160,6 @@ public class StartupService extends Service {
 			}
 		};
 
-
-		public Response.Listener<User> mUserListener = new Response.Listener<User>() {
-			@Override
-			public void onResponse(User response) {
-
-//				mCurrentUser = response;
-				LogEx.v(String.format("response=%s", response));
-			}
-		};
 
 		public Response.ErrorListener mErrorListener = new Response.ErrorListener() {
 			@Override

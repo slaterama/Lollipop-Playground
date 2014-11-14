@@ -8,6 +8,7 @@ import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.app.SessionManager;
+import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
@@ -31,6 +32,9 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 	private static final String KEY_THIRD_PARTY_NAME = "third_party_name";
 	private static final String KEY_THIRD_PARTY_ID = "third_party_id";
 	private static final String KEY_THIRD_PARTY_TOKEN = "third_party_token";
+
+	private static final String KEY_AVATAR_URL = "avatar_url";
+	private static final String KEY_AVATAR_PROVIDER = "avatar_provider";
 
 	private static UserRequest newGetRequest(Context context, String userId,
 											 Response.Listener<User> listener, Response.ErrorListener errorListener) {
@@ -74,13 +78,14 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 												 String firstName, String lastName, String email,
 												 Response.Listener<User> listener, Response.ErrorListener errorListener) {
 		return newRegisterRequest(context, username, password, firstName, lastName, email,
-				null, null, null, listener, errorListener);
+				null, null, null, null, listener, errorListener);
 	}
 
-	public static UserRequest newRegisterRequest(Context context, String username, String password,
+	public static UserRequest newRegisterRequest(final Context context, String username, String password,
 												 String firstName, String lastName, String email,
-												 ThirdParty thirdParty, String thirdPartyId, String thirdPartyToken,
-												 Response.Listener<User> listener, Response.ErrorListener errorListener) {
+												 final ThirdParty thirdParty, String thirdPartyId, String thirdPartyToken,
+												 final String thirdPartyAvatarUrl,
+												 final Response.Listener<User> listener, final Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_REGISTER);
 		Map<String, String> params = new HashMap<String, String>(8);
@@ -92,7 +97,36 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 		if (thirdParty != null) params.put(KEY_THIRD_PARTY_NAME, thirdParty.toString());
 		if (!TextUtils.isEmpty(thirdPartyId)) params.put(KEY_THIRD_PARTY_ID, thirdPartyId);
 		if (!TextUtils.isEmpty(thirdPartyToken)) params.put(KEY_THIRD_PARTY_TOKEN, thirdPartyToken);
-		return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
+
+		// Catch the result in an interim listener if successful, and update the user's avatar url if provided.
+		if (TextUtils.isEmpty(thirdPartyAvatarUrl)) {
+			return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
+		} else {
+			Response.Listener<User> interimListener = new Response.Listener<User>() {
+				@Override
+				public void onResponse(User response) {
+					// If we're here, the register was successful and now we want to update the user avatar url.
+					SessionManager.getInstance(context).setCurrentUser(response); // <-- Need this before calling the update request
+					Map<String, String> updateParams = new HashMap<String, String>(2);
+					updateParams.put(KEY_AVATAR_PROVIDER, String.valueOf(thirdParty.getAvatarProvider()));
+					updateParams.put(KEY_AVATAR_URL, thirdPartyAvatarUrl);
+					UserRequest updateRequest = newUpdateRequest(context, response.getId(), updateParams, listener, errorListener);
+					VolleyManager.getInstance(context).getRequestQueue().add(updateRequest);
+				}
+			};
+
+			// TODO Probably need an interim error listener as well
+			Response.ErrorListener interimErrorListener = new Response.ErrorListener() {
+				@Override
+				public void onErrorResponse(VolleyError error) {
+					// TODO take out the "setCurrentUser" line at line #109 and run a new user again, see what happens when we get here.
+
+					errorListener.onErrorResponse(error);
+				}
+			};
+
+			return new UserRequest(Method.POST, urlString, null, params, interimListener, interimErrorListener);
+		}
 	}
 
 	public static UserRequest newResetPasswordRequest(Context context, String email,
@@ -102,6 +136,13 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 		Map<String, String> params = new HashMap<String, String>(1);
 		params.put(KEY_EMAIL, email);
 		return new UserRequest(Api.Version.V1, Method.POST, urlString, null, params, listener, errorListener);
+	}
+
+	public static UserRequest newUpdateRequest(Context context, String userId, Map<String, String> params,
+											  Response.Listener<User> listener, Response.ErrorListener errorListener) {
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER_UPDATE, userId);
+		return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
 	}
 
 	public UserRequest(Api.Version version, int method, String url,

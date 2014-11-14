@@ -6,6 +6,6 @@ public class ApiV3 extends ApiBase {
 		super(environment, version);
 
 		// Once we have a version 3, add those endpoints here, for example:
-		// addEndpoint(new Endpoint(Endpoint.Type.USER, Server.Type.API, "v3/user/%s", APPEND_DEFAULT));
+		// addEndpoint(new Endpoint(Endpoint.Type.USER, Server.Type.API, "v3/user/%s", APPEND_STANDARD));
 	}
 }
