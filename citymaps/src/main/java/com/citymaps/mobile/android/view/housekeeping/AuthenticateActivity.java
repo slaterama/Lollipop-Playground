@@ -2,10 +2,11 @@ package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Button;
+import android.widget.Toast;
 import com.android.volley.*;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
@@ -32,6 +33,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	private boolean mStartupMode;
 
+	private ConnectivityManager mConnectivityManager;
+
 	private UiLifecycleHelper mUiLifecycleHelper;
 
 	private SessionState mLastProcessedState = null;
@@ -56,6 +59,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		}
 		setContentView(R.layout.activity_authenticate);
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
+
+		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
 		if (savedInstanceState != null) {
 			// We only want to start Facebook's UiLifecycleHelper if the user has already tapped the "Log in with Facebook" button
@@ -113,7 +118,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 			case REQUEST_CODE_CREATE_ACCOUNT:
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
-					onContinue();
+					finish();
 				}
 				break;
 			default:
@@ -128,6 +133,11 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		int id = view.getId();
 		switch (id) {
 			case R.id.login_authenticate_facebook_button: {
+				if (mConnectivityManager.getActiveNetworkInfo() == null) {
+					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+					return;
+				}
+
 				if (mUiLifecycleHelper == null) {
 					mUiLifecycleHelper = new UiLifecycleHelper(this, mStatusCallback);
 				}
@@ -141,7 +151,12 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				}
 			}
 			case R.id.login_authenticate_google_button: {
-				LogEx.d(((Button) view).getText().toString());
+				if (mConnectivityManager.getActiveNetworkInfo() == null) {
+					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+
 				break;
 			}
 			case R.id.login_authenticate_create_account_button: {
@@ -157,7 +172,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				break;
 			}
 			case R.id.login_authenticate_skip_button: {
-				onContinue();
+				finish();
 				break;
 			}
 		}
@@ -177,8 +192,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				public void onCompleted(final GraphUser user, Response response) {
 					if (user == null) {
 						if (getSupportFragmentManager().findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-							String title = response.getError().getErrorUserTitle();
-							String message = response.getError().getErrorUserMessage();
+							FacebookRequestError error = response.getError();
+							String title = error.getErrorUserTitle();
+							String message = error.getErrorUserMessage();
 							LoginErrorDialogFragment fragment = LoginErrorDialogFragment.newInstance(title, message);
 							fragment.show(getSupportFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
 						}
@@ -189,13 +205,11 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 								ThirdParty.FACEBOOK, id, token, new com.android.volley.Response.Listener<User>() {
 									@Override
 									public void onResponse(User response) {
-										LogEx.d(String.format("response=%s", response));
+										finish();
 									}
 								}, new com.android.volley.Response.ErrorListener() {
 									@Override
 									public void onErrorResponse(VolleyError error) {
-										LogEx.d(String.format("error=%s", error));
-
 										// There is no CM user linked to this Facebook account. Take them to the Create Account screen
 										Intent intent = new Intent(AuthenticateActivity.this, LoginActivity.class);
 										IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
@@ -205,7 +219,10 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 								});
 						VolleyManager.getInstance(AuthenticateActivity.this).getRequestQueue().add(loginRequest);
 					}
-					LogEx.i(String.format("user=%s", user));
+
+					if (LogEx.isLoggable(LogEx.INFO)) {
+						LogEx.i(String.format("Facebook: user=%s", user));
+					}
 				}
 			}).executeAsync();
 		} else if (exception != null) {
@@ -216,10 +233,11 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		}
 	}
 
-	public void onContinue() {
+	@Override
+	public void finish() {
 		if (mStartupMode) {
 			startActivity(new Intent(this, MainActivity.class));
 		}
-		finish();
+		super.finish();
 	}
 }
