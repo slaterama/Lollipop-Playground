@@ -43,21 +43,24 @@ public class LoginActivity extends TrackedActionBarActivity
 
 		mScrollView = (ScrollView) findViewById(R.id.login_scrollview);
 
+		final int[] scrollViewPos;
 		if (savedInstanceState == null) {
 			Intent intent = getIntent();
 			int loginMode = IntentUtils.getLoginMode(intent, SIGN_IN_MODE);
 			showFragment(loginMode, false, false);
+			scrollViewPos = new int[]{0, 0};
 		} else {
-			// RatioImageView causes ScrollView to lose its position after
-			// orientation change so let's restore it by posting a Runnable
-			final int[] scrollViewPos = savedInstanceState.getIntArray(STATE_KEY_SCROLL_POSITION);
-			new Handler().post(new Runnable() {
-				@Override
-				public void run() {
-					mScrollView.scrollTo(scrollViewPos[0], scrollViewPos[1]);
-				}
-			});
+			scrollViewPos = savedInstanceState.getIntArray(STATE_KEY_SCROLL_POSITION);
 		}
+
+		// RatioImageView causes unpredictable ScrollView position in landscape orientation
+		// so let's set/restore it by posting a Runnable
+		new Handler().post(new Runnable() {
+			@Override
+			public void run() {
+				mScrollView.scrollTo(scrollViewPos[0], scrollViewPos[1]);
+			}
+		});
 	}
 
 	@Override

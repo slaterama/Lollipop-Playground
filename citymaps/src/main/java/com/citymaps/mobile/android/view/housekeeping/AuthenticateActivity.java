@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -23,23 +24,31 @@ import com.facebook.*;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 
 public class AuthenticateActivity extends TrackedActionBarActivity {
 
-	private static final String STATE_KEY_FACEBOOK_INITIATED = "facebookInitiated";
+	private static final String STATE_KEY_FACEBOOK_INVOKED = "facebookInvoked";
 
-	private static final int REQUEST_CODE_LOGIN = 1001;
-	private static final int REQUEST_CODE_CREATE_ACCOUNT = 1002;
+	private static final String STATE_KEY_GOOGLE_INVOKED = "googleInvoked";
+
+	private static final int REQUEST_CODE_GOOGLE_SIGN_IN = 1001;
+	private static final int REQUEST_CODE_LOGIN = 1002;
+	private static final int REQUEST_CODE_CREATE_ACCOUNT = 1003;
 
 	private boolean mStartupMode;
 
 	private ConnectivityManager mConnectivityManager;
 
+	//private boolean mFacebookInvoked = false;
+
 	private UiLifecycleHelper mUiLifecycleHelper;
 
 	private SessionState mLastProcessedState = null;
 
-	Session.StatusCallback mStatusCallback = new Session.StatusCallback() {
+	private Session.StatusCallback mStatusCallback = new Session.StatusCallback() {
 		@Override
 		public void call(Session session, SessionState state, Exception exception) {
 			// Facebook's "onResume" fix triggers onSessionStateChange twice in some
@@ -51,12 +60,77 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		}
 	};
 
+	//private boolean mGoogleInvoked = false;
+
+	/* Client used to interact with Google APIs. */
+	private GoogleApiClient mGoogleApiClient;
+
+	/* A flag indicating that a PendingIntent is in progress and prevents
+	 * us from starting further intents.
+     */
+	private boolean mGoogleIntentInProgress;
+
+	/* Track whether the Google sign-in button has been clicked so that we know to resolve
+ 	 * all issues preventing sign-in without waiting.
+ 	 */
+	private boolean mGoogleAttemptingSignIn = false;
+
+	/* Store the connection result from onConnectionFailed callbacks so that we can
+ 	 * resolve them when the user clicks sign-in.
+ 	 */
+	private ConnectionResult mConnectionResult;
+
+	private GoogleApiClient.ConnectionCallbacks mConnectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
+		@Override
+		public void onConnected(Bundle bundle) {
+			// mGoogleAttemptingSignIn = false;
+			LogEx.d("Connected!");
+		}
+
+		@Override
+		public void onConnectionSuspended(int cause) {
+			mGoogleApiClient.connect();
+		}
+	};
+
+	private GoogleApiClient.OnConnectionFailedListener mOnConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+		@Override
+		public void onConnectionFailed(ConnectionResult result) {
+			/*
+			if (!mGoogleIntentInProgress && result.hasResolution()) {
+				try {
+					mGoogleIntentInProgress = true;
+					startIntentSenderForResult(result.getResolution().getIntentSender(),
+							REQUEST_CODE_GOOGLE_SIGN_IN, null, 0, 0, 0);
+				} catch (IntentSender.SendIntentException e) {
+					// The intent was canceled before it was sent.  Return to the default
+					// state and attempt to connect to get an updated ConnectionResult.
+					mGoogleIntentInProgress = false;
+					mGoogleApiClient.connect();
+				}
+			}
+			*/
+
+			// Store the ConnectionResult so that we can use it later when the user clicks
+			// 'sign-in'.
+			mConnectionResult = result;
+
+			if (mGoogleAttemptingSignIn) {
+				// The user has already clicked 'sign-in' so we attempt to resolve all
+				// errors until the user is signed in, or they cancel.
+				resolveGoogleSignInError();
+			}
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		/* TODO Need to restore this
 		if (!getResources().getBoolean(R.bool.authenticate_allow_orientation_change)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
+		*/
 		setContentView(R.layout.activity_authenticate);
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
 
@@ -64,11 +138,30 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 		if (savedInstanceState != null) {
 			// We only want to start Facebook's UiLifecycleHelper if the user has already tapped the "Log in with Facebook" button
-			boolean facebookInitiated = savedInstanceState.getBoolean(STATE_KEY_FACEBOOK_INITIATED, false);
-			if (facebookInitiated) {
+			boolean facebookInvoked = savedInstanceState.getBoolean(STATE_KEY_FACEBOOK_INVOKED, false);
+			if (facebookInvoked) {
 				mUiLifecycleHelper = new UiLifecycleHelper(this, mStatusCallback);
 				mUiLifecycleHelper.onCreate(savedInstanceState);
 			}
+
+			// We only want to start Google's API client if the user has already tapped the "Sign in with Google" button
+			boolean googleInvoked = savedInstanceState.getBoolean(STATE_KEY_GOOGLE_INVOKED, false);
+			if (googleInvoked) {
+				mGoogleApiClient = new GoogleApiClient.Builder(this)
+						.addConnectionCallbacks(mConnectionCallbacks)
+						.addOnConnectionFailedListener(mOnConnectionFailedListener)
+						.addApi(Plus.API)
+						.addScope(Plus.SCOPE_PLUS_LOGIN)
+						.build();
+			}
+		}
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if (mGoogleApiClient != null) {
+			mGoogleApiClient.connect();
 		}
 	}
 
@@ -90,10 +183,11 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
+		outState.putBoolean(STATE_KEY_FACEBOOK_INVOKED, mUiLifecycleHelper != null);
 		if (mUiLifecycleHelper != null) {
-			outState.putBoolean(STATE_KEY_FACEBOOK_INITIATED, true);
 			mUiLifecycleHelper.onSaveInstanceState(outState);
 		}
+		outState.putBoolean(STATE_KEY_GOOGLE_INVOKED, mGoogleApiClient != null);
 	}
 
 	@Override
@@ -101,6 +195,13 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		super.onPause();
 		if (mUiLifecycleHelper != null) {
 			mUiLifecycleHelper.onPause();
+		}
+	}
+
+	protected void onStop() {
+		super.onStop();
+		if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
 		}
 	}
 
@@ -115,10 +216,19 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
+			case REQUEST_CODE_GOOGLE_SIGN_IN:
+				if (resultCode != RESULT_OK) {
+					mGoogleAttemptingSignIn = false;
+				}
+				mGoogleIntentInProgress = false;
+				if (!mGoogleApiClient.isConnecting()) {
+					mGoogleApiClient.connect();
+				}
+				break;
 			case REQUEST_CODE_CREATE_ACCOUNT:
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
-					finish();
+					wrapUp();
 				}
 				break;
 			default:
@@ -137,7 +247,6 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-
 				if (mUiLifecycleHelper == null) {
 					mUiLifecycleHelper = new UiLifecycleHelper(this, mStatusCallback);
 				}
@@ -149,14 +258,30 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 							.setPermissions(FacebookUtils.FACEBOOK_READ_PERMISSIONS_LIST)
 							.setCallback(mStatusCallback));
 				}
+				break;
 			}
 			case R.id.login_authenticate_google_button: {
 				if (mConnectivityManager.getActiveNetworkInfo() == null) {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-
-
+				if (mGoogleApiClient == null) {
+					mGoogleApiClient = new GoogleApiClient.Builder(this)
+							.addConnectionCallbacks(mConnectionCallbacks)
+							.addOnConnectionFailedListener(mOnConnectionFailedListener)
+							.addApi(Plus.API)
+							.addScope(Plus.SCOPE_PLUS_LOGIN)
+							.build();
+				}
+				if (!mGoogleApiClient.isConnected()) {
+					mGoogleApiClient.connect();
+				}
+				/*
+				if (!mGoogleApiClient.isConnecting()) {
+					mGoogleAttemptingSignIn = true;
+					resolveGoogleSignInError();
+				}
+				*/
 				break;
 			}
 			case R.id.login_authenticate_create_account_button: {
@@ -172,7 +297,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				break;
 			}
 			case R.id.login_authenticate_skip_button: {
-				finish();
+				wrapUp();
 				break;
 			}
 		}
@@ -205,7 +330,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 								ThirdParty.FACEBOOK, id, token, new com.android.volley.Response.Listener<User>() {
 									@Override
 									public void onResponse(User response) {
-										finish();
+										wrapUp();
 									}
 								}, new com.android.volley.Response.ErrorListener() {
 									@Override
@@ -233,11 +358,26 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		}
 	}
 
-	@Override
-	public void finish() {
+	/* A helper method to resolve the current ConnectionResult error. */
+	private void resolveGoogleSignInError() {
+		if (mConnectionResult.hasResolution()) {
+			try {
+				mGoogleIntentInProgress = true;
+				startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
+						REQUEST_CODE_GOOGLE_SIGN_IN, null, 0, 0, 0);
+			} catch (IntentSender.SendIntentException e) {
+				// The intent was canceled before it was sent.  Return to the default
+				// state and attempt to connect to get an updated ConnectionResult.
+				mGoogleIntentInProgress = false;
+				mGoogleApiClient.connect();
+			}
+		}
+	}
+
+	public void wrapUp() {
 		if (mStartupMode) {
 			startActivity(new Intent(this, MainActivity.class));
 		}
-		super.finish();
+		finish();
 	}
 }

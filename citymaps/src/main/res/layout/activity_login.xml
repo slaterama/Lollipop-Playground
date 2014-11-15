@@ -1,39 +1,33 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			 xmlns:citymaps="http://schemas.android.com/apk/res-auto"
-			 xmlns:tools="http://schemas.android.com/tools"
-			 android:layout_width="match_parent"
-			 android:layout_height="match_parent"
-			 tools:context="com.citymaps.mobile.android.view.housekeeping.LoginActivity"
-			 tools:ignore="MergeRootFrame">
-
-	<ScrollView
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:citymaps="http://schemas.android.com/apk/res-auto"
+			xmlns:tools="http://schemas.android.com/tools"
 			android:id="@+id/login_scrollview"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:fillViewport="true">
+			android:fillViewport="true"
+			tools:context="com.citymaps.mobile.android.view.housekeeping.LoginActivity"
+			tools:ignore="MergeRootFrame">
 
-		<LinearLayout
+	<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+		<com.citymaps.mobile.android.widget.RatioImageView
+				android:id="@+id/login_header_image"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:layout_gravity="center_horizontal"
+				citymaps:ratio="1.77777778"
+				citymaps:baseOnSmallestWidth="true"
+				android:src="@drawable/cm_logo_160dp"
+				android:scaleType="centerInside"/>
 
-			<com.citymaps.mobile.android.widget.RatioImageView
-					android:id="@+id/login_header_image"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_horizontal"
-					citymaps:ratio="1.77777778"
-					citymaps:baseOnSmallestWidth="true"
-					android:src="@drawable/cm_logo_160dp"
-					android:scaleType="centerInside" />
+		<FrameLayout
+				android:id="@+id/login_fragment_container"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"/>
 
-			<FrameLayout
-					android:id="@+id/login_fragment_container"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent" />
+	</LinearLayout>
 
-		</LinearLayout>
-
-	</ScrollView>
-
-</FrameLayout>
+</ScrollView>
