@@ -97,7 +97,7 @@ public class GsonRequest<T> extends Request<T> {
 
 	@Override
 	protected VolleyError parseNetworkError(VolleyError volleyError) {
-		if (volleyError.networkResponse == null || !(volleyError instanceof ServerError)) {
+		if (volleyError.networkResponse == null /*|| !(volleyError instanceof ServerError)*/) {
 			return super.parseNetworkError(volleyError);
 		} else try {
 			JsonObject jsonObject = newJsonObject(volleyError.networkResponse);

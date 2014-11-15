@@ -115,17 +115,7 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 				}
 			};
 
-			// TODO Probably need an interim error listener as well
-			Response.ErrorListener interimErrorListener = new Response.ErrorListener() {
-				@Override
-				public void onErrorResponse(VolleyError error) {
-					// TODO take out the "setCurrentUser" line at line #109 and run a new user again, see what happens when we get here.
-
-					errorListener.onErrorResponse(error);
-				}
-			};
-
-			return new UserRequest(Method.POST, urlString, null, params, interimListener, interimErrorListener);
+			return new UserRequest(Method.POST, urlString, null, params, interimListener, errorListener);
 		}
 	}
 
