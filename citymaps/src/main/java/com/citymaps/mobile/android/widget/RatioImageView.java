@@ -3,6 +3,10 @@ package com.citymaps.mobile.android.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import com.citymaps.mobile.android.R;
 
@@ -13,19 +17,23 @@ public class RatioImageView extends ImageView {
 
 	private float mRatio;
 
+	private boolean mBaseOnSmallestWidth = true;
+
+	private DisplayMetrics mDisplayMetrics;
+
 	public RatioImageView(Context context) {
 		super(context);
-		init(null, 0);
+		init(context, null, 0);
 	}
 
 	public RatioImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(attrs, 0);
+		init(context, attrs, 0);
 	}
 
 	public RatioImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init(attrs, defStyle);
+		init(context, attrs, defStyle);
 	}
 
 	/*
@@ -35,47 +43,117 @@ public class RatioImageView extends ImageView {
 	}
 	*/
 
-	private void init(AttributeSet attrs, int defStyle) {
+	private void init(Context context, AttributeSet attrs, int defStyle) {
 		// Load attributes
 		final TypedArray a = getContext().obtainStyledAttributes(
 				attrs, R.styleable.RatioImageView, defStyle, 0);
 		setRatio(a.getFloat(R.styleable.RatioImageView_ratio, 0.0f));
+		setBaseOnSmallestWidth(a.getBoolean(R.styleable.RatioImageView_baseOnSmallestWidth, false));
 		a.recycle();
+
+		WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		Display display = manager.getDefaultDisplay();
+		mDisplayMetrics = new DisplayMetrics();
+		display.getMetrics(mDisplayMetrics);
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		if (mRatio > 0.0f) {
-			int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-			int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-			int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-			int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-			// Update widthMeasureSpec if appropriate
-			if (heightMode == MeasureSpec.EXACTLY) {
-				int desiredWidth = (int) (heightSize * mRatio);
-				if (widthMode == MeasureSpec.UNSPECIFIED) {
-					widthMeasureSpec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.EXACTLY);
-				} else if (widthMode == MeasureSpec.AT_MOST) {
-					widthMeasureSpec = MeasureSpec.makeMeasureSpec(Math.min(desiredWidth, heightSize), MeasureSpec.EXACTLY);
-				}
-			}
+		// The following code is loosely based on the onMeasure method
+		// in Android's ImageView widget, in order to base the measured dimensions
+		// on a given ratio.
 
-			// Update heightMeasureSpec if appropriate
-			if (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST) {
-				int desiredHeight = (int) (widthSize / mRatio);
-				if (heightMode == MeasureSpec.UNSPECIFIED) {
-					heightMeasureSpec = MeasureSpec.makeMeasureSpec(desiredHeight, MeasureSpec.EXACTLY);
-				} else if (heightMode == MeasureSpec.AT_MOST) {
-					heightMeasureSpec = MeasureSpec.makeMeasureSpec(Math.min(widthSize, desiredHeight), MeasureSpec.EXACTLY);
+		if (mRatio >= 0.0000001) {
+			final int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
+			final int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
+			final int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
+			final int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
+
+			// We are allowed to change the view's width
+			boolean resizeWidth = widthSpecMode != MeasureSpec.EXACTLY;
+
+			// We are allowed to change the view's height
+			boolean resizeHeight = heightSpecMode != MeasureSpec.EXACTLY;
+
+			if (resizeWidth || resizeHeight) {
+				// If we get here, it means we want to resize to match the
+				// desired aspect ratio, and we have the freedom to change at
+				// least one dimension.
+
+				int measuredWidth = getMeasuredWidth();
+				int measuredHeight = getMeasuredHeight();
+
+				// See what our actual aspect ratio is
+				float actualAspect = (float) (measuredWidth) / (measuredHeight);
+
+				if (Math.abs(actualAspect - mRatio) > 0.0000001) {
+
+					boolean done = false;
+
+					// Try adjusting width to be proportional to height
+					if (resizeWidth) {
+						int newWidth = Math.max((int) (measuredHeight * mRatio), getSuggestedMinimumWidth());
+						if (widthSpecMode == MeasureSpec.AT_MOST && newWidth > widthSpecSize) {
+							measuredWidth = widthSpecSize;
+						} else {
+							measuredWidth = newWidth;
+							done = true;
+						}
+					}
+
+					// Try adjusting height to be proportional to width
+					if (!done && resizeHeight) {
+						int widthToUse = measuredWidth;
+						if (getLayoutParams().width == ViewGroup.LayoutParams.MATCH_PARENT && mBaseOnSmallestWidth
+								&& mDisplayMetrics.widthPixels > mDisplayMetrics.heightPixels) {
+
+							if (isInEditMode()) {
+								widthToUse = (int) (widthToUse / 1.77777778f);
+							} else {
+								int widthDiff = mDisplayMetrics.widthPixels - measuredWidth;
+								widthToUse = Math.max(mDisplayMetrics.heightPixels - widthDiff, 0);
+							}
+						}
+
+						int newHeight = Math.max((int) (widthToUse / mRatio), getSuggestedMinimumHeight());
+						if (heightSpecMode == MeasureSpec.AT_MOST && newHeight > heightSpecSize) {
+							measuredHeight = heightSpecMode;
+						} else {
+							measuredHeight = newHeight;
+						}
+					}
+
+					setMeasuredDimension(measuredWidth, measuredHeight);
 				}
 			}
 		}
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
+	/**
+	 * Whether to base the ratio on the smallest screen width. If this flag is set,
+	 * the control will attempt to set the height to what it would be in portrait orientation.
+	 * Applies only to views with width set to {@code MATCH_PARENT} and height set to {@code WRAP_CONTENT}.
+	 *
+	 * @return Whether to base the ratio on the smallest screen width.
+	 */
+	public boolean isBaseOnSmallestWidth() {
+		return mBaseOnSmallestWidth;
+	}
+
+	/**
+	 * Sets whether to base the ratio on the smallest screen width. If this flag is set,
+	 * the control will attempt to set the height to what it would be in portrait orientation.
+	 * Applies only to views with width set to {@code MATCH_PARENT} and height set to {@code WRAP_CONTENT}.
+	 */
+	public void setBaseOnSmallestWidth(boolean baseOnSmallestWidth) {
+		mBaseOnSmallestWidth = baseOnSmallestWidth;
+		forceLayout();
 	}
 
 	/**
 	 * Gets the ratio value.
+	 *
 	 * @return The ratio value.
 	 */
 	public float getRatio() {
@@ -85,6 +163,7 @@ public class RatioImageView extends ImageView {
 	/**
 	 * Sets the view's example string attribute value. In the example view, this string
 	 * is the text to draw.
+	 *
 	 * @param ratio The example string attribute value to use.
 	 */
 	public void setRatio(float ratio) {

@@ -7,6 +7,16 @@ import android.view.View;
 @TargetApi(16)
 public class ViewCompatJellyBean extends ViewCompat {
 	@Override
+	public int getMinimumHeightImpl(View view) {
+		return view.getMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidthImpl(View view) {
+		return view.getMinimumWidth();
+	}
+
+	@Override
 	public boolean isAttachedToWindowImpl(View view) {
 		boolean attached = false;
 		if (view != null) {

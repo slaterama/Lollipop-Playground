@@ -3,15 +3,14 @@ package com.citymaps.mobile.android.view.housekeeping;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
@@ -20,12 +19,13 @@ import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.MaterialHelper;
 
 public class LoginActivity extends TrackedActionBarActivity
 		implements LoginSignInFragment.OnSignInListener,
 		LoginCreateAccountFragment.OnCreateAccountListener,
 		LoginResetPasswordFragment.OnResetPasswordListener {
+
+	public static final String STATE_KEY_SCROLL_POSITION = "scrollPosition";
 
 	public static final int SIGN_IN_MODE = 0;
 	public static final int CREATE_ACCOUNT_MODE = 1;
@@ -34,23 +34,38 @@ public class LoginActivity extends TrackedActionBarActivity
 	public static final String URI_PARAM_TERMS_OF_SERVICE = "terms_of_service";
 	public static final String URI_PARAM_PRIVICY_POLICY = "privacy_policy";
 
-	private int mLoginMode;
+	private ScrollView mScrollView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_login);
 
-		// Since headerView is a "RatioImageView", we want the width to be the smaller of decorView's dimensions
-		View headerView = findViewById(R.id.login_header_image);
-		MaterialHelper.constrainWidthToShorterDimension(getWindow(), headerView);
+		mScrollView = (ScrollView) findViewById(R.id.login_scrollview);
 
-        if (savedInstanceState == null) {
+		if (savedInstanceState == null) {
 			Intent intent = getIntent();
-			mLoginMode = IntentUtils.getLoginMode(intent, SIGN_IN_MODE);
-			showFragment(mLoginMode, false, false);
-        }
-    }
+			int loginMode = IntentUtils.getLoginMode(intent, SIGN_IN_MODE);
+			showFragment(loginMode, false, false);
+		} else {
+			// RatioImageView causes ScrollView to lose its position after
+			// orientation change so let's restore it by posting a Runnable
+			final int[] scrollViewPos = savedInstanceState.getIntArray(STATE_KEY_SCROLL_POSITION);
+			new Handler().post(new Runnable() {
+				@Override
+				public void run() {
+					mScrollView.scrollTo(scrollViewPos[0], scrollViewPos[1]);
+				}
+			});
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putIntArray(STATE_KEY_SCROLL_POSITION,
+				new int[]{mScrollView.getScrollX(), mScrollView.getScrollY()});
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -81,19 +96,19 @@ public class LoginActivity extends TrackedActionBarActivity
 	}
 
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.login, menu);
-        return true;
-    }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.login, menu);
+		return true;
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return super.onOptionsItemSelected(item);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		return super.onOptionsItemSelected(item);
+	}
 
 	@Override
 	public void onSignInSuccess(User currentUser) {

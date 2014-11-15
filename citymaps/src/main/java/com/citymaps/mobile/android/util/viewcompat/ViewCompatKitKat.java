@@ -7,6 +7,16 @@ import android.view.View;
 @TargetApi(19)
 public class ViewCompatKitKat extends ViewCompat {
 	@Override
+	public int getMinimumHeightImpl(View view) {
+		return view.getMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidthImpl(View view) {
+		return view.getMinimumWidth();
+	}
+
+	@Override
 	public boolean isAttachedToWindowImpl(View view) {
 		return view.isAttachedToWindow();
 	}

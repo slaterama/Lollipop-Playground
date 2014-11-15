@@ -7,6 +7,8 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewParent;
 
+import java.lang.reflect.Field;
+
 /**
  * Class that allows for determining whether a view is attached to a window in pre-KitKat builds.
  * Though logic is accessed via static methods, this singleton implements the "Initialization-on-demand holder idiom"
@@ -81,6 +83,14 @@ public abstract class ViewCompat {
 		return depth;
 	}
 
+	public static int getMinimumHeight(View view) {
+		return getInstance().getMinimumHeightImpl(view);
+	}
+
+	public static int getMinimumWidth(View view) {
+		return getInstance().getMinimumWidthImpl(view);
+	}
+
 	/**
 	 * Returns true if this view is currently attached to a window.
 	 */
@@ -102,6 +112,10 @@ public abstract class ViewCompat {
 
 	protected ViewCompat() {
 	}
+
+	public abstract int getMinimumHeightImpl(View view);
+
+	public abstract int getMinimumWidthImpl(View view);
 
 	/**
 	 * Returns true if this view is currently attached to a window.

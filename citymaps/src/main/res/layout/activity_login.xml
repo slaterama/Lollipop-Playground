@@ -7,6 +7,7 @@
 			 tools:ignore="MergeRootFrame">
 
 	<ScrollView
+			android:id="@+id/login_scrollview"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:fillViewport="true">
@@ -22,6 +23,7 @@
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_horizontal"
 					citymaps:ratio="1.77777778"
+					citymaps:baseOnSmallestWidth="true"
 					android:src="@drawable/cm_logo_160dp"
 					android:scaleType="centerInside" />
 
