@@ -1,11 +1,15 @@
 package com.citymaps.mobile.android.util;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.ThirdParty;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
@@ -115,14 +119,14 @@ public class IntentUtils {
 		return intent.getBooleanExtra(EXTRA_STARTUP_MODE, defaultValue);
 	}
 
-	public static void putThirdPartyUser(Intent intent, Session session, GraphUser user) {
-		if (session == null || user == null) {
+	public static void putThirdPartyUser(Intent intent, String accessToken, GraphUser user) {
+		if (user == null) {
 			return;
 		}
 
 		intent.putExtra(EXTRA_THIRD_PARTY, ThirdParty.FACEBOOK);
 		intent.putExtra(EXTRA_THIRD_PARTY_ID, user.getId());
-		intent.putExtra(EXTRA_THIRD_PARTY_TOKEN, session.getAccessToken());
+		intent.putExtra(EXTRA_THIRD_PARTY_TOKEN, accessToken);
 		intent.putExtra(EXTRA_THIRD_PARTY_FIRST_NAME, user.getFirstName());
 		intent.putExtra(EXTRA_THIRD_PARTY_LAST_NAME, user.getLastName());
 		intent.putExtra(EXTRA_THIRD_PARTY_USERNAME, user.getUsername());
@@ -131,6 +135,32 @@ public class IntentUtils {
 			intent.putExtra(EXTRA_THIRD_PARTY_EMAIL, email.toString());
 		}
 		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, FacebookUtils.getAvatarUrl(user.getId(), FacebookUtils.PictureType.LARGE, true));
+	}
+
+	public static void putThirdPartyUser(Intent intent, GoogleApiClient client, String accessToken, Person person) {
+		if (person == null) {
+			return;
+		}
+
+		boolean hasName = person.hasName();
+		Person.Name name = (hasName ? person.getName() : null);
+		String email = Plus.AccountApi.getAccountName(client);
+		String username = "";
+		if (!TextUtils.isEmpty(email)) {
+			String tokens[] = email.split("@");
+			if (tokens.length > 0) {
+				username = tokens[0];
+			}
+		}
+
+		intent.putExtra(EXTRA_THIRD_PARTY, ThirdParty.GOOGLE);
+		intent.putExtra(EXTRA_THIRD_PARTY_ID, person.hasId() ? person.getId() : "");
+		intent.putExtra(EXTRA_THIRD_PARTY_TOKEN, accessToken);
+		intent.putExtra(EXTRA_THIRD_PARTY_FIRST_NAME, name == null ? "" : name.getGivenName());
+		intent.putExtra(EXTRA_THIRD_PARTY_LAST_NAME, name == null ? "" : name.getFamilyName());
+		intent.putExtra(EXTRA_THIRD_PARTY_USERNAME, username);
+		intent.putExtra(EXTRA_THIRD_PARTY_EMAIL, email);
+		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, GoogleUtils.getAvatarUrl(person, 200));
 	}
 
 	public static ThirdParty getThirdParty(Intent intent) {
