@@ -110,6 +110,14 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+
+		// TODO NEXT
+		// ERROR: When already in Google permissions dialog
+		// and we switch orientation over and over again,
+		// we are getting many copies of the dialog. In other
+		// words, some combination of mGoogleSignInClicked and
+		// mGoogleIntentInProgress is not getting set correctly.
+
 		if (mGoogleApiClient != null) {
 			mGoogleApiClient.connect();
 		}
