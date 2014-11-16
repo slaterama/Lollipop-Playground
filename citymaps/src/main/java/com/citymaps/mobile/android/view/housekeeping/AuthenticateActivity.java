@@ -110,15 +110,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-
-		LogEx.i();
-
 		if (mGoogleApiClient != null) {
-
-			// Since this is disconnecting every time we go to LoginActivity,
-			// we come back here and it reconnects and therefore launces LoginActivity again
-			// (i.e. endless loop). How to prevent? Something to do with mGoogleSignInClicked maybe?
-
 			mGoogleApiClient.connect();
 		}
 	}
@@ -173,8 +165,6 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		LogEx.i();
-
 		switch (requestCode) {
 			case REQUEST_CODE_GOOGLE_SIGN_IN:
 				// TODO This is messy. Need to really figure out mGoogleSignInClicked,

@@ -24,16 +24,35 @@ public class GoogleUtils {
 	public static String getAvatarUrl(Person person, int size) {
 		if (person == null)
 			return "";
-
 		String url = person.getImage().getUrl();
-
-		url = url.substring(0,
-				url.length() - 2)
-				+ size;
-
+		url = url.replaceAll("sz=\\d+$", String.format("sz=%d", size));
 		return url;
 	}
 
+	public static String getAvatarUrl(Person person, PictureType type) {
+		return getAvatarUrl(person, type.getSize());
+	}
+
+	public static String getAvatarUrl(Person person) {
+		return getAvatarUrl(person, PictureType.SMALL.getSize());
+	}
+
 	private GoogleUtils() {
+	}
+
+	public static enum PictureType {
+		SMALL(50),
+		NORMAL(100),
+		LARGE(200);
+
+		private int mSize;
+
+		private PictureType(int size) {
+			mSize = size;
+		}
+
+		public int getSize() {
+			return mSize;
+		}
 	}
 }

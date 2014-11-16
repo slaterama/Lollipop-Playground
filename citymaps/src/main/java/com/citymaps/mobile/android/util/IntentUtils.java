@@ -160,7 +160,7 @@ public class IntentUtils {
 		intent.putExtra(EXTRA_THIRD_PARTY_LAST_NAME, name == null ? "" : name.getFamilyName());
 		intent.putExtra(EXTRA_THIRD_PARTY_USERNAME, username);
 		intent.putExtra(EXTRA_THIRD_PARTY_EMAIL, email);
-		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, GoogleUtils.getAvatarUrl(person, 200));
+		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, GoogleUtils.getAvatarUrl(person, GoogleUtils.PictureType.LARGE));
 	}
 
 	public static ThirdParty getThirdParty(Intent intent) {
