@@ -169,6 +169,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 			case REQUEST_CODE_GOOGLE_SIGN_IN:
 				// TODO This is messy. Need to really figure out mGoogleSignInClicked,
 				// mGoogleIntentInProgress, etc.
+				// Could go into a Google helper, just like the Facebook one does
 				if (resultCode != RESULT_OK) {
 					mGoogleSignInClicked = false;
 				}
