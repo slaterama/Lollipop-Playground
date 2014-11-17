@@ -58,6 +58,10 @@
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
+				android:name=".view.housekeeping.AuthenticateActivity_New"
+				android:theme="@style/AppTheme.NoTitleOrActionBar">
+		</activity>
+		<activity
 				android:name=".view.housekeeping.AuthenticateActivity_NotUsed"
 				android:windowSoftInputMode="adjustResize|stateHidden">
 		</activity>

@@ -16,6 +16,14 @@ public class FacebookUtils {
 		FACEBOOK_READ_PERMISSIONS_LIST = Arrays.asList(FACEBOOK_READ_PERMISSIONS);
 	}
 
+	public static String getBaseAvatarUrl(String id, boolean invalidate) {
+		return getAvatarUrl(id, -1, -1, null, invalidate);
+	}
+
+	public static String getBaseAvatarUrl(String id) {
+		return getAvatarUrl(id, -1, -1, null, false);
+	}
+
 	private static String getAvatarUrl(String id, int width, int height, PictureType type, boolean invalidate) {
 		Uri.Builder builder = Uri.parse(String.format("http://graph.facebook.com/%s/picture", id)).buildUpon();
 		if (width > 0 && height > 0) {

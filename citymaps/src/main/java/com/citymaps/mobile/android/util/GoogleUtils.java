@@ -21,6 +21,14 @@ public class GoogleUtils {
 		return "oauth2:" + TextUtils.join(" ", GOOGLE_AUTH_SCOPES);
 	}
 
+	public static String getBaseAvatarUrl(Person person) {
+		if (person == null)
+			return "";
+		String url = person.getImage().getUrl();
+		url = url.replaceAll(".sz=\\d+$", String.format("sz=%d", ""));
+		return url;
+	}
+
 	public static String getAvatarUrl(Person person, int size) {
 		if (person == null)
 			return "";
