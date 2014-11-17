@@ -100,42 +100,6 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 		}
 	}
 
-	/*
-	@Override
-	public void onConnectionStateChange(ThirdPartyConnection connection, Map<String, Object> args) {
-		if (LogEx.isLoggable(LogEx.INFO)) {
-			LogEx.i(String.format("connection=%s, args=%s", connection, args));
-		}
-
-		ThirdParty thirdParty = connection.getThirdParty();
-		switch (thirdParty) {
-			case FACEBOOK: {
-				ThirdPartyConnectionFacebook facebookConnection = (ThirdPartyConnectionFacebook) connection;
-				Session session = (Session) args.get("session");
-				SessionState state = (SessionState) args.get("state");
-				Exception exception = (Exception) args.get("exception");
-
-				if (connection.isConnected()) {
-					// We have a session now. Get the user
-					facebookConnection.getToken(mFacebookCallbacks);
-					facebookConnection.getUser(mFacebookCallbacks);
-				} else if (exception != null) {
-					if (getSupportFragmentManager().findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-						LoginErrorDialogFragment fragment =
-								LoginErrorDialogFragment.newInstance(getTitle(), exception.getMessage());
-						fragment.show(getSupportFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
-					}
-				}
-				break;
-			}
-			case GOOGLE: {
-
-				break;
-			}
-		}
-	}
-	*/
-
 	public void onButtonClick(View view) {
 		int id = view.getId();
 		switch (id) {
@@ -156,18 +120,35 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 				}
 
 				if (thirdParty != null) {
-					thirdParty.getToken(new ThirdParty.TokenCallbacks() {
+
+					// TODO Causing problems with concurrency.
+
+					thirdParty.getToken(ThirdParty.Mode.INTERACTIVE, new ThirdParty.TokenCallbacks() {
 						@Override
-						public void onToken(String token) {
+						public void onSuccess(String data) {
 							if (LogEx.isLoggable(LogEx.INFO)) {
-								LogEx.i(String.format("token=%s", token));
+								LogEx.i(String.format("token=%s", data));
 							}
-
-
 						}
 
 						@Override
-						public void onTokenError(Throwable error) {
+						public void onError(Exception error) {
+							if (LogEx.isLoggable(LogEx.INFO)) {
+								LogEx.i();
+							}
+						}
+					});
+
+					thirdParty.getUser(ThirdParty.Mode.INTERACTIVE, new ThirdParty.UserCallbacks() {
+						@Override
+						public void onSuccess(ThirdParty.UserProxy user) {
+							if (LogEx.isLoggable(LogEx.INFO)) {
+								LogEx.i(String.format("name=%s %s", user.getFirstName(), user.getLastName()));
+							}
+						}
+
+						@Override
+						public void onError(Object error) {
 							if (LogEx.isLoggable(LogEx.INFO)) {
 								LogEx.i();
 							}
@@ -204,81 +185,28 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 
 	@Override
 	public void onConnected(ThirdParty thirdParty) {
+		/*
 		if (LogEx.isLoggable(LogEx.INFO)) {
 			LogEx.i(String.format("thirdParty=%s", thirdParty));
 		}
+		*/
 	}
 
 	@Override
 	public void onDisconnected(ThirdParty thirdParty) {
+		/*
 		if (LogEx.isLoggable(LogEx.INFO)) {
 			LogEx.i(String.format("thirdParty=%s", thirdParty));
 		}
+		*/
 	}
 
 	@Override
 	public void onError(ThirdParty thirdParty) {
+		/*
 		if (LogEx.isLoggable(LogEx.INFO)) {
 			LogEx.i(String.format("thirdParty=%s", thirdParty));
 		}
+		*/
 	}
-
-	/*
-	private class FacebookCallbacks implements TokenCallbacks,
-			UserCallbacks<GraphUser, FacebookRequestError> {
-		String mToken;
-		GraphUser mUser;
-
-		@Override
-		public void onToken(String token) {
-			mToken = token;
-			checkState();
-		}
-
-		@Override
-		public void onTokenError(Throwable error) {
-
-		}
-
-		@Override
-		public void onUser(GraphUser user) {
-			mUser = user;
-			checkState();
-		}
-
-		@Override
-		public void onUserError(FacebookRequestError error) {
-
-		}
-
-		private void checkState() {
-			if (mToken != null && mUser != null) {
-				if (LogEx.isLoggable(LogEx.INFO)) {
-					LogEx.i("Got token and user!");
-				}
-
-				final String id = mUser.getId();
-				UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivity_New.this,
-						com.citymaps.mobile.android.model.ThirdParty.FACEBOOK, id, mToken, new com.android.volley.Response.Listener<User>() {
-							@Override
-							public void onResponse(User response) {
-								wrapUp();
-							}
-						}, new com.android.volley.Response.ErrorListener() {
-							@Override
-							public void onErrorResponse(VolleyError error) {
-								// There is no CM user linked to this Facebook account. Take them to the Create Account screen
-								Intent intent = new Intent(AuthenticateActivity_New.this, LoginActivity.class);
-								IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
-								IntentUtils.putThirdPartyUser(intent, mToken, mUser);
-								mToken = null;
-								mUser = null;
-								AuthenticateActivity_New.this.startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
-							}
-						});
-				VolleyManager.getInstance(AuthenticateActivity_New.this).getRequestQueue().add(loginRequest);
-			}
-		}
-	}
-	*/
 }

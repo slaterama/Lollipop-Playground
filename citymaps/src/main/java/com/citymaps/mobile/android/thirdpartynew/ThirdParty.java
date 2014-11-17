@@ -91,7 +91,9 @@ public abstract class ThirdParty {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	}
 
-	public abstract void getToken(TokenCallbacks callbacks);
+	public abstract void getToken(Mode mode, TokenCallbacks callbacks);
+
+	public abstract void getUser(Mode mode, UserCallbacks callbacks);
 
 	public static interface ConnectionCallbacks {
 		public void onConnected(ThirdParty thirdParty);
@@ -99,13 +101,33 @@ public abstract class ThirdParty {
 		public void onError(ThirdParty thirdParty);
 	}
 
-	public static interface TokenCallbacks {
-		public void onToken(String token);
-		public void onTokenError(Throwable error);
+	protected static abstract interface ThirdPartyCallbacks<D, E> {
+		public void onSuccess(D data);
+		public void onError(E error);
+	}
+
+	public static interface TokenCallbacks extends ThirdPartyCallbacks<String, Exception> {
+//		public void onToken(String token);
+//		public void onTokenError(Throwable error);
+	}
+
+	public static interface UserCallbacks extends ThirdPartyCallbacks<UserProxy, Object> {
+//		public void onUser(UserProxy user);
+//		public void onUserError(Object error);
+	}
+
+	public static interface UserProxy {
+		public String getFirstName();
+		public String getLastName();
 	}
 
 	public static enum Type {
 		FACEBOOK,
 		GOOGLE
+	}
+
+	public static enum Mode {
+		SILENT,
+		INTERACTIVE
 	}
 }

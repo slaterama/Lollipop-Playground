@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.citymaps.mobile.android.util.FacebookUtils;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
+import com.citymaps.mobile.android.util.LogEx;
+import com.facebook.*;
+import com.facebook.model.GraphUser;
 
 public class ThirdPartyFacebook extends ThirdParty
 		implements Session.StatusCallback {
@@ -17,6 +17,8 @@ public class ThirdPartyFacebook extends ThirdParty
 	private SessionState mLastState = null;
 
 	private TokenCallbacks mPendingTokenCallbacks = null;
+
+	private UserCallbacks mPendingUserCallbacks = null;
 
 	public ThirdPartyFacebook(Activity activity, ConnectionCallbacks callbacks) {
 		super(activity, callbacks);
@@ -79,40 +81,20 @@ public class ThirdPartyFacebook extends ThirdParty
 		mHelper.onActivityResult(requestCode, resultCode, data);
 	}
 
-	/*
 	@Override
-	public void onActivate(boolean silent) {
+	public void getToken(Mode mode, TokenCallbacks callbacks) {
 		Session session = Session.getActiveSession();
-		if (session == null || session.isOpened() || session.isClosed()) {
-			Session.openActiveSession(mActivity, !silent, FacebookUtils.FACEBOOK_READ_PERMISSIONS_LIST, this);
-		} else {
-			if (!silent) {
-				session.openForRead(new Session.OpenRequest(mActivity)
-						.setPermissions(FacebookUtils.FACEBOOK_READ_PERMISSIONS_LIST)
-						.setCallback(this));
-			}
+		if (LogEx.isLoggable(LogEx.INFO)) {
+			LogEx.i(String.format("session=%s", session));
 		}
-	}
-
-	@Override
-	public void onDeactivate() {
-		Session session = Session.getActiveSession();
-		if (session.isOpened()) {
-			session.close(); // ???
-		}
-	}
-	*/
-
-	@Override
-	public void getToken(TokenCallbacks callbacks) {
-		Session session = Session.getActiveSession();
-		if (session == null) {
-			if (callbacks != null) {
-				callbacks.onToken(session.getAccessToken());
-			}
-		} else {
+		if (session == null || !session.isOpened()) {
 			mPendingTokenCallbacks = callbacks;
-			Session.openActiveSession(mActivity, true, FacebookUtils.FACEBOOK_READ_PERMISSIONS_LIST, this);
+			boolean allowLoginUI = (mode != null && mode.equals(Mode.INTERACTIVE));
+			Session.setActiveSession(Session.openActiveSession(mActivity, allowLoginUI, FacebookUtils.FACEBOOK_READ_PERMISSIONS_LIST, this));
+		} else {
+			if (callbacks != null) {
+				callbacks.onSuccess(session.getAccessToken());
+			}
 		}
 
 		/*
@@ -127,29 +109,60 @@ public class ThirdPartyFacebook extends ThirdParty
 	}
 
 	@Override
-	public void call(Session session, @NonNull SessionState state, Exception exception) {
-//		mSession = session;
-		if (state != mLastState) {
-//			boolean justConnected = ((mLastState == null || !mLastState.isOpened()) && (state != null && state.isOpened()));
-
-			mLastState = state;
-
-			/*
-			if (justConnected) {
-				if (mCallbacks != null) {
-					mCallbacks.onConnected(this);
-				}
+	public void getUser(Mode mode, final UserCallbacks callbacks) {
+		Session session = Session.getActiveSession();
+		if (LogEx.isLoggable(LogEx.INFO)) {
+			LogEx.i(String.format("session=%s", session));
+		}
+		if (session == null || !session.isOpened()) {
+			mPendingUserCallbacks = callbacks;
+			boolean allowLoginUI = (mode != null && mode.equals(Mode.INTERACTIVE));
+			Session.setActiveSession(Session.openActiveSession(mActivity, allowLoginUI, FacebookUtils.FACEBOOK_READ_PERMISSIONS_LIST, this));
+		} else {
+			if (callbacks != null) {
+				Request.newMeRequest(session, new Request.GraphUserCallback() {
+					@Override
+					public void onCompleted(GraphUser user, Response response) {
+						if (user == null) {
+							callbacks.onError(response);
+						} else {
+							UserProxy proxy = new FacebookUserProxy(user);
+							callbacks.onSuccess(proxy);
+						}
+					}
+				}).executeAsync();
 			}
-			*/
+		}
+	}
 
+	@Override
+	public void call(Session session, @NonNull SessionState state, Exception exception) {
+		if (state != mLastState) {
+			mLastState = state;
 			if (state.isOpened()) {
 				if (mConnectionCallbacks != null) {
 					mConnectionCallbacks.onConnected(this);
 				}
 
 				if (mPendingTokenCallbacks != null) {
-					mPendingTokenCallbacks.onToken(session.getAccessToken());
+					mPendingTokenCallbacks.onSuccess(session.getAccessToken());
 					mPendingTokenCallbacks = null;
+				}
+
+				if (mPendingUserCallbacks != null) {
+					Request.newMeRequest(session, new Request.GraphUserCallback() {
+						@Override
+						public void onCompleted(GraphUser user, Response response) {
+							if (user == null) {
+								mPendingUserCallbacks.onError(response);
+								mPendingUserCallbacks = null;
+							} else {
+								UserProxy proxy = new FacebookUserProxy(user);
+								mPendingUserCallbacks.onSuccess(proxy);
+								mPendingUserCallbacks = null;
+							}
+						}
+					}).executeAsync();
 				}
 			} else if (exception != null) {
 				if (mConnectionCallbacks != null) {
@@ -157,10 +170,34 @@ public class ThirdPartyFacebook extends ThirdParty
 				}
 
 				if (mPendingTokenCallbacks != null) {
-					mPendingTokenCallbacks.onTokenError(null);
+					mPendingTokenCallbacks.onError(null);
 					mPendingTokenCallbacks = null;
 				}
+
+				if (mPendingUserCallbacks != null) {
+					mPendingUserCallbacks.onError(null);
+					mPendingUserCallbacks = null;
+				}
 			}
+		}
+	}
+
+	public class FacebookUserProxy implements UserProxy {
+		private GraphUser mGraphUser;
+
+		public FacebookUserProxy(@NonNull GraphUser graphUser) {
+			super();
+			mGraphUser = graphUser;
+		}
+
+		@Override
+		public String getFirstName() {
+			return mGraphUser.getFirstName();
+		}
+
+		@Override
+		public String getLastName() {
+			return mGraphUser.getLastName();
 		}
 	}
 }

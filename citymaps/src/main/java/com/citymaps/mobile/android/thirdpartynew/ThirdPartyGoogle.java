@@ -5,18 +5,17 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.citymaps.mobile.android.util.LogEx;
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
-
-import java.io.IOException;
+import com.google.android.gms.plus.model.people.Person;
 
 public class ThirdPartyGoogle extends ThirdParty
 		implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -40,7 +39,7 @@ public class ThirdPartyGoogle extends ThirdParty
 	/* Track whether the sign-in button has been clicked so that we know to resolve
 	 * all issues preventing sign-in without waiting.
 	 */
-	private boolean mSignInClicked; // ???? mActive?
+	private boolean mSignInClicked;
 
 	/* Store the connection result from onConnectionFailed callbacks so that we can
 	 * resolve them when the user clicks sign-in.
@@ -48,6 +47,8 @@ public class ThirdPartyGoogle extends ThirdParty
 	private ConnectionResult mConnectionResult;
 
 	private TokenCallbacks mPendingTokenCallbacks = null;
+
+	private UserCallbacks mPendingUserCallbacks = null;
 
 	public ThirdPartyGoogle(Activity activity, ConnectionCallbacks callbacks) {
 		super(activity, callbacks);
@@ -115,12 +116,44 @@ public class ThirdPartyGoogle extends ThirdParty
 	*/
 
 	@Override
-	public void getToken(final TokenCallbacks callbacks /*, TODO interactive i.e. signInClicked */) {
+	public void getToken(Mode mode, final TokenCallbacks callbacks /*, TODO interactive i.e. signInClicked */) {
 		if (mGoogleApiClient.isConnected()) {
 			new TokenTask(mActivity, mGoogleApiClient, callbacks).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		} else {
-			mPendingTokenCallbacks = null;
-			mSignInClicked = true; // TODO interactive
+			mPendingTokenCallbacks = callbacks;
+			mSignInClicked = (mode != null && mode == Mode.INTERACTIVE);
+			if (!mGoogleApiClient.isConnecting()) {
+				mGoogleApiClient.connect();
+			}
+		}
+
+		/*
+		UserCallbacks<Person, Exception> callbacks2 = new UserCallbacks<Person, Exception>() {
+			@Override
+			public void onUser(Person user) {
+
+			}
+
+			@Override
+			public void onUserError(Exception error) {
+
+			}
+		};
+		getUser(Mode.INTERACTIVE, callbacks2, Person.class, Exception.class);
+		*/
+	}
+
+	@Override
+	public void getUser(Mode mode, UserCallbacks callbacks) {
+		if (mGoogleApiClient.isConnected()) {
+			if (callbacks != null) {
+				Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+				UserProxy proxy = new GoogleUserProxy(person);
+				callbacks.onSuccess(proxy);
+			}
+		} else {
+			mPendingUserCallbacks = callbacks;
+			mSignInClicked = (mode != null && mode == Mode.INTERACTIVE);
 			if (!mGoogleApiClient.isConnecting()) {
 				mGoogleApiClient.connect();
 			}
@@ -138,16 +171,23 @@ public class ThirdPartyGoogle extends ThirdParty
 		if (mConnectionCallbacks != null) {
 			mConnectionCallbacks.onConnected(this);
 		}
-	}
-
-	@Override
-	public void onConnectionSuspended(int cause) {
-		mGoogleApiClient.connect();
 
 		if (mPendingTokenCallbacks != null) {
 			new TokenTask(mActivity, mGoogleApiClient, mPendingTokenCallbacks).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			mPendingTokenCallbacks = null;
 		}
+
+		if (mPendingUserCallbacks != null) {
+			Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+			UserProxy proxy = new GoogleUserProxy(person);
+			mPendingUserCallbacks.onSuccess(proxy);
+			mPendingUserCallbacks = null;
+		}
+	}
+
+	@Override
+	public void onConnectionSuspended(int cause) {
+		mGoogleApiClient.connect();
 	}
 
 	@Override
@@ -186,6 +226,31 @@ public class ThirdPartyGoogle extends ThirdParty
 		}
 	}
 
+	public static class GoogleUserProxy implements UserProxy {
+		private Person mPerson;
+
+		public GoogleUserProxy(@NonNull Person person) {
+			super();
+			mPerson = person;
+		}
+
+		public Person getPerson() {
+			return mPerson;
+		}
+
+		@Override
+		public String getFirstName() {
+			Person.Name name = mPerson.getName();
+			return (name == null ? null : name.getGivenName());
+		}
+
+		@Override
+		public String getLastName() {
+			Person.Name name = mPerson.getName();
+			return (name == null ? null : name.getFamilyName());
+		}
+	}
+
 	private static class TokenTask extends AsyncTask<Void, Void, Void> {
 		private Activity mActivity;
 		private GoogleApiClient mGoogleApiClient;
@@ -218,7 +283,7 @@ public class ThirdPartyGoogle extends ThirdParty
 		protected void onPostExecute(Void result) {
 			if (mException == null) {
 				if (mCallbacks != null) {
-					mCallbacks.onToken(mToken);
+					mCallbacks.onSuccess(mToken);
 				}
 			} else if (mException instanceof UserRecoverableAuthException) {
 				Intent recoveryIntent = ((UserRecoverableAuthException) mException).getIntent();
@@ -226,7 +291,7 @@ public class ThirdPartyGoogle extends ThirdParty
 				mActivity.startActivityForResult(recoveryIntent, RC_USER_RECOVERABLE_AUTH_EXCEPTION);
 			} else {
 				if (mCallbacks != null) {
-					mCallbacks.onTokenError(mException);
+					mCallbacks.onError(mException);
 				}
 			}
 		}
