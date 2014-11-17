@@ -158,9 +158,14 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	protected void onStop() {
 		super.onStop();
+
+		mGoogleApiClient.stopAutoManage(this);
+
+		/*
 		if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
 			mGoogleApiClient.disconnect();
 		}
+		*/
 	}
 
 	@Override

@@ -18,6 +18,8 @@ public class ThirdPartyConnectionManager {
 		mConnectionMap = new LinkedHashMap<ThirdParty, ThirdPartyConnection>();
 	}
 
+	/* Lifecycle methods */
+
 	public void onCreate(Bundle savedInstanceState) {
 		Collection<ThirdPartyConnection> values = mConnectionMap.values();
 		for (ThirdPartyConnection connection : values) {
@@ -74,6 +76,8 @@ public class ThirdPartyConnectionManager {
 		}
 	}
 
+	/* Methods */
+
 	public ThirdPartyConnection addConnection(ThirdParty thirdParty) {
 		ThirdPartyConnection connection = null;
 		if (thirdParty != null) {
@@ -97,7 +101,7 @@ public class ThirdPartyConnectionManager {
 		}
 	}
 
-	public void removeAll() {
+	public void reset() {
 		Collection<ThirdPartyConnection> values = mConnectionMap.values();
 		Iterator<ThirdPartyConnection> iterator = values.iterator();
 		while(iterator.hasNext()) {

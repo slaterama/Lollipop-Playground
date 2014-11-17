@@ -6,26 +6,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Toast;
-import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
-import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.*;
-import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.thirdparty.*;
-import com.citymaps.mobile.android.thirdparty.ThirdParty;
-import com.citymaps.mobile.android.thirdparty.ThirdPartyConnection.TokenCallbacks;
-import com.citymaps.mobile.android.thirdparty.ThirdPartyConnection.UserCallbacks;
+import com.citymaps.mobile.android.thirdpartynew.ThirdParty;
+import com.citymaps.mobile.android.thirdpartynew.ThirdPartyManager;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
-import com.facebook.*;
-import com.facebook.model.GraphUser;
-
-import java.util.Map;
 
 public class AuthenticateActivity_New extends TrackedActionBarActivity
-		implements ThirdPartyConnection.Callbacks {
+		implements ThirdParty.ConnectionCallbacks {
 
 	private static final int REQUEST_CODE_LOGIN = 1001;
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 1002;
@@ -34,9 +24,7 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 
 	private ConnectivityManager mConnectivityManager;
 
-	private ThirdPartyConnectionManager mThirdPartyConnectionManager;
-
-	private FacebookCallbacks mFacebookCallbacks;
+	private ThirdPartyManager mThirdPartyManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,48 +34,52 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
 
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		mThirdPartyConnectionManager = new ThirdPartyConnectionManager(this);
-		mThirdPartyConnectionManager.addConnection(ThirdParty.FACEBOOK);
-		mThirdPartyConnectionManager.addConnection(ThirdParty.GOOGLE);
-		mThirdPartyConnectionManager.onCreate(savedInstanceState);
-
-		mFacebookCallbacks = new FacebookCallbacks();
+		mThirdPartyManager = new ThirdPartyManager(this, this);
+		mThirdPartyManager.add(ThirdParty.Type.FACEBOOK);
+		mThirdPartyManager.add(ThirdParty.Type.GOOGLE);
+		mThirdPartyManager.onCreate(savedInstanceState);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mThirdPartyConnectionManager.onResume();
+		mThirdPartyManager.onResume();
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		mThirdPartyConnectionManager.onStart();
+		mThirdPartyManager.onStart();
 	}
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
-		mThirdPartyConnectionManager.onSaveInstanceState(outState);
+		mThirdPartyManager.onSaveInstanceState(outState);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		mThirdPartyConnectionManager.onPause();
+		mThirdPartyManager.onPause();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		mThirdPartyConnectionManager.onStop();
+		mThirdPartyManager.onStop();
+
+		// TODO Begin MY Google
+		if (isChangingConfigurations()) {
+
+		}
+		// End MY Google
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mThirdPartyConnectionManager.onDestroy();
+		mThirdPartyManager.onDestroy();
 	}
 
 	@Override
@@ -95,8 +87,7 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 		switch (requestCode) {
 			case REQUEST_CODE_CREATE_ACCOUNT:
 				if (resultCode != RESULT_OK) {
-					mThirdPartyConnectionManager.getConnection(ThirdParty.FACEBOOK).disconnect();
-					mThirdPartyConnectionManager.getConnection(ThirdParty.GOOGLE).disconnect();
+					// TODO What to do here? I think ThirdParty needs a "cancel" method?
 				}
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
@@ -105,10 +96,11 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 				break;
 			default:
 				super.onActivityResult(requestCode, resultCode, data);
-				mThirdPartyConnectionManager.onActivityResult(requestCode, resultCode, data);
+				mThirdPartyManager.onActivityResult(requestCode, resultCode, data);
 		}
 	}
 
+	/*
 	@Override
 	public void onConnectionStateChange(ThirdPartyConnection connection, Map<String, Object> args) {
 		if (LogEx.isLoggable(LogEx.INFO)) {
@@ -142,24 +134,46 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 			}
 		}
 	}
+	*/
 
 	public void onButtonClick(View view) {
 		int id = view.getId();
 		switch (id) {
-			case R.id.login_authenticate_facebook_button: {
-				if (mConnectivityManager.getActiveNetworkInfo() == null) {
-					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
-					return;
-				}
-				mThirdPartyConnectionManager.getConnection(ThirdParty.FACEBOOK).connect(false, this);
-				break;
-			}
+			case R.id.login_authenticate_facebook_button:
 			case R.id.login_authenticate_google_button: {
 				if (mConnectivityManager.getActiveNetworkInfo() == null) {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-				mThirdPartyConnectionManager.getConnection(ThirdParty.GOOGLE).connect(false, this);
+				ThirdParty thirdParty = null;
+				switch (id) {
+					case R.id.login_authenticate_facebook_button:
+						thirdParty = mThirdPartyManager.get(ThirdParty.Type.FACEBOOK);
+						break;
+					case R.id.login_authenticate_google_button:
+						thirdParty = mThirdPartyManager.get(ThirdParty.Type.GOOGLE);
+						break;
+				}
+
+				if (thirdParty != null) {
+					thirdParty.getToken(new ThirdParty.TokenCallbacks() {
+						@Override
+						public void onToken(String token) {
+							if (LogEx.isLoggable(LogEx.INFO)) {
+								LogEx.i(String.format("token=%s", token));
+							}
+
+
+						}
+
+						@Override
+						public void onTokenError(Throwable error) {
+							if (LogEx.isLoggable(LogEx.INFO)) {
+								LogEx.i();
+							}
+						}
+					});
+				}
 				break;
 			}
 			case R.id.login_authenticate_create_account_button: {
@@ -188,6 +202,28 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 		finish();
 	}
 
+	@Override
+	public void onConnected(ThirdParty thirdParty) {
+		if (LogEx.isLoggable(LogEx.INFO)) {
+			LogEx.i(String.format("thirdParty=%s", thirdParty));
+		}
+	}
+
+	@Override
+	public void onDisconnected(ThirdParty thirdParty) {
+		if (LogEx.isLoggable(LogEx.INFO)) {
+			LogEx.i(String.format("thirdParty=%s", thirdParty));
+		}
+	}
+
+	@Override
+	public void onError(ThirdParty thirdParty) {
+		if (LogEx.isLoggable(LogEx.INFO)) {
+			LogEx.i(String.format("thirdParty=%s", thirdParty));
+		}
+	}
+
+	/*
 	private class FacebookCallbacks implements TokenCallbacks,
 			UserCallbacks<GraphUser, FacebookRequestError> {
 		String mToken;
@@ -244,4 +280,5 @@ public class AuthenticateActivity_New extends TrackedActionBarActivity
 			}
 		}
 	}
+	*/
 }

@@ -66,6 +66,10 @@
 				android:windowSoftInputMode="adjustResize|stateHidden">
 		</activity>
 		<activity
+				android:name=".view.housekeeping.AuthenticateActivity_BareBones"
+				android:windowSoftInputMode="adjustResize|stateHidden">
+		</activity>
+		<activity
 				android:name=".view.housekeeping.LoginActivity"
 				android:label="@string/login_sign_in_activity_title"
 				android:launchMode="singleTop">
