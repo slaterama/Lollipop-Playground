@@ -112,6 +112,10 @@ public class GoogleProxy extends ThirdPartyProxy
 		}
 	}
 
+	public GoogleApiClient getGoogleApiClient() {
+		return mGoogleApiClient;
+	}
+
 	@Override
 	public void openConnection(boolean interactive) {
 		mGoogleApiClient = newGoogleApiClient();

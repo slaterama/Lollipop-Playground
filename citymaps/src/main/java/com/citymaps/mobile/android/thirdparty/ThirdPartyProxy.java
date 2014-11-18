@@ -2,15 +2,24 @@ package com.citymaps.mobile.android.thirdparty;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import com.citymaps.mobile.android.util.LogEx;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class ThirdPartyProxy {
 
 	protected Activity mActivity;
 
+	protected final Queue<Request> mRequestQueue;
+
 	public ThirdPartyProxy(Activity activity) {
 		super();
 		mActivity = activity;
+		mRequestQueue = new ConcurrentLinkedQueue<Request>();
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,33 @@ public abstract class ThirdPartyProxy {
 	public abstract void openConnection(boolean interactive);
 
 	public abstract void closeConnection();
+
+	public void addRequest(Request request) {
+		synchronized (mRequestQueue) {
+			boolean empty = mRequestQueue.isEmpty();
+			mRequestQueue.add(request);
+			if (empty) {
+				new Handler().post(mProcessQueue);
+			}
+		}
+	}
+
+	private Runnable mProcessQueue = new Runnable() {
+		@Override
+		public void run() {
+			synchronized (mRequestQueue) {
+				int i = 0;
+				Request request;
+				while ((request = mRequestQueue.poll()) != null) {
+					processRequest(request);
+				}
+			}
+		}
+	};
+
+	protected void processRequest(Request request) {
+
+	}
 
 	public static abstract class Request<T, E> {
 		protected Listener<T> mListener;

@@ -2,11 +2,14 @@ package com.citymaps.mobile.android.view.housekeeping.authenticate;
 
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.Toast;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
@@ -14,11 +17,20 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
+import com.citymaps.mobile.android.view.housekeeping.LoginErrorDialogFragment;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -31,7 +43,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 1002;
 
 	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
-	private static final List<Scope> GOOGLE_SCOPES = Arrays.asList(Plus.SCOPE_PLUS_LOGIN);
+	private static final List<Scope> GOOGLE_SCOPES = Arrays.asList(Plus.SCOPE_PLUS_LOGIN, Plus.SCOPE_PLUS_PROFILE);
+
+	private static final String GOOGLE_ACCOUNT_NAME_SCOPE = String.format("oauth2:%s", Scopes.PLUS_LOGIN);
 
 	private boolean mStartupMode;
 
@@ -175,11 +189,41 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		finish();
 	}
 
+	private void handleThirdPartyUser(ThirdPartyUser user) {
+		// TODO
+		LogEx.i(String.format("thirdPartyUser=%s", user));
+	}
+
+	private void handleError(String message) {
+		FragmentManager manager = getSupportFragmentManager();
+		if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
+			LoginErrorDialogFragment fragment =
+					LoginErrorDialogFragment.newInstance(getTitle(), message);
+			fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
+		}
+	}
+
 	private FacebookProxy.Callbacks mFacebookCallbacks = new FacebookProxy.Callbacks() {
 		@Override
 		public void onSessionStateChange(ThirdPartyProxy proxy, Session session, SessionState state) {
 			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("session=%s, state=%s", session, state));
+			}
+
+			if (session.isOpened()) {
+				final String token = session.getAccessToken();
+				Request.newMeRequest(session, new Request.GraphUserCallback() {
+					@Override
+					public void onCompleted(GraphUser user, Response response) {
+						if (user != null) {
+							ThirdPartyUser thirdPartyUser = new ThirdPartyUser(token, user);
+							handleThirdPartyUser(thirdPartyUser);
+						} else if (response != null && response.getError() != null) {
+							// Error. Display a dialog fragment.
+							handleError(response.getError().getErrorUserMessage());
+						}
+					}
+				}).executeAsync();
 			}
 		}
 
@@ -197,6 +241,34 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("connectionHint=%s", connectionHint));
 			}
+
+			new AsyncTask<Void, Void, ThirdPartyUser>() {
+				@Override
+				protected ThirdPartyUser doInBackground(Void... params) {
+					ThirdPartyUser user = null;
+
+					try {
+						GoogleApiClient googleApiClient = mGoogleProxy.getGoogleApiClient();
+						Person person = Plus.PeopleApi.getCurrentPerson(googleApiClient);
+						String accountName = Plus.AccountApi.getAccountName(googleApiClient);
+						String token = GoogleAuthUtil.getToken(AuthenticateActivity.this, accountName, GOOGLE_ACCOUNT_NAME_SCOPE);
+						user = new ThirdPartyUser(token, person, accountName);
+					} catch (UserRecoverableAuthException e) {
+						AuthenticateActivity.this.startActivity(e.getIntent()); // No "startActivityForResult" at the moment. User will have to re-try
+					} catch (Exception e) {
+						handleError(e.getLocalizedMessage());
+					}
+
+					return user;
+				}
+
+				@Override
+				protected void onPostExecute(ThirdPartyUser result) {
+					if (result != null) {
+						handleThirdPartyUser(result);
+					}
+				}
+			}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 
 		@Override
@@ -204,6 +276,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("result=%s", result));
 			}
+
+			int errorCode = result.getErrorCode();
+			// TODO
 		}
 	};
 }

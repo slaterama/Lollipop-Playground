@@ -1,11 +1,14 @@
 package com.citymaps.mobile.android.util;
 
 import android.net.Uri;
+import com.facebook.model.GraphUser;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class FacebookUtils {
+
+	private static final String PROPERTY_NAME_EMAIL = "email";
 
 	public static final String[] FACEBOOK_READ_PERMISSIONS = new String[] {
 			"public_profile", "email", "user_friends"
@@ -16,12 +19,13 @@ public class FacebookUtils {
 		FACEBOOK_READ_PERMISSIONS_LIST = Arrays.asList(FACEBOOK_READ_PERMISSIONS);
 	}
 
-	public static String getBaseAvatarUrl(String id, boolean invalidate) {
-		return getAvatarUrl(id, -1, -1, null, invalidate);
+	public static String getEmail(GraphUser user) {
+		Object property = user.getProperty(PROPERTY_NAME_EMAIL);
+		return (property == null ? null : property.toString());
 	}
 
-	public static String getBaseAvatarUrl(String id) {
-		return getAvatarUrl(id, -1, -1, null, false);
+	public static String getBaseAvatarUrl(GraphUser user) {
+		return (user == null || user.getId() == null ? null : String.format("http://graph.facebook.com/%s/picture", user.getId()));
 	}
 
 	private static String getAvatarUrl(String id, int width, int height, PictureType type, boolean invalidate) {

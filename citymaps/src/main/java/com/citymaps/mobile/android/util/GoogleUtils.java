@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.util;
 
+import android.net.Uri;
 import android.text.TextUtils;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.Scope;
@@ -21,12 +22,26 @@ public class GoogleUtils {
 		return "oauth2:" + TextUtils.join(" ", GOOGLE_AUTH_SCOPES);
 	}
 
+	public static String getFirstName(Person person) {
+		return (person == null || person.getName() == null ? null : person.getName().getGivenName());
+	}
+
+	public static String getLastName(Person person) {
+		return (person == null || person.getName() == null ? null : person.getName().getFamilyName());
+	}
+
 	public static String getBaseAvatarUrl(Person person) {
-		if (person == null)
-			return "";
-		String url = person.getImage().getUrl();
-		url = url.replaceAll(".sz=\\d+$", String.format("sz=%d", ""));
-		return url;
+		String avatarUrl = null;
+		if (person != null) {
+			Person.Image image = person.getImage();
+			if (image != null) {
+				String url = image.getUrl();
+				if (url != null) {
+					avatarUrl = UriUtils.removeParameter(url, "sz");
+				}
+			}
+		}
+		return avatarUrl;
 	}
 
 	public static String getAvatarUrl(Person person, int size) {

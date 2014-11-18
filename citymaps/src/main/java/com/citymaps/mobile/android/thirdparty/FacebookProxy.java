@@ -3,10 +3,7 @@ package com.citymaps.mobile.android.thirdparty;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import com.facebook.FacebookRequestError;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
+import com.facebook.*;
 import com.facebook.model.GraphUser;
 
 import java.util.List;
@@ -134,6 +131,29 @@ public class FacebookProxy extends ThirdPartyProxy
 
 	private UiLifecycleHelper newUiLifecycleHelper() {
 		return new UiLifecycleHelper(mActivity, this);
+	}
+
+	@Override
+	protected void processRequest(final Request request) {
+		if (request instanceof UserRequest) {
+			final UserRequest userRequest = (UserRequest) request;
+			com.facebook.Request.newMeRequest(mSession, new com.facebook.Request.GraphUserCallback() {
+				@Override
+				public void onCompleted(GraphUser user, Response response) {
+					if (user == null) {
+						if (userRequest.mErrorListener != null) {
+							userRequest.mErrorListener.onErrorResponse(response.getError());
+						}
+					} else {
+						if (userRequest.mListener != null) {
+							userRequest.mListener.onResponse(user);
+						}
+					}
+				}
+			}).executeAsync();
+		} else {
+			super.processRequest(request);
+		}
 	}
 
 	/* Callbacks */
