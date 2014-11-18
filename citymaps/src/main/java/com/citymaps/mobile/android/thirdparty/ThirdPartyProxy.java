@@ -55,13 +55,16 @@ public abstract class ThirdPartyProxy {
 	public abstract class Connection<P> {
 		protected P[] mPermissions;
 		protected boolean mInteractive;
+		/*
 		protected Set<Request> mRequests;
+		*/
 
 		public Connection setPermissions(P... permissions) {
 			mPermissions = permissions;
 			return this;
 		}
 
+		/*
 		public Connection addRequest(Request request) {
 			if (request != null) {
 				synchronized (this) {
@@ -73,6 +76,7 @@ public abstract class ThirdPartyProxy {
 			}
 			return this;
 		}
+		*/
 
 		public Connection setInteractive(boolean interactive) {
 			mInteractive = interactive;

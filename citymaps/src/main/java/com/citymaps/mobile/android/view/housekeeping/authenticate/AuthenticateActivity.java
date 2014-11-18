@@ -139,6 +139,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 				((FacebookConnection) mFacebookProxy.newConnection())
 						.setPermissions(FACEBOOK_PERMISSIONS)
+						/*
 						.addRequest(new ThirdPartyProxy.TokenRequest(
 								new Request.Listener<String>() {
 									@Override
@@ -169,7 +170,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 										}
 									}
 								}))
+						*/
 						.setInteractive(true)
+						// TODO add connection listener
 						.connect();
 
 				break;
@@ -183,6 +186,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				GoogleConnection connection = (GoogleConnection) mGoogleProxy.newConnection();
 				connection.setPermissions(GOOGLE_PERMISSIONS)
 						.setInteractive(true)
+						/*
 						.addRequest(new ThirdPartyProxy.TokenRequest(
 								new Request.Listener<String>() {
 									@Override
@@ -213,16 +217,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 										}
 									}
 								}))
+						*/
+						// TODO add connection listener
 						.connect();
-
-				/*
-				mGoogleProxy.newConnection()
-						.setPermissions()
-						.addRequest(new TokenRequest())
-						.addRequest(new PersonRequest())
-						.setInteractive(true)
-						.connect();
-				*/
 
 				break;
 			}
