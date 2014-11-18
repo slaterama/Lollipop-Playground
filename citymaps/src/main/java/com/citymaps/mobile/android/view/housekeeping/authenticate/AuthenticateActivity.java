@@ -8,13 +8,20 @@ import android.widget.Toast;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
+import com.citymaps.mobile.android.thirdparty.FacebookProxy.FacebookConnection;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
+import com.citymaps.mobile.android.thirdparty.GoogleProxy.GoogleConnection;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
+import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.Request;
 import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
+import com.facebook.FacebookRequestError;
+import com.facebook.model.GraphUser;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -46,8 +53,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 		mThirdPartyProxies = new LinkedHashSet<ThirdPartyProxy>();
 
-		mFacebookProxy = new FacebookProxy();
-		mGoogleProxy = new GoogleProxy();
+		mFacebookProxy = new FacebookProxy(this);
+		mGoogleProxy = new GoogleProxy(this);
 		mThirdPartyProxies.add(mFacebookProxy);
 		mThirdPartyProxies.add(mGoogleProxy);
 	}
@@ -105,8 +112,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		switch (requestCode) {
 			case REQUEST_CODE_CREATE_ACCOUNT:
 				if (resultCode != RESULT_OK) {
-					// TODO What to do here? I think ThirdParty needs a "cancel" method?
-
+					mFacebookProxy.disconnect();
+					mGoogleProxy.disconnect();
 				}
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
@@ -124,36 +131,88 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	public void onButtonClick(View view) {
 		int id = view.getId();
 		switch (id) {
-			case R.id.login_authenticate_facebook_button:
+			case R.id.login_authenticate_facebook_button: {
 				if (mConnectivityManager.getActiveNetworkInfo() == null) {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
-				((FacebookProxy.FacebookConnection) mFacebookProxy.newConnection())
+				((FacebookConnection) mFacebookProxy.newConnection())
 						.setPermissions(FACEBOOK_PERMISSIONS)
-						.setInteractive(true)
-						.connect();
+						.addRequest(new ThirdPartyProxy.TokenRequest(
+								new Request.Listener<String>() {
+									@Override
+									public void onResponse(String response) {
 
-				/*
-				mFacebookProxy.newConnection()
-						.setPermissions()
-						.addRequest(new TokenRequest(), mTokenRequestListener)
-						.addRequest(new UserRequest(), mUserRequestListener)
+									}
+								},
+								new Request.ErrorListener<Exception>() {
+									@Override
+									public void onErrorResponse(Exception error) {
+
+									}
+								}))
+						.addRequest(new FacebookProxy.UserRequest(
+								new Request.Listener<GraphUser>() {
+									@Override
+									public void onResponse(GraphUser response) {
+										if (LogEx.isLoggable(LogEx.i())) {
+											LogEx.i();
+										}
+									}
+								},
+								new Request.ErrorListener<FacebookRequestError>() {
+									@Override
+									public void onErrorResponse(FacebookRequestError error) {
+										if (LogEx.isLoggable(LogEx.i())) {
+											LogEx.i();
+										}
+									}
+								}))
 						.setInteractive(true)
 						.connect();
-				*/
 
 				break;
+			}
 			case R.id.login_authenticate_google_button: {
 				if (mConnectivityManager.getActiveNetworkInfo() == null) {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
-				((GoogleProxy.GoogleConnection) mGoogleProxy.newConnection())
-						.setPermissions(GOOGLE_PERMISSIONS)
+				GoogleConnection connection = (GoogleConnection) mGoogleProxy.newConnection();
+				connection.setPermissions(GOOGLE_PERMISSIONS)
 						.setInteractive(true)
+						.addRequest(new ThirdPartyProxy.TokenRequest(
+								new Request.Listener<String>() {
+									@Override
+									public void onResponse(String response) {
+
+									}
+								},
+								new Request.ErrorListener<Exception>() {
+									@Override
+									public void onErrorResponse(Exception error) {
+
+									}
+								}))
+						.addRequest(new GoogleProxy.PersonRequest(
+								new Request.Listener<Person>() {
+									@Override
+									public void onResponse(Person response) {
+										if (LogEx.isLoggable(LogEx.i())) {
+											LogEx.i();
+										}
+									}
+								},
+								new Request.ErrorListener<Exception>() {
+									@Override
+									public void onErrorResponse(Exception error) {
+										if (LogEx.isLoggable(LogEx.i())) {
+											LogEx.i();
+										}
+									}
+								}))
 						.connect();
 
 				/*

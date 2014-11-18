@@ -196,7 +196,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
-					Intent intent = new Intent(activity, AuthenticateActivityStandard.class);
+					Intent intent = new Intent(activity, AuthenticateActivity.class);
 					IntentUtils.putStartupMode(intent, true);
 					activity.startActivity(intent);
 					activity.finish();
