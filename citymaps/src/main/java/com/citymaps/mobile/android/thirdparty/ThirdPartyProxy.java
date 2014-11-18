@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 public abstract class ThirdPartyProxy {
 
 	protected Activity mActivity;
@@ -48,35 +45,19 @@ public abstract class ThirdPartyProxy {
 
 	}
 
-	public abstract Connection newConnection();
+	/*
+	public abstract Connection openConnection();
+	*/
 
-	public abstract void disconnect();
+	public abstract void openConnection(boolean interactive);
 
-	public abstract class Connection<P> {
-		protected P[] mPermissions;
+	public abstract void closeConnection();
+
+//	public abstract void disconnect();
+
+	/*
+	public abstract class Connection {
 		protected boolean mInteractive;
-		/*
-		protected Set<Request> mRequests;
-		*/
-
-		public Connection setPermissions(P... permissions) {
-			mPermissions = permissions;
-			return this;
-		}
-
-		/*
-		public Connection addRequest(Request request) {
-			if (request != null) {
-				synchronized (this) {
-					if (mRequests == null) {
-						mRequests = new LinkedHashSet<Request>();
-					}
-					mRequests.add(request);
-				}
-			}
-			return this;
-		}
-		*/
 
 		public Connection setInteractive(boolean interactive) {
 			mInteractive = interactive;
@@ -85,6 +66,7 @@ public abstract class ThirdPartyProxy {
 
 		public abstract void connect();
 	}
+	*/
 
 	public static abstract class Request<T, E> {
 		protected Listener<T> mListener;

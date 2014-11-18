@@ -65,7 +65,6 @@
 		</activity>
 		<activity
 				android:name=".view.housekeeping.authenticate.AuthenticateActivity"
-				android:screenOrientation="portrait"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity

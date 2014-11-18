@@ -11,28 +11,38 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class FacebookProxy extends ThirdPartyProxy
 		implements Session.StatusCallback {
 
-	private static final String STATE_KEY_INVOKED = FacebookProxy.class.getName() + ".invoked";
+	private static final String CONNECTION_OPEN = FacebookProxy.class.getName() + ".connectionOpen";
+
+	private List<String> mReadPermissions;
+
+	private List<String> mWritePermissions;
 
 	private Session mSession;
 
 	private UiLifecycleHelper mUiLifecycleHelper;
 
-	public FacebookProxy(Activity activity) {
+	public FacebookProxy(Activity activity, List<String> readPermissions, List<String> writePermissions) {
 		super(activity);
+		mReadPermissions = readPermissions;
+		mWritePermissions = writePermissions;
+	}
+
+	public FacebookProxy(Activity activity, List<String> readPermissions) {
+		this(activity, readPermissions, null);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			boolean invoked = savedInstanceState.getBoolean(STATE_KEY_INVOKED, false);
-			if (invoked) {
-				mUiLifecycleHelper = new UiLifecycleHelper(mActivity, this);
+			boolean connectionOpen = savedInstanceState.getBoolean(CONNECTION_OPEN, false);
+			if (connectionOpen) {
+				mUiLifecycleHelper = newUiLifecycleHelper();
 				mUiLifecycleHelper.onCreate(savedInstanceState);
 			}
 		}
@@ -58,7 +68,7 @@ public class FacebookProxy extends ThirdPartyProxy
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putBoolean(STATE_KEY_INVOKED, mUiLifecycleHelper != null);
+		outState.putBoolean(CONNECTION_OPEN, mUiLifecycleHelper != null);
 		if (mUiLifecycleHelper != null) {
 			mUiLifecycleHelper.onSaveInstanceState(outState);
 		}
@@ -96,35 +106,53 @@ public class FacebookProxy extends ThirdPartyProxy
 		}
 	}
 
+	/*
 	@Override
-	public Connection newConnection() {
+	public Connection openConnection() {
 		return new FacebookConnection();
+	}
+	*/
+
+	@Override
+	public void openConnection(boolean interactive) {
+		mUiLifecycleHelper = newUiLifecycleHelper();
+		mSession = Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
 	}
 
 	@Override
-	public void disconnect() {
-		mSession = null;
+	public void closeConnection() {
+		if (mSession != null) {
+			mSession.close();
+			mSession = null;
+		}
 		mUiLifecycleHelper = null;
 	}
 
-	public class FacebookConnection extends Connection<String> {
+	/*
+	public class FacebookConnection extends Connection {
 
 		@Override
 		public void connect() {
-			mUiLifecycleHelper = new UiLifecycleHelper(mActivity, FacebookProxy.this);
-			mSession = Session.getActiveSession();
-			if (mSession == null) {
-				mSession = Session.openActiveSession(mActivity, mInteractive, Arrays.asList(mPermissions), FacebookProxy.this);
-			} else if (mSession.isOpened()) {
-				Toast.makeText(mActivity, "Facebook user is connected!", Toast.LENGTH_SHORT).show();
-			}
+			mUiLifecycleHelper = newUiLifecycleHelper();
+			mSession = Session.openActiveSession(mActivity, mInteractive, mReadPermissions, FacebookProxy.this);
 		}
 	}
+	*/
+
+	private UiLifecycleHelper newUiLifecycleHelper() {
+		return new UiLifecycleHelper(mActivity, this);
+	}
+
+	/* Callbacks */
 
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
 		if (LogEx.isLoggable(LogEx.INFO)) {
 			LogEx.i(String.format("session=%s, state=%s, exception=%s", session, state, exception));
+		}
+
+		if (session.isOpened()) {
+			Toast.makeText(mActivity, "Facebook user is connected!", Toast.LENGTH_SHORT).show();
 		}
 	}
 

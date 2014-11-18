@@ -12,27 +12,22 @@ import com.citymaps.mobile.android.thirdparty.FacebookProxy.FacebookConnection;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy.GoogleConnection;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
-import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.Request;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
-import com.facebook.FacebookRequestError;
-import com.facebook.model.GraphUser;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	private static final int REQUEST_CODE_LOGIN = 1001;
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 1002;
 
-	private static String[] FACEBOOK_PERMISSIONS = new String[]{"public_profile", "email"};
-	private static Scope[] GOOGLE_PERMISSIONS = new Scope[]{Plus.SCOPE_PLUS_LOGIN};
+	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
+	private static final List<Scope> GOOGLE_SCOPES = Arrays.asList(Plus.SCOPE_PLUS_LOGIN);
 
 	private boolean mStartupMode;
 
@@ -42,6 +37,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	private FacebookProxy mFacebookProxy;
 	private GoogleProxy mGoogleProxy;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,10 +49,13 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 		mThirdPartyProxies = new LinkedHashSet<ThirdPartyProxy>();
 
-		mFacebookProxy = new FacebookProxy(this);
-		mGoogleProxy = new GoogleProxy(this);
+		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS);
+		mGoogleProxy = new GoogleProxy(this, GOOGLE_SCOPES);
 		mThirdPartyProxies.add(mFacebookProxy);
 		mThirdPartyProxies.add(mGoogleProxy);
+		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
+			proxy.onCreate(savedInstanceState);
+		}
 	}
 
 	@Override
@@ -112,8 +111,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		switch (requestCode) {
 			case REQUEST_CODE_CREATE_ACCOUNT:
 				if (resultCode != RESULT_OK) {
-					mFacebookProxy.disconnect();
-					mGoogleProxy.disconnect();
+					mFacebookProxy.closeConnection();
+					mGoogleProxy.closeConnection();
 				}
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
@@ -137,8 +136,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					return;
 				}
 
-				((FacebookConnection) mFacebookProxy.newConnection())
-						.setPermissions(FACEBOOK_PERMISSIONS)
+				mFacebookProxy.openConnection()
+//						.setPermissions(FACEBOOK_PERMISSIONS)
 						/*
 						.addRequest(new ThirdPartyProxy.TokenRequest(
 								new Request.Listener<String>() {
@@ -183,8 +182,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					return;
 				}
 
-				GoogleConnection connection = (GoogleConnection) mGoogleProxy.newConnection();
-				connection.setPermissions(GOOGLE_PERMISSIONS)
+				mGoogleProxy.openConnection()
+//				connection
+//						.setPermissions(GOOGLE_PERMISSIONS)
 						.setInteractive(true)
 						/*
 						.addRequest(new ThirdPartyProxy.TokenRequest(
