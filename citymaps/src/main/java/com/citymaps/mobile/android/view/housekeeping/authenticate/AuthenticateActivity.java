@@ -8,14 +8,11 @@ import android.widget.Toast;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
-import com.citymaps.mobile.android.thirdparty.FacebookProxy.FacebookConnection;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
-import com.citymaps.mobile.android.thirdparty.GoogleProxy.GoogleConnection;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 
@@ -135,45 +132,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-
-				mFacebookProxy.openConnection()
-//						.setPermissions(FACEBOOK_PERMISSIONS)
-						/*
-						.addRequest(new ThirdPartyProxy.TokenRequest(
-								new Request.Listener<String>() {
-									@Override
-									public void onResponse(String response) {
-
-									}
-								},
-								new Request.ErrorListener<Exception>() {
-									@Override
-									public void onErrorResponse(Exception error) {
-
-									}
-								}))
-						.addRequest(new FacebookProxy.UserRequest(
-								new Request.Listener<GraphUser>() {
-									@Override
-									public void onResponse(GraphUser response) {
-										if (LogEx.isLoggable(LogEx.i())) {
-											LogEx.i();
-										}
-									}
-								},
-								new Request.ErrorListener<FacebookRequestError>() {
-									@Override
-									public void onErrorResponse(FacebookRequestError error) {
-										if (LogEx.isLoggable(LogEx.i())) {
-											LogEx.i();
-										}
-									}
-								}))
-						*/
-						.setInteractive(true)
-						// TODO add connection listener
-						.connect();
-
+				mFacebookProxy.openConnection(true);
 				break;
 			}
 			case R.id.login_authenticate_google_button: {
@@ -181,46 +140,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-
-				mGoogleProxy.openConnection()
-//				connection
-//						.setPermissions(GOOGLE_PERMISSIONS)
-						.setInteractive(true)
-						/*
-						.addRequest(new ThirdPartyProxy.TokenRequest(
-								new Request.Listener<String>() {
-									@Override
-									public void onResponse(String response) {
-
-									}
-								},
-								new Request.ErrorListener<Exception>() {
-									@Override
-									public void onErrorResponse(Exception error) {
-
-									}
-								}))
-						.addRequest(new GoogleProxy.PersonRequest(
-								new Request.Listener<Person>() {
-									@Override
-									public void onResponse(Person response) {
-										if (LogEx.isLoggable(LogEx.i())) {
-											LogEx.i();
-										}
-									}
-								},
-								new Request.ErrorListener<Exception>() {
-									@Override
-									public void onErrorResponse(Exception error) {
-										if (LogEx.isLoggable(LogEx.i())) {
-											LogEx.i();
-										}
-									}
-								}))
-						*/
-						// TODO add connection listener
-						.connect();
-
+				mGoogleProxy.openConnection(true);
 				break;
 			}
 			case R.id.login_authenticate_create_account_button: {
