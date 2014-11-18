@@ -23,6 +23,8 @@ import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.util.UpdateUtils.UpdateType;
 import com.citymaps.mobile.android.view.MainActivity;
+import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivity;
+import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivityStandard;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -194,7 +196,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
-					Intent intent = new Intent(activity, AuthenticateActivity_New.class);
+					Intent intent = new Intent(activity, AuthenticateActivityStandard.class);
 					IntentUtils.putStartupMode(intent, true);
 					activity.startActivity(intent);
 					activity.finish();
@@ -216,7 +218,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 						new Response.ErrorListener() {
 							@Override
 							public void onErrorResponse(VolleyError error) {
-								Intent intent = new Intent(activity, AuthenticateActivity_New.class);
+								Intent intent = new Intent(activity, AuthenticateActivity.class);
 								IntentUtils.putStartupMode(intent, true);
 								activity.startActivity(intent);
 								activity.finish();

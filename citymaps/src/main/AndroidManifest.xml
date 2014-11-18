@@ -27,7 +27,7 @@
 			android:label="@string/app_name"
 			android:theme="@style/AppTheme">
 
-		<!-- Launch/Onboarding Activities -->
+		<!-- Launch/Housekeeping Activities -->
 
 		<activity
 				android:name=".view.housekeeping.LaunchActivity"
@@ -54,20 +54,19 @@
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
-				android:name=".view.housekeeping.AuthenticateActivity"
+				android:name=".view.housekeeping.authenticate.AuthenticateActivityNoThirdParty"
+				android:screenOrientation="portrait"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
-				android:name=".view.housekeeping.AuthenticateActivity_New"
+				android:name=".view.housekeeping.authenticate.AuthenticateActivityStandard"
+				android:screenOrientation="portrait"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
-				android:name=".view.housekeeping.AuthenticateActivity_NotUsed"
-				android:windowSoftInputMode="adjustResize|stateHidden">
-		</activity>
-		<activity
-				android:name=".view.housekeeping.AuthenticateActivity_BareBones"
-				android:windowSoftInputMode="adjustResize|stateHidden">
+				android:name=".view.housekeeping.authenticate.AuthenticateActivity"
+				android:screenOrientation="portrait"
+				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
 				android:name=".view.housekeeping.LoginActivity"
@@ -88,6 +87,7 @@
 		<activity
 				android:name="com.facebook.LoginActivity"
 				android:theme="@android:style/Theme.Translucent.NoTitleBar"
+				android:screenOrientation="portrait"
 				android:label="@string/app_name">
 		</activity>
 

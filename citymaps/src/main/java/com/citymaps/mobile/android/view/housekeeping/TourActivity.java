@@ -11,6 +11,7 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivity;
 
 public class TourActivity extends TrackedActionBarActivity {
 
@@ -35,7 +36,7 @@ public class TourActivity extends TrackedActionBarActivity {
 
 						// TODO Some sort of logic to choose Authenticate vs. Main?
 
-						intent = new Intent(this, AuthenticateActivity_New.class);
+						intent = new Intent(this, AuthenticateActivity.class);
 						IntentUtils.putStartupMode(intent, true);
 					} else {
 						intent = new Intent(this, EnableLocationActivity.class);
