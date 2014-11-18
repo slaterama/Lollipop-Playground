@@ -11,12 +11,19 @@ import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AuthenticateActivity extends TrackedActionBarActivity {
 
@@ -34,7 +41,6 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	private FacebookProxy mFacebookProxy;
 	private GoogleProxy mGoogleProxy;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,8 +52,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 		mThirdPartyProxies = new LinkedHashSet<ThirdPartyProxy>();
 
-		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS);
-		mGoogleProxy = new GoogleProxy(this, GOOGLE_SCOPES);
+		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, mFacebookCallbacks);
+		mGoogleProxy = new GoogleProxy(this, GOOGLE_SCOPES, mGoogleCallbacks);
 		mThirdPartyProxies.add(mFacebookProxy);
 		mThirdPartyProxies.add(mGoogleProxy);
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
@@ -168,4 +174,36 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		}
 		finish();
 	}
+
+	private FacebookProxy.Callbacks mFacebookCallbacks = new FacebookProxy.Callbacks() {
+		@Override
+		public void onSessionStateChange(ThirdPartyProxy proxy, Session session, SessionState state) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("session=%s, state=%s", session, state));
+			}
+		}
+
+		@Override
+		public void onError(ThirdPartyProxy proxy, Session session, SessionState state, Exception exception) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("session=%s, state=%s, exception=%s", session, state, exception));
+			}
+		}
+	};
+
+	private GoogleProxy.Callbacks mGoogleCallbacks = new GoogleProxy.Callbacks() {
+		@Override
+		public void onConnected(ThirdPartyProxy proxy, Bundle connectionHint) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("connectionHint=%s", connectionHint));
+			}
+		}
+
+		@Override
+		public void onUnresolvedError(ThirdPartyProxy proxy, ConnectionResult result) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("result=%s", result));
+			}
+		}
+	};
 }

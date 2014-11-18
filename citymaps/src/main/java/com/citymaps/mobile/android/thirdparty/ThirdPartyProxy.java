@@ -45,28 +45,9 @@ public abstract class ThirdPartyProxy {
 
 	}
 
-	/*
-	public abstract Connection openConnection();
-	*/
-
 	public abstract void openConnection(boolean interactive);
 
 	public abstract void closeConnection();
-
-//	public abstract void disconnect();
-
-	/*
-	public abstract class Connection {
-		protected boolean mInteractive;
-
-		public Connection setInteractive(boolean interactive) {
-			mInteractive = interactive;
-			return this;
-		}
-
-		public abstract void connect();
-	}
-	*/
 
 	public static abstract class Request<T, E> {
 		protected Listener<T> mListener;

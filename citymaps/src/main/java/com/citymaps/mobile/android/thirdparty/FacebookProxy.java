@@ -3,8 +3,6 @@ package com.citymaps.mobile.android.thirdparty;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
-import com.citymaps.mobile.android.util.LogEx;
 import com.facebook.FacebookRequestError;
 import com.facebook.Session;
 import com.facebook.SessionState;
@@ -16,31 +14,43 @@ import java.util.List;
 public class FacebookProxy extends ThirdPartyProxy
 		implements Session.StatusCallback {
 
-	private static final String CONNECTION_OPEN = FacebookProxy.class.getName() + ".connectionOpen";
+	private static final String STATE_KEY_LAST_HANDLED_STATE = FacebookProxy.class.getName() + ".lastHandledState";
+
+	private static final String STATE_KEY_CONNECTION_OPEN = FacebookProxy.class.getName() + ".connectionOpen";
 
 	private List<String> mReadPermissions;
 
 	private List<String> mWritePermissions;
 
+	private Callbacks mCallbacks;
+
 	private Session mSession;
 
 	private UiLifecycleHelper mUiLifecycleHelper;
 
-	public FacebookProxy(Activity activity, List<String> readPermissions, List<String> writePermissions) {
+	private SessionState mLastHandledState;
+
+	public FacebookProxy(Activity activity, List<String> readPermissions, List<String> writePermissions, Callbacks callbacks) {
 		super(activity);
 		mReadPermissions = readPermissions;
 		mWritePermissions = writePermissions;
+		mCallbacks = callbacks;
+	}
+
+	public FacebookProxy(Activity activity, List<String> readPermissions, Callbacks callbacks) {
+		this(activity, readPermissions, null, callbacks);
 	}
 
 	public FacebookProxy(Activity activity, List<String> readPermissions) {
-		this(activity, readPermissions, null);
+		this(activity, readPermissions, null, null);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			boolean connectionOpen = savedInstanceState.getBoolean(CONNECTION_OPEN, false);
+			mLastHandledState = (SessionState) savedInstanceState.getSerializable(STATE_KEY_LAST_HANDLED_STATE);
+			boolean connectionOpen = savedInstanceState.getBoolean(STATE_KEY_CONNECTION_OPEN, false);
 			if (connectionOpen) {
 				mUiLifecycleHelper = newUiLifecycleHelper();
 				mUiLifecycleHelper.onCreate(savedInstanceState);
@@ -57,7 +67,7 @@ public class FacebookProxy extends ThirdPartyProxy
 			// session is not null, the session state change notification
 			// may not be triggered. Trigger it if it's open/closed.
 			Session session = Session.getActiveSession();
-			if (session != null && (session.isOpened() || session.isClosed()) ) {
+			if (session != null && (session.isOpened() || session.isClosed())) {
 				call(session, session.getState(), null);
 			}
 
@@ -68,7 +78,8 @@ public class FacebookProxy extends ThirdPartyProxy
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putBoolean(CONNECTION_OPEN, mUiLifecycleHelper != null);
+		outState.putSerializable(STATE_KEY_LAST_HANDLED_STATE, mLastHandledState);
+		outState.putBoolean(STATE_KEY_CONNECTION_OPEN, mUiLifecycleHelper != null);
 		if (mUiLifecycleHelper != null) {
 			mUiLifecycleHelper.onSaveInstanceState(outState);
 		}
@@ -106,13 +117,6 @@ public class FacebookProxy extends ThirdPartyProxy
 		}
 	}
 
-	/*
-	@Override
-	public Connection openConnection() {
-		return new FacebookConnection();
-	}
-	*/
-
 	@Override
 	public void openConnection(boolean interactive) {
 		mUiLifecycleHelper = newUiLifecycleHelper();
@@ -128,17 +132,6 @@ public class FacebookProxy extends ThirdPartyProxy
 		mUiLifecycleHelper = null;
 	}
 
-	/*
-	public class FacebookConnection extends Connection {
-
-		@Override
-		public void connect() {
-			mUiLifecycleHelper = newUiLifecycleHelper();
-			mSession = Session.openActiveSession(mActivity, mInteractive, mReadPermissions, FacebookProxy.this);
-		}
-	}
-	*/
-
 	private UiLifecycleHelper newUiLifecycleHelper() {
 		return new UiLifecycleHelper(mActivity, this);
 	}
@@ -147,12 +140,20 @@ public class FacebookProxy extends ThirdPartyProxy
 
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
-		if (LogEx.isLoggable(LogEx.INFO)) {
-			LogEx.i(String.format("session=%s, state=%s, exception=%s", session, state, exception));
+		mSession = session;
+
+		// Always handle exceptions
+		if (exception != null) {
+			if (mCallbacks != null) {
+				mCallbacks.onError(this, session, state, exception);
+			}
 		}
 
-		if (session.isOpened()) {
-			Toast.makeText(mActivity, "Facebook user is connected!", Toast.LENGTH_SHORT).show();
+		if (state != mLastHandledState) {
+			if (mCallbacks != null && exception == null) {
+				mCallbacks.onSessionStateChange(this, session, state);
+			}
+			mLastHandledState = state;
 		}
 	}
 
@@ -160,5 +161,10 @@ public class FacebookProxy extends ThirdPartyProxy
 		public UserRequest(Listener<GraphUser> listener, ErrorListener<FacebookRequestError> errorListener) {
 			super(listener, errorListener);
 		}
+	}
+
+	public static interface Callbacks {
+		public void onSessionStateChange(ThirdPartyProxy proxy, Session session, SessionState state);
+		public void onError(ThirdPartyProxy proxy, Session session, SessionState state, Exception exception);
 	}
 }

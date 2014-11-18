@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
@@ -14,7 +15,7 @@ import com.google.android.gms.plus.model.people.Person;
 import java.util.List;
 
 public class GoogleProxy extends ThirdPartyProxy
-		implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+		implements ConnectionCallbacks, OnConnectionFailedListener {
 
 	private static final String STATE_KEY_CONNECTION_OPEN = GoogleProxy.class.getName() + ".connectionOpen";
 
@@ -27,6 +28,8 @@ public class GoogleProxy extends ThirdPartyProxy
 	/* */
 	private List<Scope> mScopes;
 
+	private Callbacks mCallbacks;
+
 	/* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
 
@@ -38,16 +41,21 @@ public class GoogleProxy extends ThirdPartyProxy
 	/* Track whether the sign-in button has been clicked so that we know to resolve
 	 * all issues preventing sign-in without waiting.
 	 */
-	private boolean mSignInClicked = false; // TODO Will be a sort of "allow ui" flag
+	private boolean mSignInClicked = false;
 
 	/* Store the connection result from onConnectionFailed callbacks so that we can
 	 * resolve them when the user clicks sign-in.
 	 */
 	private ConnectionResult mConnectionResult;
 
-	public GoogleProxy(Activity activity, List<Scope> scopes) {
+	public GoogleProxy(Activity activity, List<Scope> scopes, Callbacks callbacks) {
 		super(activity);
 		mScopes = scopes;
+		mCallbacks = callbacks;
+	}
+
+	public GoogleProxy(Activity activity, List<Scope> scopes) {
+		this(activity, scopes, null);
 	}
 
 	@Override
@@ -104,13 +112,6 @@ public class GoogleProxy extends ThirdPartyProxy
 		}
 	}
 
-	/*
-	@Override
-	public Connection openConnection() {
-		return new GoogleConnection();
-	}
-	*/
-
 	@Override
 	public void openConnection(boolean interactive) {
 		mGoogleApiClient = newGoogleApiClient();
@@ -144,31 +145,15 @@ public class GoogleProxy extends ThirdPartyProxy
 		return builder.build();
 	}
 
-	/* A helper method to resolve the current ConnectionResult error. */
-	private void resolveSignInError() {
-		if (mConnectionResult.hasResolution()) {
-			try {
-				mIntentInProgress = true;
-				mActivity.startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
-						REQUEST_CODE_GOOGLE_SIGN_IN, null, 0, 0, 0);
-			} catch (IntentSender.SendIntentException e) {
-				// The intent was canceled before it was sent.  Return to the default
-				// state and attempt to connect to get an updated ConnectionResult.
-				mIntentInProgress = false;
-				if (mGoogleApiClient != null) {
-					mGoogleApiClient.connect();
-				}
-			}
-		}
-	}
-
 	/* Callbacks */
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
 		mConnectionResult = null;
-		Toast.makeText(mActivity, "Google user is connected!", Toast.LENGTH_SHORT).show();
+		if (mCallbacks != null) {
+			mCallbacks.onConnected(this, connectionHint);
+		}
 	}
 
 	@Override
@@ -185,29 +170,34 @@ public class GoogleProxy extends ThirdPartyProxy
 			// 'sign-in'.
 			mConnectionResult = result;
 
-			if (mSignInClicked) {
-				// The user has already clicked 'sign-in' so we attempt to resolve all
-				// errors until the user is signed in, or they cancel.
-				resolveSignInError();
+			if (mConnectionResult.hasResolution() && mSignInClicked) {
+				try {
+					mIntentInProgress = true;
+					result.startResolutionForResult(mActivity, REQUEST_CODE_GOOGLE_SIGN_IN);
+				} catch (IntentSender.SendIntentException e) {
+					// The intent was canceled before it was sent.  Return to the default
+					// state and attempt to connect to get an updated ConnectionResult.
+					mIntentInProgress = false;
+					if (mGoogleApiClient != null) {
+						mGoogleApiClient.connect();
+					}
+				}
+			} else {
+				if (mCallbacks != null) {
+					mCallbacks.onUnresolvedError(this, result);
+				}
 			}
 		}
 	}
-
-	/*
-	public class GoogleConnection extends Connection {
-
-		@Override
-		public void connect() {
-			mGoogleApiClient = newGoogleApiClient();
-			mSignInClicked = true;
-			mGoogleApiClient.connect();
-		}
-	}
-	*/
 
 	public static class PersonRequest extends Request<Person, Exception> {
 		public PersonRequest(Listener<Person> listener, ErrorListener<Exception> errorListener) {
 			super(listener, errorListener);
 		}
+	}
+
+	public static interface Callbacks {
+		public void onConnected(ThirdPartyProxy proxy, Bundle connectionHint);
+		public void onUnresolvedError(ThirdPartyProxy proxy, ConnectionResult result);
 	}
 }
