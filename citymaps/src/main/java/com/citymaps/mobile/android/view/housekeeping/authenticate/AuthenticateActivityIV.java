@@ -6,8 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Toast;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.ThirdPartyUser;
+import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.volley.UserRequest;
 import com.citymaps.mobile.android.thirdpartynew.FacebookProxy;
 import com.citymaps.mobile.android.thirdpartynew.GoogleProxy;
 import com.citymaps.mobile.android.thirdpartynew.GoogleProxy.OnPreBuildListener;
@@ -19,25 +25,16 @@ import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import java.util.*;
 
-import static com.citymaps.mobile.android.thirdpartynew.ThirdPartyProxy.DATA_TOKEN;
 import static com.citymaps.mobile.android.thirdpartynew.FacebookProxy.DATA_ME;
 import static com.citymaps.mobile.android.thirdpartynew.GoogleProxy.DATA_ACCOUNT_NAME;
 import static com.citymaps.mobile.android.thirdpartynew.GoogleProxy.DATA_CURRENT_PERSON;
-
-/*
- * TODO
- * I might want to introduce a way to only have callbacks be active once "connect" has been
- * called. How to accomplish this? For one, GoogleProxy would need to be passed the onSaveInstanceState
- * callback. We can always set listeners (as we do now), but maintain an "active" flag
- * that is set on connect() and cleared on cancel(). THAT boolean is maintained by the proxies.
- */
+import static com.citymaps.mobile.android.thirdpartynew.ThirdPartyProxy.DATA_TOKEN;
 
 public class AuthenticateActivityIV extends TrackedActionBarActivity {
 
@@ -149,7 +146,9 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 		switch (requestCode) {
 			case REQUEST_CODE_CREATE_ACCOUNT:
 				if (resultCode != RESULT_OK) {
-					// TODO What to do here? I think ThirdParty needs a "cancel" method?
+					// TODO Where else to set callbacks to null? onError?
+					mFacebookProxy.setCallbacks(null);
+					mGoogleProxy.setCallbacks(null);
 				}
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
@@ -212,14 +211,7 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 
 	/* GoogleProxy callbacks */
 
-	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.Callbacks() {
-		@Override
-		public void onConnecting(GoogleProxy proxy) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s", proxy));
-			}
-		}
-
+	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
 			if (LogEx.isLoggable(LogEx.INFO)) {
@@ -228,32 +220,11 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 
 			proxy.requestData(proxy.getGoogleApiClient(), Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
 		}
-
-		@Override
-		public void onError(GoogleProxy proxy, ConnectionResult result) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s, result=%s", proxy, result));
-			}
-		}
-
-		@Override
-		public void onDisconnected(GoogleProxy proxy) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s", proxy));
-			}
-		}
 	};
 
 	/* FacebookProxy callbacks */
 
-	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.Callbacks() {
-		@Override
-		public void onConnecting(FacebookProxy proxy, Session session, SessionState state) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s, session=%s, state=%s", proxy, session, state));
-			}
-		}
-
+	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
 			if (LogEx.isLoggable(LogEx.INFO)) {
@@ -262,20 +233,6 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 
 			proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
 		}
-
-		@Override
-		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s, session=%s, state=%s, exception=%s", proxy, session, state, exception));
-			}
-		}
-
-		@Override
-		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s, session=%s, state=%s", proxy, session, state));
-			}
-		}
 	};
 
 	/* Proxy request data callbacks */
@@ -283,19 +240,43 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 	private ThirdPartyProxy.OnDataListener mOnDataListener = new ThirdPartyProxy.OnDataListener() {
 		@Override
 		public void onData(ThirdPartyProxy proxy, Map<String, Object> data, Map<String, Object> errors) {
+
+			// TODO Need some error handling here
+
+			final ThirdPartyUser thirdPartyUser;
 			if (proxy == mFacebookProxy) {
 				String token = (String) data.get(DATA_TOKEN);
-				GraphUser user = (GraphUser) data.get(DATA_ME);
-				if (LogEx.isLoggable(LogEx.INFO)) {
-					LogEx.i(String.format("token=%s, user=%s", token, user));
-				}
+				GraphUser graphUser = (GraphUser) data.get(DATA_ME);
+				thirdPartyUser = new ThirdPartyUser(token, graphUser);
 			} else if (proxy == mGoogleProxy) {
 				String token = (String) data.get(DATA_TOKEN);
-				String accountName = (String) data.get(DATA_ACCOUNT_NAME);
 				Person person = (Person) data.get(DATA_CURRENT_PERSON);
-				if (LogEx.isLoggable(LogEx.INFO)) {
-					LogEx.i(String.format("token=%s, accountName=%s, person=%s", token, accountName, person));
-				}
+				String accountName = (String) data.get(DATA_ACCOUNT_NAME);
+				thirdPartyUser = new ThirdPartyUser(token, person, accountName);
+			} else {
+				thirdPartyUser = null;
+			}
+
+			// Attempt to log in to Citymaps using the third party user info
+
+			if (thirdPartyUser != null) {
+				UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivityIV.this, thirdPartyUser.getThirdParty(),
+						thirdPartyUser.getId(), thirdPartyUser.getToken(), new Response.Listener<User>() {
+							@Override
+							public void onResponse(User response) {
+								wrapUp();
+							}
+						}, new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								// There is no Citymaps user linked to the third party account. Take them to the Create Account screen
+								Intent intent = new Intent(AuthenticateActivityIV.this, LoginActivity.class);
+								IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
+								IntentUtils.putThirdPartyUser(intent, thirdPartyUser);
+								AuthenticateActivityIV.this.startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
+							}
+						});
+				VolleyManager.getInstance(AuthenticateActivityIV.this).getRequestQueue().add(loginRequest);
 			}
 		}
 	};

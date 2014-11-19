@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -218,5 +217,27 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 		public void onDisconnected(GoogleProxy proxy);
 
 		public void onError(GoogleProxy proxy, ConnectionResult result);
+	}
+
+	public static abstract class SimpleCallbacks implements Callbacks {
+		@Override
+		public void onConnecting(GoogleProxy proxy) {
+
+		}
+
+		@Override
+		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
+
+		}
+
+		@Override
+		public void onDisconnected(GoogleProxy proxy) {
+
+		}
+
+		@Override
+		public void onError(GoogleProxy proxy, ConnectionResult result) {
+
+		}
 	}
 }

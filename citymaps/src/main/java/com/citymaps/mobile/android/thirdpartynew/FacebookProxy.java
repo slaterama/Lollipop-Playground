@@ -149,4 +149,26 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state);
 		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception);
 	}
+
+	public static abstract class SimpleCallbacks implements Callbacks {
+		@Override
+		public void onConnecting(FacebookProxy proxy, Session session, SessionState state) {
+
+		}
+
+		@Override
+		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
+
+		}
+
+		@Override
+		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state) {
+
+		}
+
+		@Override
+		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+
+		}
+	}
 }

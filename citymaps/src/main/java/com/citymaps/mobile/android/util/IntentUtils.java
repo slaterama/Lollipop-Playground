@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.ThirdParty;
+import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -86,6 +87,9 @@ public class IntentUtils {
 	 */
 	public static final String EXTRA_STARTUP_MODE = makeExtra("STARTUP_MODE");
 
+	public static final String EXTRA_THIRD_PARTY_USER = makeExtra("THIRD_PARTY_USER");
+
+	/*
 	public static final String EXTRA_THIRD_PARTY = makeExtra("THIRD_PARTY");
 	public static final String EXTRA_THIRD_PARTY_ID = makeExtra("THIRD_PARTY_ID");
 	public static final String EXTRA_THIRD_PARTY_TOKEN = makeExtra("THIRD_PARTY_TOKEN");
@@ -94,6 +98,7 @@ public class IntentUtils {
 	public static final String EXTRA_THIRD_PARTY_USERNAME = makeExtra("THIRD_PARTY_USERNAME");
 	public static final String EXTRA_THIRD_PARTY_EMAIL = makeExtra("THIRD_PARTY_EMAIL");
 	public static final String EXTRA_THIRD_PARTY_AVATAR_URL = makeExtra("THIRD_PARTY_AVATAR_URL");
+	*/
 
 	public static void putConfig(Intent intent, Config config) {
 		intent.putExtra(EXTRA_CONFIG, config);
@@ -119,6 +124,7 @@ public class IntentUtils {
 		return intent.getBooleanExtra(EXTRA_STARTUP_MODE, defaultValue);
 	}
 
+	/*
 	public static void putThirdPartyUser(Intent intent, String accessToken, GraphUser user) {
 		if (user == null) {
 			return;
@@ -193,6 +199,15 @@ public class IntentUtils {
 
 	public static String getThirdPartyAvatarUrl(Intent intent) {
 		return intent.getStringExtra(EXTRA_THIRD_PARTY_AVATAR_URL);
+	}
+	*/
+
+	public static void putThirdPartyUser(Intent intent, ThirdPartyUser thirdPartyUser) {
+		intent.putExtra(EXTRA_THIRD_PARTY_USER, thirdPartyUser);
+	}
+
+	public static ThirdPartyUser getThirdPartyUser(Intent intent) {
+		return intent.getParcelableExtra(EXTRA_THIRD_PARTY_USER);
 	}
 
 	private IntentUtils() {

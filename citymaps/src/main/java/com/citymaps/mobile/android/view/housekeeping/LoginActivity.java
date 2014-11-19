@@ -16,7 +16,7 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.ThirdParty;
+import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.IntentUtils;
 
@@ -149,6 +149,14 @@ public class LoginActivity extends TrackedActionBarActivity
 		switch (loginMode) {
 			case CREATE_ACCOUNT_MODE:
 				Intent intent = getIntent();
+				ThirdPartyUser thirdPartyUser = IntentUtils.getThirdPartyUser(intent);
+				if (thirdPartyUser == null) {
+					fragment = LoginCreateAccountFragment.newInstance();
+				} else {
+					fragment = LoginCreateAccountFragment.newInstance(thirdPartyUser);
+				}
+
+				/*
 				ThirdParty thirdParty = IntentUtils.getThirdParty(intent);
 				if (thirdParty == null) {
 					fragment = LoginCreateAccountFragment.newInstance();
@@ -164,6 +172,7 @@ public class LoginActivity extends TrackedActionBarActivity
 							thirdPartyId, thirdPartyToken, thirdPartyFirstName, thirdPartyLastName,
 							thirdPartyUsername, thirdPartyEmail, thirdPartyAvatarUrl);
 				}
+				*/
 				break;
 			case RESET_PASSWORD_MODE:
 				fragment = LoginResetPasswordFragment.newInstance("", "");
