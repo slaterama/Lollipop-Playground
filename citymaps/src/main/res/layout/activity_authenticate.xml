@@ -115,8 +115,10 @@
 
 			<View
 					android:layout_width="1dp"
-					android:layout_height="@dimen/touch_target"
-					android:background="@drawable/divider_vertical_grey"/>
+					android:layout_height="match_parent"
+					android:background="@drawable/divider_vertical_grey"
+					android:layout_marginTop="@dimen/component_baseline_grid"
+					android:layout_marginBottom="@dimen/component_baseline_grid"/>
 
 			<Button
 					android:id="@+id/login_authenticate_skip_button"

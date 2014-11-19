@@ -2,34 +2,33 @@ package com.citymaps.mobile.android.thirdpartynew;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
+import android.text.TextUtils;
+import com.facebook.*;
+import com.facebook.model.GraphUser;
 
-import java.util.List;
+import java.util.*;
 
-public class FacebookProxy extends ThirdPartyProxy
+public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callbacks>
 		implements Session.StatusCallback {
+
+	public static final String DATA_ME = "me";
 
 	private List<String> mReadPermissions;
 	private List<String> mWritePermissions;
 
-	private ProxyCallbacks mProxyCallbacks;
-
 	private UiLifecycleHelper mUiLifecycleHelper;
 
-	public FacebookProxy(Activity activity, List<String> readPermissions, List<String> writePermissions,
-						 ProxyCallbacks proxyCallbacks) {
+	public FacebookProxy(Activity activity, List<String> readPermissions, List<String> writePermissions) {
 		super(activity);
 		mReadPermissions = readPermissions;
 		mWritePermissions = writePermissions;
-		mProxyCallbacks = proxyCallbacks;
 		mUiLifecycleHelper = new UiLifecycleHelper(activity, this);
 	}
 
-	public FacebookProxy(Activity activity, List<String> readPermissions, ProxyCallbacks proxyCallbacks) {
-		this(activity, readPermissions, null, proxyCallbacks);
+	public FacebookProxy(Activity activity, List<String> readPermissions) {
+		this(activity, readPermissions, null);
 	}
 
 	/* Lifecycle methods */
@@ -80,7 +79,6 @@ public class FacebookProxy extends ThirdPartyProxy
 
 	@Override
 	public void connect(boolean interactive) {
-		super.connect(interactive);
 		Session session = Session.getActiveSession();
 		if (session != null && !session.isOpened() && !session.isClosed()) {
 			session.openForRead(new Session.OpenRequest(mActivity)
@@ -91,33 +89,64 @@ public class FacebookProxy extends ThirdPartyProxy
 		}
 	}
 
+	@Override
+	public void requestData(final Session session, final List<String> names, final OnDataListener listener) {
+		new DataTask(this, names, listener) {
+			@Override
+			protected Void doInBackground(Void... params) {
+				if (mNames != null) {
+					Map<Request, String> requestMap = new HashMap<Request, String>();
+					for (String name : mNames) {
+						if (TextUtils.equals(name, DATA_TOKEN)) {
+							mData.put(DATA_TOKEN, session.getAccessToken());
+						} else if (TextUtils.equals(name, DATA_ME)) {
+							requestMap.put(Request.newMeRequest(session, null), name);
+						}
+					}
+					List<Response> responses = Request.executeBatchAndWait(requestMap.keySet());
+					for (Response response : responses) {
+						Request request = response.getRequest();
+						String name = requestMap.get(request);
+						FacebookRequestError error = response.getError();
+						if (error != null) {
+							mErrors.put(name, error);
+						} else if (TextUtils.equals(name, DATA_ME)) {
+							mData.put(name, response.getGraphObjectAs(GraphUser.class));
+						}
+					}
+				}
+				return null;
+			}
+		}.executeOnExecutor(DataTask.THREAD_POOL_EXECUTOR);
+	}
+
 	/* Facebook callbacks */
 
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
 		if (exception != null) {
-			if (mProxyCallbacks != null) {
-				mProxyCallbacks.onError(this, session, state, exception);
+			if (mCallbacks != null) {
+				mCallbacks.onError(this, session, state, exception);
 			}
 		} else if (session.isOpened()) {
-			if (mProxyCallbacks != null) {
-				mProxyCallbacks.onConnected(this, session, state);
+			if (mCallbacks != null) {
+				mCallbacks.onConnected(this, session, state);
 			}
 		} else if (session.isClosed()) {
-			if (mProxyCallbacks != null) {
-				mProxyCallbacks.onDisconnected(this, session, state);
+			if (mCallbacks != null) {
+				mCallbacks.onDisconnected(this, session, state);
 			}
 		} else if (SessionState.OPENING.equals(state)) {
-			if (mProxyCallbacks != null) {
-				mProxyCallbacks.onConnecting(this, session, state);
+			if (mCallbacks != null) {
+				mCallbacks.onConnecting(this, session, state);
 			}
 		}
 	}
 
-	public static interface ProxyCallbacks {
+	public static interface Callbacks extends ThirdPartyProxy.Callbacks {
 		public void onConnecting(FacebookProxy proxy, Session session, SessionState state);
 		public void onConnected(FacebookProxy proxy, Session session, SessionState state);
-		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception);
 		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state);
+		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception);
 	}
 }

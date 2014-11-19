@@ -7,6 +7,6 @@
 	<dimen name="floating_action_button_size">56dp</dimen>
 	<dimen name="mini_floating_action_button_size">40dp</dimen>
 
-	<dimen name="login_authenticate_button_width">280dp</dimen>
+	<dimen name="login_authenticate_button_width">290dp</dimen>
 
 </resources>

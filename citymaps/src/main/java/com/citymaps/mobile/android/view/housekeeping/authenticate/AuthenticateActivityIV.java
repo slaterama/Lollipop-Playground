@@ -18,14 +18,18 @@ import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static com.citymaps.mobile.android.thirdpartynew.ThirdPartyProxy.DATA_TOKEN;
+import static com.citymaps.mobile.android.thirdpartynew.FacebookProxy.DATA_ME;
+import static com.citymaps.mobile.android.thirdpartynew.GoogleProxy.DATA_ACCOUNT_NAME;
+import static com.citymaps.mobile.android.thirdpartynew.GoogleProxy.DATA_CURRENT_PERSON;
 
 /*
  * TODO
@@ -36,6 +40,9 @@ import java.util.Set;
  */
 
 public class AuthenticateActivityIV extends TrackedActionBarActivity {
+
+	private static final String STATE_KEY_FACEBOOK_PROXY_ACTIVE = "facebookProxyActive";
+	private static final String STATE_KEY_GOOGLE_PROXY_ACTIVE = "googleProxyActive";
 
 	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
 
@@ -66,11 +73,22 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 				builder.addApi(Plus.API);
 				builder.addScope(Plus.SCOPE_PLUS_LOGIN);
 			}
-		}, mGoogleProxyCallbacks);
-		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, mFacebookProxyCallbacks);
+		});
+		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS);
 		mThirdPartyProxies = new HashSet<ThirdPartyProxy>(2);
 		mThirdPartyProxies.add(mFacebookProxy);
 		mThirdPartyProxies.add(mGoogleProxy);
+
+		// Restore callbacks if they were set prior to configuration change
+		if (savedInstanceState != null) {
+			if (savedInstanceState.getBoolean(STATE_KEY_FACEBOOK_PROXY_ACTIVE, false)) {
+				mFacebookProxy.setCallbacks(mFacebookProxyCallbacks);
+			}
+			if (savedInstanceState.getBoolean(STATE_KEY_GOOGLE_PROXY_ACTIVE, false)) {
+				mGoogleProxy.setCallbacks(mGoogleProxyCallbacks);
+			}
+		}
+		
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
 			proxy.onCreate(savedInstanceState);
 		}
@@ -98,6 +116,8 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
 			proxy.onSaveInstanceState(outState);
 		}
+		outState.putBoolean(STATE_KEY_FACEBOOK_PROXY_ACTIVE, mFacebookProxy.getCallbacks() != null);
+		outState.putBoolean(STATE_KEY_GOOGLE_PROXY_ACTIVE, mGoogleProxy.getCallbacks() != null);
 	}
 
 	@Override
@@ -152,6 +172,7 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
+				mFacebookProxy.setCallbacks(mFacebookProxyCallbacks);
 				mFacebookProxy.connect(true);
 				break;
 			case R.id.login_authenticate_google_button: {
@@ -159,6 +180,7 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
+				mGoogleProxy.setCallbacks(mGoogleProxyCallbacks);
 				mGoogleProxy.connect(true);
 				break;
 			}
@@ -190,31 +212,33 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 
 	/* GoogleProxy callbacks */
 
-	private GoogleProxy.ProxyCallbacks mGoogleProxyCallbacks = new GoogleProxy.ProxyCallbacks() {
+	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.Callbacks() {
 		@Override
 		public void onConnecting(GoogleProxy proxy) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s", proxy));
 			}
 		}
 
 		@Override
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, connectionHint=%s", proxy, connectionHint));
 			}
+
+			proxy.requestData(proxy.getGoogleApiClient(), Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
 		}
 
 		@Override
 		public void onError(GoogleProxy proxy, ConnectionResult result) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, result=%s", proxy, result));
 			}
 		}
 
 		@Override
 		public void onDisconnected(GoogleProxy proxy) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s", proxy));
 			}
 		}
@@ -222,32 +246,56 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 
 	/* FacebookProxy callbacks */
 
-	private FacebookProxy.ProxyCallbacks mFacebookProxyCallbacks = new FacebookProxy.ProxyCallbacks() {
+	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.Callbacks() {
 		@Override
 		public void onConnecting(FacebookProxy proxy, Session session, SessionState state) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, session=%s, state=%s", proxy, session, state));
 			}
 		}
 
 		@Override
 		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, session=%s, state=%s", proxy, session, state));
 			}
+
+			proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
 		}
 
 		@Override
 		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, session=%s, state=%s, exception=%s", proxy, session, state, exception));
 			}
 		}
 
 		@Override
 		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state) {
-			if (LogEx.isLoggable(LogEx.INFO) && proxy.isActive()) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, session=%s, state=%s", proxy, session, state));
+			}
+		}
+	};
+
+	/* Proxy request data callbacks */
+
+	private ThirdPartyProxy.OnDataListener mOnDataListener = new ThirdPartyProxy.OnDataListener() {
+		@Override
+		public void onData(ThirdPartyProxy proxy, Map<String, Object> data, Map<String, Object> errors) {
+			if (proxy == mFacebookProxy) {
+				String token = (String) data.get(DATA_TOKEN);
+				GraphUser user = (GraphUser) data.get(DATA_ME);
+				if (LogEx.isLoggable(LogEx.INFO)) {
+					LogEx.i(String.format("token=%s, user=%s", token, user));
+				}
+			} else if (proxy == mGoogleProxy) {
+				String token = (String) data.get(DATA_TOKEN);
+				String accountName = (String) data.get(DATA_ACCOUNT_NAME);
+				Person person = (Person) data.get(DATA_CURRENT_PERSON);
+				if (LogEx.isLoggable(LogEx.INFO)) {
+					LogEx.i(String.format("token=%s, accountName=%s, person=%s", token, accountName, person));
+				}
 			}
 		}
 	};

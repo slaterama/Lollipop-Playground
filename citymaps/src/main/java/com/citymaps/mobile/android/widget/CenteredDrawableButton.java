@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.Button;
@@ -35,7 +36,14 @@ public class CenteredDrawableButton extends Button {
 			Drawable drawableLeft = drawables[0];
 			Drawable drawableRight = drawables[2];
 			if (drawableLeft != null || drawableRight != null) {
-				float textWidth = getPaint().measureText(getText().toString());
+				Rect backgroundDrawablePadding = new Rect();
+				Drawable backgroundDrawable = getBackground();
+				if (backgroundDrawable != null) {
+					backgroundDrawable.getPadding(backgroundDrawablePadding);
+				}
+
+				CharSequence text = getText();
+				float textWidth = getPaint().measureText(text, 0, text.length());
 				int drawablePadding = getCompoundDrawablePadding();
 				int drawableWidth = 0;
 				if (drawableLeft != null)
@@ -43,8 +51,9 @@ public class CenteredDrawableButton extends Button {
 				else /* drawableRight != null */ {
 					drawableWidth = drawableRight.getIntrinsicWidth();
 				}
+				float availableWidth = w - backgroundDrawablePadding.left - backgroundDrawablePadding.right;
 				float bodyWidth = textWidth + drawableWidth + drawablePadding;
-				int padding = Math.max((int) ((w - bodyWidth) / 2.0f), 0);
+				int padding = Math.max((int) ((availableWidth - bodyWidth) / 2.0f), 0);
 				setPadding(padding, getPaddingTop(), padding, getPaddingBottom());
 			}
 		}

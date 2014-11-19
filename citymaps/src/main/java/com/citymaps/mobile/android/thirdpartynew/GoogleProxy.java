@@ -5,19 +5,29 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 
-public class GoogleProxy extends ThirdPartyProxy
+import java.util.List;
+
+public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Callbacks>
 		implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+	public static final String DATA_ACCOUNT_NAME = "accountName";
+	public static final String DATA_CURRENT_PERSON = "currentPerson";
+
+	private static final String GOOGLE_ACCOUNT_NAME_SCOPE = String.format("oauth2:%s", Scopes.PLUS_LOGIN);
 
 	/* A magic number we will use to know that our sign-in error resolution activity has completed */
 	private static final int OUR_REQUEST_CODE = 49404;
 
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = OUR_REQUEST_CODE;
-
-	private ProxyCallbacks mProxyCallbacks;
 
 	/* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -44,7 +54,7 @@ public class GoogleProxy extends ThirdPartyProxy
 
 	/* Constructors */
 
-	public GoogleProxy(Activity activity, OnPreBuildListener onPreBuildListener, ProxyCallbacks proxyCallbacks) {
+	public GoogleProxy(Activity activity, OnPreBuildListener onPreBuildListener) {
 		super(activity);
 		GoogleApiClient.Builder builder = new GoogleApiClient.Builder(activity)
 				.addConnectionCallbacks(this)
@@ -53,7 +63,10 @@ public class GoogleProxy extends ThirdPartyProxy
 			onPreBuildListener.onPreBuild(builder);
 		}
 		mGoogleApiClient = builder.build();
-		mProxyCallbacks = proxyCallbacks;
+	}
+
+	public GoogleApiClient getGoogleApiClient() {
+		return mGoogleApiClient;
 	}
 
 	/* Lifecycle methods */
@@ -109,9 +122,8 @@ public class GoogleProxy extends ThirdPartyProxy
 
 	@Override
 	public void connect(boolean interactive) {
-		super.connect(interactive);
-		if (mProxyCallbacks != null) {
-			mProxyCallbacks.onConnecting(this);
+		if (mCallbacks != null) {
+			mCallbacks.onConnecting(this);
 		}
 		if (mGoogleApiClient.isConnected()) {
 			onConnected(mConnectionHint);
@@ -124,6 +136,40 @@ public class GoogleProxy extends ThirdPartyProxy
 		}
 	}
 
+	@Override
+	public void requestData(final GoogleApiClient googleApiClient, List<String> names, OnDataListener listener) {
+		new DataTask(this, names, listener) {
+			private String mAccountName;
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				if (mNames != null) {
+					for (String name : mNames) {
+						if (TextUtils.equals(name, DATA_TOKEN)) {
+							try {
+								mData.put(name, GoogleAuthUtil.getToken(mActivity, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
+							} catch (Exception e) {
+								mErrors.put(name, e);
+							}
+						} else if (TextUtils.equals(name, DATA_ACCOUNT_NAME)) {
+							mData.put(name, getAccountName());
+						} else if (TextUtils.equals(name, DATA_CURRENT_PERSON)) {
+							mData.put(name, Plus.PeopleApi.getCurrentPerson(googleApiClient));
+						}
+					}
+				}
+				return null;
+			}
+
+			String getAccountName() {
+				if (mAccountName == null) {
+					mAccountName = Plus.AccountApi.getAccountName(googleApiClient);
+				}
+				return mAccountName;
+			}
+		}.executeOnExecutor(DataTask.THREAD_POOL_EXECUTOR);
+	}
+
 	/* Google callbacks */
 
 	@Override
@@ -131,8 +177,8 @@ public class GoogleProxy extends ThirdPartyProxy
 		mSignInClicked = false;
 		mConnectionResult = null;
 		mConnectionHint = connectionHint;
-		if (mProxyCallbacks != null) {
-			mProxyCallbacks.onConnected(this, connectionHint);
+		if (mCallbacks != null) {
+			mCallbacks.onConnected(this, connectionHint);
 		}
 	}
 
@@ -152,8 +198,8 @@ public class GoogleProxy extends ThirdPartyProxy
 				// The user has already clicked 'sign-in' so we attempt to resolve all
 				// errors until the user is signed in, or they cancel.
 				resolveSignInError();
-			} else if (mProxyCallbacks != null) {
-				mProxyCallbacks.onError(this, result);
+			} else if (mCallbacks != null) {
+				mCallbacks.onError(this, result);
 			}
 		}
 	}
@@ -164,13 +210,13 @@ public class GoogleProxy extends ThirdPartyProxy
 		public void onPreBuild(@NonNull GoogleApiClient.Builder builder);
 	}
 
-	public static interface ProxyCallbacks {
+	public static interface Callbacks extends ThirdPartyProxy.Callbacks {
 		public void onConnecting(GoogleProxy proxy);
 
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint);
 
-		public void onError(GoogleProxy proxy, ConnectionResult result);
-
 		public void onDisconnected(GoogleProxy proxy);
+
+		public void onError(GoogleProxy proxy, ConnectionResult result);
 	}
 }
