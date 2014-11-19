@@ -68,6 +68,10 @@
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
+				android:name=".view.housekeeping.authenticate.AuthenticateActivityIV"
+				android:theme="@style/AppTheme.NoTitleOrActionBar">
+		</activity>
+		<activity
 				android:name=".view.housekeeping.LoginActivity"
 				android:label="@string/login_sign_in_activity_title"
 				android:launchMode="singleTop">

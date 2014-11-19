@@ -24,6 +24,7 @@ import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.util.UpdateUtils.UpdateType;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivity;
+import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivityIV;
 import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivityStandard;
 
 import java.util.Timer;
@@ -196,7 +197,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
-					Intent intent = new Intent(activity, AuthenticateActivity.class);
+					Intent intent = new Intent(activity, AuthenticateActivityIV.class);
 					IntentUtils.putStartupMode(intent, true);
 					activity.startActivity(intent);
 					activity.finish();
