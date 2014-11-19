@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory
+			android:key="pref_cat_friends"
+			android:title="@string/pref_cat_friends_title"
+			android:order="0">
+
+		<Preference
+				android:key="pref_friendfinder"
+				android:title="@string/pref_friendfinder_title"
+				android:persistent="false"
+				android:order="0" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_accounts"
+			android:title="@string/pref_cat_accounts_title"
+			android:order="1">
+
+		<SwitchPreference
+				android:key="pref_connect_facebook"
+				android:title="@string/pref_connect_facebook_title"
+				android:persistent="false"
+				android:order="0" />
+
+		<SwitchPreference
+				android:key="pref_connect_google"
+				android:title="@string/pref_connect_google_title"
+				android:persistent="false"
+				android:order="1" />
+
+		<SwitchPreference
+				android:key="pref_connect_twitter"
+				android:title="@string/pref_connect_twitter_title"
+				android:persistent="false"
+				android:order="2" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_notifications"
+			android:title="@string/pref_cat_notifications_title"
+			android:order="2">
+
+		<CheckBoxPreference
+				android:key="pref_email_notifications"
+				android:title="@string/pref_email_notifications_title"
+				android:persistent="false"
+				android:order="0" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_signout"
+			android:title="@string/pref_cat_signout_title"
+			android:order="5">
+
+		<Preference
+				android:key="pref_cat_signout"
+				android:title="@string/pref_signout_title"
+				android:persistent="false"
+				android:order="0"  />
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

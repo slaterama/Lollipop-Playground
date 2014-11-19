@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory
+			android:key="pref_cat_signin"
+			android:title="@string/pref_cat_signin_title"
+			android:order="5">
+
+		<Preference
+				android:key="pref_signin"
+				android:title="@string/pref_signin_title"
+				android:persistent="false"
+				android:order="0" />
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory
+			android:key="pref_cat_dev_general"
+			android:title="@string/pref_cat_dev_general_title"
+			android:order="0">
+
+		<com.citymaps.mobile.android.preference.ListPreferenceEx
+				android:key="pref_server_environment"
+				android:title="@string/pref_dev_server_title"
+				android:persistent="true"
+				android:order="0" />
+
+		<EditTextPreference
+				android:key="pref_api_server"
+				android:title="@string/pref_dev_api_server_title"
+				android:persistent="false"
+				android:order="1" />
+
+		<EditTextPreference
+				android:key="pref_search_server"
+				android:title="@string/pref_dev_search_server_title"
+				android:persistent="false"
+				android:order="2" />
+
+		<EditTextPreference
+				android:key="pref_mobile_server"
+				android:title="@string/pref_dev_mobile_server_title"
+				android:persistent="false"
+				android:order="3" />
+
+		<EditTextPreference
+				android:key="pref_assets_server"
+				android:title="@string/pref_dev_assets_server_title"
+				android:persistent="false"
+				android:order="4" />
+
+		<EditTextPreference
+				android:key="pref_map_tile_server"
+				android:title="@string/pref_dev_map_tile_server_title"
+				android:persistent="false"
+				android:order="5" />
+
+		<EditTextPreference
+				android:key="pref_business_tile_server"
+				android:title="@string/pref_dev_business_tile_server_title"
+				android:persistent="false"
+				android:order="6" />
+
+		<EditTextPreference
+				android:key="pref_region_tile_server"
+				android:title="@string/pref_dev_region_tile_server_title"
+				android:persistent="false"
+				android:order="7" />
+
+		<SwitchPreference
+				android:key="pref_network_cache"
+				android:title="@string/pref_dev_network_cache_title"
+				android:defaultValue="true"
+				android:persistent="false"
+				android:order="8" />
+
+		<Preference
+				android:key="pref_android_version"
+				android:title="@string/pref_dev_android_version_title"
+				android:persistent="false"
+				android:order="9" />
+
+		<Preference
+				android:key="pref_api_version"
+				android:title="@string/pref_dev_api_version_title"
+				android:summary="@string/pref_dev_api_version_summary_getting"
+				android:persistent="false"
+				android:order="10" />
+
+		<Preference
+				android:key="pref_device_id"
+				android:title="@string/pref_dev_device_id_title"
+				android:persistent="false"
+				android:order="11" />
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

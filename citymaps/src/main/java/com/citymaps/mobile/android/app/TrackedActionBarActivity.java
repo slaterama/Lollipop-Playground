@@ -37,3 +37,4 @@ public class TrackedActionBarActivity extends ActionBarActivity {
 	}
 
 }
+

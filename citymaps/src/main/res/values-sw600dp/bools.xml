@@ -7,7 +7,6 @@
 	<bool name="hard_update_allow_orientation_change">true</bool>
 	<bool name="tour_allow_orientation_change">true</bool>
 	<bool name="enable_location_allow_orientation_change">true</bool>
-	<bool name="authenticate_allow_orientation_change">true</bool>
 	<bool name="login_allow_orientation_change">true</bool>
 
 </resources>

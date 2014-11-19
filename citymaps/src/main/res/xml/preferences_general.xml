@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory
+			android:key="pref_cat_info"
+			android:title="@string/pref_cat_info_title"
+			android:order="3">
+
+		<Preference
+				android:key="pref_about"
+				android:title="@string/pref_about_title"
+				android:persistent="false"
+				android:order="0">
+
+			<intent
+					android:action="android.intent.action.VIEW"
+					android:data="http://citymaps.com/about" />
+
+		</Preference>
+
+		<Preference
+				android:key="pref_support"
+				android:title="@string/pref_support_title"
+				android:persistent="false"
+				android:order="1">
+
+			<intent
+					android:action="android.intent.action.VIEW"
+					android:data="http://citymaps.com/support" />
+
+		</Preference>
+
+		<Preference
+				android:key="pref_tour"
+				android:title="@string/pref_tour_title"
+				android:persistent="false"
+				android:order="2" />
+
+		<Preference
+				android:key="pref_feedback"
+				android:title="@string/pref_feedback_title"
+				android:persistent="false"
+				android:order="3" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_more"
+			android:title="@string/pref_cat_more_title"
+			android:order="4">
+
+		<Preference
+				android:key="pref_policy"
+				android:title="@string/pref_privacy_title"
+				android:persistent="false"
+				android:order="0">
+
+			<intent
+					android:action="android.intent.action.VIEW"
+					android:data="http://citymaps.com/privacy" />
+
+		</Preference>
+
+		<Preference
+				android:key="pref_terms"
+				android:title="@string/pref_terms_title"
+				android:persistent="false"
+				android:order="1">
+
+			<intent
+					android:action="android.intent.action.VIEW"
+					android:data="http://citymaps.com/terms" />
+
+		</Preference>
+
+		<Preference
+				android:key="pref_credits"
+				android:title="@string/pref_credits_title"
+				android:persistent="false"
+				android:order="2">
+
+			<intent
+					android:action="android.intent.action.VIEW"
+					android:data="http://citymaps.com/credits" />
+
+		</Preference>
+
+		<Preference
+				android:key="pref_developer_mode"
+				android:title="@string/pref_developer_mode_title"
+				android:widgetLayout="@layout/preference_widget_layout_button"
+				android:persistent="false"
+				android:order="3">
+
+		</Preference>
+
+		<!--
+		<com.citymaps.mobile.android.preference.SwitchPreferenceEx
+				android:key="pref_developer_mode"
+				android:title="@string/pref_developer_mode_title"
+				android:persistent="false"
+				android:order="3">
+
+			<intent
+					android:targetPackage="com.spamytic.mobile"
+					android:targetClass="com.spamytic.mobile.view.PreferencesActivity$PreferencesActivityImpl"
+					android:action="com.spamytic.mobile.action.DEVELOPER_PREFERENCES" />
+
+		</com.citymaps.mobile.android.preference.SwitchPreferenceEx>
+		-->
+
+	</PreferenceCategory>
+
+</PreferenceScreen>
