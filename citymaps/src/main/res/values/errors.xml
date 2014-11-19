@@ -4,6 +4,8 @@
 	<string name="error_message_generic">An unknown error occurred.</string>
 	<string name="error_message_no_connection">You are not connected to the Internet.</string>
 
+	<string name="error_login_third_party_user">Unable to get %s user information. Try again later.</string>
+
 	<string name="validator_missing_generic">Please enter a value.</string>
 	<string name="validator_missing_your_first_name">Please enter your first name.</string>
 	<string name="validator_missing_your_last_name">Please enter your last name.</string>

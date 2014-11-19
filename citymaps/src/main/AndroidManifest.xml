@@ -68,7 +68,7 @@
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity
-				android:name=".view.housekeeping.authenticate.AuthenticateActivityIV"
+				android:name=".view.housekeeping.AuthenticateActivity"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity

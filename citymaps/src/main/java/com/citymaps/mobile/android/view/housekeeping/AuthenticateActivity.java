@@ -1,9 +1,11 @@
-package com.citymaps.mobile.android.view.housekeeping.authenticate;
+package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.Toast;
 import com.android.volley.Response;
@@ -11,6 +13,7 @@ import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
@@ -19,9 +22,7 @@ import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
-import com.citymaps.mobile.android.view.housekeeping.LoginActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
@@ -36,7 +37,7 @@ import static com.citymaps.mobile.android.thirdparty.GoogleProxy.DATA_ACCOUNT_NA
 import static com.citymaps.mobile.android.thirdparty.GoogleProxy.DATA_CURRENT_PERSON;
 import static com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.DATA_TOKEN;
 
-public class AuthenticateActivityIV extends TrackedActionBarActivity {
+public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	private static final String STATE_KEY_FACEBOOK_PROXY_ACTIVE = "facebookProxyActive";
 	private static final String STATE_KEY_GOOGLE_PROXY_ACTIVE = "googleProxyActive";
@@ -214,11 +215,8 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s, connectionHint=%s", proxy, connectionHint));
-			}
-
-			proxy.requestData(proxy.getGoogleApiClient(), Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
+			proxy.requestData(proxy.getGoogleApiClient(),
+					Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
 		}
 	};
 
@@ -227,10 +225,6 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
-			if (LogEx.isLoggable(LogEx.INFO)) {
-				LogEx.i(String.format("proxy=%s, session=%s, state=%s", proxy, session, state));
-			}
-
 			proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
 		}
 	};
@@ -247,11 +241,29 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 			if (proxy == mFacebookProxy) {
 				String token = (String) data.get(DATA_TOKEN);
 				GraphUser graphUser = (GraphUser) data.get(DATA_ME);
+				if (token == null || graphUser == null) {
+					FragmentManager manager = getSupportFragmentManager();
+					if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
+						String message = getString(R.string.error_login_third_party_user, ThirdParty.FACEBOOK.getProperName());
+						DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
+						fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
+					}
+					return;
+				}
 				thirdPartyUser = new ThirdPartyUser(token, graphUser);
 			} else if (proxy == mGoogleProxy) {
 				String token = (String) data.get(DATA_TOKEN);
 				Person person = (Person) data.get(DATA_CURRENT_PERSON);
 				String accountName = (String) data.get(DATA_ACCOUNT_NAME);
+				if (token == null || person == null || accountName == null) {
+					FragmentManager manager = getSupportFragmentManager();
+					if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
+						String message = getString(R.string.error_login_third_party_user, ThirdParty.GOOGLE.getProperName());
+						DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
+						fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
+					}
+					return;
+				}
 				thirdPartyUser = new ThirdPartyUser(token, person, accountName);
 			} else {
 				thirdPartyUser = null;
@@ -260,7 +272,7 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 			// Attempt to log in to Citymaps using the third party user info
 
 			if (thirdPartyUser != null) {
-				UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivityIV.this, thirdPartyUser.getThirdParty(),
+				UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivity.this, thirdPartyUser.getThirdParty(),
 						thirdPartyUser.getId(), thirdPartyUser.getToken(), new Response.Listener<User>() {
 							@Override
 							public void onResponse(User response) {
@@ -270,13 +282,13 @@ public class AuthenticateActivityIV extends TrackedActionBarActivity {
 							@Override
 							public void onErrorResponse(VolleyError error) {
 								// There is no Citymaps user linked to the third party account. Take them to the Create Account screen
-								Intent intent = new Intent(AuthenticateActivityIV.this, LoginActivity.class);
+								Intent intent = new Intent(AuthenticateActivity.this, LoginActivity.class);
 								IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
 								IntentUtils.putThirdPartyUser(intent, thirdPartyUser);
-								AuthenticateActivityIV.this.startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
+								AuthenticateActivity.this.startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
 							}
 						});
-				VolleyManager.getInstance(AuthenticateActivityIV.this).getRequestQueue().add(loginRequest);
+				VolleyManager.getInstance(AuthenticateActivity.this).getRequestQueue().add(loginRequest);
 			}
 		}
 	};

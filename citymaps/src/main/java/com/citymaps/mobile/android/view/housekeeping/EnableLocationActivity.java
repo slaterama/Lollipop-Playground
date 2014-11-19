@@ -13,7 +13,6 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
-import com.citymaps.mobile.android.view.housekeeping.authenticate.AuthenticateActivity;
 
 public class EnableLocationActivity extends TrackedActionBarActivity {
 

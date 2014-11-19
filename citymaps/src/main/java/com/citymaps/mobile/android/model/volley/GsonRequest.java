@@ -56,7 +56,7 @@ public class GsonRequest<T> extends Request<T> {
 		setShouldCache(false);
 
 		if (LogEx.isLoggable(LogEx.VERBOSE)) {
-			LogEx.v(String.format("url=%s", url));
+			LogEx.v(String.format("url=%s, headers=%s, params=%s", url, headers, params));
 		}
 
 		mClass = clazz;
