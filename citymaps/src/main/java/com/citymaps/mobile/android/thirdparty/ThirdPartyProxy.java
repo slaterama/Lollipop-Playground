@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.thirdpartynew;
+package com.citymaps.mobile.android.thirdparty;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -14,10 +14,10 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.thirdpartynew.FacebookProxy;
-import com.citymaps.mobile.android.thirdpartynew.GoogleProxy;
-import com.citymaps.mobile.android.thirdpartynew.GoogleProxy.OnPreBuildListener;
-import com.citymaps.mobile.android.thirdpartynew.ThirdPartyProxy;
+import com.citymaps.mobile.android.thirdparty.FacebookProxy;
+import com.citymaps.mobile.android.thirdparty.GoogleProxy;
+import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;
+import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.view.MainActivity;
@@ -31,10 +31,10 @@ import com.google.android.gms.plus.model.people.Person;
 
 import java.util.*;
 
-import static com.citymaps.mobile.android.thirdpartynew.FacebookProxy.DATA_ME;
-import static com.citymaps.mobile.android.thirdpartynew.GoogleProxy.DATA_ACCOUNT_NAME;
-import static com.citymaps.mobile.android.thirdpartynew.GoogleProxy.DATA_CURRENT_PERSON;
-import static com.citymaps.mobile.android.thirdpartynew.ThirdPartyProxy.DATA_TOKEN;
+import static com.citymaps.mobile.android.thirdparty.FacebookProxy.DATA_ME;
+import static com.citymaps.mobile.android.thirdparty.GoogleProxy.DATA_ACCOUNT_NAME;
+import static com.citymaps.mobile.android.thirdparty.GoogleProxy.DATA_CURRENT_PERSON;
+import static com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.DATA_TOKEN;
 
 public class AuthenticateActivityIV extends TrackedActionBarActivity {
 

@@ -1,8 +1,7 @@
-package com.citymaps.mobile.android.thirdpartynew;
+package com.citymaps.mobile.android.thirdparty;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import com.facebook.*;
