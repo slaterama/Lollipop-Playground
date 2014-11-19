@@ -1,16 +1,9 @@
 package com.citymaps.mobile.android.util;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.model.Config;
-import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
@@ -89,17 +82,6 @@ public class IntentUtils {
 
 	public static final String EXTRA_THIRD_PARTY_USER = makeExtra("THIRD_PARTY_USER");
 
-	/*
-	public static final String EXTRA_THIRD_PARTY = makeExtra("THIRD_PARTY");
-	public static final String EXTRA_THIRD_PARTY_ID = makeExtra("THIRD_PARTY_ID");
-	public static final String EXTRA_THIRD_PARTY_TOKEN = makeExtra("THIRD_PARTY_TOKEN");
-	public static final String EXTRA_THIRD_PARTY_FIRST_NAME = makeExtra("THIRD_PARTY_FIRST_NAME");
-	public static final String EXTRA_THIRD_PARTY_LAST_NAME = makeExtra("THIRD_PARTY_LAST_NAME");
-	public static final String EXTRA_THIRD_PARTY_USERNAME = makeExtra("THIRD_PARTY_USERNAME");
-	public static final String EXTRA_THIRD_PARTY_EMAIL = makeExtra("THIRD_PARTY_EMAIL");
-	public static final String EXTRA_THIRD_PARTY_AVATAR_URL = makeExtra("THIRD_PARTY_AVATAR_URL");
-	*/
-
 	public static void putConfig(Intent intent, Config config) {
 		intent.putExtra(EXTRA_CONFIG, config);
 	}
@@ -123,84 +105,6 @@ public class IntentUtils {
 	public static boolean isStartupMode(Intent intent, boolean defaultValue) {
 		return intent.getBooleanExtra(EXTRA_STARTUP_MODE, defaultValue);
 	}
-
-	/*
-	public static void putThirdPartyUser(Intent intent, String accessToken, GraphUser user) {
-		if (user == null) {
-			return;
-		}
-
-		intent.putExtra(EXTRA_THIRD_PARTY, ThirdParty.FACEBOOK);
-		intent.putExtra(EXTRA_THIRD_PARTY_ID, user.getId());
-		intent.putExtra(EXTRA_THIRD_PARTY_TOKEN, accessToken);
-		intent.putExtra(EXTRA_THIRD_PARTY_FIRST_NAME, user.getFirstName());
-		intent.putExtra(EXTRA_THIRD_PARTY_LAST_NAME, user.getLastName());
-		intent.putExtra(EXTRA_THIRD_PARTY_USERNAME, user.getUsername());
-		Object email = user.getProperty(PROPERTY_NAME_EMAIL);
-		if (email != null) {
-			intent.putExtra(EXTRA_THIRD_PARTY_EMAIL, email.toString());
-		}
-		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, FacebookUtils.getAvatarUrl(user.getId(), FacebookUtils.PictureType.LARGE, true));
-	}
-
-	public static void putThirdPartyUser(Intent intent, GoogleApiClient client, String accessToken, Person person) {
-		if (person == null) {
-			return;
-		}
-
-		boolean hasName = person.hasName();
-		Person.Name name = (hasName ? person.getName() : null);
-		String email = Plus.AccountApi.getAccountName(client);
-		String username = "";
-		if (!TextUtils.isEmpty(email)) {
-			String tokens[] = email.split("@");
-			if (tokens.length > 0) {
-				username = tokens[0];
-			}
-		}
-
-		intent.putExtra(EXTRA_THIRD_PARTY, ThirdParty.GOOGLE);
-		intent.putExtra(EXTRA_THIRD_PARTY_ID, person.hasId() ? person.getId() : "");
-		intent.putExtra(EXTRA_THIRD_PARTY_TOKEN, accessToken);
-		intent.putExtra(EXTRA_THIRD_PARTY_FIRST_NAME, name == null ? "" : name.getGivenName());
-		intent.putExtra(EXTRA_THIRD_PARTY_LAST_NAME, name == null ? "" : name.getFamilyName());
-		intent.putExtra(EXTRA_THIRD_PARTY_USERNAME, username);
-		intent.putExtra(EXTRA_THIRD_PARTY_EMAIL, email);
-		intent.putExtra(EXTRA_THIRD_PARTY_AVATAR_URL, GoogleUtils.getAvatarUrl(person, GoogleUtils.PictureType.LARGE));
-	}
-
-	public static ThirdParty getThirdParty(Intent intent) {
-		return (ThirdParty) intent.getSerializableExtra(EXTRA_THIRD_PARTY);
-	}
-
-	public static String getThirdPartyId(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_ID);
-	}
-
-	public static String getThirdPartyToken(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_TOKEN);
-	}
-
-	public static String getThirdPartyFirstName(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_FIRST_NAME);
-	}
-
-	public static String getThirdPartyLastName(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_LAST_NAME);
-	}
-
-	public static String getThirdPartyUsername(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_USERNAME);
-	}
-
-	public static String getThirdPartyEmail(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_EMAIL);
-	}
-
-	public static String getThirdPartyAvatarUrl(Intent intent) {
-		return intent.getStringExtra(EXTRA_THIRD_PARTY_AVATAR_URL);
-	}
-	*/
 
 	public static void putThirdPartyUser(Intent intent, ThirdPartyUser thirdPartyUser) {
 		intent.putExtra(EXTRA_THIRD_PARTY_USER, thirdPartyUser);

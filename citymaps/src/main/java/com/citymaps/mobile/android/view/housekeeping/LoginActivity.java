@@ -155,24 +155,6 @@ public class LoginActivity extends TrackedActionBarActivity
 				} else {
 					fragment = LoginCreateAccountFragment.newInstance(thirdPartyUser);
 				}
-
-				/*
-				ThirdParty thirdParty = IntentUtils.getThirdParty(intent);
-				if (thirdParty == null) {
-					fragment = LoginCreateAccountFragment.newInstance();
-				} else {
-					String thirdPartyId = IntentUtils.getThirdPartyId(intent);
-					String thirdPartyToken = IntentUtils.getThirdPartyToken(intent);
-					String thirdPartyFirstName = IntentUtils.getThirdPartyFirstName(intent);
-					String thirdPartyLastName = IntentUtils.getThirdPartyLastName(intent);
-					String thirdPartyUsername = IntentUtils.getThirdPartyUsername(intent);
-					String thirdPartyEmail = IntentUtils.getThirdPartyEmail(intent);
-					String thirdPartyAvatarUrl = IntentUtils.getThirdPartyAvatarUrl(intent);
-					fragment = LoginCreateAccountFragment.newInstance(thirdParty,
-							thirdPartyId, thirdPartyToken, thirdPartyFirstName, thirdPartyLastName,
-							thirdPartyUsername, thirdPartyEmail, thirdPartyAvatarUrl);
-				}
-				*/
 				break;
 			case RESET_PASSWORD_MODE:
 				fragment = LoginResetPasswordFragment.newInstance("", "");

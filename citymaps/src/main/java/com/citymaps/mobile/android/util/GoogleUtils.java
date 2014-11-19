@@ -77,59 +77,6 @@ public class GoogleUtils {
 		return getAvatarUrl(person, type == null ? 0 : type.getSize());
 	}
 
-	/*
-	private static final Scope[] GOOGLE_SCOPES = new Scope[]{
-			Plus.SCOPE_PLUS_LOGIN,
-			Plus.SCOPE_PLUS_PROFILE
-	};
-
-	private static final String[] GOOGLE_AUTH_SCOPES = new String[] {
-			Scopes.PLUS_LOGIN
-	};
-
-	public static String getScope() {
-		return "oauth2:" + TextUtils.join(" ", GOOGLE_AUTH_SCOPES);
-	}
-
-	public static String getFirstName(Person person) {
-		return (person == null || person.getName() == null ? null : person.getName().getGivenName());
-	}
-
-	public static String getLastName(Person person) {
-		return (person == null || person.getName() == null ? null : person.getName().getFamilyName());
-	}
-
-	public static String getBaseAvatarUrl(Person person) {
-		String avatarUrl = null;
-		if (person != null) {
-			Person.Image image = person.getImage();
-			if (image != null) {
-				String url = image.getUrl();
-				if (url != null) {
-					avatarUrl = UriUtils.removeParameter(url, "sz");
-				}
-			}
-		}
-		return avatarUrl;
-	}
-
-	public static String getAvatarUrl(Person person, int size) {
-		if (person == null)
-			return "";
-		String url = person.getImage().getUrl();
-		url = url.replaceAll("sz=\\d+$", String.format("sz=%d", size));
-		return url;
-	}
-
-	public static String getAvatarUrl(Person person, PictureType type) {
-		return getAvatarUrl(person, type.getSize());
-	}
-
-	public static String getAvatarUrl(Person person) {
-		return getAvatarUrl(person, PictureType.SMALL.getSize());
-	}
-	*/
-
 	private GoogleUtils() {
 	}
 
