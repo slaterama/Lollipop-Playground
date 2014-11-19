@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 import com.android.volley.Response;
@@ -26,6 +27,7 @@ import com.citymaps.mobile.android.view.MainActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
@@ -210,6 +212,25 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		finish();
 	}
 
+	/* FacebookProxy callbacks */
+
+	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.SimpleCallbacks() {
+		@Override
+		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
+			proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
+		}
+
+		@Override
+		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			String message = exception.getLocalizedMessage();
+			FragmentManager manager = getSupportFragmentManager();
+			if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null && !TextUtils.isEmpty(message)) {
+				DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
+				fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
+			}
+		}
+	};
+
 	/* GoogleProxy callbacks */
 
 	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.SimpleCallbacks() {
@@ -218,14 +239,16 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 			proxy.requestData(proxy.getGoogleApiClient(),
 					Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
 		}
-	};
 
-	/* FacebookProxy callbacks */
-
-	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.SimpleCallbacks() {
 		@Override
-		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
-			proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
+		public void onError(GoogleProxy proxy, ConnectionResult result) {
+			int errorCode = result.getErrorCode();
+			String message = ""; // TODO
+			FragmentManager manager = getSupportFragmentManager();
+			if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null && !TextUtils.isEmpty(message)) {
+				DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
+				fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
+			}
 		}
 	};
 
