@@ -152,12 +152,8 @@ public class GoogleProxy extends ThirdPartyProxy
 				// The user has already clicked 'sign-in' so we attempt to resolve all
 				// errors until the user is signed in, or they cancel.
 				resolveSignInError();
-			} else {
-				// TODO Is it ok to relay this error to listener?
-				// (Listener might not yet be "interested")
-				if (mProxyCallbacks != null) {
-					mProxyCallbacks.onError(this, result);
-				}
+			} else if (mProxyCallbacks != null) {
+				mProxyCallbacks.onError(this, result);
 			}
 		}
 	}
@@ -170,8 +166,11 @@ public class GoogleProxy extends ThirdPartyProxy
 
 	public static interface ProxyCallbacks {
 		public void onConnecting(GoogleProxy proxy);
+
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint);
+
 		public void onError(GoogleProxy proxy, ConnectionResult result);
+
 		public void onDisconnected(GoogleProxy proxy);
 	}
 }
