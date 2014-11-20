@@ -203,6 +203,20 @@ public class User implements CitymapsObject {
 	}
 
 	/**
+	 * @return The user's full name (first name + last name).
+	 */
+	public String getFullName() {
+		// TODO Internationalization?
+		if (TextUtils.isEmpty(mFirstName)) {
+			return mLastName;
+		} else if (TextUtils.isEmpty(mLastName)) {
+			return mFirstName;
+		} else {
+			return String.format("%s %s", mFirstName, mLastName);
+		}
+	}
+
+	/**
 	 * Indicates whether some other user is "equal to" this one.
 	 * @param obj The reference user with which to compare.
 	 * @return <code>True</code> if this user is the same as the obj argument; <code>false</code> otherwise.

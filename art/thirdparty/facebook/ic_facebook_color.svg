@@ -12,13 +12,13 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
-   width="480"
-   height="480"
+   width="96"
+   height="96"
    xml:space="preserve"
    sodipodi:docname="ic_facebook_color.svg"
-   inkscape:export-filename="/Users/slaterama/Documents/Development/Idea/Citymaps/citymaps/src/main/res/drawable-xxxhdpi/ic_facebook_color_24dp.png"
-   inkscape:export-xdpi="18"
-   inkscape:export-ydpi="18"><metadata
+   inkscape:export-filename="/Users/slaterama/Documents/Development/Idea/Citymaps/citymaps/src/main/res/drawable-mdpi/ic_facebook_color_24dp.png"
+   inkscape:export-xdpi="22.5"
+   inkscape:export-ydpi="22.5"><metadata
      id="metadata8"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
@@ -45,9 +45,9 @@
      inkscape:window-height="666"
      id="namedview4"
      showgrid="false"
-     inkscape:zoom="0.39765625"
-     inkscape:cx="318.11395"
-     inkscape:cy="312.5"
+     inkscape:zoom="4.22"
+     inkscape:cx="59.386774"
+     inkscape:cy="48.271505"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -55,10 +55,10 @@
      id="g10"
      inkscape:groupmode="layer"
      inkscape:label="FB-fLogo-online-broadcast"
-     transform="matrix(1.25,0,0,-1.25,0,480)">
+     transform="matrix(1.25,0,0,-1.25,0,96)">
 <g
    id="g48"
-   transform="matrix(1.0790841,0,0,1.079076,-85.324398,-82.08552)"><g
+   transform="matrix(0.23979647,0,0,0.23979468,-23.227645,-22.507897)"><g
      id="g50"
      clip-path="url(#clipPath52)"><g
        id="g56"

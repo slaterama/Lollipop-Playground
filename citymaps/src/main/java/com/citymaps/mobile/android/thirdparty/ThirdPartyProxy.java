@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,8 +80,8 @@ public abstract class ThirdPartyProxy<D, C extends ThirdPartyProxy.Callbacks> {
 			mNames = names;
 			if (names != null) {
 				int size = names.size();
-				mData = new HashMap<String, Object>(size);
-				mErrors = new HashMap<String, Object>(size);
+				mData = new LinkedHashMap<String, Object>(size);
+				mErrors = new LinkedHashMap<String, Object>(size);
 			}
 			mListener = listener;
 		}

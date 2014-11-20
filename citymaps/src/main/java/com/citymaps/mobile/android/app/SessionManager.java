@@ -44,9 +44,9 @@ public class SessionManager {
 		mConfig = SharedPreferenceUtils.getConfig(sp);
 
 		// TODO TEMP
-		mCurrentUser = new User();
-		mCurrentUser .setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
-		mCurrentUser .setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
+//		mCurrentUser = new User();
+//		mCurrentUser .setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
+//		mCurrentUser .setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
 		// END TEMP
 	}
 

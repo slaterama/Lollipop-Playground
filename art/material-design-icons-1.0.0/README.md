@@ -10,7 +10,6 @@ Material Design Icons are the official open-source icons featured in the Google 
 * 1x, 2x, 3x icons targeted at iOS (PNG)
 * Hi-dpi versions of all icons (hdpi, mdpi, xhdpi, xxhdpi, xxxhdpi) (PNG)
 
-
 ## Getting Started
 
 You have a few options for getting the icon set.

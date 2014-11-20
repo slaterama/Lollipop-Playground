@@ -25,6 +25,7 @@ import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.view.MainActivity;
+import com.facebook.FacebookRequestError;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
@@ -259,35 +260,44 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		@Override
 		public void onData(ThirdPartyProxy proxy, Map<String, Object> data, Map<String, Object> errors) {
 
-			// TODO Need some error handling here
+			// TODO Need better error handling here
+
+			if (errors != null) {
+				Iterator<String> iterator = errors.keySet().iterator();
+				if (iterator.hasNext()) {
+					String message = null;
+					String name = iterator.next();
+					Object error = errors.get(name);
+					if (error instanceof Exception) {
+						message = ((Exception) error).getLocalizedMessage();
+					} else if (error instanceof FacebookRequestError) {
+						FacebookRequestError facebookRequestError = (FacebookRequestError) error;
+						message = facebookRequestError.getErrorUserMessage();
+						if (TextUtils.isEmpty(message)) {
+							message = facebookRequestError.getErrorMessage();
+						}
+					}
+					if (TextUtils.isEmpty(message)) {
+						message = getString(R.string.error_login_third_party_user, ThirdParty.FACEBOOK.getProperName());
+					}
+					FragmentManager manager = getSupportFragmentManager();
+					if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
+						DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
+						fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
+					}
+					return;
+				}
+			}
 
 			final ThirdPartyUser thirdPartyUser;
 			if (proxy == mFacebookProxy) {
 				String token = (String) data.get(DATA_TOKEN);
 				GraphUser graphUser = (GraphUser) data.get(DATA_ME);
-				if (token == null || graphUser == null) {
-					FragmentManager manager = getSupportFragmentManager();
-					if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-						String message = getString(R.string.error_login_third_party_user, ThirdParty.FACEBOOK.getProperName());
-						DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
-						fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
-					}
-					return;
-				}
 				thirdPartyUser = new ThirdPartyUser(token, graphUser);
 			} else if (proxy == mGoogleProxy) {
 				String token = (String) data.get(DATA_TOKEN);
 				Person person = (Person) data.get(DATA_CURRENT_PERSON);
 				String accountName = (String) data.get(DATA_ACCOUNT_NAME);
-				if (token == null || person == null || accountName == null) {
-					FragmentManager manager = getSupportFragmentManager();
-					if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-						String message = getString(R.string.error_login_third_party_user, ThirdParty.GOOGLE.getProperName());
-						DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
-						fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
-					}
-					return;
-				}
 				thirdPartyUser = new ThirdPartyUser(token, person, accountName);
 			} else {
 				thirdPartyUser = null;

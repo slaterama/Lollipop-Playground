@@ -39,6 +39,10 @@ android {
         buildConfigField "int", "NAME_MIN_LENGTH", "1"
         buildConfigField "int", "NAME_MAX_LENGTH", "25"
         buildConfigField "int", "DEFAULT_AVATAR_IMAGE_SIZE", "300"
+		buildConfigField "String[]", "FEEDBACK_EMAILS", "new String[]{\"feedback@citymaps.com\"}"
+		buildConfigField "String", "FEEDBACK_SUBJECT", "\"Feedback from %s\""
+		buildConfigField "String", "FEEDBACK_SUBJECT_USER", "\"Feedback from user\""
+		buildConfigField "String", "FEEDBACK_SUBJECT_VISITOR", "\"Feedback from visitor\""
     }
 
     signingConfigs {
