@@ -8,6 +8,7 @@
 
 		<Preference
 				android:key="pref_friendfinder"
+				android:icon="@drawable/ic_people_grey600_24dp"
 				android:title="@string/pref_friendfinder_title"
 				android:persistent="false"
 				android:order="0" />
@@ -21,18 +22,21 @@
 
 		<SwitchPreference
 				android:key="pref_connect_facebook"
+				android:icon="@drawable/ic_facebook_color_24dp"
 				android:title="@string/pref_connect_facebook_title"
 				android:persistent="false"
 				android:order="0" />
 
 		<SwitchPreference
 				android:key="pref_connect_google"
+				android:icon="@drawable/ic_google_color_24dp"
 				android:title="@string/pref_connect_google_title"
 				android:persistent="false"
 				android:order="1" />
 
 		<SwitchPreference
 				android:key="pref_connect_twitter"
+				android:icon="@drawable/ic_twitter_color_24dp"
 				android:title="@string/pref_connect_twitter_title"
 				android:persistent="false"
 				android:order="2" />
@@ -46,6 +50,7 @@
 
 		<CheckBoxPreference
 				android:key="pref_email_notifications"
+				android:icon="@drawable/ic_mail_grey600_24dp"
 				android:title="@string/pref_email_notifications_title"
 				android:persistent="false"
 				android:order="0" />
@@ -59,6 +64,7 @@
 
 		<Preference
 				android:key="pref_cat_signout"
+				android:icon="@drawable/ic_exit_to_app_grey600_24dp"
 				android:title="@string/pref_signout_title"
 				android:persistent="false"
 				android:order="0"  />

@@ -9,6 +9,7 @@
 
 		<Preference
 				android:key="pref_signin"
+				android:icon="@drawable/ic_login_grey600_24dp"
 				android:title="@string/pref_signin_title"
 				android:persistent="false"
 				android:order="0" />
