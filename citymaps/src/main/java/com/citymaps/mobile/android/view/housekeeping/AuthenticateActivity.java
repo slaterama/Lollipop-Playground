@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.ThirdParty;
@@ -299,6 +300,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 						thirdPartyUser.getId(), thirdPartyUser.getToken(), new Response.Listener<User>() {
 							@Override
 							public void onResponse(User response) {
+								SessionManager.getInstance(AuthenticateActivity.this).setCurrentUser(response);
 								wrapUp();
 							}
 						}, new Response.ErrorListener() {
