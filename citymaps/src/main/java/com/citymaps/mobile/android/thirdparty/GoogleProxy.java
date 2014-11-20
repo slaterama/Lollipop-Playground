@@ -1,18 +1,26 @@
 package com.citymaps.mobile.android.thirdparty;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.util.CollectionUtils;
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Callbacks>
 		implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -27,6 +35,9 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = OUR_REQUEST_CODE;
+
+	/* Request code used to invoke sign in user interactions. */
+	private static final int RC_AUTH = OUR_REQUEST_CODE + 1;
 
 	/* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -53,7 +64,7 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 
 	/* Constructors */
 
-	public GoogleProxy(Activity activity, OnPreBuildListener onPreBuildListener) {
+	public GoogleProxy(FragmentActivity activity, OnPreBuildListener onPreBuildListener) {
 		super(activity);
 		GoogleApiClient.Builder builder = new GoogleApiClient.Builder(activity)
 				.addConnectionCallbacks(this)
@@ -86,18 +97,24 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == RC_SIGN_IN) {
-			if (resultCode != Activity.RESULT_OK) {
-				mSignInClicked = false;
-			}
+		switch (requestCode) {
+			case RC_SIGN_IN:
+				if (resultCode != FragmentActivity.RESULT_OK) {
+					mSignInClicked = false;
+				}
 
-			mIntentInProgress = false;
+				mIntentInProgress = false;
 
-			if (!mGoogleApiClient.isConnecting()) {
-				mGoogleApiClient.connect();
-			}
-		} else {
-			super.onActivityResult(requestCode, resultCode, data);
+				if (!mGoogleApiClient.isConnecting()) {
+					mGoogleApiClient.connect();
+				}
+				break;
+			case RC_AUTH:
+				// TODO
+				super.onActivityResult(requestCode, resultCode, data);
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
 		}
 	}
 
@@ -115,6 +132,15 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 				// state and attempt to connect to get an updated ConnectionResult.
 				mIntentInProgress = false;
 				mGoogleApiClient.connect();
+			}
+		} else {
+			boolean handled = false;
+			if (mCallbacks != null) {
+				handled = mCallbacks.onError(this, mConnectionResult);
+			}
+			if (!handled) {
+				mIntentInProgress = true;
+				GooglePlayServicesUtil.showErrorDialogFragment(mConnectionResult.getErrorCode(), mActivity, RC_SIGN_IN, null);
 			}
 		}
 	}
@@ -146,18 +172,47 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 					for (String name : mNames) {
 						if (TextUtils.equals(name, DATA_TOKEN)) {
 							try {
-								mData.put(name, GoogleAuthUtil.getToken(mActivity, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
+								putData(name, GoogleAuthUtil.getToken(mActivity, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
 							} catch (Exception e) {
-								mErrors.put(name, e);
+								putError(name, e);
 							}
 						} else if (TextUtils.equals(name, DATA_ACCOUNT_NAME)) {
-							mData.put(name, getAccountName());
+							putData(name, getAccountName());
 						} else if (TextUtils.equals(name, DATA_CURRENT_PERSON)) {
-							mData.put(name, Plus.PeopleApi.getCurrentPerson(googleApiClient));
+							putData(name, Plus.PeopleApi.getCurrentPerson(googleApiClient));
 						}
 					}
 				}
 				return null;
+			}
+
+			@Override
+			protected void handleErrors(Map<String, Object> errors) {
+				Object error = CollectionUtils.getFirstValue(errors);
+				if (error instanceof UserRecoverableAuthException) {
+					// Start the user recoverable action using the intent returned by getIntent
+					Intent intent = ((UserRecoverableAuthException) error).getIntent();
+					mActivity.startActivityForResult(intent, RC_AUTH);
+				} else if (error instanceof IOException) {
+					// Network or server error, the call is expected to succeed if you try again later.
+					// Don't attempt to call again immediately - the request is likely to
+					// fail, you'll hit quotas or back-off.
+					FragmentManager manager = mActivity.getSupportFragmentManager();
+					if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null) {
+						ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(),
+								R.string.error_generic_third_party_network_or_server_error);
+						fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
+					}
+				} else if (error instanceof GoogleAuthException) {
+					// Failure. The call is not expected to ever succeed so it should not be
+					// retried.
+					FragmentManager manager = mActivity.getSupportFragmentManager();
+					if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null) {
+						ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(),
+								R.string.error_generic_third_party_auth);
+						fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
+					}
+				}
 			}
 
 			String getAccountName() {
@@ -197,8 +252,6 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 				// The user has already clicked 'sign-in' so we attempt to resolve all
 				// errors until the user is signed in, or they cancel.
 				resolveSignInError();
-			} else if (mCallbacks != null) {
-				mCallbacks.onError(this, result);
 			}
 		}
 	}
@@ -216,7 +269,7 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 
 		public void onDisconnected(GoogleProxy proxy);
 
-		public void onError(GoogleProxy proxy, ConnectionResult result);
+		public boolean onError(GoogleProxy proxy, ConnectionResult result);
 	}
 
 	public static abstract class SimpleCallbacks implements Callbacks {
@@ -236,8 +289,8 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 		}
 
 		@Override
-		public void onError(GoogleProxy proxy, ConnectionResult result) {
-
+		public boolean onError(GoogleProxy proxy, ConnectionResult result) {
+			return false;
 		}
 	}
 }

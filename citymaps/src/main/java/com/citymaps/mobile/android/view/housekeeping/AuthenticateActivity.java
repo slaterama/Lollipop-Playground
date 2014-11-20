@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 import com.android.volley.Response;
@@ -15,7 +12,6 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
-import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
@@ -25,7 +21,6 @@ import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.view.MainActivity;
-import com.facebook.FacebookRequestError;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
@@ -43,8 +38,8 @@ import static com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.DATA_TOKEN;
 
 public class AuthenticateActivity extends TrackedActionBarActivity {
 
-	private static final String STATE_KEY_FACEBOOK_PROXY_ACTIVE = "facebookProxyActive";
-	private static final String STATE_KEY_GOOGLE_PROXY_ACTIVE = "googleProxyActive";
+	private static final String STATE_KEY_MONITORING_FACEBOOK = "monitoringFacbook";
+	private static final String STATE_KEY_MONITORING_GOOGLE = "monitoringGoogle";
 
 	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
 
@@ -59,6 +54,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	private GoogleProxy mGoogleProxy;
 	private Set<ThirdPartyProxy> mThirdPartyProxies;
 
+	private boolean mMonitoringFacebook;
+	private boolean mMonitoringGoogle;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,6 +67,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
 		// Create third party proxies
+		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS);
 		mGoogleProxy = new GoogleProxy(this, new OnPreBuildListener() {
 			@Override
 			public void onPreBuild(@NonNull GoogleApiClient.Builder builder) {
@@ -76,19 +75,16 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				builder.addScope(Plus.SCOPE_PLUS_LOGIN);
 			}
 		});
-		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS);
+		mFacebookProxy.setCallbacks(mFacebookProxyCallbacks);
+		mGoogleProxy.setCallbacks(mGoogleProxyCallbacks);
+
 		mThirdPartyProxies = new HashSet<ThirdPartyProxy>(2);
 		mThirdPartyProxies.add(mFacebookProxy);
 		mThirdPartyProxies.add(mGoogleProxy);
 
-		// Restore callbacks if they were set prior to configuration change
 		if (savedInstanceState != null) {
-			if (savedInstanceState.getBoolean(STATE_KEY_FACEBOOK_PROXY_ACTIVE, false)) {
-				mFacebookProxy.setCallbacks(mFacebookProxyCallbacks);
-			}
-			if (savedInstanceState.getBoolean(STATE_KEY_GOOGLE_PROXY_ACTIVE, false)) {
-				mGoogleProxy.setCallbacks(mGoogleProxyCallbacks);
-			}
+			mMonitoringFacebook = savedInstanceState.getBoolean(STATE_KEY_MONITORING_FACEBOOK, false);
+			mMonitoringGoogle = savedInstanceState.getBoolean(STATE_KEY_MONITORING_GOOGLE, false);
 		}
 		
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
@@ -118,8 +114,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
 			proxy.onSaveInstanceState(outState);
 		}
-		outState.putBoolean(STATE_KEY_FACEBOOK_PROXY_ACTIVE, mFacebookProxy.getCallbacks() != null);
-		outState.putBoolean(STATE_KEY_GOOGLE_PROXY_ACTIVE, mGoogleProxy.getCallbacks() != null);
+		outState.putBoolean(STATE_KEY_MONITORING_FACEBOOK, mMonitoringFacebook);
+		outState.putBoolean(STATE_KEY_MONITORING_GOOGLE, mMonitoringGoogle);
 	}
 
 	@Override
@@ -151,9 +147,9 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		switch (requestCode) {
 			case REQUEST_CODE_CREATE_ACCOUNT:
 				if (resultCode != RESULT_OK) {
-					// TODO Where else to set callbacks to null? onError?
-					mFacebookProxy.setCallbacks(null);
-					mGoogleProxy.setCallbacks(null);
+					// TODO Only toggle the appropriate one
+					mMonitoringFacebook = false;
+					mMonitoringGoogle = false;
 				}
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
@@ -176,7 +172,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-				mFacebookProxy.setCallbacks(mFacebookProxyCallbacks);
+				mMonitoringFacebook = true;
 				mFacebookProxy.connect(true);
 				break;
 			case R.id.login_authenticate_google_button: {
@@ -184,7 +180,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
 					return;
 				}
-				mGoogleProxy.setCallbacks(mGoogleProxyCallbacks);
+				mMonitoringGoogle = true;
 				mGoogleProxy.connect(true);
 				break;
 			}
@@ -219,17 +215,15 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
-			proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
+			if (mMonitoringFacebook) {
+				proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
+			}
 		}
 
 		@Override
-		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
-			String message = exception.getLocalizedMessage();
-			FragmentManager manager = getSupportFragmentManager();
-			if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null && !TextUtils.isEmpty(message)) {
-				DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
-				fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
-			}
+		public boolean onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			// TODO examine mMonitoringFacebook?
+			return false;
 		}
 	};
 
@@ -238,19 +232,16 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
-			proxy.requestData(proxy.getGoogleApiClient(),
-					Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
+			if (mMonitoringGoogle) {
+				proxy.requestData(proxy.getGoogleApiClient(),
+						Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
+			}
 		}
 
 		@Override
-		public void onError(GoogleProxy proxy, ConnectionResult result) {
-			int errorCode = result.getErrorCode();
-			String message = ""; // TODO
-			FragmentManager manager = getSupportFragmentManager();
-			if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null && !TextUtils.isEmpty(message)) {
-				DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
-				fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
-			}
+		public boolean onError(GoogleProxy proxy, ConnectionResult result) {
+			// TODO examine mMonitoringGoogle?
+			return false;
 		}
 	};
 
@@ -258,37 +249,12 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	private ThirdPartyProxy.OnDataListener mOnDataListener = new ThirdPartyProxy.OnDataListener() {
 		@Override
-		public void onData(ThirdPartyProxy proxy, Map<String, Object> data, Map<String, Object> errors) {
+		public void onError(ThirdPartyProxy proxy, Map<String, Object> errors) {
 
-			// TODO Need better error handling here
+		}
 
-			if (errors != null) {
-				Iterator<String> iterator = errors.keySet().iterator();
-				if (iterator.hasNext()) {
-					String message = null;
-					String name = iterator.next();
-					Object error = errors.get(name);
-					if (error instanceof Exception) {
-						message = ((Exception) error).getLocalizedMessage();
-					} else if (error instanceof FacebookRequestError) {
-						FacebookRequestError facebookRequestError = (FacebookRequestError) error;
-						message = facebookRequestError.getErrorUserMessage();
-						if (TextUtils.isEmpty(message)) {
-							message = facebookRequestError.getErrorMessage();
-						}
-					}
-					if (TextUtils.isEmpty(message)) {
-						message = getString(R.string.error_login_third_party_user, ThirdParty.FACEBOOK.getProperName());
-					}
-					FragmentManager manager = getSupportFragmentManager();
-					if (manager.findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-						DialogFragment fragment = LoginErrorDialogFragment.newInstance(getTitle(), message);
-						fragment.show(manager, LoginErrorDialogFragment.FRAGMENT_TAG);
-					}
-					return;
-				}
-			}
-
+		@Override
+		public void onData(ThirdPartyProxy proxy, Map<String, Object> data) {
 			final ThirdPartyUser thirdPartyUser;
 			if (proxy == mFacebookProxy) {
 				String token = (String) data.get(DATA_TOKEN);

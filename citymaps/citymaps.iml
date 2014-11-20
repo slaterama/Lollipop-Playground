@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="Citymaps" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":citymaps" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="Citymaps" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
@@ -31,22 +31,22 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/development" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/development/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/development/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/development/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/development/aidl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/development/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/development/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/development/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/development/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/aidl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
@@ -98,4 +98,3 @@
     <orderEntry type="module" module-name="facebook" exported="" />
   </component>
 </module>
-

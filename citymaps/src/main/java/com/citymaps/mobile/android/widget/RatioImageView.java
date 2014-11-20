@@ -111,9 +111,11 @@ public class RatioImageView extends ImageView {
 
 							if (isInEditMode()) {
 								widthToUse = (int) (widthToUse / 1.77777778f);
+							} else if (mDisplayMetrics.heightPixels == 0) {
+								widthToUse = measuredWidth;
 							} else {
-								int widthDiff = mDisplayMetrics.widthPixels - measuredWidth;
-								widthToUse = Math.max(mDisplayMetrics.heightPixels - widthDiff, 0);
+								float relativeWidth = measuredWidth * 1.0f / mDisplayMetrics.heightPixels;
+								widthToUse = (int) (mDisplayMetrics.heightPixels * relativeWidth);
 							}
 						}
 

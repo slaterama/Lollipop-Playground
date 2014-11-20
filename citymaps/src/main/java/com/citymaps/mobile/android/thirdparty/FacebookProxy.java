@@ -1,13 +1,17 @@
 package com.citymaps.mobile.android.thirdparty;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import com.citymaps.mobile.android.util.CollectionUtils;
 import com.facebook.*;
 import com.facebook.model.GraphUser;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callbacks>
 		implements Session.StatusCallback {
@@ -19,14 +23,14 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 
 	private UiLifecycleHelper mUiLifecycleHelper;
 
-	public FacebookProxy(Activity activity, List<String> readPermissions, List<String> writePermissions) {
+	public FacebookProxy(FragmentActivity activity, List<String> readPermissions, List<String> writePermissions) {
 		super(activity);
 		mReadPermissions = readPermissions;
 		mWritePermissions = writePermissions;
 		mUiLifecycleHelper = new UiLifecycleHelper(activity, this);
 	}
 
-	public FacebookProxy(Activity activity, List<String> readPermissions) {
+	public FacebookProxy(FragmentActivity activity, List<String> readPermissions) {
 		this(activity, readPermissions, null);
 	}
 
@@ -84,7 +88,7 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 					.setPermissions(mReadPermissions)
 					.setCallback(this));
 		} else {
-			Session.openActiveSession(mActivity, true, mReadPermissions, this);
+			Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
 		}
 	}
 
@@ -97,7 +101,7 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 					Map<Request, String> requestMap = new HashMap<Request, String>();
 					for (String name : mNames) {
 						if (TextUtils.equals(name, DATA_TOKEN)) {
-							mData.put(DATA_TOKEN, session.getAccessToken());
+							putData(DATA_TOKEN, session.getAccessToken());
 						} else if (TextUtils.equals(name, DATA_ME)) {
 							requestMap.put(Request.newMeRequest(session, null), name);
 						}
@@ -108,13 +112,31 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 						String name = requestMap.get(request);
 						FacebookRequestError error = response.getError();
 						if (error != null) {
-							mErrors.put(name, error);
+							putError(name, error);
 						} else if (TextUtils.equals(name, DATA_ME)) {
-							mData.put(name, response.getGraphObjectAs(GraphUser.class));
+							putData(name, response.getGraphObjectAs(GraphUser.class));
 						}
 					}
 				}
 				return null;
+			}
+
+			@Override
+			protected void handleErrors(Map<String, Object> errors) {
+				Object error = CollectionUtils.getFirstValue(errors);
+				if (error instanceof FacebookRequestError) {
+					FacebookRequestError requestError = (FacebookRequestError) error;
+					if (requestError.shouldNotifyUser()) {
+						String message = requestError.getErrorUserMessage();
+						if (!TextUtils.isEmpty(message)) {
+							FragmentManager manager = mActivity.getSupportFragmentManager();
+							if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null && !TextUtils.isEmpty(message)) {
+								ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(), message);
+								fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
+							}
+						}
+					}
+				}
 			}
 		}.executeOnExecutor(DataTask.THREAD_POOL_EXECUTOR);
 	}
@@ -124,8 +146,20 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
 		if (exception != null) {
+			boolean handled = false;
 			if (mCallbacks != null) {
-				mCallbacks.onError(this, session, state, exception);
+				handled = mCallbacks.onError(this, session, state, exception);
+			}
+			if (!handled) {
+				if (exception instanceof FacebookOperationCanceledException) {
+					// The default behavior is not to show a message
+				} else /* if (exception instanceof FacebookException) */ {
+					FragmentManager manager = mActivity.getSupportFragmentManager();
+					if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null) {
+						ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(), exception.getLocalizedMessage());
+						fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
+					}
+				}
 			}
 		} else if (session.isOpened()) {
 			if (mCallbacks != null) {
@@ -146,7 +180,7 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 		public void onConnecting(FacebookProxy proxy, Session session, SessionState state);
 		public void onConnected(FacebookProxy proxy, Session session, SessionState state);
 		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state);
-		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception);
+		public boolean onError(FacebookProxy proxy, Session session, SessionState state, Exception exception);
 	}
 
 	public static abstract class SimpleCallbacks implements Callbacks {
@@ -166,8 +200,8 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 		}
 
 		@Override
-		public void onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
-
+		public boolean onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			return false;
 		}
 	}
 }
