@@ -10,19 +10,16 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.View;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.UserSettings;
 import com.citymaps.mobile.android.model.volley.UserSettingsRequest;
-import com.citymaps.mobile.android.util.ShareUtils;
 
 public class MainPreferencesFragment extends PreferencesFragment
 		implements Preference.OnPreferenceClickListener,
@@ -119,27 +116,11 @@ public class MainPreferencesFragment extends PreferencesFragment
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
 			case SHARE_APP: {
-				ShareUtils.shareApp(getActivity());
+				mListener.onShareAppClick();
 				break;
 			}
 			case FEEDBACK: {
-				String subject;
-				if (mCurrentUser == null) {
-					subject = BuildConfig.FEEDBACK_SUBJECT_VISITOR;
-				} else {
-					String fullName = mCurrentUser.getFullName();
-					if (TextUtils.isEmpty(fullName)) {
-						subject = BuildConfig.FEEDBACK_SUBJECT_USER;
-					} else {
-						subject = String.format(BuildConfig.FEEDBACK_SUBJECT, fullName);
-					}
-				}
-				Intent intent = new Intent(Intent.ACTION_SEND);
-				intent.setType(EMAIL_INTENT_TYPE);
-				intent.putExtra(Intent.EXTRA_EMAIL, BuildConfig.FEEDBACK_EMAILS);
-				intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-				intent.putExtra(Intent.EXTRA_TEXT, "");
-				startActivity(intent);
+				mListener.onFeedbackClick();
 				break;
 			}
 			case SIGNIN: {
@@ -158,14 +139,13 @@ public class MainPreferencesFragment extends PreferencesFragment
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
 			case EMAIL_NOTIFICATIONS:
+				mListener.onReceiveEmailNotificationsChange(mEmailNotificationsPreference.isChecked());
 				return false;
 			default: {
 				return false;
 			}
 		}
 	}
-
-	// Api calls
 
 	private void getUserSettings(String userId) {
 		Request<UserSettings> request = UserSettingsRequest.newGetRequest(getActivity(), userId,
@@ -221,7 +201,9 @@ public class MainPreferencesFragment extends PreferencesFragment
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface MainPreferencesListener {
-		public void onReceiveEmailNotificationsChange(User user, boolean notifications);
+		public void onShareAppClick();
+		public void onFeedbackClick();
+		public void onReceiveEmailNotificationsChange(boolean notifications);
 		public void onSigninClick();
 		public void onSignoutClick();
 	}
