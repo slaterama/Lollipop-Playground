@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
@@ -19,6 +18,7 @@ import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.facebook.Session;
@@ -168,16 +168,14 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		int id = view.getId();
 		switch (id) {
 			case R.id.login_authenticate_facebook_button:
-				if (mConnectivityManager.getActiveNetworkInfo() == null) {
-					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+				if (CommonUtils.notifyIfNoNetwork(this)) {
 					return;
 				}
 				mMonitoringFacebook = true;
 				mFacebookProxy.connect(true);
 				break;
 			case R.id.login_authenticate_google_button: {
-				if (mConnectivityManager.getActiveNetworkInfo() == null) {
-					Toast.makeText(this, R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
+				if (CommonUtils.notifyIfNoNetwork(this)) {
 					return;
 				}
 				mMonitoringGoogle = true;

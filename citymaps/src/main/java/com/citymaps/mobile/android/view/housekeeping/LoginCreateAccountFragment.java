@@ -29,6 +29,7 @@ import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
 import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.Validator;
 import com.citymaps.mobile.android.util.ViewUtils;
 
@@ -203,6 +204,9 @@ public class LoginCreateAccountFragment extends LoginFragment
 
 	@Override
 	protected void onSubmitForm() {
+		if (CommonUtils.notifyIfNoNetwork(getActivity())) {
+			return;
+		}
 		String firstName = mFirstNameView.getText().toString();
 		String lastName = mLastNameView.getText().toString();
 		String username = mUsernameView.getText().toString();

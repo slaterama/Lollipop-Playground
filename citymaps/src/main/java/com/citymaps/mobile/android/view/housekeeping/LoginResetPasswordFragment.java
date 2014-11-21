@@ -17,6 +17,7 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.Validator;
 
 /**
@@ -127,6 +128,9 @@ public class LoginResetPasswordFragment extends LoginFragment {
 
 	@Override
 	protected void onSubmitForm() {
+		if (CommonUtils.notifyIfNoNetwork(getActivity())) {
+			return;
+		}
 		String email = mEmailView.getText().toString();
 		UserRequest registerRequest = UserRequest.newResetPasswordRequest(getActivity(), email, this, this);
 		VolleyManager.getInstance(getActivity()).getRequestQueue().add(registerRequest);

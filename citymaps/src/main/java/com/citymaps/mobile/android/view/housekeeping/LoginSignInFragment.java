@@ -19,6 +19,7 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.volley.UserRequest;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.Validator;
 
 /**
@@ -136,6 +137,9 @@ public class LoginSignInFragment extends LoginFragment
 
 	@Override
 	protected void onSubmitForm() {
+		if (CommonUtils.notifyIfNoNetwork(getActivity())) {
+			return;
+		}
 		String username = mUsernameView.getText().toString();
 		String password = mPasswordView.getText().toString();
 		UserRequest loginRequest = UserRequest.newLoginRequest(mActivity, username, password, this, this);
