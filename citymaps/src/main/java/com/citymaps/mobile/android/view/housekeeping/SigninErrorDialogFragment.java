@@ -12,15 +12,15 @@ import com.citymaps.mobile.android.R;
  * A simple {@link DialogFragment} subclass.
  *
  */
-public class LoginErrorDialogFragment extends DialogFragment {
+public class SigninErrorDialogFragment extends DialogFragment {
 
 	public static final String FRAGMENT_TAG = "loginError";
 
 	private static final String ARG_TITLE = "title";
 	private static final String ARG_MESSAGE = "message";
 
-	public static LoginErrorDialogFragment newInstance(CharSequence title, CharSequence message) {
-		LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+	public static SigninErrorDialogFragment newInstance(CharSequence title, CharSequence message) {
+		SigninErrorDialogFragment fragment = new SigninErrorDialogFragment();
 		Bundle args = new Bundle(2);
 		args.putCharSequence(ARG_TITLE, title);
 		args.putCharSequence(ARG_MESSAGE, message);

@@ -15,7 +15,7 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.Validator;
 
-public abstract class LoginFragment extends Fragment
+public abstract class FormFragment extends Fragment
 		implements TextView.OnEditorActionListener, Response.Listener<User>, Response.ErrorListener {
 
 	@Override
@@ -55,10 +55,10 @@ public abstract class LoginFragment extends Fragment
 	protected boolean processInput(CharSequence input, Validator validator, boolean required, boolean your) {
 		if (!validator.validate(input, required)) {
 			String message = validator.getMessage(getActivity(), input, required, your);
-			if (getFragmentManager().findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-				LoginErrorDialogFragment fragment =
-						LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-				fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			if (getFragmentManager().findFragmentByTag(SigninErrorDialogFragment.FRAGMENT_TAG) == null) {
+				SigninErrorDialogFragment fragment =
+						SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+				fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
 			}
 			return false;
 		}
@@ -68,10 +68,10 @@ public abstract class LoginFragment extends Fragment
 	protected boolean processInput(CharSequence input1, CharSequence input2, Validator validator) {
 		if (!validator.equals(input1, input2)) {
 			String message = validator.getMessage(getActivity(), input1, input2);
-			if (getFragmentManager().findFragmentByTag(LoginErrorDialogFragment.FRAGMENT_TAG) == null) {
-				LoginErrorDialogFragment fragment =
-						LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-				fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			if (getFragmentManager().findFragmentByTag(SigninErrorDialogFragment.FRAGMENT_TAG) == null) {
+				SigninErrorDialogFragment fragment =
+						SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+				fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
 			}
 			return false;
 		}

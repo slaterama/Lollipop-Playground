@@ -167,14 +167,14 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	public void onButtonClick(View view) {
 		int id = view.getId();
 		switch (id) {
-			case R.id.login_authenticate_facebook_button:
+			case R.id.signin_authenticate_facebook_button:
 				if (CommonUtils.notifyIfNoNetwork(this)) {
 					return;
 				}
 				mMonitoringFacebook = true;
 				mFacebookProxy.connect(true);
 				break;
-			case R.id.login_authenticate_google_button: {
+			case R.id.signin_authenticate_google_button: {
 				if (CommonUtils.notifyIfNoNetwork(this)) {
 					return;
 				}
@@ -182,19 +182,19 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				mGoogleProxy.connect(true);
 				break;
 			}
-			case R.id.login_authenticate_create_account_button: {
-				Intent intent = new Intent(this, LoginActivity.class);
-				IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
+			case R.id.signin_authenticate_create_account_button: {
+				Intent intent = new Intent(this, SigninActivity.class);
+				IntentUtils.putLoginMode(intent, SigninActivity.CREATE_ACCOUNT_MODE);
 				startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
 				break;
 			}
-			case R.id.login_authenticate_signin_button: {
-				Intent intent = new Intent(this, LoginActivity.class);
-				IntentUtils.putLoginMode(intent, LoginActivity.SIGN_IN_MODE);
+			case R.id.signin_authenticate_signin_button: {
+				Intent intent = new Intent(this, SigninActivity.class);
+				IntentUtils.putLoginMode(intent, SigninActivity.SIGN_IN_MODE);
 				startActivityForResult(intent, REQUEST_CODE_LOGIN);
 				break;
 			}
-			case R.id.login_authenticate_skip_button: {
+			case R.id.signin_authenticate_skip_button: {
 				wrapUp();
 				break;
 			}
@@ -281,8 +281,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 							@Override
 							public void onErrorResponse(VolleyError error) {
 								// There is no Citymaps user linked to the third party account. Take them to the Create Account screen
-								Intent intent = new Intent(AuthenticateActivity.this, LoginActivity.class);
-								IntentUtils.putLoginMode(intent, LoginActivity.CREATE_ACCOUNT_MODE);
+								Intent intent = new Intent(AuthenticateActivity.this, SigninActivity.class);
+								IntentUtils.putLoginMode(intent, SigninActivity.CREATE_ACCOUNT_MODE);
 								IntentUtils.putThirdPartyUser(intent, thirdPartyUser);
 								AuthenticateActivity.this.startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
 							}

@@ -9,35 +9,35 @@
 			  android:orientation="vertical"
 			  android:gravity="center_horizontal"
 			  android:focusableInTouchMode="true"
-			  tools:context="com.citymaps.mobile.android.view.housekeeping.LoginSignInFragment">
+			  tools:context="com.citymaps.mobile.android.view.housekeeping.SigninFragment">
 
 	<EditText
-			android:id="@+id/login_sign_in_username"
+			android:id="@+id/signin_username"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:inputType="text|textNoSuggestions"
-			android:hint="@string/login_sign_in_username_hint" />
+			android:hint="@string/signin_username_hint" />
 
 	<EditText
-			android:id="@+id/login_sign_in_password"
+			android:id="@+id/signin_password"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:inputType="textPassword"
 			android:imeOptions="actionGo"
-			android:hint="@string/login_sign_in_password_hint" />
+			android:hint="@string/signin_password_hint" />
 
 	<Button
-			android:id="@+id/login_sign_in_create_account_button"
+			android:id="@+id/signin_create_account_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/login_sign_in_create_account"
+			android:text="@string/signin_create_account"
 			style="?android:borderlessButtonStyle" />
 
 	<Button
-			android:id="@+id/login_sign_in_reset_password_button"
+			android:id="@+id/signin_reset_password_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/login_sign_in_reset_password"
+			android:text="@string/signin_reset_password"
 			style="?android:borderlessButtonStyle" />
 
 </LinearLayout>

@@ -1,11 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 			xmlns:citymaps="http://schemas.android.com/apk/res-auto"
 			xmlns:tools="http://schemas.android.com/tools"
-			android:id="@+id/login_scrollview"
+			android:id="@+id/signin_scrollview"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:fillViewport="true"
-			tools:context="com.citymaps.mobile.android.view.housekeeping.LoginActivity"
+			tools:context="com.citymaps.mobile.android.view.housekeeping.SigninActivity"
 			tools:ignore="MergeRootFrame">
 
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,7 +19,7 @@
 				  tools:context="com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity">
 
 		<com.citymaps.mobile.android.widget.RatioImageView
-				android:id="@+id/login_authenticate_header_image"
+				android:id="@+id/signin_authenticate_header_image"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:src="@drawable/cm_logo_160dp"
@@ -28,7 +28,7 @@
 				citymaps:baseOnSmallestWidth="true"/>
 
 		<LinearLayout
-				android:layout_width="@dimen/login_authenticate_button_width"
+				android:layout_width="@dimen/signin_authenticate_button_width"
 				android:layout_height="wrap_content"
 				android:layout_weight="0"
 				android:gravity="center_horizontal"
@@ -37,12 +37,12 @@
 				android:divider="@drawable/divider_padding_default">
 
 			<TextView
-					android:id="@+id/login_authenticate_tagline"
+					android:id="@+id/signin_authenticate_tagline"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:gravity="center"
 					android:textAppearance="?android:textAppearanceLarge"
-					android:text="@string/login_authenticate_tagline"/>
+					android:text="@string/signin_authenticate_tagline"/>
 
 			<Space
 					android:layout_width="match_parent"
@@ -50,30 +50,30 @@
 					android:visibility="invisible"/>
 
 			<com.citymaps.mobile.android.widget.CenteredDrawableButton
-					android:id="@+id/login_authenticate_facebook_button"
+					android:id="@+id/signin_authenticate_facebook_button"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:drawableLeft="@drawable/com_facebook_inverse_icon"
 					android:drawableStart="@drawable/com_facebook_inverse_icon"
-					android:text="@string/login_authenticate_facebook"
+					android:text="@string/signin_authenticate_facebook"
 					style="?facebookButtonStyle"
 					android:onClick="onButtonClick"/>
 
 			<com.citymaps.mobile.android.widget.CenteredDrawableButton
-					android:id="@+id/login_authenticate_google_button"
+					android:id="@+id/signin_authenticate_google_button"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:drawableLeft="@drawable/gplus_inverse_icon"
 					android:drawableStart="@drawable/gplus_inverse_icon"
-					android:text="@string/login_authenticate_google"
+					android:text="@string/signin_authenticate_google"
 					style="?googleButtonStyle"
 					android:onClick="onButtonClick"/>
 
 			<com.citymaps.mobile.android.widget.CenteredDrawableButton
-					android:id="@+id/login_authenticate_create_account_button"
+					android:id="@+id/signin_authenticate_create_account_button"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/login_authenticate_create_account"
+					android:text="@string/signin_authenticate_create_account"
 					style="?citymapsGreyButtonStyle"
 					android:onClick="onButtonClick"/>
 
@@ -85,7 +85,7 @@
 				android:layout_weight="1"/>
 
 		<LinearLayout
-				android:id="@+id/login_authenticate_login_container"
+				android:id="@+id/signin_authenticate_signin_container"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
@@ -97,10 +97,10 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:textAppearanceMedium"
-					android:text="@string/login_authenticate_have_an_account"/>
+					android:text="@string/signin_authenticate_have_an_account"/>
 
 			<Button
-					android:id="@+id/login_authenticate_signin_button"
+					android:id="@+id/signin_authenticate_signin_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:minWidth="0dp"
@@ -109,7 +109,7 @@
 					android:paddingRight="@dimen/component_baseline_grid"
 					android:paddingEnd="@dimen/component_baseline_grid"
 					android:textStyle="bold"
-					android:text="@string/login_authenticate_signin"
+					android:text="@string/signin_authenticate_signin"
 					style="?android:borderlessButtonStyle"
 					android:onClick="onButtonClick"/>
 
@@ -121,7 +121,7 @@
 					android:layout_marginBottom="@dimen/component_baseline_grid"/>
 
 			<Button
-					android:id="@+id/login_authenticate_skip_button"
+					android:id="@+id/signin_authenticate_skip_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:minWidth="0dp"
@@ -129,7 +129,7 @@
 					android:paddingStart="@dimen/component_baseline_grid"
 					android:paddingRight="@dimen/component_baseline_grid"
 					android:paddingEnd="@dimen/component_baseline_grid"
-					android:text="@string/login_authenticate_skip"
+					android:text="@string/signin_authenticate_skip"
 					style="?android:borderlessButtonStyle"
 					android:onClick="onButtonClick"/>
 

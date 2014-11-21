@@ -23,12 +23,12 @@ import com.citymaps.mobile.android.util.Validator;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginResetPasswordFragment.OnResetPasswordListener} interface
+ * {@link SigninResetPasswordFragment.OnResetPasswordListener} interface
  * to handle interaction events.
- * Use the {@link LoginResetPasswordFragment#newInstance} factory method to
+ * Use the {@link SigninResetPasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginResetPasswordFragment extends LoginFragment {
+public class SigninResetPasswordFragment extends FormFragment {
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,8 +53,8 @@ public class LoginResetPasswordFragment extends LoginFragment {
 	 * @return A new instance of fragment LoginResetPasswordFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static LoginResetPasswordFragment newInstance(String param1, String param2) {
-		LoginResetPasswordFragment fragment = new LoginResetPasswordFragment();
+	public static SigninResetPasswordFragment newInstance(String param1, String param2) {
+		SigninResetPasswordFragment fragment = new SigninResetPasswordFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_PARAM1, param1);
 		args.putString(ARG_PARAM2, param2);
@@ -62,7 +62,7 @@ public class LoginResetPasswordFragment extends LoginFragment {
 		return fragment;
 	}
 
-	public LoginResetPasswordFragment() {
+	public SigninResetPasswordFragment() {
 		// Required empty public constructor
 	}
 
@@ -90,21 +90,21 @@ public class LoginResetPasswordFragment extends LoginFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_login_reset_password, container, false);
+		return inflater.inflate(R.layout.fragment_signin_reset_password, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mEmailView = (EditText) view.findViewById(R.id.login_reset_password_email);
-		mConfirmEmailView = (EditText) view.findViewById(R.id.login_reset_password_confirm_email);
+		mEmailView = (EditText) view.findViewById(R.id.signin_reset_password_email);
+		mConfirmEmailView = (EditText) view.findViewById(R.id.signin_reset_password_confirm_email);
 		mConfirmEmailView.setOnEditorActionListener(this);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		getActivity().setTitle(R.string.login_reset_password_activity_title);
+		getActivity().setTitle(R.string.signin_reset_password_activity_title);
 	}
 
 	@Override
@@ -140,10 +140,10 @@ public class LoginResetPasswordFragment extends LoginFragment {
 	public void onResponse(User response) {
 		super.onResponse(response);
 		if (response == null) {
-			String message = getString(R.string.login_reset_password_failure);
+			String message = getString(R.string.signin_reset_password_failure);
 			onErrorResponse(new VolleyError(message, new ServerError()));
 		} else {
-			String message = getString(R.string.login_reset_password_success, response.getEmail());
+			String message = getString(R.string.signin_reset_password_success, response.getEmail());
 			Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
 
 			if (mListener != null) {
@@ -162,9 +162,9 @@ public class LoginResetPasswordFragment extends LoginFragment {
 			if (TextUtils.isEmpty(message)) {
 				message = getString(R.string.error_message_generic);
 			}
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			SigninErrorDialogFragment fragment =
+					SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
 		}
 	}
 

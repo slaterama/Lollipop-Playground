@@ -25,12 +25,12 @@ import com.citymaps.mobile.android.util.Validator;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginSignInFragment.OnSignInListener} interface
+ * {@link SigninFragment.OnSignInListener} interface
  * to handle interaction events.
- * Use the {@link LoginSignInFragment#newInstance} factory method to
+ * Use the {@link SigninFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginSignInFragment extends LoginFragment
+public class SigninFragment extends FormFragment
 		implements View.OnClickListener {
 
 	// TODO: Rename parameter arguments, choose names that match
@@ -57,8 +57,8 @@ public class LoginSignInFragment extends LoginFragment
 	 * @return A new instance of fragment LoginSignInFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static LoginSignInFragment newInstance(String param1, String param2) {
-		LoginSignInFragment fragment = new LoginSignInFragment();
+	public static SigninFragment newInstance(String param1, String param2) {
+		SigninFragment fragment = new SigninFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_PARAM1, param1);
 		args.putString(ARG_PARAM2, param2);
@@ -66,7 +66,7 @@ public class LoginSignInFragment extends LoginFragment
 		return fragment;
 	}
 
-	public LoginSignInFragment() {
+	public SigninFragment() {
 		// Required empty public constructor
 	}
 
@@ -95,25 +95,25 @@ public class LoginSignInFragment extends LoginFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_login_sign_in, container, false);
+		return inflater.inflate(R.layout.fragment_signin, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mUsernameView = (EditText) view.findViewById(R.id.login_sign_in_username);
-		mPasswordView = (EditText) view.findViewById(R.id.login_sign_in_password);
+		mUsernameView = (EditText) view.findViewById(R.id.signin_username);
+		mPasswordView = (EditText) view.findViewById(R.id.signin_password);
 		mPasswordView.setOnEditorActionListener(this);
-		Button createAccountBtn = (Button) view.findViewById(R.id.login_sign_in_create_account_button);
+		Button createAccountBtn = (Button) view.findViewById(R.id.signin_create_account_button);
 		createAccountBtn.setOnClickListener(this);
-		Button resetPasswordBtn = (Button) view.findViewById(R.id.login_sign_in_reset_password_button);
+		Button resetPasswordBtn = (Button) view.findViewById(R.id.signin_reset_password_button);
 		resetPasswordBtn.setOnClickListener(this);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		getActivity().setTitle(R.string.login_sign_in_activity_title);
+		getActivity().setTitle(R.string.signin_activity_title);
 	}
 
 	@Override
@@ -165,9 +165,9 @@ public class LoginSignInFragment extends LoginFragment
 			if (TextUtils.isEmpty(message)) {
 				message = getString(R.string.error_message_generic);
 			}
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			SigninErrorDialogFragment fragment =
+					SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
 		}
 	}
 
@@ -175,12 +175,12 @@ public class LoginSignInFragment extends LoginFragment
 	public void onClick(View view) {
 		int id = view.getId();
 		switch (id) {
-			case R.id.login_sign_in_create_account_button:
+			case R.id.signin_create_account_button:
 				if (mListener != null) {
 					mListener.onSignInCreateAccount();
 				}
 				break;
-			case R.id.login_sign_in_reset_password_button:
+			case R.id.signin_reset_password_button:
 				if (mListener != null) {
 					mListener.onSignInResetPassword();
 				}

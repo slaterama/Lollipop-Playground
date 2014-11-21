@@ -20,10 +20,10 @@ import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.IntentUtils;
 
-public class LoginActivity extends TrackedActionBarActivity
-		implements LoginSignInFragment.OnSignInListener,
-		LoginCreateAccountFragment.OnCreateAccountListener,
-		LoginResetPasswordFragment.OnResetPasswordListener {
+public class SigninActivity extends TrackedActionBarActivity
+		implements SigninFragment.OnSignInListener,
+		SigninCreateAccountFragment.OnCreateAccountListener,
+		SigninResetPasswordFragment.OnResetPasswordListener {
 
 	public static final String STATE_KEY_SCROLL_POSITION = "scrollPosition";
 
@@ -39,7 +39,7 @@ public class LoginActivity extends TrackedActionBarActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_login);
+		setContentView(R.layout.activity_signin);
 
 		mScrollView = (ScrollView) findViewById(R.id.login_scrollview);
 
@@ -151,17 +151,17 @@ public class LoginActivity extends TrackedActionBarActivity
 				Intent intent = getIntent();
 				ThirdPartyUser thirdPartyUser = IntentUtils.getThirdPartyUser(intent);
 				if (thirdPartyUser == null) {
-					fragment = LoginCreateAccountFragment.newInstance();
+					fragment = SigninCreateAccountFragment.newInstance();
 				} else {
-					fragment = LoginCreateAccountFragment.newInstance(thirdPartyUser);
+					fragment = SigninCreateAccountFragment.newInstance(thirdPartyUser);
 				}
 				break;
 			case RESET_PASSWORD_MODE:
-				fragment = LoginResetPasswordFragment.newInstance("", "");
+				fragment = SigninResetPasswordFragment.newInstance("", "");
 				break;
 			case SIGN_IN_MODE:
 			default:
-				fragment = LoginSignInFragment.newInstance("", "");
+				fragment = SigninFragment.newInstance("", "");
 		}
 
 		FragmentManager manager = getSupportFragmentManager();

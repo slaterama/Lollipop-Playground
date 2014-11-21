@@ -36,12 +36,12 @@ import com.citymaps.mobile.android.util.ViewUtils;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginCreateAccountFragment.OnCreateAccountListener} interface
+ * {@link SigninCreateAccountFragment.OnCreateAccountListener} interface
  * to handle interaction events.
- * Use the {@link LoginCreateAccountFragment#newInstance} factory method to
+ * Use the {@link SigninCreateAccountFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginCreateAccountFragment extends LoginFragment
+public class SigninCreateAccountFragment extends FormFragment
 		implements VolleyCallbacks<User> {
 
 	private static final int REQUEST_CODE_USE_THIRD_PARTY_INFO = 0;
@@ -64,8 +64,8 @@ public class LoginCreateAccountFragment extends LoginFragment
 	 * @return A new instance of fragment LoginCreateAccountFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static LoginCreateAccountFragment newInstance() {
-		LoginCreateAccountFragment fragment = new LoginCreateAccountFragment();
+	public static SigninCreateAccountFragment newInstance() {
+		SigninCreateAccountFragment fragment = new SigninCreateAccountFragment();
 		return fragment;
 	}
 
@@ -73,8 +73,8 @@ public class LoginCreateAccountFragment extends LoginFragment
 	 * @param thirdPartyUser
 	 * @return
 	 */
-	public static LoginCreateAccountFragment newInstance(ThirdPartyUser thirdPartyUser) {
-		LoginCreateAccountFragment fragment = new LoginCreateAccountFragment();
+	public static SigninCreateAccountFragment newInstance(ThirdPartyUser thirdPartyUser) {
+		SigninCreateAccountFragment fragment = new SigninCreateAccountFragment();
 		Bundle args = new Bundle();
 		args.putParcelable(ARG_THIRD_PARTY_USER, thirdPartyUser);
 		fragment.setArguments(args);
@@ -83,7 +83,7 @@ public class LoginCreateAccountFragment extends LoginFragment
 
 	private ThirdPartyUser mThirdPartyUser;
 
-	public LoginCreateAccountFragment() {
+	public SigninCreateAccountFragment() {
 		// Required empty public constructor
 	}
 
@@ -115,23 +115,23 @@ public class LoginCreateAccountFragment extends LoginFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_login_create_account, container, false);
+		return inflater.inflate(R.layout.fragment_signin_create_account, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		TextView disclaimerView = (TextView) view.findViewById(R.id.login_create_account_disclaimer);
-		disclaimerView.setText(Html.fromHtml(getString(R.string.login_create_account_disclaimer)));
-		Spannable spannable = (Spannable) Html.fromHtml(getString(R.string.login_create_account_disclaimer));
+		TextView disclaimerView = (TextView) view.findViewById(R.id.signin_create_account_disclaimer);
+		disclaimerView.setText(Html.fromHtml(getString(R.string.signin_create_account_disclaimer)));
+		Spannable spannable = (Spannable) Html.fromHtml(getString(R.string.signin_create_account_disclaimer));
 		ViewUtils.setSpannableText(disclaimerView, spannable);
 
-		mFirstNameView = (EditText) view.findViewById(R.id.login_create_account_first_name);
-		mLastNameView = (EditText) view.findViewById(R.id.login_create_account_last_name);
-		mUsernameView = (EditText) view.findViewById(R.id.login_create_account_username);
-		mEmailView = (EditText) view.findViewById(R.id.login_create_account_email);
-		mPasswordView = (EditText) view.findViewById(R.id.login_create_account_password);
-		mConfirmPasswordView = (EditText) view.findViewById(R.id.login_create_account_confirm_password);
+		mFirstNameView = (EditText) view.findViewById(R.id.signin_create_account_first_name);
+		mLastNameView = (EditText) view.findViewById(R.id.signin_create_account_last_name);
+		mUsernameView = (EditText) view.findViewById(R.id.signin_create_account_username);
+		mEmailView = (EditText) view.findViewById(R.id.signin_create_account_email);
+		mPasswordView = (EditText) view.findViewById(R.id.signin_create_account_password);
+		mConfirmPasswordView = (EditText) view.findViewById(R.id.signin_create_account_confirm_password);
 		mConfirmPasswordView.setOnEditorActionListener(this);
 
 		if (savedInstanceState == null) {
@@ -148,7 +148,7 @@ public class LoginCreateAccountFragment extends LoginFragment
 	@Override
 	public void onResume() {
 		super.onResume();
-		getActivity().setTitle(R.string.login_create_account_activity_title);
+		getActivity().setTitle(R.string.signin_create_account_activity_title);
 	}
 
 	@Override
@@ -243,9 +243,9 @@ public class LoginCreateAccountFragment extends LoginFragment
 			if (TextUtils.isEmpty(message)) {
 				message = getString(R.string.error_message_generic);
 			}
-			LoginErrorDialogFragment fragment =
-					LoginErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), LoginErrorDialogFragment.FRAGMENT_TAG);
+			SigninErrorDialogFragment fragment =
+					SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
+			fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
 		}
 	}
 
@@ -284,7 +284,7 @@ public class LoginCreateAccountFragment extends LoginFragment
 			ThirdPartyUser thirdPartyUser = getArguments().getParcelable(ARG_THIRD_PARTY_USER);
 			return new AlertDialog.Builder(getActivity())
 					.setTitle(getActivity().getTitle())
-					.setMessage(getString(R.string.login_create_account_use_third_party_info, thirdPartyUser.getThirdParty().getProperName()))
+					.setMessage(getString(R.string.signin_create_account_use_third_party_info, thirdPartyUser.getThirdParty().getProperName()))
 					.setPositiveButton(android.R.string.yes, this)
 					.setNegativeButton(android.R.string.no, this)
 					.show();
