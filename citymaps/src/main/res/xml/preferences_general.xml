@@ -3,6 +3,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<PreferenceCategory
+			android:key="pref_cat_share_app"
+			android:title="@string/pref_cat_share_app_title"
+			android:order="0">
+
+
+		<!--
+		<ListPreference
+				android:key="pref_share_app"
+				android:icon="@drawable/ic_share_grey600_24dp"
+				android:title="@string/pref_share_app_title"
+				android:entries="@array/pref_share_entries"
+				android:entryValues="@array/pref_share_entry_values"
+				android:persistent="false"
+				android:order="0" />
+		-->
+
+		<Preference
+				android:key="pref_share_app"
+				android:icon="@drawable/ic_share_grey600_24dp"
+				android:title="@string/pref_share_app_title"
+				android:persistent="false"
+				android:order="0" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
 			android:key="pref_cat_info"
 			android:title="@string/pref_cat_info_title"
 			android:order="3">
@@ -35,7 +61,7 @@
 
 		<Preference
 				android:key="pref_tour"
-				android:icon="@drawable/ic_explore_grey600_24dp"
+				android:icon="@drawable/ic_tour_gray600_24dp"
 				android:title="@string/pref_tour_title"
 				android:persistent="false"
 				android:order="2" />

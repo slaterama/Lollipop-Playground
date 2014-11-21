@@ -75,7 +75,9 @@ public class StartupService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(mConnectivityReceiver);
-		LogEx.d("Byeeeeeeeee....");
+		if (LogEx.isLoggable(LogEx.VERBOSE)) {
+			LogEx.v("StartupService finished");
+		}
 	}
 
 	@Override

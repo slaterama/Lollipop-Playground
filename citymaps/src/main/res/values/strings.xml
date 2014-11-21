@@ -112,8 +112,8 @@
 	=====================================================================
 	-->
 
-	<string name="pref_cat_friends_title">Share app</string>
-	<string name="pref_friendfinder_title">Share app with friends</string>
+	<string name="pref_cat_share_app_title">Share app</string>
+	<string name="pref_share_app_title">Share app with friends</string>
 
 	<string name="pref_cat_accounts_title">Connect Your Accounts</string>
 	<string name="pref_connect_facebook_title">Facebook</string>
@@ -166,5 +166,21 @@
 	<string name="pref_dev_api_version_summary_last_known">(Last known version: %s)</string>
 	<string name="pref_dev_api_version_summary_getting">Getting API version…</string>
 	<string name="pref_dev_api_version_summary_error">Error: %s</string>
+
+	<string name="pref_share_email">Email</string>
+	<string name="pref_share_sms">SMS</string>
+	<string-array name="pref_share_entries">
+		<item>Email</item>
+		<item>SMS</item>
+	</string-array>
+
+	<string name="pref_share_chooser_text">Share App</string>
+	<string name="pref_share_app_text">Check out Citymaps, your personalized map of places. Download now: http://ctym.ps/1nebhVl</string>
+	<string name="pref_share_app_email_subject">Get Citymaps</string>
+	<string name="pref_share_app_email_text">Hi there,\n\nCheck out Citymaps, your personalized map of places.\n\nDownload now: http://ctym.ps/1nebhVl</string>
+	<string name="pref_share_app_email_html"><![CDATA[Hi there,
+		<p>Check out Citymaps, your personalized map of places.</p>
+		<p>Download now: <a href="http://ctym.ps/1nebhVl">http://ctym.ps/1nebhVl</a></p>
+	]]></string>
 
 </resources>

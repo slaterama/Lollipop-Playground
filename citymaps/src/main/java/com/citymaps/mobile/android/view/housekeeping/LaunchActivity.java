@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.Config;
@@ -208,6 +209,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 						new Response.Listener<User>() {
 							@Override
 							public void onResponse(User response) {
+								SessionManager.getInstance(activity).setCurrentUser(response);
 								Intent intent = new Intent(activity, MainActivity.class);
 								activity.startActivity(intent);
 								activity.finish();
