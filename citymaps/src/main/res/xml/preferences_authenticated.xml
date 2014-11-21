@@ -51,7 +51,7 @@
 			android:order="5">
 
 		<Preference
-				android:key="pref_cat_signout"
+				android:key="pref_signout"
 				android:icon="@drawable/ic_logon_off_gray600_24dp"
 				android:title="@string/pref_signout_title"
 				android:persistent="false"

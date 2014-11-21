@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.UserSettings;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 
 public class SessionManager {
@@ -37,17 +38,12 @@ public class SessionManager {
 	private Config mConfig;
 
 	private User mCurrentUser;
+	private UserSettings mCurrentUserSettings;
 
 	private SessionManager() {
 		mEnvironment = Environment.newInstance(sContext);
 		SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(sContext);
 		mConfig = SharedPreferenceUtils.getConfig(sp);
-
-		// TODO TEMP
-//		mCurrentUser = new User();
-//		mCurrentUser .setId("8ad760c4-3eb5-42e8-aa23-8259856e7763");
-//		mCurrentUser .setCitymapsToken("N0uCaPGjdHwuedfBvyvg8MrqXzmsHJ");
-		// END TEMP
 	}
 
 	public Config getConfig() {
@@ -66,14 +62,27 @@ public class SessionManager {
 		if (user != mCurrentUser) {
 			mCurrentUser = user;
 
+			setCurrentUserSettings(null);
+
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(sContext);
 			if (user == null) {
 				SharedPreferenceUtils.remove(sp, SharedPreferenceUtils.Key.CITYMAPS_TOKEN).apply();
+				mCurrentUserSettings = null;
 			} else {
 				SharedPreferenceUtils.putCitymapsToken(sp, user.getCitymapsToken()).apply();
 			}
 
 			// TODO Send broadcast?
+		}
+	}
+
+	public UserSettings getCurrentUserSettings() {
+		return mCurrentUserSettings;
+	}
+
+	public void setCurrentUserSettings(UserSettings settings) {
+		if (settings != mCurrentUserSettings) {
+			mCurrentUserSettings = settings;
 		}
 	}
 

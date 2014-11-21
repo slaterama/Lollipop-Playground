@@ -10,7 +10,6 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.UserSettings;
 import com.citymaps.mobile.android.util.GsonUtils;
 import com.google.gson.Gson;
@@ -21,11 +20,11 @@ import java.util.Map;
 
 public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 
-	public static UserRequest newSettingsRequest(Context context, String userId,
-												 Response.Listener<User> listener, Response.ErrorListener errorListener) {
+	public static UserSettingsRequest newGetRequest(Context context, String userId,
+												 Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_SETTINGS, userId);
-		return new UserRequest(Api.Version.V1, Method.GET, urlString, null, null, listener, errorListener);
+		return new UserSettingsRequest(Api.Version.V1, Method.GET, urlString, null, null, listener, errorListener);
 	}
 
 	public UserSettingsRequest(Api.Version version, int method, String url,

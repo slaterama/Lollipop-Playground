@@ -1,11 +1,26 @@
 package com.citymaps.mobile.android.view.settings;
 
+import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import com.citymaps.mobile.android.preference.PreferenceFragment;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PreferencesFragment extends PreferenceFragment {
+
+	protected ActionBarActivity mActivity;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mActivity = (ActionBarActivity) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must extend ActionBarActivity");
+		}
+	}
 
 	public static enum PreferenceType {
 		SHARE_APP("pref_share_app"),

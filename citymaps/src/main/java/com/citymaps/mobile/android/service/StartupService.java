@@ -36,9 +36,6 @@ public class StartupService extends Service {
 	http://trinitytuts.com/integrating-facebook-sdk-application-android-studio/
 	 */
 
-	protected static final IntentFilter CONNECTIVITY_FILTER =
-			new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-
 	private LocalBroadcastManager mLocalBroadcastManager;
 
 	private ConnectivityManager mConnectivityManager;
@@ -68,7 +65,7 @@ public class StartupService extends Service {
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		checkState();
-		registerReceiver(mConnectivityReceiver, CONNECTIVITY_FILTER);
+		registerReceiver(mConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 	}
 
 	@Override

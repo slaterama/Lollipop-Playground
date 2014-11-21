@@ -18,6 +18,7 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
+import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity;
 import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
 import com.citymaps.mobile.android.view.housekeeping.SoftUpdateDialogFragment;
 import com.citymaps.mobile.android.view.settings.PreferencesActivity;
@@ -26,6 +27,9 @@ import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
 public class MainActivity extends TrackedActionBarActivity
 		implements SharedPreferences.OnSharedPreferenceChangeListener, MainFragment.OnFragmentInteractionListener {
+
+	private static final int REQUEST_CODE_PREFERENCES = 0;
+	public static final int RESULT_LOGOUT = RESULT_FIRST_USER;
 
 	private LocalBroadcastManager mLocalBroadcastManager;
 
@@ -89,6 +93,21 @@ public class MainActivity extends TrackedActionBarActivity
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_PREFERENCES:
+				switch (resultCode) {
+					case RESULT_LOGOUT:
+						startActivity(new Intent(this, AuthenticateActivity.class));
+						break;
+				}
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -103,7 +122,7 @@ public class MainActivity extends TrackedActionBarActivity
         int id = item.getItemId();
 		switch (id) {
 			case R.id.action_settings:
-				startActivity(new Intent(this, PreferencesActivity.class));
+				startActivityForResult(new Intent(this, PreferencesActivity.class), REQUEST_CODE_PREFERENCES);
 				return true;
 			case R.id.action_profile:
 				startActivity(new Intent(this, ProfileActivity.class));

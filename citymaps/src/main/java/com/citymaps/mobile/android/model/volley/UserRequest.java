@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.model.volley;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 public class UserRequest extends CitymapsGsonRequest<User> {
 
+	private static final String KEY_USER_ID = "user_id";
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_PASSWORD = "password";
 	private static final String KEY_FIRST_NAME = "first_name";
@@ -71,6 +73,15 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 		if (thirdParty != null) params.put(KEY_THIRD_PARTY_NAME, thirdParty.toString());
 		if (!TextUtils.isEmpty(thirdPartyId)) params.put(KEY_THIRD_PARTY_ID, thirdPartyId);
 		if (!TextUtils.isEmpty(thirdPartyToken)) params.put(KEY_THIRD_PARTY_TOKEN, thirdPartyToken);
+		return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
+	}
+
+	public static UserRequest newLogoutRequest(Context context, @NonNull String userId,
+											   Response.Listener<User> listener, Response.ErrorListener errorListener) {
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER_LOGOUT);
+		Map<String, String> params = new HashMap<String, String>(1);
+		params.put(KEY_USER_ID, userId);
 		return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
 	}
 
