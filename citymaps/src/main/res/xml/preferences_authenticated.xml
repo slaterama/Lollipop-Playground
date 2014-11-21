@@ -20,12 +20,14 @@
 				android:persistent="false"
 				android:order="1" />
 
+		<!--
 		<SwitchPreference
 				android:key="pref_connect_twitter"
 				android:icon="@drawable/ic_twitter_color_24dp"
 				android:title="@string/pref_connect_twitter_title"
 				android:persistent="false"
 				android:order="2" />
+		-->
 
 	</PreferenceCategory>
 

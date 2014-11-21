@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 
 public final class GsonUtils {
 
+	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
 	/**
 	 * A {@link com.google.gson.Gson} instance used to generate the result.
 	 */
@@ -17,6 +19,7 @@ public final class GsonUtils {
 	public static Gson getGson() {
 		if (sGson == null)
 			sGson = new GsonBuilder()
+					.setDateFormat(DATE_FORMAT_PATTERN)
 					.setPrettyPrinting()
 					.create();
 		return sGson;

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,8 +20,11 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 	private static final String EMAIL_INTENT_TYPE = "message/rfc822";
 
-	private Preference mShareApp;
-	private Preference mPreferenceSendFeedback;
+	private Preference mShareAppPreference;
+	private Preference mFeedbackPreference;
+	private SwitchPreference mEmailNotificationsPreference;
+	private Preference mSigninPreference;
+	private Preference mSignoutPreference;
 
 	public static MainPreferencesFragment newInstance() {
 		return new MainPreferencesFragment();
@@ -44,11 +48,21 @@ public class MainPreferencesFragment extends PreferencesFragment
 				? R.xml.preferences_unauthenticated
 				: R.xml.preferences_authenticated);
 
-		mShareApp = findPreference(PreferenceType.SHARE_APP.toString());
-		mPreferenceSendFeedback = findPreference(PreferenceType.FEEDBACK.toString());
+		mShareAppPreference = findPreference(PreferenceType.SHARE_APP.toString());
+		mFeedbackPreference = findPreference(PreferenceType.FEEDBACK.toString());
+		mEmailNotificationsPreference = (SwitchPreference) findPreference(PreferenceType.EMAIL_NOTIFICATIONS.toString());
+		mSigninPreference = findPreference(PreferenceType.SIGNIN.toString());
+		mSignoutPreference = findPreference(PreferenceType.SIGNOUT.toString());
 
-		mShareApp.setOnPreferenceClickListener(this);
-		mPreferenceSendFeedback.setOnPreferenceClickListener(this);
+		mShareAppPreference.setOnPreferenceClickListener(this);
+		mFeedbackPreference.setOnPreferenceClickListener(this);
+		mEmailNotificationsPreference.setOnPreferenceChangeListener(this);
+		if (mSigninPreference != null) {
+			mSigninPreference.setOnPreferenceClickListener(this);
+		}
+		if (mSignoutPreference != null) {
+			mSignoutPreference.setOnPreferenceClickListener(this);
+		}
 	}
 
 	@Override
@@ -87,6 +101,14 @@ public class MainPreferencesFragment extends PreferencesFragment
 				startActivity(intent);
 				break;
 			}
+			case SIGNIN: {
+
+				break;
+			}
+			case SIGNOUT: {
+
+				break;
+			}
 		}
 		return false;
 	}
@@ -95,6 +117,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
+			case EMAIL_NOTIFICATIONS:
+				return false;
 			default: {
 				return false;
 			}
