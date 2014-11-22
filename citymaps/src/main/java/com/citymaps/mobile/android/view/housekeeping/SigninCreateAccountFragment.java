@@ -27,8 +27,8 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
-import com.citymaps.mobile.android.model.volley.UserRequest;
-import com.citymaps.mobile.android.model.volley.VolleyCallbacks;
+import com.citymaps.mobile.android.model.request.UserRequest;
+import com.citymaps.mobile.android.model.request.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.Validator;
 import com.citymaps.mobile.android.util.ViewUtils;
@@ -233,20 +233,8 @@ public class SigninCreateAccountFragment extends FormFragment
 	@Override
 	public void onErrorResponse(VolleyError error) {
 		super.onErrorResponse(error);
-		if (error instanceof NoConnectionError) {
-			Toast.makeText(getActivity(), R.string.error_message_no_connection, Toast.LENGTH_SHORT).show();
-		} else {
-
-			// TODO Why is localized message empty here?
-
-			String message = error.getLocalizedMessage();
-			if (TextUtils.isEmpty(message)) {
-				message = getString(R.string.error_message_generic);
-			}
-			SigninErrorDialogFragment fragment =
-					SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-			fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
-		}
+		CommonUtils.showSimpleDialogFragment(getFragmentManager(),
+				getActivity().getTitle(), error.getLocalizedMessage());
 	}
 
 	public static class UseThirdPartyInfoDialogFragment extends DialogFragment

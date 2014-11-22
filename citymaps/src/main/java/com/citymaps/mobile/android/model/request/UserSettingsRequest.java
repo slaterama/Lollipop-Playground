@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model.volley;
+package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import com.android.volley.NetworkResponse;
@@ -24,19 +24,30 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 												 Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_SETTINGS, userId);
-		return new UserSettingsRequest(Api.Version.V1, Method.GET, urlString, null, null, listener, errorListener);
+		return new UserSettingsRequest(Api.Version.V1, false, Method.GET, urlString, null, null, listener, errorListener);
 	}
 
-	public UserSettingsRequest(Api.Version version, int method, String url,
+	public static UserSettingsRequest newUpdateRequest(Context context, String settingsId, Map<String, String> params,
+													   Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		String urlString = environment.buildUrlString(Endpoint.Type.USER_SETTINGS, settingsId);
+		return new UserSettingsRequest(Api.Version.V1, true, Method.POST, urlString, null, params, listener, errorListener);
+	}
+
+	protected boolean mResponseWrapsArray = false;
+
+	public UserSettingsRequest(Api.Version version, boolean responseWrapsArray, int method, String url,
 					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		super(version, method, url, UserSettings.class, headers, params, listener, errorListener);
+		mResponseWrapsArray = responseWrapsArray;
 	}
 
-	public UserSettingsRequest(int method, String url,
+	public UserSettingsRequest(boolean responseWrapsArray, int method, String url,
 					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		super(Api.Version.V2, method, url, UserSettings.class, headers, params, listener, errorListener);
+		mResponseWrapsArray = responseWrapsArray;
 	}
 
 	@Override
@@ -48,9 +59,19 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 				int code = jsonObject.get(MEMBER_NAME_CODE_V1).getAsInt();
 				if (code == 0) {
 					// Parse into a success result
-					UserSettingsWrapperV1 result = gson.fromJson(jsonObject, UserSettingsWrapperV1.class);
-					UserSettings userSettings = result.getData();
-					return Response.success(userSettings, HttpHeaderParser.parseCacheHeaders(response));
+					if (mResponseWrapsArray) {
+						UserSettingsArrayWrapperV1 result = gson.fromJson(jsonObject, UserSettingsArrayWrapperV1.class);
+						UserSettings[] userSettings = result.getData();
+						if (userSettings == null || userSettings.length < 1) {
+							return null;
+						} else {
+							return Response.success(userSettings[0], HttpHeaderParser.parseCacheHeaders(response));
+						}
+					} else {
+						UserSettingsWrapperV1 result = gson.fromJson(jsonObject, UserSettingsWrapperV1.class);
+						UserSettings userSettings = result.getData();
+						return Response.success(userSettings, HttpHeaderParser.parseCacheHeaders(response));
+					}
 				} else {
 					// Parse into an error result
 					ResultErrorV1 result = gson.fromJson(jsonObject, ResultErrorV1.class);
@@ -81,6 +102,16 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 
 		@Override
 		public UserSettings getData() {
+			return mUserSettings;
+		}
+	}
+
+	public static class UserSettingsArrayWrapperV1 extends ResultSuccessV1<UserSettings[]> {
+		@SerializedName("user_settings")
+		private UserSettings[] mUserSettings;
+
+		@Override
+		public UserSettings[] getData() {
 			return mUserSettings;
 		}
 	}

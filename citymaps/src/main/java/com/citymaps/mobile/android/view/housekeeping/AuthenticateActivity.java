@@ -13,7 +13,7 @@ import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
-import com.citymaps.mobile.android.model.volley.UserRequest;
+import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;

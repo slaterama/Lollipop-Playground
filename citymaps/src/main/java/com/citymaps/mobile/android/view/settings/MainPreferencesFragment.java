@@ -10,20 +10,36 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.View;
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.UserSettings;
-import com.citymaps.mobile.android.model.volley.UserSettingsRequest;
+import com.citymaps.mobile.android.model.request.UserRequest;
+import com.citymaps.mobile.android.model.request.UserSettingsRequest;
+import com.citymaps.mobile.android.model.request.VolleyCallbacks;
+import com.citymaps.mobile.android.util.CommonUtils;
+import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.ShareUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainPreferencesFragment extends PreferencesFragment
 		implements Preference.OnPreferenceClickListener,
 		Preference.OnPreferenceChangeListener {
+
+	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
+
+	private static final int REQUEST_CODE_USER_SETTINGS = 0;
+
+	private static final int RESULT_ERROR = Activity.RESULT_FIRST_USER;
 
 	private static final String EMAIL_INTENT_TYPE = "message/rfc822";
 
@@ -47,6 +63,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 	protected boolean mUserLoggedIn = false;
 
+	protected HelperFragment mHelperFragment;
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -63,6 +81,22 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 		mCurrentUser = mSessionManager.getCurrentUser();
 		mUserLoggedIn = (mCurrentUser != null);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (savedInstanceState == null) {
+			mHelperFragment = new HelperFragment();
+			getFragmentManager()
+					.beginTransaction()
+					.add(mHelperFragment, HelperFragment.FRAGMENT_TAG)
+					.commit();
+		} else {
+			mHelperFragment = (HelperFragment) getFragmentManager().getFragment(savedInstanceState,
+					STATE_KEY_HELPER_FRAGMENT);
+		}
+		mHelperFragment.setTargetFragment(this, REQUEST_CODE_USER_SETTINGS);
 	}
 
 	@Override
@@ -85,8 +119,6 @@ public class MainPreferencesFragment extends PreferencesFragment
 			mEmailNotificationsPreference = (SwitchPreference) findPreference(PreferenceType.EMAIL_NOTIFICATIONS.toString());
 			mSignoutPreference = findPreference(PreferenceType.SIGNOUT.toString());
 
-			mEmailNotificationsPreference.setEnabled(false);
-
 			mEmailNotificationsPreference.setOnPreferenceChangeListener(this);
 			mSignoutPreference.setOnPreferenceClickListener(this);
 		} else {
@@ -99,8 +131,15 @@ public class MainPreferencesFragment extends PreferencesFragment
 	public void onResume() {
 		super.onResume();
 		if (mUserLoggedIn) {
-			getActivity().registerReceiver(mConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+			getActivity().registerReceiver(mConnectivityReceiver,
+					new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		getFragmentManager().putFragment(outState, STATE_KEY_HELPER_FRAGMENT, mHelperFragment);
 	}
 
 	@Override
@@ -112,19 +151,60 @@ public class MainPreferencesFragment extends PreferencesFragment
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_USER_SETTINGS:
+				switch (resultCode) {
+					case Activity.RESULT_OK:
+						UserSettings settings = mSessionManager.getCurrentUserSettings();
+						if (mEmailNotificationsPreference != null) {
+							mEmailNotificationsPreference.setChecked(settings.isEmailNotifications());
+						}
+						break;
+					case RESULT_ERROR:
+						if (mConnectivityManager.getActiveNetworkInfo() != null) {
+							String errorMessage = IntentUtils.getErrorMessage(data);
+							// TODO Show error dialog
+						}
+						break;
+				}
+
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
+	@Override
 	public boolean onPreferenceClick(Preference preference) {
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
 			case SHARE_APP: {
-				mListener.onShareAppClick();
+				ShareUtils.shareApp(getActivity());
 				break;
 			}
 			case FEEDBACK: {
-				mListener.onFeedbackClick();
+				String subject;
+				if (mCurrentUser == null) {
+					subject = BuildConfig.FEEDBACK_SUBJECT_VISITOR;
+				} else {
+					String fullName = mCurrentUser.getFullName();
+					if (TextUtils.isEmpty(fullName)) {
+						subject = BuildConfig.FEEDBACK_SUBJECT_USER;
+					} else {
+						subject = String.format(BuildConfig.FEEDBACK_SUBJECT, fullName);
+					}
+				}
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType(EMAIL_INTENT_TYPE);
+				intent.putExtra(Intent.EXTRA_EMAIL, BuildConfig.FEEDBACK_EMAILS);
+				intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+				intent.putExtra(Intent.EXTRA_TEXT, "");
+				startActivity(intent);
 				break;
 			}
 			case SIGNIN: {
-
+				mListener.onSigninClick();
 				break;
 			}
 			case SIGNOUT: {
@@ -139,7 +219,10 @@ public class MainPreferencesFragment extends PreferencesFragment
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
 			case EMAIL_NOTIFICATIONS:
-				mListener.onReceiveEmailNotificationsChange(mEmailNotificationsPreference.isChecked());
+				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
+					boolean enabled = (Boolean) newValue;
+					mHelperFragment.setEmailNotifications(enabled);
+				}
 				return false;
 			default: {
 				return false;
@@ -147,48 +230,76 @@ public class MainPreferencesFragment extends PreferencesFragment
 		}
 	}
 
-	private void getUserSettings(String userId) {
-		Request<UserSettings> request = UserSettingsRequest.newGetRequest(getActivity(), userId,
-				new Response.Listener<UserSettings>() {
-					@Override
-					public void onResponse(UserSettings response) {
-						mSessionManager.setCurrentUserSettings(response);
-						mEmailNotificationsPreference.setSummary(null);
-						mEmailNotificationsPreference.setChecked(response.isEmailNotifications());
-					}
-				},
-				new Response.ErrorListener() {
-					@Override
-					public void onErrorResponse(VolleyError error) {
-						if (mConnectivityManager.getActiveNetworkInfo() == null) {
-							mEmailNotificationsPreference.setSummary(R.string.error_summary_no_connection);
-						} else {
-							mEmailNotificationsPreference.setSummary(error.getLocalizedMessage());
-						}
-					}
-				});
-		VolleyManager.getInstance(getActivity()).getRequestQueue().add(request);
-	}
-
 	private BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			boolean connected = (mConnectivityManager.getActiveNetworkInfo() != null);
 			if (connected) {
-				mEmailNotificationsPreference.setEnabled(true);
 				UserSettings settings = mSessionManager.getCurrentUserSettings();
 				if (settings == null) {
-					getUserSettings(mCurrentUser.getId());
+					mHelperFragment.requestUserSettings();
 				} else {
-					mEmailNotificationsPreference.setSummary(null);
 					mEmailNotificationsPreference.setChecked(settings.isEmailNotifications());
 				}
 			} else {
-				mEmailNotificationsPreference.setEnabled(false);
-				mEmailNotificationsPreference.setSummary(R.string.error_summary_no_connection);
+				// No action
 			}
 		}
 	};
+
+	public static class HelperFragment extends Fragment {
+
+		public static final String FRAGMENT_TAG = HelperFragment.class.getName();
+
+		private SessionManager mSessionManager;
+
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+			mSessionManager = SessionManager.getInstance(activity);
+		}
+
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setRetainInstance(true);
+		}
+
+		public void requestUserSettings() {
+			User currentUser = mSessionManager.getCurrentUser();
+			if (currentUser != null) {
+				Request<UserSettings> request = UserSettingsRequest.newGetRequest(getActivity(), currentUser.getId(),
+						mUserSettingsCallbacks, mUserSettingsCallbacks);
+				VolleyManager.getInstance(getActivity()).getRequestQueue().add(request);
+			}
+		}
+
+		public void setEmailNotifications(boolean enabled) {
+			final UserSettings settings = mSessionManager.getCurrentUserSettings();
+			if (settings != null) {
+				Map<String, String> params = new HashMap<String, String>(1);
+				params.put(UserRequest.KEY_EMAIL_NOTIFICATIONS, enabled ? "1" : "0");
+				UserSettingsRequest request = UserSettingsRequest.newUpdateRequest(getActivity(),
+						settings.getId(), params, mUserSettingsCallbacks, mUserSettingsCallbacks);
+				VolleyManager.getInstance(getActivity()).getRequestQueue().add(request);
+			}
+		}
+
+		private VolleyCallbacks<UserSettings> mUserSettingsCallbacks = new VolleyCallbacks<UserSettings>() {
+			@Override
+			public void onResponse(UserSettings settings) {
+				mSessionManager.setCurrentUserSettings(settings);
+				getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
+			}
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Intent data = new Intent();
+				IntentUtils.putErrorMessage(data, error.getLocalizedMessage());
+				getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_ERROR, data);
+			}
+		};
+	}
 
 	/**
 	 * This interface must be implemented by activities that contain this
@@ -201,10 +312,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface MainPreferencesListener {
-		public void onShareAppClick();
-		public void onFeedbackClick();
-		public void onReceiveEmailNotificationsChange(boolean notifications);
 		public void onSigninClick();
+
 		public void onSignoutClick();
 	}
 }

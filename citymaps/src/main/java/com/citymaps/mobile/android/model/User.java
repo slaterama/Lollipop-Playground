@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * A user of the Citymaps application.
  */
-public class User implements CitymapsObject {
+public class User extends CitymapsObservable {
 
 	/**
 	 * The unique id assigned to this user.

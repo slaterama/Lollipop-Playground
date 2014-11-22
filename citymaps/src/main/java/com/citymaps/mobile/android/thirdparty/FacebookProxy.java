@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import com.citymaps.mobile.android.util.CollectionUtils;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.facebook.*;
 import com.facebook.model.GraphUser;
 
@@ -129,11 +130,8 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 					if (requestError.shouldNotifyUser()) {
 						String message = requestError.getErrorUserMessage();
 						if (!TextUtils.isEmpty(message)) {
-							FragmentManager manager = mActivity.getSupportFragmentManager();
-							if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null && !TextUtils.isEmpty(message)) {
-								ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(), message);
-								fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
-							}
+							CommonUtils.showSimpleDialogFragment(mActivity.getSupportFragmentManager(),
+									mActivity.getTitle(), message);
 						}
 					}
 				}
@@ -154,11 +152,8 @@ public class FacebookProxy extends ThirdPartyProxy<Session, FacebookProxy.Callba
 				if (exception instanceof FacebookOperationCanceledException) {
 					// The default behavior is not to show a message
 				} else /* if (exception instanceof FacebookException) */ {
-					FragmentManager manager = mActivity.getSupportFragmentManager();
-					if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null) {
-						ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(), exception.getLocalizedMessage());
-						fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
-					}
+					CommonUtils.showSimpleDialogFragment(mActivity.getSupportFragmentManager(),
+							mActivity.getTitle(), exception.getLocalizedMessage());
 				}
 			}
 		} else if (session.isOpened()) {

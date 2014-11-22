@@ -13,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.Validator;
 
 public abstract class FormFragment extends Fragment
@@ -55,11 +56,8 @@ public abstract class FormFragment extends Fragment
 	protected boolean processInput(CharSequence input, Validator validator, boolean required, boolean your) {
 		if (!validator.validate(input, required)) {
 			String message = validator.getMessage(getActivity(), input, required, your);
-			if (getFragmentManager().findFragmentByTag(SigninErrorDialogFragment.FRAGMENT_TAG) == null) {
-				SigninErrorDialogFragment fragment =
-						SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-				fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
-			}
+			CommonUtils.showSimpleDialogFragment(getFragmentManager(),
+					getActivity().getTitle(), message);
 			return false;
 		}
 		return true;
@@ -68,11 +66,8 @@ public abstract class FormFragment extends Fragment
 	protected boolean processInput(CharSequence input1, CharSequence input2, Validator validator) {
 		if (!validator.equals(input1, input2)) {
 			String message = validator.getMessage(getActivity(), input1, input2);
-			if (getFragmentManager().findFragmentByTag(SigninErrorDialogFragment.FRAGMENT_TAG) == null) {
-				SigninErrorDialogFragment fragment =
-						SigninErrorDialogFragment.newInstance(getActivity().getTitle(), message);
-				fragment.show(getFragmentManager(), SigninErrorDialogFragment.FRAGMENT_TAG);
-			}
+			CommonUtils.showSimpleDialogFragment(getFragmentManager(),
+					getActivity().getTitle(), message);
 			return false;
 		}
 		return true;

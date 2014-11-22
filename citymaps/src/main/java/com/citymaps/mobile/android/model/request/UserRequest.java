@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model.volley;
+package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -35,8 +35,10 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 	private static final String KEY_THIRD_PARTY_ID = "third_party_id";
 	private static final String KEY_THIRD_PARTY_TOKEN = "third_party_token";
 
-	private static final String KEY_AVATAR_URL = "avatar_url";
-	private static final String KEY_AVATAR_PROVIDER = "avatar_provider";
+	// For update requests
+	public static final String KEY_AVATAR_URL = "avatar_url";
+	public static final String KEY_AVATAR_PROVIDER = "avatar_provider";
+	public static final String KEY_EMAIL_NOTIFICATIONS = "email_notifications";
 
 	private static UserRequest newGetRequest(Context context, String userId,
 											 Response.Listener<User> listener, Response.ErrorListener errorListener) {

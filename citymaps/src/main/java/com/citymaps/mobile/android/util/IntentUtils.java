@@ -82,6 +82,8 @@ public class IntentUtils {
 
 	public static final String EXTRA_THIRD_PARTY_USER = makeExtra("THIRD_PARTY_USER");
 
+	public static final String EXTRA_ERROR_MESSAGE = makeExtra("ERROR_MESSAGE");
+
 	public static void putConfig(Intent intent, Config config) {
 		intent.putExtra(EXTRA_CONFIG, config);
 	}
@@ -112,6 +114,14 @@ public class IntentUtils {
 
 	public static ThirdPartyUser getThirdPartyUser(Intent intent) {
 		return intent.getParcelableExtra(EXTRA_THIRD_PARTY_USER);
+	}
+
+	public static void putErrorMessage(Intent intent, String errorMessage) {
+		intent.putExtra(EXTRA_ERROR_MESSAGE, errorMessage);
+	}
+
+	public static String getErrorMessage(Intent intent) {
+		return intent.getStringExtra(EXTRA_ERROR_MESSAGE);
 	}
 
 	private IntentUtils() {

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.util.CollectionUtils;
+import com.citymaps.mobile.android.util.CommonUtils;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -197,21 +198,14 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleApiClient, GoogleProxy.Ca
 					// Network or server error, the call is expected to succeed if you try again later.
 					// Don't attempt to call again immediately - the request is likely to
 					// fail, you'll hit quotas or back-off.
-					FragmentManager manager = mActivity.getSupportFragmentManager();
-					if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null) {
-						ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(),
-								R.string.error_generic_third_party_network_or_server_error);
-						fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
-					}
+					CommonUtils.showSimpleDialogFragment(mActivity.getSupportFragmentManager(),
+							mActivity.getTitle(),
+							mActivity.getString(R.string.error_generic_third_party_network_or_server_error));
 				} else if (error instanceof GoogleAuthException) {
 					// Failure. The call is not expected to ever succeed so it should not be
 					// retried.
-					FragmentManager manager = mActivity.getSupportFragmentManager();
-					if (manager.findFragmentByTag(ErrorDialogFragment.FRAGMENT_TAG) == null) {
-						ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(mActivity.getTitle(),
-								R.string.error_generic_third_party_auth);
-						fragment.show(manager, ErrorDialogFragment.FRAGMENT_TAG);
-					}
+					CommonUtils.showSimpleDialogFragment(mActivity.getSupportFragmentManager(),
+							mActivity.getTitle(), mActivity.getString(R.string.error_generic_third_party_auth));
 				}
 			}
 

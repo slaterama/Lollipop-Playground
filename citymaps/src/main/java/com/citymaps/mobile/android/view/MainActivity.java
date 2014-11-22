@@ -30,6 +30,7 @@ public class MainActivity extends TrackedActionBarActivity
 
 	private static final int REQUEST_CODE_PREFERENCES = 0;
 	public static final int RESULT_LOGOUT = RESULT_FIRST_USER;
+	public static final int RESULT_LOGIN = RESULT_FIRST_USER + 1;
 
 	private LocalBroadcastManager mLocalBroadcastManager;
 
@@ -97,6 +98,7 @@ public class MainActivity extends TrackedActionBarActivity
 		switch (requestCode) {
 			case REQUEST_CODE_PREFERENCES:
 				switch (resultCode) {
+					case RESULT_LOGIN:
 					case RESULT_LOGOUT:
 						startActivity(new Intent(this, AuthenticateActivity.class));
 						break;

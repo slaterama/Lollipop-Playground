@@ -4,7 +4,7 @@
 	<string name="error_message_generic">An unknown error occurred.</string>
 	<string name="error_message_no_connection">You are not connected to the Internet.</string>
 
-	<string name="error_summary_no_connection">Not connected to the Internet</string>
+	<string name="error_summary_no_connection">No connection available</string>
 
 	<string name="error_generic_third_party_network_or_server_error">There was an error communicating with %s. Try again later.</string>
 	<string name="error_generic_third_party_auth">There was an error authenticating with %s.</string>

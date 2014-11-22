@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.model.volley;
+package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import com.android.volley.Response;
