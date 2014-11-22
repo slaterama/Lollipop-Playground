@@ -1,7 +1,9 @@
 package com.citymaps.mobile.android.model;
 
+import android.content.Context;
 import android.text.TextUtils;
 
+import com.citymaps.mobile.android.R;
 import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -12,39 +14,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class User extends CitymapsObservable {
 
 	/**
-	 * The unique id assigned to this user.
-	 */
-	@SerializedName("user_id")
-	protected String mId;
-
-	/**
 	 * The token assigned to this user by the Citymaps framework.
 	 */
 	@SerializedName("citymaps_token")
 	protected String mCitymapsToken;
 
 	/**
-	 * The username chosen by this user.
+	 * This user's company name.
 	 */
-	protected String mUsername;
-
-	/**
-	 * The user's first name.
-	 */
-	@SerializedName("first_name")
-	protected String mFirstName;
-
-	/**
-	 * The user's last name.
-	 */
-	@SerializedName("last_name")
-	protected String mLastName;
-
-	/**
-	 * The user's email address.
-	 */
-	@SerializedName("email_address")
-	protected String mEmail;
+	@SerializedName("company_name")
+	protected String mCompanyName;
 
 	/**
 	 * Whether to use this user's company name as the display name.
@@ -53,10 +32,33 @@ public class User extends CitymapsObservable {
 	protected boolean mDisplayCompany;
 
 	/**
-	 * This user's company name.
+	 * The user's email address.
 	 */
-	@SerializedName("company_name")
-	protected String mCompanyName;
+	@SerializedName("email_address")
+	protected String mEmail;
+
+	/**
+	 * The user's first name.
+	 */
+	@SerializedName("first_name")
+	protected String mFirstName;
+
+	/**
+	 * The unique id assigned to this user.
+	 */
+	@SerializedName("user_id")
+	protected String mId;
+
+	/**
+	 * The user's last name.
+	 */
+	@SerializedName("last_name")
+	protected String mLastName;
+
+	/**
+	 * The username chosen by this user.
+	 */
+	protected String mUsername;
 
 	/**
 	 * @return {@link CitymapsObject.ObjectType#USER}
@@ -88,9 +90,25 @@ public class User extends CitymapsObservable {
 	 */
 	@Override
 	public String getName() {
+		return getName(null);
+	}
+
+	/**
+	 * @return The user's display name, optionally using a Context to
+	 * resolve the full name format.
+	 */
+	public String getName(Context context) {
 		if (mDisplayCompany && !TextUtils.isEmpty(mCompanyName))
 			return mCompanyName;
-		return String.format("%s %s", mFirstName, mLastName).trim();
+		else if (TextUtils.isEmpty(mFirstName)) {
+			return mLastName;
+		} else if (TextUtils.isEmpty(mLastName)) {
+			return mFirstName;
+		} else if (context == null) {
+			return String.format("%s %s", mFirstName, mLastName);
+		} else {
+			return context.getString(R.string.user_full_name_format, mFirstName, mLastName);
+		}
 	}
 
 	/**
@@ -106,21 +124,6 @@ public class User extends CitymapsObservable {
 	 */
 	public void setCitymapsToken(String citymapsToken) {
 		mCitymapsToken = citymapsToken;
-	}
-
-	/**
-	 * @return The username chosen by this user.
-	 */
-	public String getUsername() {
-		return mUsername;
-	}
-
-	/**
-	 * Sets the username chosen by this user.
-	 * @param username The username chosen by this user.
-	 */
-	public void setUsername(String username) {
-		mUsername = username;
 	}
 
 	/**
@@ -149,6 +152,21 @@ public class User extends CitymapsObservable {
 	 */
 	public void setLastName(String lastName) {
 		mLastName = lastName;
+	}
+
+	/**
+	 * @return The username chosen by this user.
+	 */
+	public String getUsername() {
+		return mUsername;
+	}
+
+	/**
+	 * Sets the username chosen by this user.
+	 * @param username The username chosen by this user.
+	 */
+	public void setUsername(String username) {
+		mUsername = username;
 	}
 
 	/**
@@ -195,20 +213,6 @@ public class User extends CitymapsObservable {
 	 */
 	public void setCompanyName(String companyName) {
 		mCompanyName = companyName;
-	}
-
-	/**
-	 * @return The user's full name (first name + last name).
-	 */
-	public String getFullName() {
-		// TODO Internationalization?
-		if (TextUtils.isEmpty(mFirstName)) {
-			return mLastName;
-		} else if (TextUtils.isEmpty(mLastName)) {
-			return mFirstName;
-		} else {
-			return String.format("%s %s", mFirstName, mLastName);
-		}
 	}
 
 	/**

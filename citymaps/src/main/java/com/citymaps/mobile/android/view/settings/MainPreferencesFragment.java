@@ -190,7 +190,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 				if (mCurrentUser == null) {
 					subject = BuildConfig.FEEDBACK_SUBJECT_VISITOR;
 				} else {
-					String fullName = mCurrentUser.getFullName();
+					String fullName = mCurrentUser.getName(getActivity());
 					if (TextUtils.isEmpty(fullName)) {
 						subject = BuildConfig.FEEDBACK_SUBJECT_USER;
 					} else {

@@ -11,6 +11,10 @@
 	<string name="hello_world">Hello world!</string>
 	<string name="hello_blank_fragment">Hello blank fragment</string>
 
+	<!-- Format string for constructing a user's full name.
+	     This appears here so other locales can specify a different order. -->
+	<string name="user_full_name_format">%1$s %2$s</string>
+
 	<!--
 	================================================================
 	Action (menu) strings
