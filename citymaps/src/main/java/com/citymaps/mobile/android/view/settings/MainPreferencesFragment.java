@@ -25,7 +25,6 @@ import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.request.UserSettingsRequest;
 import com.citymaps.mobile.android.model.request.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CommonUtils;
-import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.ShareUtils;
 
 import java.util.HashMap;
@@ -39,14 +38,19 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 	private static final int REQUEST_CODE_USER_SETTINGS = 0;
 
-	private static final int RESULT_ERROR = Activity.RESULT_FIRST_USER;
-
 	private static final String EMAIL_INTENT_TYPE = "message/rfc822";
 
+	// General preferences
 	private Preference mShareAppPreference;
 	private Preference mFeedbackPreference;
-	private SwitchPreference mEmailNotificationsPreference;
+
+	// Signed-out preferences
 	private Preference mSigninPreference;
+
+	// Signed-in preferences
+	private SwitchPreference mFacebookPreference;
+	private SwitchPreference mGooglePreference;
+	private SwitchPreference mEmailNotificationsPreference;
 	private Preference mSignoutPreference;
 
 	public static MainPreferencesFragment newInstance() {
@@ -116,9 +120,13 @@ public class MainPreferencesFragment extends PreferencesFragment
 		mFeedbackPreference.setOnPreferenceClickListener(this);
 
 		if (mUserLoggedIn) {
+			mFacebookPreference = (SwitchPreference) findPreference(PreferenceType.CONNECT_FACEBOOK.toString());
+			mGooglePreference = (SwitchPreference) findPreference(PreferenceType.CONNECT_GOOGLE.toString());
 			mEmailNotificationsPreference = (SwitchPreference) findPreference(PreferenceType.EMAIL_NOTIFICATIONS.toString());
 			mSignoutPreference = findPreference(PreferenceType.SIGNOUT.toString());
 
+			mFacebookPreference.setOnPreferenceChangeListener(this);
+			mGooglePreference.setOnPreferenceChangeListener(this);
 			mEmailNotificationsPreference.setOnPreferenceChangeListener(this);
 			mSignoutPreference.setOnPreferenceClickListener(this);
 		} else {
@@ -159,12 +167,6 @@ public class MainPreferencesFragment extends PreferencesFragment
 						UserSettings settings = mSessionManager.getCurrentUserSettings();
 						if (mEmailNotificationsPreference != null) {
 							mEmailNotificationsPreference.setChecked(settings.isEmailNotifications());
-						}
-						break;
-					case RESULT_ERROR:
-						if (mConnectivityManager.getActiveNetworkInfo() != null) {
-							String errorMessage = IntentUtils.getErrorMessage(data);
-							// TODO Show error dialog
 						}
 						break;
 				}
@@ -218,6 +220,16 @@ public class MainPreferencesFragment extends PreferencesFragment
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
+			case CONNECT_FACEBOOK:
+				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
+
+				}
+				return false;
+			case CONNECT_GOOGLE:
+				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
+
+				}
+				return false;
 			case EMAIL_NOTIFICATIONS:
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
 					boolean enabled = (Boolean) newValue;
@@ -294,9 +306,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 			@Override
 			public void onErrorResponse(VolleyError error) {
-				Intent data = new Intent();
-				IntentUtils.putErrorMessage(data, error.getLocalizedMessage());
-				getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_ERROR, data);
+				CommonUtils.showSimpleDialogFragment(getFragmentManager(),
+						getActivity().getTitle(), error.getLocalizedMessage());
 			}
 		};
 	}
