@@ -5,32 +5,40 @@ import android.util.SparseArray;
 import com.citymaps.mobile.android.R;
 
 /**
- * An object maintained by the Citymaps application. Every object has a type, an id, and a name. Type is read-only and is provided
- * by the various classes that implement this interface. Name is also read-only but may be configured as writable by the
- * implementing class. Id is writable and can be set via the {@link #setId(String) setName} method.
+ * An object maintained by the Citymaps application. Every object has a type, an ID, and a name.
+ * Type is read-only and is provided by the various classes that implement this interface.
  */
 public interface CitymapsObject {
 
 	/**
+	 * Gets the type of this object.
 	 * @return The type of this object.
 	 */
 	public ObjectType getType();
 
 	/**
-	 * Sets the id of this object.
-	 * @param id the id of this object
-	 */
-	public void setId(String id);
-
-	/**
-	 * @return The id of this object.
+	 * Gets the ID of this object.
+	 * @return The ID of this object.
 	 */
 	public String getId();
 
 	/**
+	 * Sets the ID of this object.
+	 * @param id The new ID.
+	 */
+	public void setId(String id);
+
+	/**
+	 * Returns the name of this object.
 	 * @return The name of this object.
 	 */
 	public String getName();
+
+	/**
+	 * Sets the name of this object.
+	 * @param name The new name.
+	 */
+	public void setName(String name);
 
 	/*
 	 * Enums
