@@ -11,6 +11,7 @@ import java.util.Date;
 /**
  * A user of the Citymaps application.
  */
+@SuppressWarnings("unused")
 public class User extends CitymapsObservable {
 
 	/**
@@ -907,6 +908,7 @@ public class User extends CitymapsObservable {
 	 * <i>Deprecated. Use {@link #getThirdPartyCredentials} instead.</i>
 	 * @return The Facebook ID.
 	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	public String getThirdPartyId() {
 		return mThirdPartyId;
@@ -917,6 +919,7 @@ public class User extends CitymapsObservable {
 	 * <i>Deprecated. Use {@link #setThirdPartyCredentials} instead.</i>
 	 * @param thirdPartyId The new ID.
 	 */
+	@SuppressWarnings("deprecation")
 	public void setThirdPartyId(String thirdPartyId) {
 		mThirdPartyId = thirdPartyId;
 	}
