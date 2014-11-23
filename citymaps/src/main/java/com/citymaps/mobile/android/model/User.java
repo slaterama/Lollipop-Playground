@@ -2,11 +2,11 @@ package com.citymaps.mobile.android.model;
 
 import android.content.Context;
 import android.text.TextUtils;
-
 import com.citymaps.mobile.android.R;
 import com.google.gson.annotations.SerializedName;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.util.Date;
 
 /**
  * A user of the Citymaps application.
@@ -14,54 +14,259 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class User extends CitymapsObservable {
 
 	/**
+	 * Whether this user is active.
+	 */
+	@SerializedName("is_active")
+	private boolean mActive;
+
+	/**
+	 * The admin level of this user.
+	 */
+	@SerializedName("admin_level")
+	private int mAdminLevel;
+
+	/**
+	 * The provider that supplied the avatar for this user.
+	 */
+	@SerializedName("avatar_provider")
+	private AvatarProvider mAvatarProvider;
+
+	/**
+	 * The URL for this user's avatar.
+	 */
+	@SerializedName("avatar_url")
+	private String mAvatarUrl;
+
+	/**
+	 * This user's bio (i.e. a short description of this user).
+	 */
+	@SerializedName("bio")
+	private String mBio;
+
+	/**
+	 * The city in which this user is located.
+	 */
+	@SerializedName("city")
+	private String mCity;
+
+	/**
 	 * The token assigned to this user by the Citymaps framework.
 	 */
 	@SerializedName("citymaps_token")
-	protected String mCitymapsToken;
+	private String mCitymapsToken;
 
 	/**
-	 * This user's company name.
+	 * The total number of collections (maps) this user has added.
+	 */
+	@SerializedName("map_adds")
+	private int mCollectionAdds;
+
+	/**
+	 * The total number of collections (maps) this user has liked.
+	 */
+	@SerializedName("map_likes")
+	private int mCollectionLikes;
+
+	/**
+	 * The total number of collections (maps) this user has saved.
+	 */
+	@SerializedName("map_saves")
+	private int mCollectionSaves;
+
+	/**
+	 * The total number of collections (maps) this user has created.
+	 */
+	@SerializedName("maps_count")
+	private int mCollectionsCount;
+
+	/**
+	 * The total number of collections (maps) this user has saved.
+	 * <i>Duplicate of {@link #mCollectionSaves}.</i>
+	 */
+	@SerializedName("maps_saved_count")
+	private int mCollectionsSavedCount;
+
+	/**
+	 * The name of this user if the user is a company (i.e.
+	 * {@link #mDisplayCompany} is set to {@code true}.
 	 */
 	@SerializedName("company_name")
-	protected String mCompanyName;
+	private String mCompanyName;
 
 	/**
-	 * Whether to use this user's company name as the display name.
+	 * Whether to use {@link #mCompanyName} as this user's display name.
 	 */
 	@SerializedName("display_company_name")
-	protected boolean mDisplayCompany;
+	private boolean mDisplayCompany;
 
 	/**
 	 * The user's email address.
 	 */
 	@SerializedName("email_address")
-	protected String mEmail;
+	private String mEmail;
 
 	/**
 	 * The user's first name.
 	 */
 	@SerializedName("first_name")
-	protected String mFirstName;
+	private String mFirstName;
+
+	/**
+	 * The total number of users that are following this user.
+	 */
+	@SerializedName("followers_count")
+	private int mFollowersCount;
+
+	/**
+	 * The total number of users that this user is following.
+	 */
+	@SerializedName("follows_count")
+	private int mFollowsCount;
 
 	/**
 	 * The unique id assigned to this user.
 	 */
 	@SerializedName("user_id")
-	protected String mId;
+	private String mId;
 
 	/**
-	 * The user's last name.
+	 * The number of profile images associated with this user.
+	 */
+	@SerializedName("images_count")
+	private int mImagesCount;
+
+	/**
+	 * The date of this user's last login.
+	 */
+	@SerializedName("last_login")
+	private Date mLastLogin;
+
+	/**
+	 * This user's last name.
 	 */
 	@SerializedName("last_name")
-	protected String mLastName;
+	private String mLastName;
+
+	/**
+	 * This user's login IP address.
+	 */
+	@SerializedName("login_ip")
+	private String mLoginIp;
+
+	/**
+	 * The total number of places in all of this user's collections (maps).
+	 */
+	@SerializedName("markers_count")
+	private int mMarkersCount;
+
+	/**
+	 * This user's display name.
+	 */
+	@SerializedName("name")
+	private String mName;
+
+	/**
+	 * The total number of businesses this user has added.
+	 * <i>NOTE: Not sure if we are using this.</i>
+	 */
+	@SerializedName("business_adds")
+	private int mPlaceAdds;
+
+	/**
+	 * The total number of businesses this user has commented on.
+	 */
+	@SerializedName("business_comments")
+	private int mPlaceComments;
+
+	/**
+	 * The total number of businesses this user has liked.
+	 */
+	@SerializedName("business_likes")
+	private int mPlaceLikes;
+
+	/**
+	 * The total number of businesses this user has liked.
+	 * <i>Duplicate of {@link #mPlaceLikes}.</i>
+	 */
+	@SerializedName("business_likes_count")
+	private int mPlacesLikedCount;
+
+	/**
+	 * The template to display as the default header background for this user if
+	 * {@link #mPostcardUrl} does not contain a value.
+	 */
+	@SerializedName("postcard_template")
+	private String mPostcardTemplate;
+
+	/**
+	 * The URL of the image to display as the default header background for this user.
+	 */
+	@SerializedName("postcard_url")
+	private String mPostcardUrl;
+
+	/**
+	 * Whether this user is public.
+	 */
+	@SerializedName("is_public")
+	private boolean mPublic;
+
+	/**
+	 * Whether this is a rollout user.
+	 */
+	@SerializedName("is_rollout_user")
+	private boolean mRolloutUser;
+
+	/**
+	 * The state in which this user is located.
+	 */
+	@SerializedName("state")
+	private String mState;
+
+	/**
+	 * Whether this user is a super admin.
+	 */
+	@SerializedName("is_super_admin")
+	private boolean mSuperAdmin;
+
+	/**
+	 * The date of the most decent entry in this user's activity stream.
+	 */
+	@SerializedName("stream_timestamp")
+	private Date mStreamTimestamp;
+
+	/**
+	 * A class that contains all of the third-party credentials associated with this user.
+	 */
+	@SerializedName("third_party_credentials")
+	private ThirdPartyCredentials mThirdPartyCredentials;
+
+	/**
+	 * The Facebook id associated with this user.
+	 * <i>Deprecated. Use {@link #mThirdPartyCredentials} instead.</i>
+	 */
+	@SerializedName("third_party_id")
+	private String mThirdPartyId;
+
+	/**
+	 * The total number of tips this user has left.
+	 */
+	@SerializedName("tips_count")
+	private int mTipsCount;
 
 	/**
 	 * The username chosen by this user.
 	 */
-	protected String mUsername;
+	@SerializedName("username")
+	private String mUsername;
 
 	/**
-	 * @return {@link CitymapsObject.ObjectType#USER}
+	 * This user's website.
+	 */
+	@SerializedName("website")
+	private String mWebsite;
+
+	/**
+	 * @return {@link CitymapsObject.ObjectType#USER}.
 	 */
 	@Override
 	public ObjectType getType() {
@@ -98,9 +303,11 @@ public class User extends CitymapsObservable {
 	 * resolve the full name format.
 	 */
 	public String getName(Context context) {
-		if (mDisplayCompany && !TextUtils.isEmpty(mCompanyName))
+		if (!TextUtils.isEmpty(mName)) {
+			return mName;
+		} else if (mDisplayCompany && !TextUtils.isEmpty(mCompanyName)) {
 			return mCompanyName;
-		else if (TextUtils.isEmpty(mFirstName)) {
+		} else if (TextUtils.isEmpty(mFirstName)) {
 			return mLastName;
 		} else if (TextUtils.isEmpty(mLastName)) {
 			return mFirstName;
@@ -109,6 +316,15 @@ public class User extends CitymapsObservable {
 		} else {
 			return context.getString(R.string.user_full_name_format, mFirstName, mLastName);
 		}
+	}
+
+
+	public boolean isActive() {
+		return mActive;
+	}
+
+	public void setActive(boolean active) {
+		mActive = active;
 	}
 
 	/**
@@ -230,5 +446,100 @@ public class User extends CitymapsObservable {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	/**
+	 * A class that represents a single third-party credential.
+	 */
+	public static class ThirdPartyCredential {
+
+		/**
+		 * The id associated with this third-party credential.
+		 */
+		@SerializedName("id")
+		private String mId;
+
+		/**
+		 * Returns the id associated with this third-party credential.
+		 */
+		public String getId() {
+			return mId;
+		}
+
+		/**
+		 * Sets the ID associated with this third-party credential.
+		 * @param id The new ID.
+		 */
+		public void setId(String id) {
+			mId = id;
+		}
+	}
+
+	/**
+	 * A class that contains a user's third party credentials.
+	 */
+	public static class ThirdPartyCredentials {
+
+		/**
+		 * This user's Facebook credientials.
+		 */
+		@SerializedName("facebook")
+		private ThirdPartyCredential mFacebook;
+
+		/**
+		 * This user's Google credentials.
+		 */
+		@SerializedName("google")
+		private ThirdPartyCredential mGoogle;
+
+		/**
+		 * Returns this user's Facebook credentials.
+		 */
+		public ThirdPartyCredential getFacebook() {
+			return mFacebook;
+		}
+
+		/**
+		 * Sets this user's Facebook credentials.
+		 * @param credential The new Facebook credentials.
+		 */
+		public void setFacebook(ThirdPartyCredential credential) {
+			mFacebook = credential;
+		}
+
+		/**
+		 * Returns this user's Google credentials.
+		 */
+		public ThirdPartyCredential getGoogle() {
+			return mGoogle;
+		}
+
+		/**
+		 * Sets this user's Google credentials.
+		 * @param credential The new Google credentials.
+		 */
+		public void setGoogle(ThirdPartyCredential credential) {
+			mGoogle = credential;
+		}
+	}
+
+	/**
+	 * Enum type that specifies the provider that supplied a user's avatar.
+	 */
+	public static enum AvatarProvider {
+		@SerializedName("0")
+		CITYMAPS(0),
+
+		@SerializedName("1")
+		FACEBOOK(1),
+
+		@SerializedName("2")
+		GOOGLE(2);
+
+		private int mIntValue;
+
+		private AvatarProvider(int intValue) {
+			mIntValue = intValue;
+		}
 	}
 }

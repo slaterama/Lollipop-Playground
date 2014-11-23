@@ -1,5 +1,8 @@
 package com.citymaps.mobile.android.model;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Date;
 import java.util.Observable;
 
 /**
@@ -10,4 +13,25 @@ import java.util.Observable;
 public abstract class CitymapsObservable extends Observable
 		implements CitymapsObject {
 
+	@SerializedName("created_at")
+	private Date mCreatedAt;
+
+	@SerializedName("updated_at")
+	private Date mUpdatedAt;
+
+	public Date getCreatedAt() {
+		return mCreatedAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		mCreatedAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return mUpdatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		mUpdatedAt = updatedAt;
+	}
 }
