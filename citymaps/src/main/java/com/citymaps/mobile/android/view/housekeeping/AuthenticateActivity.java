@@ -1,7 +1,6 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -16,7 +15,6 @@ import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
-import com.citymaps.mobile.android.thirdparty.GoogleProxy.OnPreBuildListener;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.IntentUtils;
@@ -36,26 +34,25 @@ import static com.citymaps.mobile.android.thirdparty.GoogleProxy.DATA_ACCOUNT_NA
 import static com.citymaps.mobile.android.thirdparty.GoogleProxy.DATA_CURRENT_PERSON;
 import static com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.DATA_TOKEN;
 
+// TODO Where/when to call "stop()" on proxies?
+
 public class AuthenticateActivity extends TrackedActionBarActivity {
 
-	private static final String STATE_KEY_MONITORING_FACEBOOK = "monitoringFacbook";
-	private static final String STATE_KEY_MONITORING_GOOGLE = "monitoringGoogle";
+	private static final String STATE_KEY_FACEBOOK_INVOKED = "facebookInvoked";
+	private static final String STATE_KEY_GOOGLE_INVOKED = "googleInvoked";
 
 	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
 
 	private static final int REQUEST_CODE_LOGIN = 1;
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 2;
+	private static final int REQUEST_CODE_CREATE_ACCOUNT_WITH_FACEBOOK = 3;
+	private static final int REQUEST_CODE_CREATE_ACCOUNT_WITH_GOOGLE = 4;
 
 	private boolean mStartupMode;
-
-	private ConnectivityManager mConnectivityManager;
 
 	private FacebookProxy mFacebookProxy;
 	private GoogleProxy mGoogleProxy;
 	private Set<ThirdPartyProxy> mThirdPartyProxies;
-
-	private boolean mMonitoringFacebook;
-	private boolean mMonitoringGoogle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,29 +61,17 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		setContentView(R.layout.activity_authenticate);
 		mStartupMode = IntentUtils.isStartupMode(getIntent(), false);
 
-		mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-		// Create third party proxies
-		mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS);
-		mGoogleProxy = new GoogleProxy(this, new OnPreBuildListener() {
-			@Override
-			public void onPreBuild(@NonNull GoogleApiClient.Builder builder) {
-				builder.addApi(Plus.API);
-				builder.addScope(Plus.SCOPE_PLUS_LOGIN);
-			}
-		});
-		mFacebookProxy.setCallbacks(mFacebookProxyCallbacks);
-		mGoogleProxy.setCallbacks(mGoogleProxyCallbacks);
-
 		mThirdPartyProxies = new HashSet<ThirdPartyProxy>(2);
-		mThirdPartyProxies.add(mFacebookProxy);
-		mThirdPartyProxies.add(mGoogleProxy);
-
 		if (savedInstanceState != null) {
-			mMonitoringFacebook = savedInstanceState.getBoolean(STATE_KEY_MONITORING_FACEBOOK, false);
-			mMonitoringGoogle = savedInstanceState.getBoolean(STATE_KEY_MONITORING_GOOGLE, false);
+			if (savedInstanceState.getBoolean(STATE_KEY_FACEBOOK_INVOKED)) {
+				mFacebookProxy = newFacebookProxy();
+				mThirdPartyProxies.add(mFacebookProxy);
+			}
+			if (savedInstanceState.getBoolean(STATE_KEY_GOOGLE_INVOKED)) {
+				mGoogleProxy = newGoogleProxy();
+				mThirdPartyProxies.add(mGoogleProxy);
+			}
 		}
-		
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
 			proxy.onCreate(savedInstanceState);
 		}
@@ -114,8 +99,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		for (ThirdPartyProxy proxy : mThirdPartyProxies) {
 			proxy.onSaveInstanceState(outState);
 		}
-		outState.putBoolean(STATE_KEY_MONITORING_FACEBOOK, mMonitoringFacebook);
-		outState.putBoolean(STATE_KEY_MONITORING_GOOGLE, mMonitoringGoogle);
+		outState.putBoolean(STATE_KEY_FACEBOOK_INVOKED, mFacebookProxy != null);
+		outState.putBoolean(STATE_KEY_GOOGLE_INVOKED, mGoogleProxy != null);
 	}
 
 	@Override
@@ -146,10 +131,26 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 			case REQUEST_CODE_CREATE_ACCOUNT:
-				if (resultCode != RESULT_OK) {
-					// TODO Only toggle the appropriate one
-					mMonitoringFacebook = false;
-					mMonitoringGoogle = false;
+				if (resultCode == RESULT_OK) {
+					wrapUp();
+				}
+				break;
+			case REQUEST_CODE_CREATE_ACCOUNT_WITH_FACEBOOK:
+				if (resultCode == RESULT_OK) {
+					wrapUp();
+				} else {
+					mThirdPartyProxies.remove(mFacebookProxy);
+					mFacebookProxy.stop(false);
+					mFacebookProxy = null;
+				}
+				break;
+			case REQUEST_CODE_CREATE_ACCOUNT_WITH_GOOGLE:
+				if (resultCode == RESULT_OK) {
+					wrapUp();
+				} else {
+					mThirdPartyProxies.remove(mGoogleProxy);
+					mGoogleProxy.stop(false);
+					mGoogleProxy = null;
 				}
 			case REQUEST_CODE_LOGIN:
 				if (resultCode == RESULT_OK) {
@@ -171,15 +172,21 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				if (CommonUtils.notifyIfNoNetwork(this)) {
 					return;
 				}
-				mMonitoringFacebook = true;
-				mFacebookProxy.connect(true);
+				if (mFacebookProxy == null) {
+					mFacebookProxy = newFacebookProxy();
+					mThirdPartyProxies.add(mFacebookProxy);
+				}
+				mFacebookProxy.start(true, mFacebookCallbacks);
 				break;
 			case R.id.signin_authenticate_google_button: {
 				if (CommonUtils.notifyIfNoNetwork(this)) {
 					return;
 				}
-				mMonitoringGoogle = true;
-				mGoogleProxy.connect(true);
+				if (mGoogleProxy == null) {
+					mGoogleProxy = newGoogleProxy();
+					mThirdPartyProxies.add(mGoogleProxy);
+				}
+				mGoogleProxy.start(true, mGoogleCallbacks);
 				break;
 			}
 			case R.id.signin_authenticate_create_account_button: {
@@ -201,6 +208,14 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		}
 	}
 
+	private FacebookProxy newFacebookProxy() {
+		return new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
+	}
+
+	private GoogleProxy newGoogleProxy() {
+		return new GoogleProxy(this, mGoogleCallbacks);
+	}
+
 	private void wrapUp() {
 		if (mStartupMode) {
 			startActivity(new Intent(this, MainActivity.class));
@@ -210,49 +225,63 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 
 	/* FacebookProxy callbacks */
 
-	private FacebookProxy.Callbacks mFacebookProxyCallbacks = new FacebookProxy.SimpleCallbacks() {
+	private FacebookProxy.Callbacks mFacebookCallbacks = new FacebookProxy.SimpleCallbacks() {
 		@Override
-		public void onConnected(FacebookProxy proxy, Session session, SessionState state) {
-			if (mMonitoringFacebook) {
-				proxy.requestData(session, Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
-			}
+		public void onConnected(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			proxy.requestData(Arrays.asList(DATA_TOKEN, DATA_ME), mOnDataListener);
 		}
 
 		@Override
-		public boolean onError(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
-			// TODO examine mMonitoringFacebook?
+		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			mThirdPartyProxies.remove(mFacebookProxy);
+			mFacebookProxy.stop(true); // TODO clear? Or not?
+			mFacebookProxy = null;
+		}
+
+		@Override
+		public boolean onFailed(FacebookProxy proxy, boolean cancelled, Session session, SessionState state, Exception exception) {
+			// TODO Error handling
+
+			mThirdPartyProxies.remove(mFacebookProxy);
+			mFacebookProxy.stop(true); // TODO clear? Or not?
+			mFacebookProxy = null;
 			return false;
 		}
 	};
 
-	/* GoogleProxy callbacks */
+	private GoogleProxy.Callbacks mGoogleCallbacks = new GoogleProxy.SimpleCallbacks() {
+		@Override
+		public void onPreBuild(@NonNull GoogleApiClient.Builder builder) {
+			builder.addApi(Plus.API);
+			builder.addScope(Plus.SCOPE_PLUS_LOGIN);
+		}
 
-	private GoogleProxy.Callbacks mGoogleProxyCallbacks = new GoogleProxy.SimpleCallbacks() {
 		@Override
 		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
-			if (mMonitoringGoogle) {
-				proxy.requestData(proxy.getGoogleApiClient(),
-						Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
-			}
+			proxy.requestData(Arrays.asList(DATA_TOKEN, DATA_ACCOUNT_NAME, DATA_CURRENT_PERSON), mOnDataListener);
 		}
 
 		@Override
-		public boolean onError(GoogleProxy proxy, ConnectionResult result) {
-			// TODO examine mMonitoringGoogle?
+		public void onDisconnected(GoogleProxy proxy) {
+			mThirdPartyProxies.remove(mGoogleProxy);
+			mGoogleProxy.stop(true); // TODO clear? Or not?
+			mGoogleProxy = null;
+		}
+
+		@Override
+		public boolean onFailed(GoogleProxy proxy, boolean cancelled, ConnectionResult result) {
+			// TODO Error handling
+
+			mThirdPartyProxies.remove(mGoogleProxy);
+			mGoogleProxy.stop(true); // TODO clear? Or not?
+			mGoogleProxy = null;
 			return false;
 		}
 	};
-
-	/* Proxy request data callbacks */
 
 	private ThirdPartyProxy.OnDataListener mOnDataListener = new ThirdPartyProxy.OnDataListener() {
 		@Override
-		public void onError(ThirdPartyProxy proxy, Map<String, Object> errors) {
-
-		}
-
-		@Override
-		public void onData(ThirdPartyProxy proxy, Map<String, Object> data) {
+		public void onData(final ThirdPartyProxy proxy, Map<String, Object> data) {
 			final ThirdPartyUser thirdPartyUser;
 			if (proxy == mFacebookProxy) {
 				String token = (String) data.get(DATA_TOKEN);
@@ -268,7 +297,6 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 			}
 
 			// Attempt to log in to Citymaps using the third party user info
-
 			if (thirdPartyUser != null) {
 				UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivity.this, thirdPartyUser.getThirdParty(),
 						thirdPartyUser.getId(), thirdPartyUser.getToken(), new Response.Listener<User>() {
@@ -281,14 +309,27 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 							@Override
 							public void onErrorResponse(VolleyError error) {
 								// There is no Citymaps user linked to the third party account. Take them to the Create Account screen
+								int requestCode;
+								if (proxy == mFacebookProxy) {
+									requestCode = REQUEST_CODE_CREATE_ACCOUNT_WITH_FACEBOOK;
+								} else if (proxy == mGoogleProxy) {
+									requestCode = REQUEST_CODE_CREATE_ACCOUNT_WITH_GOOGLE;
+								} else {
+									return;
+								}
 								Intent intent = new Intent(AuthenticateActivity.this, SigninActivity.class);
 								IntentUtils.putLoginMode(intent, SigninActivity.CREATE_ACCOUNT_MODE);
 								IntentUtils.putThirdPartyUser(intent, thirdPartyUser);
-								AuthenticateActivity.this.startActivityForResult(intent, REQUEST_CODE_CREATE_ACCOUNT);
+								AuthenticateActivity.this.startActivityForResult(intent, requestCode);
 							}
 						});
 				VolleyManager.getInstance(AuthenticateActivity.this).getRequestQueue().add(loginRequest);
 			}
+		}
+
+		@Override
+		public void onError(ThirdPartyProxy proxy, Map<String, Object> errors) {
+			// TODO Error handling
 		}
 	};
 }
