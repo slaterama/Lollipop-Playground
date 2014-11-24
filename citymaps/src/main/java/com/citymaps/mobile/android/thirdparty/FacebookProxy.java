@@ -3,7 +3,6 @@ package com.citymaps.mobile.android.thirdparty;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import com.citymaps.mobile.android.util.CollectionUtils;
 import com.citymaps.mobile.android.util.CommonUtils;

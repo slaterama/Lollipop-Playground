@@ -24,6 +24,7 @@ import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.util.UpdateUtils.UpdateType;
 import com.citymaps.mobile.android.view.MainActivity;
+import com.citymaps.mobile.android.thirdparty2.AuthenticateActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;

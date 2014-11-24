@@ -18,7 +18,7 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
-import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity;
+import com.citymaps.mobile.android.thirdparty2.AuthenticateActivity;
 import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
 import com.citymaps.mobile.android.view.housekeeping.SoftUpdateDialogFragment;
 import com.citymaps.mobile.android.view.settings.PreferencesActivity;
