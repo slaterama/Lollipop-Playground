@@ -55,11 +55,14 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 			session.openForRead(new Session.OpenRequest(mActivity)
 					.setPermissions(mReadPermissions)
 					.setCallback(this));
-		} else {
-			session = Session.openActiveSessionFromCache(mActivity);
+		} else if (!TextUtils.isEmpty(mToken)) {
+			AccessToken accessToken = AccessToken.createFromExistingAccessToken(mToken, null, null, null, mReadPermissions);
+			session = Session.openActiveSessionWithAccessToken(mActivity, accessToken, this);
 			if (session == null) {
 				Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
 			}
+		} else {
+			Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
 		}
 	}
 

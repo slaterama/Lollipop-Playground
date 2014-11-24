@@ -1,13 +1,11 @@
 package com.citymaps.mobile.android.view.settings;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,10 +30,14 @@ import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.ShareUtils;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import java.util.*;
 
@@ -107,11 +109,14 @@ public class MainPreferencesFragment extends PreferencesFragment
 		if (mCurrentUser != null) {
 			User.ThirdPartyCredentials credentials = mCurrentUser.getThirdPartyCredentials();
 			if (credentials != null) {
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 				if (credentials.getFacebook() != null) {
 					mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
+					mFacebookProxy.setToken(SharedPreferenceUtils.getFacebookToken(sp, null));
 				}
 				if (credentials.getGoogle() != null) {
 					mGoogleProxy = new GoogleProxy(this, mGoogleCallbacks);
+					mGoogleProxy.setToken(SharedPreferenceUtils.getGoogleToken(sp, null));
 				}
 			}
 		}
@@ -163,11 +168,11 @@ public class MainPreferencesFragment extends PreferencesFragment
 			if (credentials != null) {
 				if (credentials.getFacebook() != null) {
 					mFacebookPreference.setChecked(true);
-					mFacebookProxy.start(false, mFacebookCallbacks);
+					mFacebookProxy.start(false, mFacebookCallbacks); // TODO Might want an option where we ONLY connect with a token with no fallback
 				}
 				if (credentials.getGoogle() != null) {
 					mGooglePreference.setChecked(true);
-					mGoogleProxy.start(false, mGoogleCallbacks);
+					mGoogleProxy.start(false, mGoogleCallbacks); // TODO Might want an option where we ONLY connect with a token with no fallback
 				}
 			}
 		}
@@ -320,6 +325,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 			if (LogEx.isLoggable(LogEx.INFO)) {
 				LogEx.i(String.format("proxy=%s, session=%s, state=%s, exception=%s", proxy, session, state, exception));
 			}
+			mFacebookProxy.requestData(Arrays.asList(FacebookProxy.DATA_ME), mOnDataListener);
 		}
 
 		@Override
@@ -344,6 +350,66 @@ public class MainPreferencesFragment extends PreferencesFragment
 		public void onPreBuild(@NonNull GoogleApiClient.Builder builder) {
 			builder.addApi(Plus.API);
 			builder.addScope(Plus.SCOPE_PLUS_LOGIN);
+		}
+
+		@Override
+		public void onConnecting(GoogleProxy proxy) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s", proxy));
+			}
+		}
+
+		@Override
+		public void onConnected(GoogleProxy proxy, Bundle connectionHint) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s, connectionHint=%s", proxy, connectionHint));
+			}
+		}
+
+		@Override
+		public void onDisconnected(GoogleProxy proxy) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s", proxy));
+			}
+		}
+
+		@Override
+		public boolean onFailed(GoogleProxy proxy, boolean cancelled, ConnectionResult result) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s, cancelled=%b, result=%s", proxy, cancelled, result));
+			}
+			mFacebookPreference.setSummary(R.string.error_pref_third_party_connection_lost);
+			return true;
+		}
+	};
+
+	private ThirdPartyProxy.OnDataListener mOnDataListener = new ThirdPartyProxy.OnDataListener() {
+		@Override
+		public void onData(ThirdPartyProxy proxy, Map<String, Object> data) {
+			ThirdParty thirdParty = proxy.getThirdParty();
+			switch (thirdParty) {
+				case FACEBOOK:
+					// TODO Are all these null checks necessary?
+					String facebookId = mCurrentUser.getFacebookId();
+					GraphUser graphUser = (GraphUser) data.get(FacebookProxy.DATA_ME);
+					if (graphUser == null || !TextUtils.equals(facebookId, graphUser.getId())) {
+						mFacebookPreference.setSummary(R.string.error_pref_third_party_connection_lost);
+					} else {
+						mFacebookPreference.setSummary(graphUser.getName());
+					}
+					break;
+				case GOOGLE:
+					if (mCurrentUser != null) {
+						String googleId = mCurrentUser.getGoogleId();
+						Person person = (Person) data.get(GoogleProxy.DATA_CURRENT_PERSON);
+					}
+					break;
+			}
+		}
+
+		@Override
+		public void onError(ThirdPartyProxy proxy, Map<String, Object> errors) {
+
 		}
 	};
 

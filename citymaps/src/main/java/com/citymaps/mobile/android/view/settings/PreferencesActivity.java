@@ -24,7 +24,8 @@ public class PreferencesActivity extends TrackedActionBarActivity
 	private static final String EMAIL_INTENT_TYPE = "message/rfc822";
 
 	public static final int DEFAULT_PREFERENCES = 0;
-	public static final int DEVELOPER_PREFERENCES = 1;
+	public static final int DEFAULT_PREFERENCES_AUTHENTICATED = 1;
+	public static final int DEVELOPER_PREFERENCES = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

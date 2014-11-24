@@ -973,6 +973,36 @@ public class User extends CitymapsObservable {
 	}
 
 	/**
+	 * Helper method to get the Facebook ID associated with user, if one exists.
+	 * @return The Facebook ID.
+	 */
+	public String getFacebookId() {
+		String id = null;
+		if (mThirdPartyCredentials != null) {
+			ThirdPartyCredential credential = mThirdPartyCredentials.getFacebook();
+			if (credential != null) {
+				id = credential.mId;
+			}
+		}
+		return id;
+	}
+
+	/**
+	 * Helper method to get the Google ID associated with user, if one exists.
+	 * @return The Google ID.
+	 */
+	public String getGoogleId() {
+		String id = null;
+		if (mThirdPartyCredentials != null) {
+			ThirdPartyCredential credential = mThirdPartyCredentials.getGoogle();
+			if (credential != null) {
+				id = credential.mId;
+			}
+		}
+		return id;
+	}
+
+	/**
 	 * Indicates whether some other user is "equal to" this one.
 	 * @param obj The reference user with which to compare.
 	 * @return <code>True</code> if this user is the same as the obj argument; <code>false</code> otherwise.
@@ -1080,6 +1110,10 @@ public class User extends CitymapsObservable {
 
 		private AvatarProvider(int intValue) {
 			mIntValue = intValue;
+		}
+
+		public int getIntValue() {
+			return mIntValue;
 		}
 	}
 }

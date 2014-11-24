@@ -120,7 +120,7 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 				public void onResponse(User response) {
 					// If we're here, the register was successful and now we want to update the user avatar url.
 					Map<String, String> updateParams = new HashMap<String, String>(2);
-					updateParams.put(KEY_AVATAR_PROVIDER, String.valueOf(thirdParty.getAvatarProvider()));
+					updateParams.put(KEY_AVATAR_PROVIDER, String.valueOf(response.getAvatarProvider().getIntValue()));
 					updateParams.put(KEY_AVATAR_URL, thirdPartyAvatarUrl);
 					UserRequest updateRequest = newUpdateRequest(context, response.getId(), updateParams, listener, errorListener);
 					VolleyManager.getInstance(context).getRequestQueue().add(updateRequest);

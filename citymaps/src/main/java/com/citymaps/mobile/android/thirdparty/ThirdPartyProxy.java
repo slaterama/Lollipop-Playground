@@ -16,9 +16,8 @@ import java.util.Map;
 
 public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 
-	private static final String CLASSNAME = ThirdPartyProxy.class.getName();
-	private static final String STATE_KEY_ACTIVE = CLASSNAME + ".active";
-	private static final String STATE_KEY_INTERACTIVE = CLASSNAME + ".interactive";
+	private static final String STATE_KEY_ACTIVE = ThirdPartyProxy.class.getName() + ".active";
+	private static final String STATE_KEY_INTERACTIVE = ThirdPartyProxy.class.getName() + ".interactive";
 
 	public static final String DATA_TOKEN = "token";
 
@@ -26,11 +25,13 @@ public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 
 	protected Fragment mFragment;
 
-	private boolean mActive;
+	protected boolean mActive;
 
-	private boolean mInteractive;
+	protected boolean mInteractive;
 
-	private C mCallbacks;
+	protected C mCallbacks;
+
+	protected String mToken;
 
 	public ThirdPartyProxy(FragmentActivity activity, C callbacks) {
 		mActivity = activity;
@@ -60,6 +61,14 @@ public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 
 	protected C getCallbacks() {
 		return mCallbacks;
+	}
+
+	public String getToken() {
+		return mToken;
+	}
+
+	public void setToken(String token) {
+		mToken = token;
 	}
 
 	public void start(boolean interactive, C callbacks) {
@@ -130,11 +139,6 @@ public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 			super();
 			mProxy = proxy;
 			mNames = names;
-			//if (names != null) {
-				//int size = names.size();
-				//mData = new LinkedHashMap<String, Object>(size);
-				//mErrors = new LinkedHashMap<String, Object>(size);
-			//}
 			mListener = listener;
 		}
 
