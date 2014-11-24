@@ -56,7 +56,10 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 					.setPermissions(mReadPermissions)
 					.setCallback(this));
 		} else {
-			Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
+			session = Session.openActiveSessionFromCache(mActivity);
+			if (session == null) {
+				Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
+			}
 		}
 	}
 

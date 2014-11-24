@@ -1,6 +1,9 @@
 package com.citymaps.mobile.android.view.settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import com.android.volley.Response;
@@ -10,6 +13,7 @@ import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.SignoutDialogFragment;
 
@@ -60,6 +64,12 @@ public class PreferencesActivity extends TrackedActionBarActivity
 						@Override
 						public void onResponse(User response) {
 							sessionManager.setCurrentUser(null);
+
+							// Clear third party tokens
+							SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(PreferencesActivity.this);
+							sp.edit().remove(SharedPreferenceUtils.Key.FACEBOOK_TOKEN.getKeyName())
+								.remove(SharedPreferenceUtils.Key.GOOGLE_TOKEN.getKeyName()).apply();
+
 							setResult(MainActivity.RESULT_LOGOUT);
 							finish();
 						}
@@ -67,7 +77,7 @@ public class PreferencesActivity extends TrackedActionBarActivity
 					new Response.ErrorListener() {
 						@Override
 						public void onErrorResponse(VolleyError error) {
-							// TODO Show error message
+							// TODO Error handling
 						}
 					});
 			VolleyManager.getInstance(this).getRequestQueue().add(request);

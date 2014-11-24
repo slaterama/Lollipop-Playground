@@ -979,9 +979,7 @@ public class User extends CitymapsObservable {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof User)
-			return TextUtils.equals(mId, ((User) obj).getId());
-		return super.equals(obj);
+		return (obj instanceof User && TextUtils.equals(mId, ((User) obj).getId()));
 	}
 
 	@Override

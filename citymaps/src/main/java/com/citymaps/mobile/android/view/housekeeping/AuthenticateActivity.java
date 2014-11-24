@@ -1,7 +1,9 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import com.android.volley.Response;
@@ -10,6 +12,7 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
@@ -18,6 +21,7 @@ import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
@@ -64,11 +68,11 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		mThirdPartyProxies = new HashSet<ThirdPartyProxy>(2);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.getBoolean(STATE_KEY_FACEBOOK_INVOKED)) {
-				mFacebookProxy = newFacebookProxy();
+				mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
 				mThirdPartyProxies.add(mFacebookProxy);
 			}
 			if (savedInstanceState.getBoolean(STATE_KEY_GOOGLE_INVOKED)) {
-				mGoogleProxy = newGoogleProxy();
+				mGoogleProxy = new GoogleProxy(this, mGoogleCallbacks);
 				mThirdPartyProxies.add(mGoogleProxy);
 			}
 		}
@@ -173,7 +177,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					return;
 				}
 				if (mFacebookProxy == null) {
-					mFacebookProxy = newFacebookProxy();
+					mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
 					mThirdPartyProxies.add(mFacebookProxy);
 				}
 				mFacebookProxy.start(true, mFacebookCallbacks);
@@ -183,7 +187,7 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 					return;
 				}
 				if (mGoogleProxy == null) {
-					mGoogleProxy = newGoogleProxy();
+					mGoogleProxy = new GoogleProxy(this, mGoogleCallbacks);
 					mThirdPartyProxies.add(mGoogleProxy);
 				}
 				mGoogleProxy.start(true, mGoogleCallbacks);
@@ -206,14 +210,6 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 				break;
 			}
 		}
-	}
-
-	private FacebookProxy newFacebookProxy() {
-		return new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
-	}
-
-	private GoogleProxy newGoogleProxy() {
-		return new GoogleProxy(this, mGoogleCallbacks);
 	}
 
 	private void wrapUp() {
@@ -283,48 +279,50 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 		@Override
 		public void onData(final ThirdPartyProxy proxy, Map<String, Object> data) {
 			final ThirdPartyUser thirdPartyUser;
-			if (proxy == mFacebookProxy) {
-				String token = (String) data.get(DATA_TOKEN);
-				GraphUser graphUser = (GraphUser) data.get(DATA_ME);
-				thirdPartyUser = new ThirdPartyUser(token, graphUser);
-			} else if (proxy == mGoogleProxy) {
-				String token = (String) data.get(DATA_TOKEN);
-				Person person = (Person) data.get(DATA_CURRENT_PERSON);
-				String accountName = (String) data.get(DATA_ACCOUNT_NAME);
-				thirdPartyUser = new ThirdPartyUser(token, person, accountName);
-			} else {
-				thirdPartyUser = null;
+			final ThirdParty thirdParty = proxy.getThirdParty();
+			final int requestCode;
+			switch (thirdParty) {
+				case FACEBOOK: {
+					String token = (String) data.get(DATA_TOKEN);
+					GraphUser graphUser = (GraphUser) data.get(DATA_ME);
+					thirdPartyUser = new ThirdPartyUser(token, graphUser);
+					requestCode = REQUEST_CODE_CREATE_ACCOUNT_WITH_FACEBOOK;
+					break;
+				}
+				case GOOGLE: {
+					String token = (String) data.get(DATA_TOKEN);
+					Person person = (Person) data.get(DATA_CURRENT_PERSON);
+					String accountName = (String) data.get(DATA_ACCOUNT_NAME);
+					thirdPartyUser = new ThirdPartyUser(token, person, accountName);
+					requestCode = REQUEST_CODE_CREATE_ACCOUNT_WITH_GOOGLE;
+					break;
+				}
+				default:
+					return;
 			}
 
 			// Attempt to log in to Citymaps using the third party user info
-			if (thirdPartyUser != null) {
-				UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivity.this, thirdPartyUser.getThirdParty(),
-						thirdPartyUser.getId(), thirdPartyUser.getToken(), new Response.Listener<User>() {
-							@Override
-							public void onResponse(User response) {
-								SessionManager.getInstance(AuthenticateActivity.this).setCurrentUser(response);
-								wrapUp();
-							}
-						}, new Response.ErrorListener() {
-							@Override
-							public void onErrorResponse(VolleyError error) {
-								// There is no Citymaps user linked to the third party account. Take them to the Create Account screen
-								int requestCode;
-								if (proxy == mFacebookProxy) {
-									requestCode = REQUEST_CODE_CREATE_ACCOUNT_WITH_FACEBOOK;
-								} else if (proxy == mGoogleProxy) {
-									requestCode = REQUEST_CODE_CREATE_ACCOUNT_WITH_GOOGLE;
-								} else {
-									return;
-								}
-								Intent intent = new Intent(AuthenticateActivity.this, SigninActivity.class);
-								IntentUtils.putLoginMode(intent, SigninActivity.CREATE_ACCOUNT_MODE);
-								IntentUtils.putThirdPartyUser(intent, thirdPartyUser);
-								AuthenticateActivity.this.startActivityForResult(intent, requestCode);
-							}
-						});
-				VolleyManager.getInstance(AuthenticateActivity.this).getRequestQueue().add(loginRequest);
-			}
+			UserRequest loginRequest = UserRequest.newLoginRequest(AuthenticateActivity.this, thirdPartyUser.getThirdParty(),
+					thirdPartyUser.getId(), thirdPartyUser.getToken(), new Response.Listener<User>() {
+						@Override
+						public void onResponse(User response) {
+							// We successfully logged in using a third party
+							SessionManager.getInstance(AuthenticateActivity.this).setCurrentUser(response);
+							SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(AuthenticateActivity.this);
+							SharedPreferenceUtils.putString(sp, thirdParty.getSharedPreferenceTokenKey(), thirdPartyUser.getToken()).apply();
+							wrapUp();
+						}
+					}, new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							// There is no Citymaps user linked to the third party account. Take them to the Create Account screen
+							Intent intent = new Intent(AuthenticateActivity.this, SigninActivity.class);
+							IntentUtils.putLoginMode(intent, SigninActivity.CREATE_ACCOUNT_MODE);
+							IntentUtils.putThirdPartyUser(intent, thirdPartyUser);
+							AuthenticateActivity.this.startActivityForResult(intent, requestCode);
+						}
+					});
+			VolleyManager.getInstance(AuthenticateActivity.this).getRequestQueue().add(loginRequest);
 		}
 
 		@Override

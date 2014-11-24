@@ -112,14 +112,13 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 		if (!TextUtils.isEmpty(thirdPartyToken)) params.put(KEY_THIRD_PARTY_TOKEN, thirdPartyToken);
 
 		// Catch the result in an interim listener if successful, and update the user's avatar url if provided.
-		if (TextUtils.isEmpty(thirdPartyAvatarUrl)) {
+		if (thirdParty == null || TextUtils.isEmpty(thirdPartyAvatarUrl)) {
 			return new UserRequest(Method.POST, urlString, null, params, listener, errorListener);
 		} else {
 			Response.Listener<User> interimListener = new Response.Listener<User>() {
 				@Override
 				public void onResponse(User response) {
 					// If we're here, the register was successful and now we want to update the user avatar url.
-					SessionManager.getInstance(context).setCurrentUser(response); // <-- Need this before calling the update request
 					Map<String, String> updateParams = new HashMap<String, String>(2);
 					updateParams.put(KEY_AVATAR_PROVIDER, String.valueOf(thirdParty.getAvatarProvider()));
 					updateParams.put(KEY_AVATAR_URL, thirdPartyAvatarUrl);

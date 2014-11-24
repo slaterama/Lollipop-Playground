@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -30,6 +32,7 @@ import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.request.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CommonUtils;
+import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.Validator;
 import com.citymaps.mobile.android.util.ViewUtils;
 
@@ -225,6 +228,14 @@ public class SigninCreateAccountFragment extends FormFragment
 	public void onResponse(User response) {
 		super.onResponse(response);
 		SessionManager.getInstance(getActivity()).setCurrentUser(response);
+
+		if (mThirdPartyUser != null) {
+			// Capture third party token
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+			ThirdParty thirdParty = mThirdPartyUser.getThirdParty();
+			SharedPreferenceUtils.putString(sp, thirdParty.getSharedPreferenceTokenKey(), mThirdPartyUser.getToken()).apply();
+		}
+
 		if (mListener != null) {
 			mListener.onCreateAccountSuccess(response);
 		}

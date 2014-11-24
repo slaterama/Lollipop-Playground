@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -19,22 +20,32 @@ import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.UserSettings;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.request.UserSettingsRequest;
 import com.citymaps.mobile.android.model.request.VolleyCallbacks;
+import com.citymaps.mobile.android.thirdparty.FacebookProxy;
+import com.citymaps.mobile.android.thirdparty.GoogleProxy;
+import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
+import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.ShareUtils;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MainPreferencesFragment extends PreferencesFragment
 		implements Preference.OnPreferenceClickListener,
 		Preference.OnPreferenceChangeListener {
 
 	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
+
+	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
 
 	private static final int REQUEST_CODE_USER_SETTINGS = 0;
 
@@ -65,9 +76,11 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 	protected User mCurrentUser;
 
-	protected boolean mUserLoggedIn = false;
-
 	protected HelperFragment mHelperFragment;
+
+	protected Set<ThirdPartyProxy> mThirdPartyProxies;
+	protected FacebookProxy mFacebookProxy;
+	protected GoogleProxy mGoogleProxy;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -84,12 +97,25 @@ public class MainPreferencesFragment extends PreferencesFragment
 		mConnectivityManager = (ConnectivityManager) activity.getSystemService(Activity.CONNECTIVITY_SERVICE);
 
 		mCurrentUser = mSessionManager.getCurrentUser();
-		mUserLoggedIn = (mCurrentUser != null);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mThirdPartyProxies = new HashSet<ThirdPartyProxy>(ThirdParty.values().length);
+		if (mCurrentUser != null) {
+			User.ThirdPartyCredentials credentials = mCurrentUser.getThirdPartyCredentials();
+			if (credentials != null) {
+				if (credentials.getFacebook() != null) {
+					mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
+				}
+				if (credentials.getGoogle() != null) {
+					mGoogleProxy = new GoogleProxy(this, mGoogleCallbacks);
+				}
+			}
+		}
+
 		if (savedInstanceState == null) {
 			mHelperFragment = new HelperFragment();
 			getFragmentManager()
@@ -109,9 +135,9 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 		addPreferencesFromResource(R.xml.preferences_general);
 
-		addPreferencesFromResource(mUserLoggedIn
-				? R.xml.preferences_authenticated
-				: R.xml.preferences_unauthenticated);
+		addPreferencesFromResource(mCurrentUser == null
+				? R.xml.preferences_unauthenticated
+				: R.xml.preferences_authenticated);
 
 		mShareAppPreference = findPreference(PreferenceType.SHARE_APP.toString());
 		mFeedbackPreference = findPreference(PreferenceType.FEEDBACK.toString());
@@ -119,7 +145,10 @@ public class MainPreferencesFragment extends PreferencesFragment
 		mShareAppPreference.setOnPreferenceClickListener(this);
 		mFeedbackPreference.setOnPreferenceClickListener(this);
 
-		if (mUserLoggedIn) {
+		if (mCurrentUser == null) {
+			mSigninPreference = findPreference(PreferenceType.SIGNIN.toString());
+			mSigninPreference.setOnPreferenceClickListener(this);
+		} else {
 			mFacebookPreference = (SwitchPreference) findPreference(PreferenceType.CONNECT_FACEBOOK.toString());
 			mGooglePreference = (SwitchPreference) findPreference(PreferenceType.CONNECT_GOOGLE.toString());
 			mEmailNotificationsPreference = (SwitchPreference) findPreference(PreferenceType.EMAIL_NOTIFICATIONS.toString());
@@ -129,16 +158,25 @@ public class MainPreferencesFragment extends PreferencesFragment
 			mGooglePreference.setOnPreferenceChangeListener(this);
 			mEmailNotificationsPreference.setOnPreferenceChangeListener(this);
 			mSignoutPreference.setOnPreferenceClickListener(this);
-		} else {
-			mSigninPreference = findPreference(PreferenceType.SIGNIN.toString());
-			mSigninPreference.setOnPreferenceClickListener(this);
+
+			User.ThirdPartyCredentials credentials = mCurrentUser.getThirdPartyCredentials();
+			if (credentials != null) {
+				if (credentials.getFacebook() != null) {
+					mFacebookPreference.setChecked(true);
+					mFacebookProxy.start(false, mFacebookCallbacks);
+				}
+				if (credentials.getGoogle() != null) {
+					mGooglePreference.setChecked(true);
+					mGoogleProxy.start(false, mGoogleCallbacks);
+				}
+			}
 		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (mUserLoggedIn) {
+		if (mCurrentUser != null) {
 			getActivity().registerReceiver(mConnectivityReceiver,
 					new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		}
@@ -153,7 +191,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (mUserLoggedIn) {
+		if (mCurrentUser != null) {
 			getActivity().unregisterReceiver(mConnectivityReceiver);
 		}
 	}
@@ -222,18 +260,28 @@ public class MainPreferencesFragment extends PreferencesFragment
 		switch (type) {
 			case CONNECT_FACEBOOK:
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
+					boolean checked = (Boolean) newValue;
+					if (checked) {
 
+					} else {
+
+					}
 				}
 				return false;
 			case CONNECT_GOOGLE:
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
+					boolean checked = (Boolean) newValue;
+					if (checked) {
 
+					} else {
+
+					}
 				}
 				return false;
 			case EMAIL_NOTIFICATIONS:
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
-					boolean enabled = (Boolean) newValue;
-					mHelperFragment.setEmailNotifications(enabled);
+					boolean checked = (Boolean) newValue;
+					mHelperFragment.setEmailNotifications(checked);
 				}
 				return false;
 			default: {
@@ -256,6 +304,46 @@ public class MainPreferencesFragment extends PreferencesFragment
 			} else {
 				// No action
 			}
+		}
+	};
+
+	private FacebookProxy.Callbacks mFacebookCallbacks = new FacebookProxy.SimpleCallbacks() {
+		@Override
+		public void onConnecting(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s, session=%s, state=%s, exception=%s", proxy, session, state, exception));
+			}
+		}
+
+		@Override
+		public void onConnected(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s, session=%s, state=%s, exception=%s", proxy, session, state, exception));
+			}
+		}
+
+		@Override
+		public void onDisconnected(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s, session=%s, state=%s, exception=%s", proxy, session, state, exception));
+			}
+		}
+
+		@Override
+		public boolean onFailed(FacebookProxy proxy, boolean cancelled, Session session, SessionState state, Exception exception) {
+			if (LogEx.isLoggable(LogEx.INFO)) {
+				LogEx.i(String.format("proxy=%s, cancelled=%b, session=%s, state=%s, exception=%s", proxy, cancelled, session, state, exception));
+			}
+			return false;
+		}
+	};
+
+	private GoogleProxy.Callbacks mGoogleCallbacks = new GoogleProxy.SimpleCallbacks() {
+
+		@Override
+		public void onPreBuild(@NonNull GoogleApiClient.Builder builder) {
+			builder.addApi(Plus.API);
+			builder.addScope(Plus.SCOPE_PLUS_LOGIN);
 		}
 	};
 

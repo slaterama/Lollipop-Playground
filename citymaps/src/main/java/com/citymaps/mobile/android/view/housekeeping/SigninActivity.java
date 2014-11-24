@@ -32,20 +32,24 @@ public class SigninActivity extends TrackedActionBarActivity
 	public static final int RESET_PASSWORD_MODE = 2;
 
 	public static final String URI_PARAM_TERMS_OF_SERVICE = "terms_of_service";
-	public static final String URI_PARAM_PRIVICY_POLICY = "privacy_policy";
+	public static final String URI_PARAM_PRIVACY_POLICY = "privacy_policy";
 
 	private ScrollView mScrollView;
+
+	private ThirdPartyUser mThirdPartyUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signin);
 
+		Intent intent = getIntent();
+		mThirdPartyUser = IntentUtils.getThirdPartyUser(intent);
+
 		mScrollView = (ScrollView) findViewById(R.id.login_scrollview);
 
 		final int[] scrollViewPos;
 		if (savedInstanceState == null) {
-			Intent intent = getIntent();
 			int loginMode = IntentUtils.getLoginMode(intent, SIGN_IN_MODE);
 			showFragment(loginMode, false, false);
 			scrollViewPos = new int[]{0, 0};
@@ -90,7 +94,7 @@ public class SigninActivity extends TrackedActionBarActivity
 			String urlString = environment.buildUrlString(Endpoint.Type.TERMS_OF_SERVICE);
 			newIntent.setData(Uri.parse(urlString));
 			startActivity(newIntent);
-		} else if (TextUtils.equals(param, URI_PARAM_PRIVICY_POLICY)) {
+		} else if (TextUtils.equals(param, URI_PARAM_PRIVACY_POLICY)) {
 			Intent newIntent = new Intent(Intent.ACTION_VIEW);
 			String urlString = environment.buildUrlString(Endpoint.Type.PRIVACY_POLICY);
 			newIntent.setData(Uri.parse(urlString));
@@ -148,12 +152,10 @@ public class SigninActivity extends TrackedActionBarActivity
 		Fragment fragment;
 		switch (loginMode) {
 			case CREATE_ACCOUNT_MODE:
-				Intent intent = getIntent();
-				ThirdPartyUser thirdPartyUser = IntentUtils.getThirdPartyUser(intent);
-				if (thirdPartyUser == null) {
+				if (mThirdPartyUser == null) {
 					fragment = SigninCreateAccountFragment.newInstance();
 				} else {
-					fragment = SigninCreateAccountFragment.newInstance(thirdPartyUser);
+					fragment = SigninCreateAccountFragment.newInstance(mThirdPartyUser);
 				}
 				break;
 			case RESET_PASSWORD_MODE:

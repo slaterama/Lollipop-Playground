@@ -83,22 +83,28 @@ public class SharedPreferenceUtils {
 		return sp.edit().remove(key.toString());
 	}
 
-	/*
-	public static Editor putFirstRunComplete(SharedPreferences sp, boolean firstRunComplete) {
-		return putBoolean(sp, Key.FIRST_RUN_COMPLETE, firstRunComplete);
-	}
-
-	public static boolean isFirstRunComplete(SharedPreferences sp, boolean defValue) {
-		return getBoolean(sp, Key.FIRST_RUN_COMPLETE, defValue);
-	}
-	*/
-
 	public static Editor putCitymapsToken(SharedPreferences sp, String value) {
 		return putString(sp, Key.CITYMAPS_TOKEN, value);
 	}
 
 	public static String getCitymapsToken(SharedPreferences sp, String defValue) {
 		return getString(sp, Key.CITYMAPS_TOKEN, defValue);
+	}
+
+	public static Editor putFacebookToken(SharedPreferences sp, String value) {
+		return putString(sp, Key.FACEBOOK_TOKEN, value);
+	}
+
+	public static String getFacebookToken(SharedPreferences sp, String defValue) {
+		return getString(sp, Key.FACEBOOK_TOKEN, defValue);
+	}
+
+	public static Editor putGoogleToken(SharedPreferences sp, String value) {
+		return putString(sp, Key.GOOGLE_TOKEN, value);
+	}
+
+	public static String getGoogleToken(SharedPreferences sp, String defValue) {
+		return getString(sp, Key.GOOGLE_TOKEN, defValue);
 	}
 
 	public static Editor putTourProcessed(SharedPreferences sp, boolean value) {
@@ -179,40 +185,50 @@ public class SharedPreferenceUtils {
 	}
 
 	public static enum Key {
-		/*
-		FIRST_RUN_COMPLETE,
-		*/
+		CITYMAPS_TOKEN("pref_citymaps_token"),
+		FACEBOOK_TOKEN("pref_facebook_token"),
+		GOOGLE_TOKEN("pref_google_token"),
 
-		CITYMAPS_TOKEN,
+		TOUR_PROCESSED("pref_tour_processed"),
+		ENABLE_LOCATION_PROCESSED("pref_enable_location_processed"),
 
-		TOUR_PROCESSED,
-		ENABLE_LOCATION_PROCESSED,
+		API_VERSION("pref_api_version"),
+		API_BUILD("pref_api_build"),
+		CONFIG_APP_VERSION("pref_config_app_version"),
+		CONFIG_APP_VERSION_CODE("pref_config_app_version_code"),
+		CONFIG_MIN_VERSION("pref_config_min_version"),
+		CONFIG_MIN_VERSION_CODE("pref_config_min_version_code"),
+		CONFIG_TIMESTAMP("pref_config_timestamp"),
+		CONFIG_UPGRADE_PROMPT("pref_config_upgrade_prompt"),
+		CONFIG_PROCESSED_ACTION("pref_config_processed_action"),
+		CONFIG_PROCESSED_TIMESTAMP("pref_config_processed_timestamp");
 
-		API_VERSION,
-		API_BUILD,
-		CONFIG_APP_VERSION,
-		CONFIG_APP_VERSION_CODE,
-		CONFIG_MIN_VERSION,
-		CONFIG_MIN_VERSION_CODE,
-		CONFIG_TIMESTAMP,
-		CONFIG_UPGRADE_PROMPT,
-		CONFIG_PROCESSED_ACTION,
-		CONFIG_PROCESSED_TIMESTAMP;
+		private static Map<String, Key> sKeyMap;
 
-		private String mToString;
-
-		private static Key fromString(String string) {
-			String name = string.replaceAll("^pref_", "").toUpperCase();
-			return Key.valueOf(name);
+		private static Key fromKeyName(String keyName) {
+			if (sKeyMap == null) {
+				Key[] keys = Key.values();
+				sKeyMap = new HashMap<String, Key>(keys.length);
+				for (Key key : keys) {
+					sKeyMap.put(key.mKeyName, key);
+				}
+			}
+			return sKeyMap.get(keyName);
 		}
 
-		private Key() {
-			mToString = String.format("pref_%s", name().toLowerCase());
+		private String mKeyName;
+
+		private Key(String keyName) {
+			mKeyName = keyName;
+		}
+
+		public String getKeyName() {
+			return mKeyName;
 		}
 
 		@Override
 		public String toString() {
-			return mToString;
+			return mKeyName;
 		}
 	}
 }
