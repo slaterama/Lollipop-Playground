@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.thirdparty;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,94 +8,80 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import com.citymaps.mobile.android.model.ThirdParty;
 
-import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy.AbsCallbacks;
-
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
+public abstract class ThirdPartyProxy<C extends ThirdPartyProxy.Callbacks> {
 
-	private static final String STATE_KEY_ACTIVE = ThirdPartyProxy.class.getName() + ".active";
-	private static final String STATE_KEY_INTERACTIVE = ThirdPartyProxy.class.getName() + ".interactive";
+	private static final String STATE_KEY_ACTIVATED = ThirdPartyProxy.class.getName() + ".activated";
 
 	public static final String DATA_TOKEN = "token";
+
+	protected Context mContext;
 
 	protected FragmentActivity mActivity;
 
 	protected Fragment mFragment;
 
-	protected boolean mActive;
+	protected boolean mActivated;
+
+	protected String mToken;
 
 	protected boolean mInteractive;
 
 	protected C mCallbacks;
 
-	protected String mToken;
-
 	public ThirdPartyProxy(FragmentActivity activity, C callbacks) {
+		super();
+		mContext = activity;
 		mActivity = activity;
 		mFragment = null;
 		mCallbacks = callbacks;
 	}
 
-	public ThirdPartyProxy(Fragment fragment, C callbacks) {
-		mActivity = fragment.getActivity();
+	public ThirdPartyProxy(Context context, Fragment fragment, C callbacks) {
+		super();
+		mContext = context;
+		mActivity = null;
 		mFragment = fragment;
 		mCallbacks = callbacks;
 	}
 
 	public abstract ThirdParty getThirdParty();
 
-	public boolean isActive() {
-		return mActive;
+	public boolean isActivated() {
+		return mActivated;
 	}
 
-	public boolean isInteractive() {
-		return mInteractive;
-	}
-
-	public void setInteractive(boolean interactive) {
-		mInteractive = interactive;
-	}
-
-	protected C getCallbacks() {
-		return mCallbacks;
-	}
-
-	public String getToken() {
-		return mToken;
-	}
-
-	public void setToken(String token) {
-		mToken = token;
-	}
-
-	public void start(boolean interactive, C callbacks) {
-		mActive = true;
+	public void activate(boolean interactive, C callbacks) {
+		mActivated = true;
+		mToken = null;
 		mInteractive = interactive;
 		mCallbacks = callbacks;
-		onProxyStart(interactive, callbacks);
+		onActivate(interactive, callbacks);
 	}
 
-	public abstract void onProxyStart(boolean interactive, C callbacks);
+	protected abstract void onActivate(boolean interactive, C callbacks);
 
-	public void stop(boolean clear) {
-		mActive = false;
+	public void deactivate(boolean clearToken) {
+		onDeactivate(clearToken);
+		mActivated = false;
+		mToken = null;
 		mInteractive = false;
 		mCallbacks = null;
-		onProxyStop(clear);
 	}
 
-	public abstract void onProxyStop(boolean clear);
+	protected abstract void onDeactivate(boolean clearToken);
 
 	public abstract boolean requestData(List<String> names, OnDataListener listener);
 
+	/* Lifecycle methods */
+
 	public void onCreate(Bundle savedInstanceState) {
 		if (savedInstanceState != null) {
-			mActive = savedInstanceState.getBoolean(STATE_KEY_ACTIVE);
-			mInteractive = savedInstanceState.getBoolean(STATE_KEY_INTERACTIVE);
+			mActivated = savedInstanceState.getBoolean(STATE_KEY_ACTIVATED);
 		}
 	}
 
@@ -107,8 +94,7 @@ public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 	}
 
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putBoolean(STATE_KEY_ACTIVE, mActive);
-		outState.putBoolean(STATE_KEY_INTERACTIVE, mInteractive);
+		outState.putBoolean(STATE_KEY_ACTIVATED, mActivated);
 	}
 
 	public void onPause() {
@@ -127,29 +113,29 @@ public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 
 	}
 
-	protected abstract static class DataTask extends AsyncTask<Void, Void, Void> {
-		protected ThirdPartyProxy mProxy;
-		protected List<String> mNames;
+	/* Classes */
+
+	protected abstract class DataTask extends AsyncTask<String, Void, Void> {
+		/* protected List<String> mNames; */
 		protected OnDataListener mListener;
 
 		private Map<String, Object> mData = null;
 		private Map<String, Object> mErrors = null;
 
-		public DataTask(ThirdPartyProxy proxy, List<String> names, OnDataListener listener) {
+		public DataTask(/*List<String> names,*/ OnDataListener listener) {
 			super();
-			mProxy = proxy;
-			mNames = names;
+			/* mNames = names; */
 			mListener = listener;
 		}
 
 		@Override
 		protected void onPostExecute(Void aVoid) {
-			if (mErrors != null) {
-				if (mListener != null) {
-					mListener.onError(mProxy, Collections.unmodifiableMap(mErrors));
+			if (mListener != null) {
+				if (mErrors != null) {
+					mListener.onError(ThirdPartyProxy.this, Collections.unmodifiableMap(mErrors));
+				} else {
+					mListener.onData(ThirdPartyProxy.this, Collections.unmodifiableMap(mData));
 				}
-			} else {
-				mListener.onData(mProxy, Collections.unmodifiableMap(mData));
 			}
 		}
 
@@ -166,15 +152,16 @@ public abstract class ThirdPartyProxy<C extends AbsCallbacks> {
 			}
 			mErrors.put(name, error);
 		}
-
-		protected abstract void handleErrors(Map<String, Object> errors);
 	}
 
-	public abstract static interface AbsCallbacks {
+	/* Interfaces */
+
+	protected static abstract interface Callbacks {
 	}
 
 	public abstract static interface OnDataListener {
 		public void onData(ThirdPartyProxy proxy, Map<String, Object> data);
+
 		public void onError(ThirdPartyProxy proxy, Map<String, Object> errors);
 	}
 }

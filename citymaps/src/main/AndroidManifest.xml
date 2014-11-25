@@ -60,7 +60,7 @@
             android:theme="@style/AppTheme.NoTitleOrActionBar" >
         </activity>
         <activity
-                android:name=".view.housekeeping.AuthenticateActivityNew"
+                android:name=".view.housekeeping.AuthenticateActivity"
                 android:theme="@style/AppTheme.NoTitleOrActionBar" >
         </activity>
         <activity

@@ -18,7 +18,7 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
-import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivityNew;
+import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity;
 import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
 import com.citymaps.mobile.android.view.housekeeping.SoftUpdateDialogFragment;
 import com.citymaps.mobile.android.view.settings.PreferencesActivity;
@@ -100,7 +100,7 @@ public class MainActivity extends TrackedActionBarActivity
 				switch (resultCode) {
 					case RESULT_LOGIN:
 					case RESULT_LOGOUT:
-						startActivity(new Intent(this, AuthenticateActivityNew.class));
+						startActivity(new Intent(this, AuthenticateActivity.class));
 						break;
 				}
 				break;

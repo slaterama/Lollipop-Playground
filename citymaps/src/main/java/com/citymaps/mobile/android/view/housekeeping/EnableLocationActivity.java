@@ -38,7 +38,7 @@ public class EnableLocationActivity extends TrackedActionBarActivity {
 
 		// TODO Some sort of logic to choose Authenticate vs. Main?
 
-		Intent intent = new Intent(this, AuthenticateActivityNew.class);
+		Intent intent = new Intent(this, AuthenticateActivity.class);
 		IntentUtils.putStartupMode(intent, true);
 		startActivity(intent);
 

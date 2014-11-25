@@ -9,7 +9,7 @@ import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.view.MainActivity;
 
-public class AuthenticateActivityBlank extends TrackedActionBarActivity {
+public class AuthenticateActivity_NoThirdParty extends TrackedActionBarActivity {
 
 	private static final int REQUEST_CODE_LOGIN = 1;
 	private static final int REQUEST_CODE_CREATE_ACCOUNT = 2;

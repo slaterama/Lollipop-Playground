@@ -1,31 +1,26 @@
 package com.citymaps.mobile.android.thirdparty;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
+import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.ThirdParty;
-import com.citymaps.mobile.android.util.CollectionUtils;
-import com.citymaps.mobile.android.util.CommonUtils;
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
-			implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+		implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+	public static final String STATE_KEY_SIGN_IN_CLICKED = "signInClicked";
 
 	public static final String DATA_ACCOUNT_NAME = "accountName";
 	public static final String DATA_CURRENT_PERSON = "currentPerson";
@@ -49,22 +44,24 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 	 */
 	private boolean mIntentInProgress;
 
+	/* Track whether the sign-in button has been clicked so that we know to resolve
+	 * all issues preventing sign-in without waiting.
+	 */
+	private boolean mSignInClicked;
+
+	private boolean mSignInCancelled;
+
 	/* Store the connection result from onConnectionFailed callbacks so that we can
 	 * resolve them when the user clicks sign-in.
 	 */
 	private ConnectionResult mConnectionResult;
 
-	/* Store the connection hint from onConnected so that we can pass it
-	 * to mProxyCallbacks on subsequent calls to connect().
-	 */
-	private Bundle mConnectionHint;
-
 	public GoogleProxy(FragmentActivity activity, Callbacks callbacks) {
 		super(activity, callbacks);
 	}
 
-	public GoogleProxy(Fragment fragment, Callbacks callbacks) {
-		super(fragment, callbacks);
+	public GoogleProxy(Context context, Fragment fragment, Callbacks callbacks) {
+		super(context, fragment, callbacks);
 	}
 
 	@Override
@@ -73,14 +70,10 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 	}
 
 	@Override
-	public void onProxyStart(boolean interactive, Callbacks callbacks) {
-		GoogleApiClient.Builder builder = new GoogleApiClient.Builder(mActivity)
-				.addConnectionCallbacks(this)
-				.addOnConnectionFailedListener(this);
-		if (callbacks != null) {
-			callbacks.onPreBuild(builder);
-		}
-		mGoogleApiClient = builder.build();
+	protected void onActivate(boolean interactive, Callbacks callbacks) {
+		mGoogleApiClient = createGoogleApiClient();
+		mSignInClicked = interactive;
+		mSignInCancelled = false;
 		if (callbacks != null) {
 			callbacks.onConnecting(this);
 		}
@@ -88,82 +81,72 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 	}
 
 	@Override
-	public void onProxyStop(boolean clear) {
-		if (mGoogleApiClient != null) {
-			mGoogleApiClient.disconnect();
-		}
+	protected void onDeactivate(boolean clearToken) {
 		mGoogleApiClient = null;
-
-		// TODO how to clear token?
 	}
 
 	@Override
 	public boolean requestData(List<String> names, OnDataListener listener) {
-		if (mGoogleApiClient == null) {
+		if (mGoogleApiClient == null || names == null) {
 			return false;
-		} else {
-			new DataTask(this, names, listener) {
-				private String mAccountName;
+		}
 
-				@Override
-				protected Void doInBackground(Void... params) {
-					if (mNames != null) {
-						for (String name : mNames) {
-							if (TextUtils.equals(name, DATA_TOKEN)) {
-								try {
-									putData(name, GoogleAuthUtil.getToken(mActivity, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
-								} catch (Exception e) {
-									putError(name, e);
-								}
-							} else if (TextUtils.equals(name, DATA_ACCOUNT_NAME)) {
-								putData(name, getAccountName());
-							} else if (TextUtils.equals(name, DATA_CURRENT_PERSON)) {
-								putData(name, Plus.PeopleApi.getCurrentPerson(mGoogleApiClient));
-							}
+		new DataTask(listener) {
+			private String mAccountName;
+
+			@Override
+			protected Void doInBackground(String... params) {
+				for (String name : params) {
+					if (TextUtils.equals(name, DATA_TOKEN)) {
+						try {
+							putData(name, GoogleAuthUtil.getToken(mActivity, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
+						} catch (Exception e) {
+							putError(name, e);
 						}
+					} else if (TextUtils.equals(name, DATA_ACCOUNT_NAME)) {
+						putData(name, getAccountName());
+					} else if (TextUtils.equals(name, DATA_CURRENT_PERSON)) {
+						putData(name, Plus.PeopleApi.getCurrentPerson(mGoogleApiClient));
 					}
-					return null;
 				}
+				return null;
+			}
 
-				@Override
-				protected void handleErrors(Map<String, Object> errors) {
-					Object error = CollectionUtils.getFirstValue(errors);
-					if (error instanceof UserRecoverableAuthException) {
-						// Start the user recoverable action using the intent returned by getIntent
-						Intent intent = ((UserRecoverableAuthException) error).getIntent();
-						mActivity.startActivityForResult(intent, RC_AUTH);
-					} else if (error instanceof IOException) {
-						// Network or server error, the call is expected to succeed if you try again later.
-						// Don't attempt to call again immediately - the request is likely to
-						// fail, you'll hit quotas or back-off.
-						CommonUtils.showSimpleDialogFragment(mActivity.getSupportFragmentManager(),
-								mActivity.getTitle(),
-								mActivity.getString(R.string.error_generic_third_party_network_or_server_error));
-					} else if (error instanceof GoogleAuthException) {
-						// Failure. The call is not expected to ever succeed so it should not be
-						// retried.
-						CommonUtils.showSimpleDialogFragment(mActivity.getSupportFragmentManager(),
-								mActivity.getTitle(), mActivity.getString(R.string.error_generic_third_party_auth));
-					}
+			String getAccountName() {
+				if (mAccountName == null) {
+					mAccountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
 				}
+				return mAccountName;
+			}
+		}.executeOnExecutor(DataTask.SERIAL_EXECUTOR, names.toArray(new String[names.size()]));
+		return true;
+	}
 
-				String getAccountName() {
-					if (mAccountName == null) {
-						mAccountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
-					}
-					return mAccountName;
-				}
-			}.executeOnExecutor(DataTask.THREAD_POOL_EXECUTOR);
-			return true;
+	/* Lifecycle methods */
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (mActivated) {
+			mGoogleApiClient = createGoogleApiClient();
+		}
+		if (savedInstanceState != null) {
+			mSignInClicked = savedInstanceState.getBoolean(STATE_KEY_SIGN_IN_CLICKED);
 		}
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (isActive() && mGoogleApiClient != null) {
+		if (mGoogleApiClient != null) {
 			mGoogleApiClient.connect();
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean(STATE_KEY_SIGN_IN_CLICKED, mSignInClicked);
 	}
 
 	@Override
@@ -179,7 +162,8 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 		switch (requestCode) {
 			case RC_SIGN_IN:
 				if (resultCode != FragmentActivity.RESULT_OK) {
-					setInteractive(false);
+					mSignInClicked = false;
+					mSignInCancelled = true;
 				}
 
 				mIntentInProgress = false;
@@ -190,54 +174,71 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 				break;
 			case RC_AUTH:
 				// TODO
-				super.onActivityResult(requestCode, resultCode, data);
 				break;
 			default:
 				super.onActivityResult(requestCode, resultCode, data);
 		}
 	}
 
-	/* A helper method to resolve the current ConnectionResult error. */
+	private GoogleApiClient createGoogleApiClient() {
+		GoogleApiClient.Builder builder = new GoogleApiClient.Builder(mContext)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this);
+		if (mCallbacks != null) {
+			mCallbacks.onPreBuild(builder);
+		}
+		return builder.build();
+	}
+
 	private void resolveSignInError() {
 		if (mConnectionResult.hasResolution()) {
 			try {
 				mIntentInProgress = true;
-				mActivity.startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
+				FragmentActivity activity = (mActivity != null ? mActivity : mFragment.getActivity());
+				activity.startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
 						RC_SIGN_IN, null, 0, 0, 0);
-			} catch (IntentSender.SendIntentException e) {
-				// The intent was canceled before it was sent.  Return to the default
-				// state and attempt to connect to get an updated ConnectionResult.
+			} catch (SendIntentException e) {
+				// The intent was cancelled before it was sent. Return to the default state
+				// and attempt to connect to get an updated ConnectionResult.
 				mIntentInProgress = false;
 				mGoogleApiClient.connect();
 			}
+		/*
 		} else {
+
 			boolean handled = false;
-			Callbacks callbacks = getCallbacks();
-			if (callbacks != null) {
-				handled = callbacks.onFailed(this, false, mConnectionResult);
+			if (mCallbacks != null) {
+				handled = mCallbacks.onFailed(this, mSignInCancelled, mConnectionResult);
 			}
 			if (!handled) {
-				mIntentInProgress = true;
-				GooglePlayServicesUtil.showErrorDialogFragment(mConnectionResult.getErrorCode(), mActivity, RC_SIGN_IN, null);
+				// TODO Error handling
 			}
+		*/
 		}
 	}
 
+	/* Callbacks */
+
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		setInteractive(false);
-		mConnectionResult = null;
-		mConnectionHint = connectionHint;
-		Callbacks callbacks = getCallbacks();
-		if (callbacks != null) {
-			callbacks.onConnected(this, connectionHint);
+		// We've resolved any connection errors.  mGoogleApiClient can be used to
+		// access Google APIs on behalf of the user.
+		if (mCallbacks != null) {
+			mCallbacks.onConnected(this, connectionHint);
 		}
 	}
 
 	@Override
 	public void onConnectionSuspended(int cause) {
-		if (isActive() && mGoogleApiClient != null) {
-			mGoogleApiClient.connect();
+		switch (cause) {
+			case CAUSE_SERVICE_DISCONNECTED:
+				if (mCallbacks != null) {
+					mCallbacks.onDisconnected(this);
+				}
+				break;
+			case GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST:
+			default:
+				mGoogleApiClient.connect();
 		}
 	}
 
@@ -247,24 +248,26 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 			// Store the ConnectionResult so that we can use it later when the user clicks 'sign-in'.
 			mConnectionResult = result;
 
-			if (isInteractive()) {
+			if (mSignInClicked) {
 				// The user has already clicked 'sign-in' so we attempt to resolve all
 				// errors until the user is signed in, or they cancel.
 				resolveSignInError();
 			} else {
 				boolean handled = false;
-				Callbacks callbacks = getCallbacks();
-				if (callbacks != null) {
-					callbacks.onFailed(this, result.getErrorCode() == ConnectionResult.SIGN_IN_REQUIRED, result);
+				if (mCallbacks != null) {
+					handled = mCallbacks.onFailed(this, mSignInCancelled, result);
 				}
+				mSignInCancelled = false;
 				if (!handled) {
-					// TODO
+					// TODO Error handling
 				}
 			}
 		}
 	}
 
-	public static interface Callbacks extends ThirdPartyProxy.AbsCallbacks {
+	/* Interfaces */
+
+	public static interface Callbacks extends ThirdPartyProxy.Callbacks {
 		public void onPreBuild(@NonNull GoogleApiClient.Builder builder);
 
 		public void onConnecting(GoogleProxy proxy);
