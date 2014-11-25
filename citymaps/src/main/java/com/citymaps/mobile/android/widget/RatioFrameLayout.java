@@ -114,14 +114,14 @@ public class RatioFrameLayout extends ImageView {
 							} else if (mDisplayMetrics.heightPixels == 0) {
 								widthToUse = measuredWidth;
 							} else {
-								float relativeWidth = measuredWidth * 1.0f / mDisplayMetrics.heightPixels;
+								float relativeWidth = measuredWidth * 1.0f / mDisplayMetrics.widthPixels;
 								widthToUse = (int) (mDisplayMetrics.heightPixels * relativeWidth);
 							}
 						}
 
 						int newHeight = Math.max((int) (widthToUse / mRatio), getSuggestedMinimumHeight());
 						if (heightSpecMode == MeasureSpec.AT_MOST && newHeight > heightSpecSize) {
-							measuredHeight = heightSpecMode;
+							measuredHeight = heightSpecSize;
 						} else {
 							measuredHeight = newHeight;
 						}
