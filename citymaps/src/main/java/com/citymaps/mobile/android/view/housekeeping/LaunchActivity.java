@@ -195,7 +195,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
-					Intent intent = new Intent(activity, AuthenticateActivity.class);
+					Intent intent = new Intent(activity, AuthenticateActivityNew.class);
 					IntentUtils.putStartupMode(intent, true);
 					activity.startActivity(intent);
 					activity.finish();
@@ -218,7 +218,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 						new Response.ErrorListener() {
 							@Override
 							public void onErrorResponse(VolleyError error) {
-								Intent intent = new Intent(activity, AuthenticateActivity.class);
+								Intent intent = new Intent(activity, AuthenticateActivityNew.class);
 								IntentUtils.putStartupMode(intent, true);
 								activity.startActivity(intent);
 								activity.finish();

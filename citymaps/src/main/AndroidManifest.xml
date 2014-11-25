@@ -60,6 +60,10 @@
             android:theme="@style/AppTheme.NoTitleOrActionBar" >
         </activity>
         <activity
+                android:name=".view.housekeeping.AuthenticateActivityNew"
+                android:theme="@style/AppTheme.NoTitleOrActionBar" >
+        </activity>
+        <activity
             android:name=".view.housekeeping.SigninActivity"
             android:label="@string/signin_activity_title"
             android:launchMode="singleTop" >

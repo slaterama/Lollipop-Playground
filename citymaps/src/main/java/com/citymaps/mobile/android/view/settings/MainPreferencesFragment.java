@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.View;
 import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
@@ -28,16 +30,10 @@ import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
-import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.ShareUtils;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.model.GraphUser;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
+import com.citymaps.mobile.android.view.MainActivity;
+import com.citymaps.mobile.android.view.housekeeping.SignoutDialogFragment;
 
 import java.util.*;
 
@@ -50,6 +46,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 	private static final List<String> FACEBOOK_READ_PERMISSIONS = Arrays.asList("public_profile", "email");
 
 	private static final int REQUEST_CODE_USER_SETTINGS = 0;
+
+	private static final int REQUEST_CODE_SIGNOUT = 1;
 
 	private static final String EMAIL_INTENT_TYPE = "message/rfc822";
 
@@ -70,8 +68,6 @@ public class MainPreferencesFragment extends PreferencesFragment
 		return new MainPreferencesFragment();
 	}
 
-	protected MainPreferencesListener mListener;
-
 	protected SessionManager mSessionManager;
 
 	protected ConnectivityManager mConnectivityManager;
@@ -81,19 +77,12 @@ public class MainPreferencesFragment extends PreferencesFragment
 	protected HelperFragment mHelperFragment;
 
 	protected Set<ThirdPartyProxy> mThirdPartyProxies;
-	protected FacebookProxy mFacebookProxy;
-	protected GoogleProxy mGoogleProxy;
+//	protected FacebookProxy mFacebookProxy;
+//	protected GoogleProxy mGoogleProxy;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
-		try {
-			mListener = (MainPreferencesListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement MainPreferencesListener");
-		}
 
 		mSessionManager = SessionManager.getInstance(activity);
 		mConnectivityManager = (ConnectivityManager) activity.getSystemService(Activity.CONNECTIVITY_SERVICE);
@@ -111,25 +100,29 @@ public class MainPreferencesFragment extends PreferencesFragment
 			if (credentials != null) {
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 				if (credentials.getFacebook() != null) {
-					mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
-					mFacebookProxy.setToken(SharedPreferenceUtils.getFacebookToken(sp, null));
+//					mFacebookProxy = new FacebookProxy(this, FACEBOOK_READ_PERMISSIONS, null, mFacebookCallbacks);
+//					mFacebookProxy.setToken(SharedPreferenceUtils.getFacebookToken(sp, null));
 				}
 				if (credentials.getGoogle() != null) {
-					mGoogleProxy = new GoogleProxy(this, mGoogleCallbacks);
-					mGoogleProxy.setToken(SharedPreferenceUtils.getGoogleToken(sp, null));
+//					mGoogleProxy = new GoogleProxy(this, mGoogleCallbacks);
+//					mGoogleProxy.setToken(SharedPreferenceUtils.getGoogleToken(sp, null));
 				}
 			}
 		}
 
+		FragmentManager manager = getFragmentManager();
 		if (savedInstanceState == null) {
 			mHelperFragment = new HelperFragment();
-			getFragmentManager()
-					.beginTransaction()
+			manager.beginTransaction()
 					.add(mHelperFragment, HelperFragment.FRAGMENT_TAG)
 					.commit();
 		} else {
-			mHelperFragment = (HelperFragment) getFragmentManager().getFragment(savedInstanceState,
-					STATE_KEY_HELPER_FRAGMENT);
+			mHelperFragment = (HelperFragment) manager.getFragment(savedInstanceState, STATE_KEY_HELPER_FRAGMENT);
+			SignoutDialogFragment signoutDialogFragment =
+					(SignoutDialogFragment) manager.findFragmentByTag(SignoutDialogFragment.FRAGMENT_TAG);
+			if (signoutDialogFragment != null) {
+				signoutDialogFragment.setTargetFragment(this, REQUEST_CODE_SIGNOUT);
+			}
 		}
 		mHelperFragment.setTargetFragment(this, REQUEST_CODE_USER_SETTINGS);
 	}
@@ -168,11 +161,11 @@ public class MainPreferencesFragment extends PreferencesFragment
 			if (credentials != null) {
 				if (credentials.getFacebook() != null) {
 					mFacebookPreference.setChecked(true);
-					mFacebookProxy.start(false, mFacebookCallbacks); // TODO Might want an option where we ONLY connect with a token with no fallback
+//					mFacebookProxy.start(false, mFacebookCallbacks); // TODO Might want an option where we ONLY connect with a token with no fallback
 				}
 				if (credentials.getGoogle() != null) {
 					mGooglePreference.setChecked(true);
-					mGoogleProxy.start(false, mGoogleCallbacks); // TODO Might want an option where we ONLY connect with a token with no fallback
+//					mGoogleProxy.start(false, mGoogleCallbacks); // TODO Might want an option where we ONLY connect with a token with no fallback
 				}
 			}
 		}
@@ -205,15 +198,43 @@ public class MainPreferencesFragment extends PreferencesFragment
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 			case REQUEST_CODE_USER_SETTINGS:
-				switch (resultCode) {
-					case Activity.RESULT_OK:
-						UserSettings settings = mSessionManager.getCurrentUserSettings();
-						if (mEmailNotificationsPreference != null) {
-							mEmailNotificationsPreference.setChecked(settings.isEmailNotifications());
-						}
-						break;
+				if (resultCode == FragmentActivity.RESULT_OK) {
+					UserSettings settings = mSessionManager.getCurrentUserSettings();
+					if (mEmailNotificationsPreference != null) {
+						mEmailNotificationsPreference.setChecked(settings.isEmailNotifications());
+					}
 				}
+				break;
+			case REQUEST_CODE_SIGNOUT:
+				if (resultCode == FragmentActivity.RESULT_OK) {
+					final FragmentActivity activity = getActivity();
+					final SessionManager sessionManager = SessionManager.getInstance(activity);
+					User currentUser = sessionManager.getCurrentUser();
+					if (currentUser != null) {
+						UserRequest request = UserRequest.newLogoutRequest(activity, currentUser.getId(),
+								new Response.Listener<User>() {
+									@Override
+									public void onResponse(User response) {
+										sessionManager.setCurrentUser(null);
 
+										// Clear third party tokens
+										SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
+										sp.edit().remove(SharedPreferenceUtils.Key.FACEBOOK_TOKEN.getKeyName())
+												.remove(SharedPreferenceUtils.Key.GOOGLE_TOKEN.getKeyName()).apply();
+
+										activity.setResult(MainActivity.RESULT_LOGOUT);
+										activity.finish();
+									}
+								},
+								new Response.ErrorListener() {
+									@Override
+									public void onErrorResponse(VolleyError error) {
+										// TODO Error handling
+									}
+								});
+						VolleyManager.getInstance(activity).getRequestQueue().add(request);
+					}
+				}
 				break;
 			default:
 				super.onActivityResult(requestCode, resultCode, data);
@@ -249,11 +270,18 @@ public class MainPreferencesFragment extends PreferencesFragment
 				break;
 			}
 			case SIGNIN: {
-				mListener.onSigninClick();
+				FragmentActivity activity = getActivity();
+				activity.setResult(MainActivity.RESULT_LOGIN);
+				activity.finish();
 				break;
 			}
 			case SIGNOUT: {
-				mListener.onSignoutClick();
+				FragmentManager manager = getFragmentManager();
+				if (manager.findFragmentByTag(SignoutDialogFragment.FRAGMENT_TAG) == null) {
+					SignoutDialogFragment fragment = SignoutDialogFragment.newInstance();
+					fragment.setTargetFragment(this, REQUEST_CODE_SIGNOUT);
+					fragment.show(manager, SignoutDialogFragment.FRAGMENT_TAG);
+				}
 			}
 		}
 		return false;
@@ -312,6 +340,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 		}
 	};
 
+	/*
 	private FacebookProxy.Callbacks mFacebookCallbacks = new FacebookProxy.SimpleCallbacks() {
 		@Override
 		public void onConnecting(FacebookProxy proxy, Session session, SessionState state, Exception exception) {
@@ -412,6 +441,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 		}
 	};
+	*/
 
 	public static class HelperFragment extends Fragment {
 
@@ -464,21 +494,5 @@ public class MainPreferencesFragment extends PreferencesFragment
 						getActivity().getTitle(), error.getLocalizedMessage());
 			}
 		};
-	}
-
-	/**
-	 * This interface must be implemented by activities that contain this
-	 * fragment to allow an interaction in this fragment to be communicated
-	 * to the activity and potentially other fragments contained in that
-	 * activity.
-	 * <p/>
-	 * See the Android Training lesson <a href=
-	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-	 * >Communicating with Other Fragments</a> for more information.
-	 */
-	public interface MainPreferencesListener {
-		public void onSigninClick();
-
-		public void onSignoutClick();
 	}
 }
