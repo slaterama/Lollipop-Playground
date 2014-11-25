@@ -23,8 +23,6 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 
 	protected Session mSession;
 
-	protected SessionState mState;
-
 	public FacebookProxy(FragmentActivity activity, List<String> readPermissions, List<String> writePermissions, Callbacks callbacks) {
 		super(activity, callbacks);
 		mReadPermissions = readPermissions;
@@ -95,10 +93,14 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 		// For scenarios where the main activity is launched and user
 		// session is not null, the session state change notification
 		// may not be triggered. Trigger it if it's open/closed.
+		// NOTE: As this is in a proxy and not in a "main activity",
+		// I don't think we need to do this.
+		/*
 		Session session = Session.getActiveSession();
 		if (session != null && (session.isOpened() || session.isClosed())) {
 			call(session, session.getState(), null);
 		}
+		*/
 
 		if (mUiLifecycleHelper != null) {
 			mUiLifecycleHelper.onResume();
@@ -150,27 +152,24 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
 		mSession = session;
-		if (state != mState) {
-			mState = state;
-			if (mCallbacks != null) {
-				switch (state) {
-					case OPENING:
-						mCallbacks.onConnecting(this, session, state, exception);
-						break;
-					case OPENED:
-					case OPENED_TOKEN_UPDATED:
-						mCallbacks.onConnected(this, session, state, exception);
-						break;
-					case CLOSED:
-					case CLOSED_LOGIN_FAILED:
-						if (exception == null) {
-							mCallbacks.onDisconnected(this, session, state, null);
-						} else {
-							boolean cancelled = (exception instanceof FacebookOperationCanceledException);
-							mCallbacks.onFailed(this, cancelled, session, state, exception);
-						}
-						break;
-				}
+		if (mCallbacks != null) {
+			switch (state) {
+				case OPENING:
+					mCallbacks.onConnecting(this, session, state, exception);
+					break;
+				case OPENED:
+				case OPENED_TOKEN_UPDATED:
+					mCallbacks.onConnected(this, session, state, exception);
+					break;
+				case CLOSED:
+				case CLOSED_LOGIN_FAILED:
+					if (exception == null) {
+						mCallbacks.onDisconnected(this, session, state, null);
+					} else {
+						boolean cancelled = (exception instanceof FacebookOperationCanceledException);
+						mCallbacks.onFailed(this, cancelled, session, state, exception);
+					}
+					break;
 			}
 		}
 	}
