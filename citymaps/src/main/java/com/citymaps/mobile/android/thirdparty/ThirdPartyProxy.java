@@ -55,15 +55,15 @@ public abstract class ThirdPartyProxy<C extends ThirdPartyProxy.Callbacks> {
 		return mActivated;
 	}
 
-	public void activate(boolean interactive, C callbacks) {
-		mActivated = true;
+	public boolean activate(boolean interactive, C callbacks) {
 		mToken = null;
 		mInteractive = interactive;
 		mCallbacks = callbacks;
-		onActivate(interactive, callbacks);
+		mActivated = onActivate(interactive, callbacks);
+		return mActivated;
 	}
 
-	protected abstract void onActivate(boolean interactive, C callbacks);
+	protected abstract boolean onActivate(boolean interactive, C callbacks);
 
 	public void deactivate(boolean clearToken) {
 		onDeactivate(clearToken);

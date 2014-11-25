@@ -27,8 +27,7 @@ public class RatioImageView extends ImageView {
 	}
 
 	public RatioImageView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(context, attrs, 0);
+		this(context, attrs, 0);
 	}
 
 	public RatioImageView(Context context, AttributeSet attrs, int defStyle) {

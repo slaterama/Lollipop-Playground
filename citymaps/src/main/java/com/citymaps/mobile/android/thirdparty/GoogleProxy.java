@@ -70,7 +70,7 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 	}
 
 	@Override
-	protected void onActivate(boolean interactive, Callbacks callbacks) {
+	protected boolean onActivate(boolean interactive, Callbacks callbacks) {
 		mGoogleApiClient = createGoogleApiClient();
 		mSignInClicked = interactive;
 		mSignInCancelled = false;
@@ -78,6 +78,7 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 			callbacks.onConnecting(this);
 		}
 		mGoogleApiClient.connect();
+		return true;
 	}
 
 	@Override

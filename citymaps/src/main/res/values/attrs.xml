@@ -2,10 +2,12 @@
 <resources>
 
 	<attr name="centeredDrawableButtonStyle" format="reference" />
+	<attr name="switchPreferenceExStyle" format="reference" />
 	<attr name="facebookButtonStyle" format="reference" />
 	<attr name="googleButtonStyle" format="reference" />
 	<attr name="citymapsGreyButtonStyle" format="reference" />
 
+	<!-- For RatioFrameLayout, RatioImageView -->
 	<attr name="ratio" format="float" />
 	<attr name="baseOnSmallestWidth" format="boolean" />
 
@@ -17,6 +19,14 @@
 	<declare-styleable name="RatioImageView">
 		<attr name="ratio" />
 		<attr name="baseOnSmallestWidth" />
+	</declare-styleable>
+
+	<declare-styleable name="SwitchPreferenceEx">
+		<attr name="checkOnClick" format="boolean" />
+		<attr name="secondaryIcon" format="reference" />
+		<attr name="android:lines" />
+		<attr name="android:maxLines" />
+		<attr name="android:singleLine" />
 	</declare-styleable>
 
 </resources>

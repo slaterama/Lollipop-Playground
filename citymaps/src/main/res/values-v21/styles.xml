@@ -5,6 +5,12 @@
 		<item name="android:drawablePadding">8dp</item>
 	</style>
 
+	<!--
+	<style name="Preference.Material.SwitchPreferenceEx" parent="@android:style/Preference.Material.SwitchPreference">
+		<item name="checkOnClick">true</item>
+	</style>
+	-->
+
 	<style name="Widget.Material.FacebookButton" parent="@style/Widget.Material.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
 		<item name="android:textStyle">normal</item>

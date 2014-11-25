@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import com.citymaps.mobile.android.model.ThirdParty;
+import com.citymaps.mobile.android.util.LogEx;
 import com.facebook.*;
 import com.facebook.model.GraphUser;
 
@@ -43,8 +44,7 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 	}
 
 	@Override
-	protected void onActivate(boolean interactive, Callbacks callbacks) {
-		mUiLifecycleHelper = new UiLifecycleHelper(mActivity, this);
+	protected boolean onActivate(boolean interactive, Callbacks callbacks) {
 		Session session = Session.getActiveSession();
 		if (session != null && !session.isOpened() && !session.isClosed()) {
 			Session.OpenRequest request = (mActivity != null
@@ -54,10 +54,15 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 					.setPermissions(mReadPermissions)
 					.setCallback(this));
 		} else if (mActivity != null) {
-			Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
+			session = Session.openActiveSession(mActivity, interactive, mReadPermissions, this);
 		} else if (mFragment != null) {
-			Session.openActiveSession(mContext, mFragment, interactive, mReadPermissions, this);
+			session = Session.openActiveSession(mContext, mFragment, interactive, mReadPermissions, this);
 		}
+		if (session != null) {
+			FragmentActivity activity = (mActivity != null ? mActivity : mFragment.getActivity());
+			mUiLifecycleHelper = new UiLifecycleHelper(activity, this);
+		}
+		return (session != null);
 	}
 
 	@Override

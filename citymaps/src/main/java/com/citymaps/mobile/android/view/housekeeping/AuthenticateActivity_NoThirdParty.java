@@ -1,5 +1,11 @@
 package com.citymaps.mobile.android.view.housekeeping;
 
+/*
+ * NOTE This Activity is currently not being used but I was keeping it around as
+ * a version of AuthenticateActivity that has no third-party logic included for all
+ * the times I re-configured the third-party proxies etc. and wanted a clean slate.
+ */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

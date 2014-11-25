@@ -16,6 +16,12 @@
 		<item name="android:drawablePadding">8dp</item>
 	</style>
 
+	<!--
+	<style name="Preference.SwitchPreferenceEx" parent="@android:style/Preference.SwitchPreference">
+		<item name="checkOnClick">true</item>
+	</style>
+	-->
+
 	<style name="Widget.FacebookButton" parent="@style/Widget.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
 		<item name="android:textStyle">normal</item>
@@ -37,6 +43,12 @@
 	<style name="Widget.Holo.CenteredDrawableButton" parent="@android:style/Widget.Holo.Light.Button">
 		<item name="android:drawablePadding">8dp</item>
 	</style>
+
+	<!--
+	<style name="Preference.Holo.SwitchPreferenceEx" parent="@android:style/Preference.Holo.SwitchPreference">
+		<item name="checkOnClick">true</item>
+	</style>
+	-->
 
 	<style name="Widget.Holo.FacebookButton" parent="@style/Widget.Holo.CenteredDrawableButton">
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>

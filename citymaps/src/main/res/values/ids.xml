@@ -3,4 +3,6 @@
 
 	<item type="id" name="mapcontainer" />
 
+	<item type="id" name="secondary_icon" />
+
 </resources>

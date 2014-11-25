@@ -6,7 +6,7 @@
 				android:layout_height="match_parent"
 				tools:context=".view.MainFragment">
 
-	<android.support.v7.widget.Toolbar
+	<!--<android.support.v7.widget.Toolbar
 			android:id="@+id/bottomtoolbar"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
@@ -14,6 +14,21 @@
 			android:layout_alignParentStart="true"
 			android:layout_alignParentRight="true"
 			android:layout_alignParentEnd="true"
-			android:layout_alignParentBottom="true" />
+			android:layout_alignParentBottom="true" /> -->
+
+	<com.citymaps.mobile.android.view.FloatingActionButton
+			android:id="@+id/explore_btn"
+			android:layout_width="@dimen/floating_action_button_size"
+			android:layout_height="@dimen/floating_action_button_size"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentBottom="true"
+			android:layout_marginBottom="@dimen/vertical_keyline"
+			android:layout_marginRight="@dimen/horizontal_keyline"
+			android:layout_marginEnd="@dimen/vertical_keyline"
+			android:src="@drawable/ic_explore_white_24dp"
+			android:tint="@android:color/white"
+			android:background="@drawable/oval"
+			android:elevation="1dp" />
 
 </RelativeLayout>

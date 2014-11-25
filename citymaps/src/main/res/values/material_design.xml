@@ -10,6 +10,10 @@
 	<dimen name="touch_target">48dp</dimen>
 
 	<dimen name="vertical_keyline">16dp</dimen>
+	<dimen name="horizontal_keyline">16dp</dimen>
+
+	<dimen name="floating_action_button_size">56dp</dimen>
+	<dimen name="mini_floating_action_button_size">40dp</dimen>
 
 	<!-- Material Design colors -->
 

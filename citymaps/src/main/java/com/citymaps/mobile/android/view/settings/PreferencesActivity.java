@@ -1,8 +1,10 @@
 package com.citymaps.mobile.android.view.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.util.LogEx;
 
 public class PreferencesActivity extends TrackedActionBarActivity {
 
@@ -21,5 +23,11 @@ public class PreferencesActivity extends TrackedActionBarActivity {
 					.add(android.R.id.content, fragment, null)
 					.commit();
 		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		LogEx.d("!!!!!!");
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

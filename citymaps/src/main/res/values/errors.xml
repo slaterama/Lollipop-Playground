@@ -27,6 +27,6 @@
 	<string name="validator_no_match_password">Passwords do not match.</string>
 	<string name="validator_no_match_email">Confirmation email does not match.</string>
 
-	<string name="error_pref_third_party_connection_lost">Connection lost for this account</string>
+	<string name="error_pref_third_party_connection_lost">Tap to reconnect</string>
 
 </resources>

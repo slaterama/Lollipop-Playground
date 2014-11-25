@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:citymaps="http://schemas.android.com/apk/res-auto">
 
 	<PreferenceCategory
 			android:key="pref_cat_accounts"
@@ -36,7 +37,7 @@
 			android:title="@string/pref_cat_notifications_title"
 			android:order="2">
 
-		<com.citymaps.mobile.android.preference.TwoLineSwitchPreference
+		<com.citymaps.mobile.android.preference.SwitchPreferenceEx
 				android:key="pref_email_notifications"
 				android:icon="@drawable/ic_mail_grey600_24dp"
 				android:title="@string/pref_email_notifications_title"

@@ -11,6 +11,7 @@
 		<item name="colorButtonNormal">@color/color_button_normal</item>
 
 		<item name="centeredDrawableButtonStyle">@style/Widget.Material.CenteredDrawableButton</item>
+		<!--<item name="switchPreferenceExStyle">@style/Preference.Material.SwitchPreferenceEx</item>-->
 		<item name="facebookButtonStyle">@style/Widget.Material.FacebookButton</item>
 		<item name="googleButtonStyle">@style/Widget.Material.GoogleButton</item>
 		<item name="citymapsGreyButtonStyle">@style/Widget.Material.CitymapsGreyButton</item>

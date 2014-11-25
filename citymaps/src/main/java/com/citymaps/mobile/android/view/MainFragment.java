@@ -1,13 +1,16 @@
 package com.citymaps.mobile.android.view;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
+import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -16,6 +19,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.RelativeLayout;
 import com.citymaps.citymapsengine.CitymapsMapView;
 import com.citymaps.mobile.android.R;
@@ -175,6 +179,7 @@ public class MainFragment extends Fragment {
 		return inflater.inflate(R.layout.fragment_main, container, false);
 	}
 
+	@TargetApi(Build.VERSION_CODES.L)
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -187,6 +192,25 @@ public class MainFragment extends Fragment {
 
 		mBottomToolbar.inflateMenu(R.menu.main);
 		 */
+
+		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.explore_btn);
+		fab.setOutlineProvider(new ViewOutlineProvider() {
+			@Override
+			public void getOutline(View view, Outline outline) {
+				int diameter = getResources().getDimensionPixelSize(R.dimen.floating_action_button_size);
+//				Outline outline = new Outline();
+				outline.setOval(0, 0, diameter, diameter);
+			}
+		});
+		fab.setClipToOutline(true);
+
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(), ExploreActivity.class));
+			}
+		});
+
 	}
 
 	@Override
