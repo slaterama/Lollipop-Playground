@@ -8,8 +8,13 @@ import com.citymaps.mobile.android.model.ThirdParty;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.util.List;
+
 public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 		implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+	public static final String DATA_NAME_ACCOUNT_NAME = "accountName";
+	public static final String DATA_NAME_CURRENT_PERSON = "currentPerson";
 
 	private GoogleApiClient mGoogleApiClient;
 
@@ -31,14 +36,21 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 
 	}
 
+	/*
 	@Override
 	protected void onActivateWithToken(String token, boolean interactive, Callbacks callbacks) {
 
 	}
+	*/
 
 	@Override
 	protected void onDeactivate(boolean clearToken) {
 
+	}
+
+	@Override
+	public boolean requestData(List<String> names, OnDataListener listener) {
+		return false;
 	}
 
 	/* Callbacks */

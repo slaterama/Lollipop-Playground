@@ -26,6 +26,10 @@
 		<item name="windowActionBar">false</item>
 	</style>
 
+	<style name="AppTheme.NoTitleOrActionBar.FullScreen">
+		<item name="android:windowFullscreen">true</item>
+	</style>
+
 	<!-- Base application theme with translucent app bar -->
 	<!-- Inspired by "Pushing the ActionBar to the Next Level" by Cyril Mottier,
 	     http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/ -->

@@ -4,16 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
 import com.citymaps.mobile.android.model.ThirdParty;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
+import com.facebook.*;
+import com.facebook.model.GraphUser;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 		implements Session.StatusCallback {
+
+	public static final String DATA_NAME_ME = "me";
 
 	protected List<String> mReadPermissions;
 
@@ -21,16 +24,19 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 
 	protected UiLifecycleHelper mUiLifecycleHelper;
 
-	protected Session mSession;
+	/* protected Session mSession; */
 
 	public FacebookProxy(FragmentActivity activity, List<String> readPermissions, List<String> writePermissions, Callbacks callbacks) {
 		super(activity, callbacks);
-		mReadPermissions = readPermissions;
-		mWritePermissions = writePermissions;
+		init(readPermissions, writePermissions);
 	}
 
 	public FacebookProxy(Fragment fragment, List<String> readPermissions, List<String> writePermissions, Callbacks callbacks) {
 		super(fragment, callbacks);
+		init(readPermissions, writePermissions);
+	}
+
+	private void init(List<String> readPermissions, List<String> writePermissions) {
 		mReadPermissions = readPermissions;
 		mWritePermissions = writePermissions;
 	}
@@ -58,21 +64,67 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 		}
 	}
 
+	/*
 	@Override
 	protected void onActivateWithToken(String token, boolean interactive, Callbacks callbacks) {
 		mUiLifecycleHelper = new UiLifecycleHelper(mActivity, this);
 
 		// NOTE For now, trying this with cached token as opposed to creating accessToken myself
-		/*
-		AccessToken accessToken = AccessToken.createFromExistingAccessToken(token, null, null, null, mReadPermissions);
-		Session.openActiveSessionWithAccessToken(mActivity, accessToken, this);
-		*/
+		// AccessToken accessToken = AccessToken.createFromExistingAccessToken(token, null, null, null, mReadPermissions);
+		// Session.openActiveSessionWithAccessToken(mActivity, accessToken, this);
 		Session.openActiveSessionFromCache(mActivity);
 	}
+	*/
 
 	@Override
 	protected void onDeactivate(boolean clearToken) {
+		Session session = Session.getActiveSession();
+		if (session != null) {
+			if (clearToken) {
+				session.closeAndClearTokenInformation();
+			} else {
+				session.close();
+			}
+			// mSession = null;
+		}
 		mUiLifecycleHelper = null;
+	}
+
+	@Override
+	public boolean requestData(List<String> names, OnDataListener listener) {
+		final Session session = Session.getActiveSession();
+		if (session == null) {
+			return false;
+		} else if (names == null) {
+			return false;
+		}
+
+		new DataTask(listener) {
+			@Override
+			protected Void doInBackground(String... params) {
+				Map<Request, String> requestMap = new HashMap<Request, String>();
+				for (String name : params) {
+					if (TextUtils.equals(name, DATA_NAME_TOKEN)) {
+						putData(DATA_NAME_TOKEN, session.getAccessToken());
+					} else if (TextUtils.equals(name, DATA_NAME_ME)) {
+						requestMap.put(Request.newMeRequest(session, null), name);
+					}
+				}
+				List<Response> responses = Request.executeBatchAndWait(requestMap.keySet());
+				for (Response response : responses) {
+					Request request = response.getRequest();
+					String name = requestMap.get(request);
+					FacebookRequestError error = response.getError();
+					if (error != null) {
+						putError(name, error);
+					} else if (TextUtils.equals(name, DATA_NAME_ME)) {
+						putData(name, response.getGraphObjectAs(GraphUser.class));
+					}
+				}
+				return null;
+			}
+		}.executeOnExecutor(DataTask.SERIAL_EXECUTOR, names.toArray(new String[names.size()]));
+		return true;
 	}
 
 	/* Lifecycle methods */
@@ -90,11 +142,12 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 	public void onResume() {
 		super.onResume();
 
+		// NOTE: As this is in a proxy and not in a "main activity",
+		// I don't think we need to do the code below (taken from FB developer site)
+
 		// For scenarios where the main activity is launched and user
 		// session is not null, the session state change notification
 		// may not be triggered. Trigger it if it's open/closed.
-		// NOTE: As this is in a proxy and not in a "main activity",
-		// I don't think we need to do this.
 		/*
 		Session session = Session.getActiveSession();
 		if (session != null && (session.isOpened() || session.isClosed())) {
@@ -151,7 +204,7 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
-		mSession = session;
+		// mSession = session;
 		if (mCallbacks != null) {
 			switch (state) {
 				case OPENING:

@@ -26,9 +26,9 @@ import com.citymaps.mobile.android.model.UserSettings;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.request.UserSettingsRequest;
 import com.citymaps.mobile.android.model.request.VolleyCallbacks;
-import com.citymaps.mobile.android.thirdparty.FacebookProxy;
-import com.citymaps.mobile.android.thirdparty.GoogleProxy;
-import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
+import com.citymaps.mobile.android.thirdparty_new.FacebookProxy;
+import com.citymaps.mobile.android.thirdparty_new.GoogleProxy;
+import com.citymaps.mobile.android.thirdparty_new.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.ShareUtils;
 import com.citymaps.mobile.android.util.SharedPreferenceUtils;
@@ -76,9 +76,9 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 	protected HelperFragment mHelperFragment;
 
-	protected Set<ThirdPartyProxy> mThirdPartyProxies;
-//	protected FacebookProxy mFacebookProxy;
-//	protected GoogleProxy mGoogleProxy;
+	protected Set<ThirdPartyProxy> mThirdPartyProxySet;
+	protected FacebookProxy mFacebookProxy;
+	protected GoogleProxy mGoogleProxy;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -94,7 +94,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mThirdPartyProxies = new HashSet<ThirdPartyProxy>(ThirdParty.values().length);
+		mThirdPartyProxySet = new HashSet<ThirdPartyProxy>(ThirdParty.values().length);
 		if (mCurrentUser != null) {
 			User.ThirdPartyCredentials credentials = mCurrentUser.getThirdPartyCredentials();
 			if (credentials != null) {
@@ -217,10 +217,15 @@ public class MainPreferencesFragment extends PreferencesFragment
 									public void onResponse(User response) {
 										sessionManager.setCurrentUser(null);
 
-										// Clear third party tokens
+										// Clear third party tokens from shared preferences
 										SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
 										sp.edit().remove(SharedPreferenceUtils.Key.FACEBOOK_TOKEN.getKeyName())
 												.remove(SharedPreferenceUtils.Key.GOOGLE_TOKEN.getKeyName()).apply();
+
+										// Deactivate third party proxies & clear tokens
+										for (ThirdPartyProxy proxy : mThirdPartyProxySet) {
+											proxy.deactivate(true);
+										}
 
 										activity.setResult(MainActivity.RESULT_LOGOUT);
 										activity.finish();

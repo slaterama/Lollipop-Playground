@@ -119,10 +119,7 @@ public class SigninActivity extends TrackedActionBarActivity
 
 	@Override
 	public void onSignInSuccess(User currentUser) {
-		Intent data = new Intent();
-		// data.putExtra("currentUser", currentUser); TODO Once User is Parcelable
-		setResult(RESULT_OK, data);
-		finish();
+		finishOk();
 	}
 
 	@Override
@@ -137,15 +134,25 @@ public class SigninActivity extends TrackedActionBarActivity
 
 	@Override
 	public void onCreateAccountSuccess(User currentUser) {
-		Intent data = new Intent();
-		// data.putExtra("currentUser", currentUser); TODO Once User is Parcelable
-		setResult(RESULT_OK, data);
-		finish();
+		finishOk();
 	}
 
 	@Override
 	public void onResetPasswordSuccess() {
 
+	}
+
+	@Override
+	public void finish() {
+		Intent data = new Intent();
+		IntentUtils.putThirdPartyUser(data, mThirdPartyUser);
+		setResult(RESULT_CANCELED, data);
+		super.finish();
+	}
+
+	private void finishOk() {
+		setResult(RESULT_OK);
+		super.finish();
 	}
 
 	private void showFragment(int loginMode, boolean animate, boolean addToBackStack) {
