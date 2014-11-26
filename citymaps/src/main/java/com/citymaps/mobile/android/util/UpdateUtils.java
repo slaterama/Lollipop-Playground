@@ -19,7 +19,7 @@ public class UpdateUtils {
 		} else if (BuildConfig.VERSION_CODE < config.getAppVersionCode()) {
 			SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(context);
 			UpdateAction action = UpdateAction.fromAction(
-					SharedPrefUtils.getInt(sp, CitymapsPreference.CONFIG_PROCESSED_ACTION,
+					SharedPrefUtils.getInt(sp, Pref.CONFIG_PROCESSED_ACTION,
 							UpdateAction.NONE.getAction()));
 			switch (action) {
 				case SKIP:
@@ -29,7 +29,7 @@ public class UpdateUtils {
 					// User selected UPDATE, but no update was made. Treat it the same as LATER
 				case LATER:
 					long processedTimestamp = SharedPrefUtils.getLong(sp,
-							CitymapsPreference.CONFIG_PROCESSED_TIMESTAMP, 0);
+							Pref.CONFIG_PROCESSED_TIMESTAMP, 0);
 					long diff = System.currentTimeMillis() - processedTimestamp;
 					if (diff > LATER_DURATION) {
 						return UpdateType.SOFT;

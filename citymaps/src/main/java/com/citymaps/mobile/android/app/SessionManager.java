@@ -11,7 +11,7 @@ import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.UserSettings;
-import com.citymaps.mobile.android.util.CitymapsPreference;
+import com.citymaps.mobile.android.util.Pref;
 import com.citymaps.mobile.android.util.SharedPrefUtils;
 
 public class SessionManager {
@@ -68,10 +68,10 @@ public class SessionManager {
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(sContext);
 			SharedPreferences.Editor editor = sp.edit();
 			if (user == null) {
-				SharedPrefUtils.remove(editor, CitymapsPreference.CITYMAPS_TOKEN).apply();
+				SharedPrefUtils.remove(editor, Pref.CITYMAPS_TOKEN).apply();
 				mCurrentUserSettings = null;
 			} else {
-				SharedPrefUtils.putString(editor, CitymapsPreference.CITYMAPS_TOKEN, user.getCitymapsToken()).apply();
+				SharedPrefUtils.putString(editor, Pref.CITYMAPS_TOKEN, user.getCitymapsToken()).apply();
 			}
 
 			// TODO Send broadcast?

@@ -1,13 +1,13 @@
 package com.citymaps.mobile.android.model;
 
-import com.citymaps.mobile.android.util.CitymapsPreference;
+import com.citymaps.mobile.android.util.Pref;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum ThirdParty {
-	FACEBOOK("facebook", "Facebook", CitymapsPreference.FACEBOOK_TOKEN),
-	GOOGLE("google", "Google", CitymapsPreference.GOOGLE_TOKEN);
+	FACEBOOK("facebook", "Facebook", Pref.FACEBOOK_TOKEN),
+	GOOGLE("google", "Google", Pref.GOOGLE_TOKEN);
 
 	private static Map<String, ThirdParty> mValueMap;
 
@@ -26,9 +26,9 @@ public enum ThirdParty {
 
 	private String mProperName;
 
-	private CitymapsPreference mPreference;
+	private Pref mPreference;
 
-	private ThirdParty(String value, String properName, CitymapsPreference preference) {
+	private ThirdParty(String value, String properName, Pref preference) {
 		mValue = value;
 		mProperName = properName;
 		mPreference = preference;
@@ -38,7 +38,7 @@ public enum ThirdParty {
 		return mProperName;
 	}
 
-	public CitymapsPreference getPreference() {
+	public Pref getPreference() {
 		return mPreference;
 	}
 

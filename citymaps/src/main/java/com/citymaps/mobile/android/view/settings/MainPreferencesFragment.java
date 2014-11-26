@@ -288,8 +288,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 										// Clear third party tokens from shared preferences
 										SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
-										sp.edit().remove(CitymapsPreference.FACEBOOK_TOKEN.getKey())
-												.remove(CitymapsPreference.GOOGLE_TOKEN.getKey()).apply();
+										sp.edit().remove(Pref.FACEBOOK_TOKEN.getKey())
+												.remove(Pref.GOOGLE_TOKEN.getKey()).apply();
 
 										// Deactivate third party proxies & clear tokens
 										for (ThirdPartyProxy proxy : mThirdPartyProxySet) {

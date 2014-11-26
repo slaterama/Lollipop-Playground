@@ -14,7 +14,7 @@ import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.Version;
 import com.citymaps.mobile.android.model.request.ConfigRequest;
 import com.citymaps.mobile.android.model.request.VersionRequest;
-import com.citymaps.mobile.android.util.CitymapsPreference;
+import com.citymaps.mobile.android.util.Pref;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPrefUtils;
@@ -128,11 +128,11 @@ public class StartupService extends Service {
 				mConfig = response;
 
 				SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(StartupService.this);
-				long configTimestamp = SharedPrefUtils.getLong(sp, CitymapsPreference.CONFIG_TIMESTAMP, 0);
+				long configTimestamp = SharedPrefUtils.getLong(sp, Pref.CONFIG_TIMESTAMP, 0);
 				if (mConfig.getTimestamp() > configTimestamp) {
 					SharedPrefUtils.putConfig(sp.edit(), mConfig).apply();
-					sp.edit().remove(CitymapsPreference.CONFIG_PROCESSED_ACTION.getKey())
-							.remove(CitymapsPreference.CONFIG_PROCESSED_TIMESTAMP.getKey())
+					sp.edit().remove(Pref.CONFIG_PROCESSED_ACTION.getKey())
+							.remove(Pref.CONFIG_PROCESSED_TIMESTAMP.getKey())
 							.apply();
 				}
 

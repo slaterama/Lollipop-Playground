@@ -160,7 +160,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 				// If we have never processed the Tour activity, start it now
 
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
-				boolean tourProcessed = SharedPrefUtils.getBoolean(sp, CitymapsPreference.TOUR_PROCESSED, false);
+				boolean tourProcessed = SharedPrefUtils.getBoolean(sp, Pref.TOUR_PROCESSED, false);
 				if (!tourProcessed) {
 					Intent intent = new Intent(activity, TourActivity.class);
 					IntentUtils.putStartupMode(intent, true);
@@ -173,12 +173,12 @@ public class LaunchActivity extends TrackedActionBarActivity
 				// If Location Services are enabled, mark the Enable Location activity as processed and continue
 				// Otherwise, start the Enable Location activity now
 
-				boolean enableLocationProcessed = SharedPrefUtils.getBoolean(sp, CitymapsPreference.ENABLE_LOCATION_PROCESSED, false);
+				boolean enableLocationProcessed = SharedPrefUtils.getBoolean(sp, Pref.ENABLE_LOCATION_PROCESSED, false);
 				if (!enableLocationProcessed) {
 					LocationManager manager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 					boolean gpsEnabled = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 					if (gpsEnabled) {
-						SharedPrefUtils.putBoolean(sp.edit(), CitymapsPreference.ENABLE_LOCATION_PROCESSED, true).apply();
+						SharedPrefUtils.putBoolean(sp.edit(), Pref.ENABLE_LOCATION_PROCESSED, true).apply();
 					} else {
 						Intent intent = new Intent(activity, EnableLocationActivity.class);
 						IntentUtils.putStartupMode(intent, true);
@@ -190,7 +190,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				// Get the saved Citymaps Token from SharedPreferences (if any)
 
-				String citymapsToken = SharedPrefUtils.getString(sp, CitymapsPreference.CITYMAPS_TOKEN, null);
+				String citymapsToken = SharedPrefUtils.getString(sp, Pref.CITYMAPS_TOKEN, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
 					Intent intent = new Intent(activity, AuthenticateActivity.class);
 					IntentUtils.putStartupMode(intent, true);

@@ -3,7 +3,7 @@ package com.citymaps.mobile.android.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum CitymapsPreference {
+public enum Pref {
 
 	/* General Preferences */
 
@@ -45,13 +45,13 @@ public enum CitymapsPreference {
 	CONFIG_PROCESSED_ACTION("pref_config_processed_action"),
 	CONFIG_PROCESSED_TIMESTAMP("pref_config_processed_timestamp");
 
-	private static Map<String, CitymapsPreference> mKeyMap;
+	private static Map<String, Pref> mKeyMap;
 
-	private static CitymapsPreference fromKey(String key) {
+	private static Pref fromKey(String key) {
 		if (mKeyMap == null) {
-			CitymapsPreference[] values = values();
-			mKeyMap = new HashMap<String, CitymapsPreference>(values.length);
-			for (CitymapsPreference value : values) {
+			Pref[] values = values();
+			mKeyMap = new HashMap<String, Pref>(values.length);
+			for (Pref value : values) {
 				mKeyMap.put(value.mKey, value);
 			}
 		}
@@ -60,7 +60,7 @@ public enum CitymapsPreference {
 
 	private String mKey;
 
-	private CitymapsPreference(String key) {
+	private Pref(String key) {
 		mKey = key;
 	}
 
