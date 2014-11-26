@@ -27,6 +27,7 @@ import com.citymaps.mobile.android.model.UserSettings;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.request.UserSettingsRequest;
 import com.citymaps.mobile.android.model.request.VolleyCallbacks;
+import com.citymaps.mobile.android.preference.SwitchPreferenceEx;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
@@ -72,9 +73,9 @@ public class MainPreferencesFragment extends PreferencesFragment
 	private Preference mSigninPreference;
 
 	// Signed-in preferences
-	private SwitchPreference mFacebookPreference;
-	private SwitchPreference mGooglePreference;
-	private SwitchPreference mEmailNotificationsPreference;
+	private SwitchPreferenceEx mFacebookPreference;
+	private SwitchPreferenceEx mGooglePreference;
+	private SwitchPreferenceEx mEmailNotificationsPreference;
 	private Preference mSignoutPreference;
 
 	public static MainPreferencesFragment newInstance() {
@@ -146,7 +147,6 @@ public class MainPreferencesFragment extends PreferencesFragment
 		mShareAppPreference = findPreference(PreferenceType.SHARE_APP.toString());
 		mFeedbackPreference = findPreference(PreferenceType.FEEDBACK.toString());
 
-		/*
 		mShareAppPreference.setOnPreferenceClickListener(this);
 		mFeedbackPreference.setOnPreferenceClickListener(this);
 
@@ -154,12 +154,14 @@ public class MainPreferencesFragment extends PreferencesFragment
 			mSigninPreference = findPreference(PreferenceType.SIGNIN.toString());
 			mSigninPreference.setOnPreferenceClickListener(this);
 		} else {
-			mFacebookPreference = (SwitchPreference) findPreference(PreferenceType.CONNECT_FACEBOOK.toString());
-			mGooglePreference = (SwitchPreference) findPreference(PreferenceType.CONNECT_GOOGLE.toString());
-			mEmailNotificationsPreference = (SwitchPreference) findPreference(PreferenceType.EMAIL_NOTIFICATIONS.toString());
+			mFacebookPreference = (SwitchPreferenceEx) findPreference(PreferenceType.CONNECT_FACEBOOK.toString());
+			mGooglePreference = (SwitchPreferenceEx) findPreference(PreferenceType.CONNECT_GOOGLE.toString());
+			mEmailNotificationsPreference = (SwitchPreferenceEx) findPreference(PreferenceType.EMAIL_NOTIFICATIONS.toString());
 			mSignoutPreference = findPreference(PreferenceType.SIGNOUT.toString());
 
+			mFacebookPreference.setOnPreferenceClickListener(this);
 			mFacebookPreference.setOnPreferenceChangeListener(this);
+			mGooglePreference.setOnPreferenceClickListener(this);
 			mGooglePreference.setOnPreferenceChangeListener(this);
 			mEmailNotificationsPreference.setOnPreferenceChangeListener(this);
 			mSignoutPreference.setOnPreferenceClickListener(this);
@@ -171,6 +173,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 				boolean activated = mFacebookProxy.activate(false, mFacebookCallbacks);
 				if (!activated) {
 					mFacebookPreference.setSummary(R.string.error_pref_third_party_connection_lost);
+					mFacebookPreference.setSecondaryIcon(R.drawable.ic_sync_problem_red_24dp);
 				}
 			}
 			if (mGoogleCredential != null) {
@@ -180,10 +183,10 @@ public class MainPreferencesFragment extends PreferencesFragment
 				boolean activated = mGoogleProxy.activate(false, mGoogleCallbacks);
 				if (!activated) {
 					mGooglePreference.setSummary(R.string.error_pref_third_party_connection_lost);
+					mGooglePreference.setSecondaryIcon(R.drawable.ic_sync_problem_red_24dp);
 				}
 			}
 		}
-		*/
 	}
 
 	@Override
@@ -270,6 +273,14 @@ public class MainPreferencesFragment extends PreferencesFragment
 				ShareUtils.shareApp(getActivity());
 				break;
 			}
+			case CONNECT_FACEBOOK: {
+				LogEx.d();
+				break;
+			}
+			case CONNECT_GOOGLE: {
+				LogEx.d();
+				break;
+			}
 			case FEEDBACK: {
 				String subject;
 				if (mCurrentUser == null) {
@@ -313,6 +324,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 		PreferenceType type = PreferenceType.fromKey(preference.getKey());
 		switch (type) {
 			case CONNECT_FACEBOOK:
+				LogEx.d();
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
 					boolean checked = (Boolean) newValue;
 					if (checked) {
@@ -321,8 +333,9 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 					}
 				}
-				return false;
+				return true;
 			case CONNECT_GOOGLE:
+				LogEx.d();
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
 					boolean checked = (Boolean) newValue;
 					if (checked) {
@@ -331,7 +344,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 					}
 				}
-				return false;
+				return true;
 			case EMAIL_NOTIFICATIONS:
 				if (!CommonUtils.notifyIfNoNetwork(getActivity())) {
 					boolean checked = (Boolean) newValue;

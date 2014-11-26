@@ -2,7 +2,7 @@
 <resources>
 
 	<attr name="centeredDrawableButtonStyle" format="reference" />
-	<attr name="switchPreferenceExStyle" format="reference" />
+	<!--<attr name="switchPreferenceExStyle" format="reference" />-->
 	<attr name="facebookButtonStyle" format="reference" />
 	<attr name="googleButtonStyle" format="reference" />
 	<attr name="citymapsGreyButtonStyle" format="reference" />
@@ -24,8 +24,9 @@
 	<declare-styleable name="SwitchPreferenceEx">
 		<attr name="checkOnClick" format="boolean" />
 		<attr name="secondaryIcon" format="reference" />
-		<attr name="android:lines" />
 		<attr name="android:maxLines" />
+		<attr name="android:lines" />
+		<attr name="android:minLines" />
 		<attr name="android:singleLine" />
 	</declare-styleable>
 

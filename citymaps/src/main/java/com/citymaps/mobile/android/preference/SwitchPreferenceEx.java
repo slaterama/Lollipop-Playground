@@ -1,14 +1,17 @@
 package com.citymaps.mobile.android.preference;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.util.LogEx;
@@ -26,9 +29,11 @@ public class SwitchPreferenceEx extends SwitchPreference {
 
 	private int mSecondaryIconResId;
 
-	private ImageView mSecondaryIcondView;
+	private ImageView mSecondaryIconView;
 
-	private int mLines = 1;
+	private int mMinLines;
+
+	private int mLines;
 
 	private int mMaxLines;
 
@@ -36,6 +41,7 @@ public class SwitchPreferenceEx extends SwitchPreference {
 
 	/**
 	 * Construct a new CitymapsSwitchPreference with the given style options.
+	 *
 	 * @param context The Context that will style this preference.
 	 */
 	public SwitchPreferenceEx(Context context) {
@@ -45,18 +51,20 @@ public class SwitchPreferenceEx extends SwitchPreference {
 
 	/**
 	 * Construct a new CitymapsSwitchPreference with the given style options.
+	 *
 	 * @param context The Context that will style this preference.
-	 * @param attrs Style attributes that differ from the default.
+	 * @param attrs   Style attributes that differ from the default.
 	 */
 	public SwitchPreferenceEx(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context, attrs, R.attr.switchPreferenceExStyle);
+		init(context, attrs, 0); //R.attr.switchPreferenceExStyle);
 	}
 
 	/**
 	 * Construct a new CitymapsSwitchPreference with the given style options.
-	 * @param context The Context that will style this preference.
-	 * @param attrs Style attributes that differ from the default.
+	 *
+	 * @param context  The Context that will style this preference.
+	 * @param attrs    Style attributes that differ from the default.
 	 * @param defStyle Theme attribute defining the default style options.
 	 */
 	public SwitchPreferenceEx(Context context, AttributeSet attrs, int defStyle) {
@@ -77,16 +85,14 @@ public class SwitchPreferenceEx extends SwitchPreference {
 		 * @android:style/Preference.Holo.SwitchPreference etc.) but android doesn't expose those styles for overriding.
 		 * So all custom appearances/behaviors will have to be done via code.
 		 */
-		/*
-		final TypedArray a = getContext().obtainStyledAttributes(
-				attrs, R.styleable.SwitchPreferenceEx, defStyle, 0);
+		final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SwitchPreferenceEx, defStyle, 0);
 		setCheckOnClick(a.getBoolean(R.styleable.SwitchPreferenceEx_checkOnClick, true));
 		setSecondaryIcon(a.getResourceId(R.styleable.SwitchPreferenceEx_secondaryIcon, 0));
-		setLines(a.getInt(R.styleable.SwitchPreferenceEx_android_lines, 1));
-		setMaxLines(a.getInt(R.styleable.SwitchPreferenceEx_android_maxLines, 1));
+		setMaxLines(a.getInt(R.styleable.SwitchPreferenceEx_android_maxLines, -1));
+		setLines(a.getInt(R.styleable.SwitchPreferenceEx_android_lines, -1));
+		setMinLines(a.getInt(R.styleable.SwitchPreferenceEx_android_minLines, -1));
 		setSingleLine(a.getBoolean(R.styleable.SwitchPreferenceEx_android_singleLine, true));
 		a.recycle();
-		*/
 	}
 
 	public boolean isCheckOnClick() {
@@ -95,6 +101,8 @@ public class SwitchPreferenceEx extends SwitchPreference {
 
 	public void setCheckOnClick(boolean checkOnClick) {
 		mCheckOnClick = checkOnClick;
+
+		notifyChanged();
 	}
 
 	public Drawable getSecondaryIcon() {
@@ -120,12 +128,22 @@ public class SwitchPreferenceEx extends SwitchPreference {
 	/**
 	 * Sets the secondary icon for this Preference with a resource ID.
 	 *
-	 * @see #setSecondaryIcon(Drawable)
 	 * @param secondaryIconResId The icon as a resource ID.
+	 * @see #setSecondaryIcon(Drawable)
 	 */
 	public void setSecondaryIcon(int secondaryIconResId) {
 		mSecondaryIconResId = secondaryIconResId;
-		setIcon(getContext().getResources().getDrawable(secondaryIconResId));
+
+		Drawable secondaryIcon = secondaryIconResId < 1 ? null : getContext().getResources().getDrawable(secondaryIconResId);
+		setSecondaryIcon(secondaryIcon);
+	}
+
+	public int getMinLines() {
+		return mMinLines;
+	}
+
+	public void setMinLines(int minLines) {
+		mMinLines = minLines;
 	}
 
 	public int getLines() {
@@ -158,18 +176,44 @@ public class SwitchPreferenceEx extends SwitchPreference {
 		notifyChanged();
 	}
 
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
-	protected void onBindView(View view) {
+	protected View onCreateView(ViewGroup parent) {
+		View view = super.onCreateView(parent);
+		if (view instanceof ViewGroup) {
+			mSecondaryIconView = new ImageView(getContext());
+			mSecondaryIconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+			mSecondaryIconView.setVisibility(View.GONE);
+			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			View widgetFrame = view.findViewById(android.R.id.widget_frame);
+			int index = ((ViewGroup) view).indexOfChild(widgetFrame);
+			if (index < 0) {
+				((ViewGroup) view).addView(mSecondaryIconView, layoutParams);
+			} else {
+				((ViewGroup) view).addView(mSecondaryIconView, index, layoutParams);
+			}
+		}
+		return view;
+	}
+
+	@Override
+	protected void onBindView(@NonNull View view) {
 		super.onBindView(view);
 
 		TextView textView = (TextView) view.findViewById(android.R.id.title);
 		if (textView != null) {
-			int maxLines = textView.getMaxLines();
-			LogEx.d(String.format("maxLines=%d", maxLines));
-			textView.setLines(mLines);
 			textView.setMaxLines(mMaxLines);
+			textView.setLines(mLines);
+			textView.setMinLines(mMinLines);
 			textView.setSingleLine(mSingleLine);
+		}
+
+		mSecondaryIconView.setImageDrawable(mSecondaryIcon);
+		mSecondaryIconView.setVisibility(mSecondaryIcon == null ? View.GONE : View.VISIBLE);
+
+		Switch switchWidget = getSwitchWidget(view);
+		if (switchWidget != null) {
+			switchWidget.setClickable(!mCheckOnClick);
 		}
 	}
 
@@ -178,5 +222,25 @@ public class SwitchPreferenceEx extends SwitchPreference {
 		if (mCheckOnClick) {
 			super.onClick();
 		}
+	}
+
+	private Switch getSwitchWidget(View view) {
+		Switch switchWidget = null;
+		LinearLayout widgetFrame = (LinearLayout) view.findViewById(android.R.id.widget_frame);
+		if (widgetFrame != null) {
+			int count = widgetFrame.getChildCount();
+			for (int i = 0; i < count; i++) {
+				View child = widgetFrame.getChildAt(i);
+				if (child instanceof Switch) {
+					int id = child.getId();
+					String resourceName = getContext().getResources().getResourceName(id);
+					if (TextUtils.equals(resourceName, "android:id/switchWidget")) {
+						switchWidget = (Switch) child;
+						break;
+					}
+				}
+			}
+		}
+		return switchWidget;
 	}
 }

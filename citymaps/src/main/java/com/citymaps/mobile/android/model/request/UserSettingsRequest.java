@@ -24,14 +24,14 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 												 Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_SETTINGS, userId);
-		return new UserSettingsRequest(Api.Version.V1, false, Method.GET, urlString, null, null, listener, errorListener);
+		return new UserSettingsRequest(Api.Version.V2, true, Method.GET, urlString, null, null, listener, errorListener);
 	}
 
 	public static UserSettingsRequest newUpdateRequest(Context context, String settingsId, Map<String, String> params,
 													   Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_SETTINGS, settingsId);
-		return new UserSettingsRequest(Api.Version.V1, true, Method.POST, urlString, null, params, listener, errorListener);
+		return new UserSettingsRequest(Api.Version.V2, true, Method.POST, urlString, null, params, listener, errorListener);
 	}
 
 	protected boolean mResponseWrapsArray = false;
@@ -80,9 +80,19 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 				}
 			case V2:
 			default:
-				UserSettingsWrapper result = gson.fromJson(jsonObject, UserSettingsWrapper.class);
-				UserSettings userSettings = result.getData();
-				return Response.success(userSettings, HttpHeaderParser.parseCacheHeaders(response));
+				if (mResponseWrapsArray) {
+					UserSettingsArrayWrapper result = gson.fromJson(jsonObject, UserSettingsArrayWrapper.class);
+					UserSettings[] userSettings = result.getData();
+					if (userSettings == null || userSettings.length < 1) {
+						return null;
+					} else {
+						return Response.success(userSettings[0], HttpHeaderParser.parseCacheHeaders(response));
+					}
+				} else {
+					UserSettingsWrapper result = gson.fromJson(jsonObject, UserSettingsWrapper.class);
+					UserSettings userSettings = result.getData();
+					return Response.success(userSettings, HttpHeaderParser.parseCacheHeaders(response));
+				}
 		}
 	}
 
@@ -92,6 +102,16 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 
 		@Override
 		public UserSettings getData() {
+			return mUserSettings;
+		}
+	}
+
+	public static class UserSettingsArrayWrapper extends ResultSuccess<UserSettings[]> {
+		@SerializedName("user_settings")
+		private UserSettings[] mUserSettings;
+
+		@Override
+		public UserSettings[] getData() {
 			return mUserSettings;
 		}
 	}
