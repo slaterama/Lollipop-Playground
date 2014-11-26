@@ -7,7 +7,6 @@
 	================================================================================
     -->
 
-
     <!-- <string name="app_name">Citymaps</string> -->
     <string name="hello_world">Hello world!</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -119,6 +118,7 @@
 		<p>Download now: <a href="http://ctym.ps/1nebhVl">http://ctym.ps/1nebhVl</a></p>
 	]]>
     </string>
+    <string name="pref_third_party_connecting">Connecting…</string>
     <string name="pref_signout_dialog_title">Sign Out</string>
     <string name="pref_signout_dialog_message">Are you sure you want to sign out?</string>
 

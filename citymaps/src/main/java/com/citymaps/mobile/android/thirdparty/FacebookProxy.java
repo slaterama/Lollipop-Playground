@@ -120,7 +120,8 @@ public class FacebookProxy extends ThirdPartyProxy<FacebookProxy.Callbacks>
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (mActivated) {
-			mUiLifecycleHelper = new UiLifecycleHelper(mActivity, this);
+			FragmentActivity activity = (mActivity != null ? mActivity : mFragment.getActivity());
+			mUiLifecycleHelper = new UiLifecycleHelper(activity, this);
 			mUiLifecycleHelper.onCreate(savedInstanceState);
 		}
 	}

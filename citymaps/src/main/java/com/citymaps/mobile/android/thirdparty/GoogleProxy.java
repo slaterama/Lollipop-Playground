@@ -100,7 +100,7 @@ public class GoogleProxy extends ThirdPartyProxy<GoogleProxy.Callbacks>
 				for (String name : params) {
 					if (TextUtils.equals(name, DATA_TOKEN)) {
 						try {
-							putData(name, GoogleAuthUtil.getToken(mActivity, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
+							putData(name, GoogleAuthUtil.getToken(mContext, getAccountName(), GOOGLE_ACCOUNT_NAME_SCOPE));
 						} catch (Exception e) {
 							putError(name, e);
 						}
