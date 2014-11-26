@@ -50,7 +50,12 @@
 				android:icon="@drawable/ic_people_grey600_24dp"
 				android:title="@string/pref_invite_friends_title"
 				android:persistent="false"
-				android:order="1"/>
+				android:order="1">
+
+			<intent
+					android:action="com.citymaps.mobile.android.INVITE_FRIENDS"/>
+
+		</Preference>
 
 	</PreferenceCategory>
 

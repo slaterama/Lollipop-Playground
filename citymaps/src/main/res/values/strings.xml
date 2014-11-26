@@ -171,6 +171,10 @@
 
 	<string name="add_business_activity_title">Add Your Business</string>
 
+	<!-- Invite friends strings -->
+
+	<string name="invite_friends_activity_title">Invite Friends</string>
+
 	<!--
 	================================================================================
 	Startup/housekeeping strings

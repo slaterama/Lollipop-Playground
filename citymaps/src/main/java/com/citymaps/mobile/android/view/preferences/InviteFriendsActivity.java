@@ -6,18 +6,18 @@ import android.view.MenuItem;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 
-public class AddBusinessActivity extends TrackedActionBarActivity {
+public class InviteFriendsActivity extends TrackedActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_add_business);
+		setContentView(R.layout.activity_invite_friends);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.add_business, menu);
+		getMenuInflater().inflate(R.menu.invite_friends, menu);
 		return true;
 	}
 

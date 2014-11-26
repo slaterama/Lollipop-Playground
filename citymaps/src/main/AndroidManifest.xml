@@ -155,6 +155,22 @@
 					android:value=".view.MainActivity"/>
 		</activity>
 		<activity
+				android:name=".view.preferences.InviteFriendsActivity"
+				android:label="@string/invite_friends_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.INVITE_FRIENDS"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
+		</activity>
+		<activity
 				android:name=".view.preferences.NotificationsPreferencesActivity"
 				android:label="@string/pref_notifications_activity_title"
 				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
