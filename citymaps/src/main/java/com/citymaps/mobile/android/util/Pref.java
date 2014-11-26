@@ -24,7 +24,8 @@ public enum Pref {
 	EDIT_PROFILE("pref_edit_profile"),
 	CHANGE_PASSWORD("pref_change_password"),
 	CONNECT_THIRD_PARTY_APPS("pref_connect_third_party_apps"),
-	INVITE_FRIENDS("invite_friends"),
+	INVITE_FRIENDS("pref_invite_friends"),
+	SET_NOTIFICATIONS("pref_set_notifications"),
 	SIGNOUT("pref_signout"),
 
 	/* Non-visible Preferences */
@@ -34,6 +35,7 @@ public enum Pref {
 	GOOGLE_TOKEN("pref_google_token"),
 	TOUR_PROCESSED("pref_tour_processed"),
 	ENABLE_LOCATION_PROCESSED("pref_enable_location_processed"),
+	DEVELOPER_MODE_ENABLED("pref_developer_mode_enabled"),
 	API_VERSION("pref_api_version"),
 	API_BUILD("pref_api_build"),
 	CONFIG_APP_VERSION("pref_config_app_version"),
@@ -47,7 +49,7 @@ public enum Pref {
 
 	private static Map<String, Pref> mKeyMap;
 
-	private static Pref fromKey(String key) {
+	public static Pref fromKey(String key) {
 		if (mKeyMap == null) {
 			Pref[] values = values();
 			mKeyMap = new HashMap<String, Pref>(values.length);

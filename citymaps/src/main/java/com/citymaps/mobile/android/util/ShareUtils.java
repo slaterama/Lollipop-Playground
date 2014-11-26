@@ -102,7 +102,7 @@ public class ShareUtils {
 		if (intentMap.size() > 0) {
 			List<Intent> intents = new ArrayList<Intent>(intentMap.values());
 			Intent lastIntent = intents.remove(intents.size() - 1);
-			Intent chooserIntent = Intent.createChooser(lastIntent, context.getString(R.string.pref_share_app_title));
+			Intent chooserIntent = Intent.createChooser(lastIntent, context.getString(R.string.pref_share_app_intent_title));
 			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
 			context.startActivity(chooserIntent);
 		}

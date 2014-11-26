@@ -158,7 +158,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 		addPreferencesFromResource(R.xml.preferences_general_old);
 
 		addPreferencesFromResource(mCurrentUser == null
-				? R.xml.preferences_unauthenticated_old
+				? R.xml.preferences_signed_out
 				: R.xml.preferences_authenticated_old);
 
 		mShareAppPreference = findPreference(PreferenceType.SHARE_APP.toString());

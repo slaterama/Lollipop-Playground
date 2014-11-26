@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory
+			android:key="pref_cat_profile"
+			android:title="@string/pref_cat_profile_title"
+			android:order="1">
+
+		<Preference
+				android:key="pref_edit_profile"
+				android:icon="@drawable/ic_person_grey600_24dp"
+				android:title="@string/pref_edit_profile_title"
+				android:persistent="false"
+				android:order="0">
+
+			<intent
+					android:action="com.citymaps.mobile.android.EDIT_PROFILE"/>
+
+		</Preference>
+
+		<Preference
+				android:key="pref_change_password"
+				android:icon="@drawable/ic_security_grey600_24dp"
+				android:title="@string/pref_change_password_title"
+				android:persistent="false"
+				android:order="1"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_third_party"
+			android:title="@string/pref_cat_third_party_title"
+			android:order="2">
+
+		<Preference
+				android:key="pref_connect_third_party_apps"
+				android:icon="@drawable/ic_apps_grey600_24dp"
+				android:title="@string/pref_connect_third_party_apps_title"
+				android:persistent="false"
+				android:order="0">
+
+			<intent
+					android:action="com.citymaps.mobile.android.CONNECT_THIRD_PARTY_APPS"/>
+
+		</Preference>
+
+		<Preference
+				android:key="pref_invite_friends"
+				android:icon="@drawable/ic_people_grey600_24dp"
+				android:title="@string/pref_invite_friends_title"
+				android:persistent="false"
+				android:order="1"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_notifications"
+			android:title="@string/pref_cat_notifications_title"
+			android:order="3">
+
+		<Preference
+				android:key="pref_set_notifications"
+				android:icon="@drawable/ic_notifications_grey600_24dp"
+				android:title="@string/pref_set_notifications_title"
+				android:persistent="false"
+				android:order="0">
+
+			<intent
+					android:action="com.citymaps.mobile.android.SET_NOTIFICATIONS"/>
+
+		</Preference>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_signout"
+			android:title="@string/pref_cat_signout_title"
+			android:order="5">
+
+		<Preference
+				android:key="pref_signout"
+				android:icon="@drawable/ic_logon_off_gray600_24dp"
+				android:title="@string/pref_signout_title"
+				android:persistent="false"
+				android:order="0"/>
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

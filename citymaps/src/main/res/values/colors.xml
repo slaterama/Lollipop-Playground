@@ -14,6 +14,8 @@
 
 	<color name="google_red">#dd4b39</color>
 
+	<color name="toast_background">#A5333336</color>
+
 	<!-- Divider colors -->
 
 	<color name="divider_light_grey">#CCC</color>

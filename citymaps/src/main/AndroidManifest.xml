@@ -3,23 +3,23 @@
 		  xmlns:tools="http://schemas.android.com/tools"
 		  package="com.citymaps.mobile.android">
 
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 	<!--
 	 To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
 	 option is required to comply with the Google+ Sign-In developer policies
 	-->
-	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
+	<uses-permission android:name="android.permission.USE_CREDENTIALS"/>
 
 	<!-- To retrieve the account name (email) as part of sign-in: -->
-	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
 	<!-- To auto-complete the email text field in the login form with the user's emails -->
-	<uses-permission android:name="android.permission.READ_PROFILE" />
-	<uses-permission android:name="android.permission.READ_CONTACTS" />
+	<uses-permission android:name="android.permission.READ_PROFILE"/>
+	<uses-permission android:name="android.permission.READ_CONTACTS"/>
 
 	<application
 			android:name="com.citymaps.mobile.android.CitymapsApplication"
@@ -36,9 +36,9 @@
 				android:noHistory="true"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
+				<action android:name="android.intent.action.MAIN"/>
 
-				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
 		<activity
@@ -64,14 +64,14 @@
 				android:label="@string/signin_activity_title"
 				android:launchMode="singleTop">
 			<intent-filter>
-				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.DEFAULT"/>
 
-				<action android:name="android.intent.action.VIEW" />
+				<action android:name="android.intent.action.VIEW"/>
 
 				<data
 						android:host="com.citymaps.mobile.android"
 						android:pathPrefix="/signin"
-						android:scheme="citymaps.internal" />
+						android:scheme="citymaps.internal"/>
 			</intent-filter>
 		</activity>
 		<activity
@@ -79,6 +79,107 @@
 				android:label="@string/app_name"
 				android:screenOrientation="portrait"
 				android:theme="@android:style/Theme.Translucent.NoTitleBar">
+		</activity>
+
+		<!-- Preference activities -->
+
+		<!--
+		<activity
+				android:name="com.citymaps.mobile.android.view.settings.PreferencesActivity"
+				android:label="@string/preferences_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity" />
+		</activity>
+		-->
+		<activity
+				android:name="com.citymaps.mobile.android.view.preferences.MainPreferencesActivity"
+				android:label="@string/preferences_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
+		</activity>
+		<activity
+				android:name=".view.preferences.AddBusinessActivity"
+				android:label="@string/add_business_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.ADD_BUSINESS"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
+		</activity>
+		<activity
+				android:name=".view.preferences.ProfilePreferencesActivity"
+				android:label="@string/pref_profile_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.EDIT_PROFILE"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
+		</activity>
+		<activity
+				android:name=".view.preferences.ThirdPartyPreferencesActivity"
+				android:label="@string/pref_third_party_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.CONNECT_THIRD_PARTY_APPS"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
+		</activity>
+		<activity
+				android:name=".view.preferences.NotificationsPreferencesActivity"
+				android:label="@string/pref_notifications_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<intent-filter>
+				<action android:name="com.citymaps.mobile.android.SET_NOTIFICATIONS"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
+		</activity>
+		<activity
+				android:name=".view.preferences.DeveloperPreferencesActivity"
+				android:label="@string/pref_developer_activity_title"
+				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
+				tools:ignore="UnusedAttribute">
+
+			<!-- Parent activity meta-data to support 4.0 and lower -->
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".view.MainActivity"/>
 		</activity>
 
 		<!-- Other activities -->
@@ -98,17 +199,6 @@
 				android:label="@string/profile_activity_title"
 				android:theme="@style/AppTheme">
 		</activity>
-		<activity
-				android:name="com.citymaps.mobile.android.view.settings.PreferencesActivity"
-				android:label="@string/preferences_activity_title"
-				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
-				tools:ignore="UnusedAttribute">
-
-			<!-- Parent activity meta-data to support 4.0 and lower -->
-			<meta-data
-					android:name="android.support.PARENT_ACTIVITY"
-					android:value=".view.MainActivity" />
-		</activity>
 
 		<!-- Services -->
 
@@ -117,9 +207,9 @@
 				android:enabled="true"
 				android:exported="false">
 			<intent-filter>
-				<action android:name="com.citymaps.mobile.android.action.STARTUP_SERVICE" />
+				<action android:name="com.citymaps.mobile.android.action.STARTUP_SERVICE"/>
 
-				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 		</service>
 		<service
@@ -127,9 +217,9 @@
 				android:enabled="true"
 				android:exported="false">
 			<intent-filter>
-				<action android:name="com.citymaps.mobile.android.action.MAP_VIEW_SERVICE" />
+				<action android:name="com.citymaps.mobile.android.action.MAP_VIEW_SERVICE"/>
 
-				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 		</service>
 
@@ -146,16 +236,16 @@
 
 		<meta-data
 				android:name="com.citymaps.mobile.android.CITYMAPS_SECRET"
-				android:value="4e1546ddc0de4e9db622dac75da14ac0" />
+				android:value="4e1546ddc0de4e9db622dac75da14ac0"/>
 		<meta-data
 				android:name="com.google.android.gms.version"
-				android:value="@integer/google_play_services_version" />
+				android:value="@integer/google_play_services_version"/>
 		<meta-data
 				android:name="com.citymaps.citymapsengine.API_KEY"
-				android:value="@string/citymaps_engine_api_key" />
+				android:value="@string/citymaps_engine_api_key"/>
 		<meta-data
 				android:name="com.facebook.sdk.ApplicationId"
-				android:value="@string/facebook_app_id" />
+				android:value="@string/facebook_app_id"/>
 
 	</application>
 

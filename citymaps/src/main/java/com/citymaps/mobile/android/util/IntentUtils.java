@@ -84,6 +84,8 @@ public class IntentUtils {
 
 	public static final String EXTRA_ERROR_MESSAGE = makeExtra("ERROR_MESSAGE");
 
+	public static final String EXTRA_DEVELOPER_PASSWORD_JUST_ENTERED = makeExtra("DEVELOPER_PASSWORD_JUST_ENTERED");
+
 	public static void putConfig(Intent intent, Config config) {
 		intent.putExtra(EXTRA_CONFIG, config);
 	}

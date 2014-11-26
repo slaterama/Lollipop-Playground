@@ -19,7 +19,7 @@
 	<PreferenceCategory
 			android:key="pref_cat_support"
 			android:title="@string/pref_cat_support_title"
-			android:order="3">
+			android:order="4">
 
 		<Preference
 				android:key="pref_about"
@@ -39,11 +39,10 @@
 				android:icon="@drawable/ic_store_mall_directory_grey600_24dp"
 				android:title="@string/pref_add_business_title"
 				android:persistent="false"
-				android:order="1">
+				android:order="1" >
 
 			<intent
-					android:action="android.intent.action.VIEW"
-					android:data="http://citymaps.com/about"/>
+					android:action="com.citymaps.mobile.android.ADD_BUSINESS"/>
 
 		</Preference>
 
@@ -90,7 +89,6 @@
 				android:key="pref_developer_mode"
 				android:icon="@drawable/ic_developer_mode_grey600_24dp"
 				android:title="@string/pref_developer_mode_title"
-				android:widgetLayout="@layout/preference_widget_layout_button"
 				android:persistent="false"
 				android:order="5">
 

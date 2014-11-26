@@ -21,7 +21,7 @@ import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity;
 import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
 import com.citymaps.mobile.android.view.housekeeping.SoftUpdateDialogFragment;
-import com.citymaps.mobile.android.view.settings.PreferencesActivity;
+import com.citymaps.mobile.android.view.preferences.MainPreferencesActivity;
 
 import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
@@ -124,7 +124,7 @@ public class MainActivity extends TrackedActionBarActivity
         int id = item.getItemId();
 		switch (id) {
 			case R.id.action_settings:
-				startActivityForResult(new Intent(this, PreferencesActivity.class), REQUEST_CODE_PREFERENCES);
+				startActivityForResult(new Intent(this, MainPreferencesActivity.class), REQUEST_CODE_PREFERENCES);
 				return true;
 			case R.id.action_profile:
 				startActivity(new Intent(this, ProfileActivity.class));

@@ -14,11 +14,10 @@ public class ExploreActivity extends TrackedActionBarActivity {
         setContentView(R.layout.activity_explore);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_explore, menu);
+        getMenuInflater().inflate(R.menu.explore, menu);
         return true;
     }
 

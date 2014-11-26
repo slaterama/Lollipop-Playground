@@ -43,6 +43,7 @@ android {
 		buildConfigField "String", "FEEDBACK_SUBJECT", "\"Feedback from %s\""
 		buildConfigField "String", "FEEDBACK_SUBJECT_USER", "\"Feedback from user\""
 		buildConfigField "String", "FEEDBACK_SUBJECT_VISITOR", "\"Feedback from visitor\""
+        buildConfigField "String", "DEVELOPER_PASSWORD", "\"general!tso\""
     }
 
     signingConfigs {

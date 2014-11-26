@@ -5,4 +5,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="@string/pref_developer_mode_enable"
+		android:clickable="false"
+		android:focusable="false"
 		style="?android:borderlessButtonStyle" />

@@ -29,6 +29,6 @@
 			android:src="@drawable/ic_explore_white_24dp"
 			android:tint="@android:color/white"
 			android:background="@drawable/oval"
-			android:elevation="1dp" />
+			android:elevation="8dp" />
 
 </RelativeLayout>
