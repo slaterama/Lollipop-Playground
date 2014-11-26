@@ -9,8 +9,9 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.util.CitymapsPreference;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 
 public class TourActivity extends TrackedActionBarActivity {
 
@@ -44,7 +45,7 @@ public class TourActivity extends TrackedActionBarActivity {
 					startActivity(intent);
 
 					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-					SharedPreferenceUtils.putTourProcessed(sp, true).apply();
+					SharedPrefUtils.putBoolean(sp.edit(), CitymapsPreference.TOUR_PROCESSED, true).apply();
 
 					finish();
 				} else {

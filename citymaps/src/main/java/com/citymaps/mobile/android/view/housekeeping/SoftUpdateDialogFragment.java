@@ -10,7 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.CitymapsPreference;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
 
 /**
@@ -35,9 +36,9 @@ public class SoftUpdateDialogFragment extends DialogFragment
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(getActivity());
-		sp.edit().putInt(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString(), which)
-				.putLong(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString(), System.currentTimeMillis())
+		SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(getActivity());
+		sp.edit().putInt(CitymapsPreference.CONFIG_PROCESSED_ACTION.getKey(), which)
+				.putLong(CitymapsPreference.CONFIG_PROCESSED_TIMESTAMP.getKey(), System.currentTimeMillis())
 				.apply();
 		switch (which) {
 			case DialogInterface.BUTTON_POSITIVE: // Update

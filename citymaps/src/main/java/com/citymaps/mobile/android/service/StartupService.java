@@ -14,9 +14,10 @@ import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.Version;
 import com.citymaps.mobile.android.model.request.ConfigRequest;
 import com.citymaps.mobile.android.model.request.VersionRequest;
+import com.citymaps.mobile.android.util.CitymapsPreference;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 
 import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
@@ -126,12 +127,12 @@ public class StartupService extends Service {
 			public void onResponse(Config response) {
 				mConfig = response;
 
-				SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(StartupService.this);
-				long configTimestamp = SharedPreferenceUtils.getConfigTimestamp(sp, 0);
+				SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(StartupService.this);
+				long configTimestamp = SharedPrefUtils.getLong(sp, CitymapsPreference.CONFIG_TIMESTAMP, 0);
 				if (mConfig.getTimestamp() > configTimestamp) {
-					SharedPreferenceUtils.putConfig(sp, mConfig).apply();
-					sp.edit().remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_ACTION.toString())
-							.remove(SharedPreferenceUtils.Key.CONFIG_PROCESSED_TIMESTAMP.toString())
+					SharedPrefUtils.putConfig(sp.edit(), mConfig).apply();
+					sp.edit().remove(CitymapsPreference.CONFIG_PROCESSED_ACTION.getKey())
+							.remove(CitymapsPreference.CONFIG_PROCESSED_TIMESTAMP.getKey())
 							.apply();
 				}
 

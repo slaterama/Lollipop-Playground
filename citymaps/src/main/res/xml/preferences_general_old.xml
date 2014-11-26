@@ -12,13 +12,13 @@
 				android:icon="@drawable/ic_share_grey600_24dp"
 				android:title="@string/pref_share_app_title"
 				android:persistent="false"
-				android:order="0"/>
+				android:order="0" />
 
 	</PreferenceCategory>
 
 	<PreferenceCategory
-			android:key="pref_cat_support"
-			android:title="@string/pref_cat_support_title"
+			android:key="pref_cat_info"
+			android:title="@string/pref_cat_info_title"
 			android:order="3">
 
 		<Preference
@@ -30,29 +30,50 @@
 
 			<intent
 					android:action="android.intent.action.VIEW"
-					android:data="http://citymaps.com/about"/>
+					android:data="http://citymaps.com/about" />
 
 		</Preference>
 
 		<Preference
-				android:key="pref_add_business"
-				android:icon="@drawable/ic_store_mall_directory_grey600_24dp"
-				android:title="@string/pref_add_business_title"
+				android:key="pref_support"
+				android:icon="@drawable/ic_help_grey600_24dp"
+				android:title="@string/pref_support_title"
 				android:persistent="false"
 				android:order="1">
 
 			<intent
 					android:action="android.intent.action.VIEW"
-					android:data="http://citymaps.com/about"/>
+					android:data="http://citymaps.com/support" />
 
 		</Preference>
+
+		<Preference
+				android:key="pref_tour"
+				android:icon="@drawable/ic_tour_gray600_24dp"
+				android:title="@string/pref_tour_title"
+				android:persistent="false"
+				android:order="2" />
+
+		<Preference
+				android:key="pref_feedback"
+				android:icon="@drawable/ic_send_grey600_24dp"
+				android:title="@string/pref_feedback_title"
+				android:persistent="false"
+				android:order="3" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:key="pref_cat_more"
+			android:title="@string/pref_cat_more_title"
+			android:order="4">
 
 		<Preference
 				android:key="pref_policy"
 				android:icon="@drawable/ic_lock_grey600_24dp"
 				android:title="@string/pref_privacy_title"
 				android:persistent="false"
-				android:order="2">
+				android:order="0">
 
 			<intent
 					android:action="android.intent.action.VIEW"
@@ -65,7 +86,7 @@
 				android:icon="@drawable/ic_assignment_turned_in_grey600_24dp"
 				android:title="@string/pref_terms_title"
 				android:persistent="false"
-				android:order="3">
+				android:order="1">
 
 			<intent
 					android:action="android.intent.action.VIEW"
@@ -78,7 +99,7 @@
 				android:icon="@drawable/ic_group_work_grey600_24dp"
 				android:title="@string/pref_credits_title"
 				android:persistent="false"
-				android:order="4">
+				android:order="2">
 
 			<intent
 					android:action="android.intent.action.VIEW"
@@ -92,9 +113,24 @@
 				android:title="@string/pref_developer_mode_title"
 				android:widgetLayout="@layout/preference_widget_layout_button"
 				android:persistent="false"
-				android:order="5">
+				android:order="3">
 
 		</Preference>
+
+		<!--
+		<com.citymaps.mobile.android.preference.SwitchPreferenceEx
+				android:key="pref_developer_mode"
+				android:title="@string/pref_developer_mode_title"
+				android:persistent="false"
+				android:order="3">
+
+			<intent
+					android:targetPackage="com.spamytic.mobile"
+					android:targetClass="com.spamytic.mobile.view.PreferencesActivity$PreferencesActivityImpl"
+					android:action="com.spamytic.mobile.action.DEVELOPER_PREFERENCES" />
+
+		</com.citymaps.mobile.android.preference.SwitchPreferenceEx>
+		-->
 
 	</PreferenceCategory>
 

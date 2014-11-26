@@ -14,14 +14,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.android.volley.NoConnectionError;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
@@ -32,7 +29,7 @@ import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.model.request.VolleyCallbacks;
 import com.citymaps.mobile.android.util.CommonUtils;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 import com.citymaps.mobile.android.util.Validator;
 import com.citymaps.mobile.android.util.ViewUtils;
 
@@ -233,7 +230,7 @@ public class SigninCreateAccountFragment extends FormFragment
 			// Capture third party token
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 			ThirdParty thirdParty = mThirdPartyUser.getThirdParty();
-			SharedPreferenceUtils.putString(sp, thirdParty.getSharedPreferenceTokenKey(), mThirdPartyUser.getToken()).apply();
+			SharedPrefUtils.putString(sp.edit(), thirdParty.getPreference(), mThirdPartyUser.getToken()).apply();
 		}
 
 		if (mListener != null) {

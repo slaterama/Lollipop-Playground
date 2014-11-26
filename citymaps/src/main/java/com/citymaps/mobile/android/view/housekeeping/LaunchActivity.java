@@ -18,10 +18,7 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
-import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
-import com.citymaps.mobile.android.util.UpdateUtils;
+import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.util.UpdateUtils.UpdateType;
 import com.citymaps.mobile.android.view.MainActivity;
 
@@ -66,8 +63,8 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 		if (savedInstanceState == null) {
 			// First of all, examine any saved config for hard/soft update
-			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
-			processConfig(SharedPreferenceUtils.getConfig(sp));
+			SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(this);
+			processConfig(SharedPrefUtils.getConfig(sp));
 			if (isFinishing()) {
 				return;
 			}
@@ -163,7 +160,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 				// If we have never processed the Tour activity, start it now
 
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
-				boolean tourProcessed = SharedPreferenceUtils.isTourProcessed(sp, false);
+				boolean tourProcessed = SharedPrefUtils.getBoolean(sp, CitymapsPreference.TOUR_PROCESSED, false);
 				if (!tourProcessed) {
 					Intent intent = new Intent(activity, TourActivity.class);
 					IntentUtils.putStartupMode(intent, true);
@@ -176,12 +173,12 @@ public class LaunchActivity extends TrackedActionBarActivity
 				// If Location Services are enabled, mark the Enable Location activity as processed and continue
 				// Otherwise, start the Enable Location activity now
 
-				boolean enableLocationProcessed = SharedPreferenceUtils.isEnableLocationProcessed(sp, false);
+				boolean enableLocationProcessed = SharedPrefUtils.getBoolean(sp, CitymapsPreference.ENABLE_LOCATION_PROCESSED, false);
 				if (!enableLocationProcessed) {
 					LocationManager manager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 					boolean gpsEnabled = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 					if (gpsEnabled) {
-						SharedPreferenceUtils.putEnableLocationProcessed(sp, true);
+						SharedPrefUtils.putBoolean(sp.edit(), CitymapsPreference.ENABLE_LOCATION_PROCESSED, true).apply();
 					} else {
 						Intent intent = new Intent(activity, EnableLocationActivity.class);
 						IntentUtils.putStartupMode(intent, true);
@@ -193,7 +190,7 @@ public class LaunchActivity extends TrackedActionBarActivity
 
 				// Get the saved Citymaps Token from SharedPreferences (if any)
 
-				String citymapsToken = SharedPreferenceUtils.getCitymapsToken(sp, null);
+				String citymapsToken = SharedPrefUtils.getString(sp, CitymapsPreference.CITYMAPS_TOKEN, null);
 				if (TextUtils.isEmpty(citymapsToken)) {
 					Intent intent = new Intent(activity, AuthenticateActivity.class);
 					IntentUtils.putStartupMode(intent, true);

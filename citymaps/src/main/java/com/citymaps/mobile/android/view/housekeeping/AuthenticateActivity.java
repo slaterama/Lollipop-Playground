@@ -22,7 +22,7 @@ import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
 import com.citymaps.mobile.android.util.CommonUtils;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
@@ -237,7 +237,8 @@ public class AuthenticateActivity extends TrackedActionBarActivity {
 						// We successfully logged in using a third party
 						SessionManager.getInstance(AuthenticateActivity.this).setCurrentUser(response);
 						SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(AuthenticateActivity.this);
-						SharedPreferenceUtils.putString(sp, user.getThirdParty().getSharedPreferenceTokenKey(), user.getToken()).apply();
+						SharedPrefUtils.putString(sp.edit(), user.getThirdParty().getPreference(),
+								user.getToken()).apply();
 						wrapUp();
 					}
 				}, new Response.ErrorListener() {

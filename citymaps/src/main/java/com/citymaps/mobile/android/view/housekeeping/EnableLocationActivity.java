@@ -11,8 +11,9 @@ import android.provider.Settings;
 import android.view.View;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
+import com.citymaps.mobile.android.util.CitymapsPreference;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 
 public class EnableLocationActivity extends TrackedActionBarActivity {
 
@@ -43,7 +44,7 @@ public class EnableLocationActivity extends TrackedActionBarActivity {
 		startActivity(intent);
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferenceUtils.putEnableLocationProcessed(sp, true).apply();
+		SharedPrefUtils.putBoolean(sp.edit(), CitymapsPreference.ENABLE_LOCATION_PROCESSED, true).apply();
 
 		finish();
 	}

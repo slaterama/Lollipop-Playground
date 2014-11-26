@@ -16,7 +16,7 @@ import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.notused_provider.config.ConfigContract.Settings;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 import com.citymaps.mobile.android.util.UpdateUtils;
 import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity;
 import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
@@ -57,8 +57,8 @@ public class MainActivity extends TrackedActionBarActivity
 
 		if (savedInstanceState == null) {
 			// First of all, examine any saved config for hard/soft update
-			SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(this);
-			processConfig(SharedPreferenceUtils.getConfig(sp));
+			SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(this);
+			processConfig(SharedPrefUtils.getConfig(sp));
 			/*
 			if (isFinishing()) {
 				return;

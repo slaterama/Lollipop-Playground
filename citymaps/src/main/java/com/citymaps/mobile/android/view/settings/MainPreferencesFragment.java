@@ -6,7 +6,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,10 +30,7 @@ import com.citymaps.mobile.android.preference.SwitchPreferenceEx;
 import com.citymaps.mobile.android.thirdparty.FacebookProxy;
 import com.citymaps.mobile.android.thirdparty.GoogleProxy;
 import com.citymaps.mobile.android.thirdparty.ThirdPartyProxy;
-import com.citymaps.mobile.android.util.CommonUtils;
-import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.ShareUtils;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.SignoutDialogFragment;
 import com.facebook.Session;
@@ -159,11 +155,11 @@ public class MainPreferencesFragment extends PreferencesFragment
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		addPreferencesFromResource(R.xml.preferences_general);
+		addPreferencesFromResource(R.xml.preferences_general_old);
 
 		addPreferencesFromResource(mCurrentUser == null
-				? R.xml.preferences_unauthenticated
-				: R.xml.preferences_authenticated);
+				? R.xml.preferences_unauthenticated_old
+				: R.xml.preferences_authenticated_old);
 
 		mShareAppPreference = findPreference(PreferenceType.SHARE_APP.toString());
 		mFeedbackPreference = findPreference(PreferenceType.FEEDBACK.toString());
@@ -292,8 +288,8 @@ public class MainPreferencesFragment extends PreferencesFragment
 
 										// Clear third party tokens from shared preferences
 										SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
-										sp.edit().remove(SharedPreferenceUtils.Key.FACEBOOK_TOKEN.getKeyName())
-												.remove(SharedPreferenceUtils.Key.GOOGLE_TOKEN.getKeyName()).apply();
+										sp.edit().remove(CitymapsPreference.FACEBOOK_TOKEN.getKey())
+												.remove(CitymapsPreference.GOOGLE_TOKEN.getKey()).apply();
 
 										// Deactivate third party proxies & clear tokens
 										for (ThirdPartyProxy proxy : mThirdPartyProxySet) {

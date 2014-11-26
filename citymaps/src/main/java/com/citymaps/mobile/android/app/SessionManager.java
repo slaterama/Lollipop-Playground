@@ -11,7 +11,8 @@ import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.UserSettings;
-import com.citymaps.mobile.android.util.SharedPreferenceUtils;
+import com.citymaps.mobile.android.util.CitymapsPreference;
+import com.citymaps.mobile.android.util.SharedPrefUtils;
 
 public class SessionManager {
 
@@ -42,8 +43,8 @@ public class SessionManager {
 
 	private SessionManager() {
 		mEnvironment = Environment.newInstance(sContext);
-		SharedPreferences sp = SharedPreferenceUtils.getConfigSharedPreferences(sContext);
-		mConfig = SharedPreferenceUtils.getConfig(sp);
+		SharedPreferences sp = SharedPrefUtils.getConfigSharedPreferences(sContext);
+		mConfig = SharedPrefUtils.getConfig(sp);
 	}
 
 	public Config getConfig() {
@@ -65,11 +66,12 @@ public class SessionManager {
 			setCurrentUserSettings(null);
 
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(sContext);
+			SharedPreferences.Editor editor = sp.edit();
 			if (user == null) {
-				SharedPreferenceUtils.remove(sp, SharedPreferenceUtils.Key.CITYMAPS_TOKEN).apply();
+				SharedPrefUtils.remove(editor, CitymapsPreference.CITYMAPS_TOKEN).apply();
 				mCurrentUserSettings = null;
 			} else {
-				SharedPreferenceUtils.putCitymapsToken(sp, user.getCitymapsToken()).apply();
+				SharedPrefUtils.putString(editor, CitymapsPreference.CITYMAPS_TOKEN, user.getCitymapsToken()).apply();
 			}
 
 			// TODO Send broadcast?
