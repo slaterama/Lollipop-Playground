@@ -174,6 +174,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 				if (!activated) {
 					mFacebookPreference.setSummary(R.string.error_pref_third_party_connection_lost);
 					mFacebookPreference.setSecondaryIcon(R.drawable.ic_sync_problem_red_24dp);
+					mFacebookPreference.setCheckOnClick(false);
 				}
 			}
 			if (mGoogleCredential != null) {
@@ -184,6 +185,7 @@ public class MainPreferencesFragment extends PreferencesFragment
 				if (!activated) {
 					mGooglePreference.setSummary(R.string.error_pref_third_party_connection_lost);
 					mGooglePreference.setSecondaryIcon(R.drawable.ic_sync_problem_red_24dp);
+					mGooglePreference.setCheckOnClick(false);
 				}
 			}
 		}

@@ -12,16 +12,14 @@
 				android:icon="@drawable/ic_facebook_color_24dp"
 				android:title="@string/pref_connect_facebook_title"
 				android:persistent="false"
-				android:order="0"
-				citymaps:checkOnClick="false" />
+				android:order="0" />
 
 		<com.citymaps.mobile.android.preference.SwitchPreferenceEx
 				android:key="pref_connect_google"
 				android:icon="@drawable/ic_google_color_24dp"
 				android:title="@string/pref_connect_google_title"
 				android:persistent="false"
-				android:order="1"
-				citymaps:checkOnClick="false" />
+				android:order="1" />
 
 		<!--
 		<SwitchPreference
