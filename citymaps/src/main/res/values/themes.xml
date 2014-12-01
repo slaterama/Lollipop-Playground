@@ -12,6 +12,9 @@
 		<item name="colorAccent">@color/color_accent</item>
 		<item name="colorButtonNormal">@color/color_button_normal</item>
 
+		<item name="floatingActionButtonStyle">@style/Widget.Holo.FloatingActionButton</item>
+		<item name="floatingActionButtonCompatStyle">@style/Widget.Holo.FloatingActionButtonCompat</item>
+
 		<item name="centeredDrawableButtonStyle">@style/Widget.Holo.CenteredDrawableButton</item>
 		<!--<item name="switchPreferenceExStyle">@style/Preference.Holo.SwitchPreferenceEx</item>-->
 		<item name="facebookButtonStyle">@style/Widget.Holo.FacebookButton</item>

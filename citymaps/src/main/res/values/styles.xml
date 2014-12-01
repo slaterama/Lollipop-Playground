@@ -12,6 +12,14 @@
 		<item name="background">@android:color/transparent</item>
 	</style>
 
+	<style name="Widget.FloatingActionButton" parent="@android:style/Widget.ImageButton">
+		<item name="fabType">normal</item>
+	</style>
+
+	<style name="Widget.FloatingActionButtonCompat" parent="@android:style/Widget.ImageButton">
+		<item name="fabType">normal</item>
+	</style>
+
 	<style name="Widget.CenteredDrawableButton" parent="@android:style/Widget.Button">
 		<item name="android:drawablePadding">8dp</item>
 	</style>
@@ -38,6 +46,14 @@
 		<item name="android:textColor">?android:textColorPrimaryInverse</item>
 		<item name="android:textStyle">normal</item>
 		<item name="android:background">@drawable/btn_citymaps_grey_default_holo_light</item>
+	</style>
+
+	<style name="Widget.Holo.FloatingActionButton" parent="@android:style/Widget.Holo.ImageButton">
+		<item name="fabType">normal</item>
+	</style>
+
+	<style name="Widget.Holo.FloatingActionButtonCompat" parent="@android:style/Widget.Holo.ImageButton">
+		<item name="fabType">normal</item>
 	</style>
 
 	<style name="Widget.Holo.CenteredDrawableButton" parent="@android:style/Widget.Holo.Light.Button">

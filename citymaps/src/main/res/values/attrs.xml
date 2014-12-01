@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<attr name="floatingActionButtonStyle" format="reference" />
+	<attr name="floatingActionButtonCompatStyle" format="reference" />
+
 	<attr name="centeredDrawableButtonStyle" format="reference" />
 	<!--<attr name="switchPreferenceExStyle" format="reference" />-->
 	<attr name="facebookButtonStyle" format="reference" />
@@ -10,6 +13,15 @@
 	<!-- For RatioFrameLayout, RatioImageView -->
 	<attr name="ratio" format="float" />
 	<attr name="baseOnSmallestWidth" format="boolean" />
+
+	<!-- For FloatingActionButton -->
+	<attr name="fabType" format="enum">
+		<enum name="normal" value="0"/>
+		<enum name="mini" value="1"/>
+		<enum name="custom" value="2"/>
+	</attr>
+	<attr name="pressedColor" format="color|reference" />
+	<attr name="rippleColor" format="color|reference" />
 
 	<declare-styleable name="RatioFrameLayout">
 		<attr name="ratio" />
@@ -28,6 +40,22 @@
 		<attr name="android:lines" />
 		<attr name="android:minLines" />
 		<attr name="android:singleLine" />
+	</declare-styleable>
+
+	<declare-styleable name="FloatingActionButton">
+		<attr name="fabType" />
+		<!--<attr name="elevation" format="dimension" />-->
+		<attr name="android:color" />
+		<attr name="pressedColor" />
+		<attr name="rippleColor" />
+	</declare-styleable>
+
+	<declare-styleable name="FloatingActionButtonCompat">
+		<attr name="fabType" />
+		<!--<attr name="elevation" format="dimension" />-->
+		<attr name="android:color" />
+		<attr name="pressedColor" />
+		<attr name="rippleColor" />
 	</declare-styleable>
 
 </resources>

@@ -24,7 +24,7 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 												 Response.Listener<UserSettings> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER_SETTINGS, userId);
-		return new UserSettingsRequest(Api.Version.V2, true, Method.GET, urlString, null, null, listener, errorListener);
+		return new UserSettingsRequest(Api.Version.V2, false, Method.GET, urlString, null, null, listener, errorListener);
 	}
 
 	public static UserSettingsRequest newUpdateRequest(Context context, String settingsId, Map<String, String> params,

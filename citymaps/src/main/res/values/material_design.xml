@@ -15,6 +15,10 @@
 	<dimen name="floating_action_button_size">56dp</dimen>
 	<dimen name="mini_floating_action_button_size">40dp</dimen>
 
+	<dimen name="default_elevation">12dp</dimen>
+
+	<dimen name="compat_shadow_offset">12dp</dimen>
+
 	<!-- Material Design colors -->
 
 	<!-- Red -->

@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<style name="Widget.Material.FloatingActionButton" parent="@android:style/Widget.Material.ImageButton">
+		<item name="fabType">normal</item>
+	</style>
+
+	<style name="Widget.Material.FloatingActionButtonCompat" parent="@android:style/Widget.Material.ImageButton">
+		<item name="fabType">normal</item>
+	</style>
+
 	<style name="Widget.Material.CenteredDrawableButton" parent="@android:style/Widget.Material.Light.Button">
 		<item name="android:drawablePadding">8dp</item>
 	</style>
