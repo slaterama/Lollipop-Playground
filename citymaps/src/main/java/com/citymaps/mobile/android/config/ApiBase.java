@@ -33,7 +33,7 @@ public class ApiBase extends Api {
 		addEndpoint(new Endpoint(Type.USER_LOGOUT, "v2/user/logout", APPEND_STANDARD));
 		addEndpoint(new Endpoint(Type.USER_REGISTER, "v2/user/register?login=1", APPEND_STANDARD));
 		addEndpoint(new Endpoint(Type.USER_RESET_PASSWORD, "user/resetpassword", APPEND_STANDARD));
-		addEndpoint(new Endpoint(Type.USER_SETTINGS, "settings/%s"));
+		addEndpoint(new Endpoint(Type.USER_SETTINGS, "v2/user/%s/setting"));
 		addEndpoint(new Endpoint(Type.USER_UPDATE, "v2/user/update/%s"));
 	}
 }
