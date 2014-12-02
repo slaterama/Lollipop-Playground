@@ -44,7 +44,7 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 											 Response.Listener<User> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String urlString = environment.buildUrlString(Endpoint.Type.USER, userId);
-		return new UserRequest(Method.POST, urlString, null, null, listener, errorListener);
+		return new UserRequest(Method.GET, urlString, null, null, listener, errorListener);
 	}
 
 	public static UserRequest newLoginRequest(Context context, String citymapsToken,

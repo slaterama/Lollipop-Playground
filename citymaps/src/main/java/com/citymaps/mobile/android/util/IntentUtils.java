@@ -2,6 +2,7 @@ package com.citymaps.mobile.android.util;
 
 import android.content.Intent;
 import com.citymaps.mobile.android.BuildConfig;
+import com.citymaps.mobile.android.map.ParcelableLonLat;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
 
@@ -63,6 +64,10 @@ public class IntentUtils {
 	 */
 	public static final String EXTRA_CONFIG = makeExtra("CONFIG");
 
+	public static final String EXTRA_DEVELOPER_PASSWORD_JUST_ENTERED = makeExtra("DEVELOPER_PASSWORD_JUST_ENTERED");
+
+	public static final String EXTRA_ERROR_MESSAGE = makeExtra("ERROR_MESSAGE");
+
 	/**
 	 * An integer that specifies in what mode the Login activity should open.
 	 * <p>Values are:
@@ -74,6 +79,12 @@ public class IntentUtils {
 	 */
 	public static final String EXTRA_LOGIN_MODE = makeExtra("LOGIN_MODE");
 
+	public static final String EXTRA_MAP_LOCATION = makeExtra("MAP_LOCATION");
+
+	public static final String EXTRA_MAP_RADIUS = makeExtra("MAP_RADIUS");
+
+	public static final String EXTRA_MAP_ZOOM = makeExtra("MAP_ZOOM");
+
 	/**
 	 * Whether the app is currently in "startup mode" (i.e. walking the user through
 	 * a series of initial screens including LaunchActivity, TourActivity, etc.)
@@ -81,10 +92,6 @@ public class IntentUtils {
 	public static final String EXTRA_STARTUP_MODE = makeExtra("STARTUP_MODE");
 
 	public static final String EXTRA_THIRD_PARTY_USER = makeExtra("THIRD_PARTY_USER");
-
-	public static final String EXTRA_ERROR_MESSAGE = makeExtra("ERROR_MESSAGE");
-
-	public static final String EXTRA_DEVELOPER_PASSWORD_JUST_ENTERED = makeExtra("DEVELOPER_PASSWORD_JUST_ENTERED");
 
 	public static void putConfig(Intent intent, Config config) {
 		intent.putExtra(EXTRA_CONFIG, config);
@@ -94,12 +101,44 @@ public class IntentUtils {
 		return intent.getParcelableExtra(EXTRA_CONFIG);
 	}
 
+	public static void putErrorMessage(Intent intent, String errorMessage) {
+		intent.putExtra(EXTRA_ERROR_MESSAGE, errorMessage);
+	}
+
+	public static String getErrorMessage(Intent intent) {
+		return intent.getStringExtra(EXTRA_ERROR_MESSAGE);
+	}
+
 	public static void putLoginMode(Intent intent, int loginMode) {
 		intent.putExtra(EXTRA_LOGIN_MODE, loginMode);
 	}
 
 	public static int getLoginMode(Intent intent, int defaultValue) {
 		return intent.getIntExtra(EXTRA_LOGIN_MODE, defaultValue);
+	}
+
+	public static void putMapLocation(Intent intent, ParcelableLonLat location) {
+		intent.putExtra(EXTRA_MAP_LOCATION, location);
+	}
+
+	public static ParcelableLonLat getMapLocation(Intent intent) {
+		return intent.getParcelableExtra(EXTRA_MAP_LOCATION);
+	}
+
+	public static void putMapRadius(Intent intent, float radius) {
+		intent.putExtra(EXTRA_MAP_RADIUS, radius);
+	}
+
+	public static float getMapRadius(Intent intent, float defaultValue) {
+		return intent.getFloatExtra(EXTRA_MAP_RADIUS, defaultValue);
+	}
+
+	public static void putMapZoom(Intent intent, int zoom) {
+		intent.putExtra(EXTRA_MAP_ZOOM, zoom);
+	}
+
+	public static int getMapZoom(Intent intent, int defaultValue) {
+		return intent.getIntExtra(EXTRA_MAP_ZOOM, defaultValue);
 	}
 
 	public static void putStartupMode(Intent intent, boolean startupMode) {
@@ -116,14 +155,6 @@ public class IntentUtils {
 
 	public static ThirdPartyUser getThirdPartyUser(Intent intent) {
 		return intent.getParcelableExtra(EXTRA_THIRD_PARTY_USER);
-	}
-
-	public static void putErrorMessage(Intent intent, String errorMessage) {
-		intent.putExtra(EXTRA_ERROR_MESSAGE, errorMessage);
-	}
-
-	public static String getErrorMessage(Intent intent) {
-		return intent.getStringExtra(EXTRA_ERROR_MESSAGE);
 	}
 
 	private IntentUtils() {

@@ -256,4 +256,55 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 
 		public abstract D getData();
 	}
+
+	public static abstract class SearchResultBase {
+
+		@SerializedName("count")
+		private int mCount;
+
+		@SerializedName("debug")
+		private Object mDebug;
+
+		@SerializedName("meta")
+		private Meta mMeta;
+
+		@SerializedName("personalized")
+		private boolean mPersonalized;
+
+		@SerializedName("suggestions")
+		private Object[] mSuggestions;
+
+		public int getCount() {
+			return mCount;
+		}
+
+		public Object getDebug() {
+			return mDebug;
+		}
+
+		public Meta getMeta() {
+			return mMeta;
+		}
+
+		public boolean isPersonalized() {
+			return mPersonalized;
+		}
+
+		public Object[] getSuggestions() {
+			return mSuggestions;
+		}
+
+		public static class Meta {
+			@SerializedName("search_type")
+			private String mSearchType;
+
+			public String getSearchType() {
+				return mSearchType;
+			}
+		}
+	}
+
+	public static abstract class SearchSuccess<D> extends SearchResultBase {
+		public abstract D getData();
+	}
 }

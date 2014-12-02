@@ -3,6 +3,7 @@ package com.citymaps.mobile.android.model;
 import android.content.Context;
 import android.util.SparseArray;
 import com.citymaps.mobile.android.R;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * An object maintained by the Citymaps application. Every object has a type, an ID, and a name.
@@ -51,66 +52,79 @@ public interface CitymapsObject {
 		/**
 		 * Indicates an unknown object type.
 		 */
+		@SerializedName("0")
 		UNKNOWN(0, R.plurals.cmobj_unknown, R.plurals.cmobj_unknown_capital),
 
 		/**
 		 * Indicates an object that represents a business.
 		 */
+		@SerializedName("1")
 		BUSINESS(1, R.plurals.cmobj_business, R.plurals.cmobj_business_capital),
 
 		/**
 		 * Indicates an object that represents a collection.
 		 */
+		@SerializedName("2")
 		COLLECTION(2, R.plurals.cmobj_collection, R.plurals.cmobj_collection_capital),
 
 		/**
 		 * Indicates an object that represents a user.
 		 */
+		@SerializedName("3")
 		USER(3, R.plurals.cmobj_user, R.plurals.cmobj_user_capital),
 
 		/**
 		 * Indicates an object that represents a tip.
 		 */
+		@SerializedName("4")
 		TIP(4, R.plurals.cmobj_tip, R.plurals.cmobj_tip_capital),
 
 		/**
 		 * Indicates an object that represents a marker.
 		 */
+		@SerializedName("5")
 		MARKER(5, R.plurals.cmobj_marker, R.plurals.cmobj_marker_capital),
 
 		/**
 		 * Indicates an object that represents a region.
 		 */
+		@SerializedName("6")
 		REGION(6, R.plurals.cmobj_region, R.plurals.cmobj_region_capital),
 
 		/**
 		 * Indicates an object that represents a place of interest.
 		 */
+		@SerializedName("12")
 		POI(12, R.plurals.cmobj_poi, R.plurals.cmobj_poi_capital),
 
 		/**
 		 * Indicates an object that represents a geocoded address.
 		 */
+		@SerializedName("13")
 		GEOCODED_ADDRESS(13, R.plurals.cmobj_geocoded_address, R.plurals.cmobj_geocoded_address_capital),
 
 		/**
 		 * Indicates an object that represents a country.
 		 */
+		@SerializedName("61")
 		COUNTRY(61, R.plurals.cmobj_country, R.plurals.cmobj_country_capital),
 
 		/**
 		 * Indicates an object that represents a state.
 		 */
+		@SerializedName("62")
 		STATE(62, R.plurals.cmobj_state, R.plurals.cmobj_state_capital),
 
 		/**
 		 * Indicates an object that represents a city.
 		 */
+		@SerializedName("63")
 		CITY(63, R.plurals.cmobj_city, R.plurals.cmobj_city_capital),
 
 		/**
 		 * Indicates an object that represents a neighborhood.
 		 */
+		@SerializedName("64")
 		NEIGHBORHOOD(64, R.plurals.cmobj_neighborhood, R.plurals.cmobj_neighborhood_capital);
 
 		/**

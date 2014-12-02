@@ -13,10 +13,13 @@ import java.util.Observable;
 public abstract class CitymapsObservable extends Observable
 		implements CitymapsObject {
 
-	@SerializedName("created_at")
+	public static final String CREATED_AT = "created_at";
+	public static final String UPDATED_AT = "updated_at";
+
+	@SerializedName(CREATED_AT)
 	private Date mCreatedAt;
 
-	@SerializedName("updated_at")
+	@SerializedName(UPDATED_AT)
 	private Date mUpdatedAt;
 
 	public Date getCreatedAt() {
@@ -25,6 +28,8 @@ public abstract class CitymapsObservable extends Observable
 
 	public void setCreatedAt(Date createdAt) {
 		mCreatedAt = createdAt;
+		setChanged();
+		notifyObservers(CREATED_AT);
 	}
 
 	public Date getUpdatedAt() {
@@ -33,5 +38,7 @@ public abstract class CitymapsObservable extends Observable
 
 	public void setUpdatedAt(Date updatedAt) {
 		mUpdatedAt = updatedAt;
+		setChanged();
+		notifyObservers(UPDATED_AT);
 	}
 }

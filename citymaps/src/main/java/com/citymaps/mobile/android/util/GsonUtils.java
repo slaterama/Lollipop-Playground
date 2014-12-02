@@ -1,7 +1,14 @@
 package com.citymaps.mobile.android.util;
 
+import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
 
 public final class GsonUtils {
 
@@ -20,11 +27,35 @@ public final class GsonUtils {
 		if (sGson == null)
 			sGson = new GsonBuilder()
 					.setDateFormat(DATE_FORMAT_PATTERN)
+					.registerTypeAdapter(String[].class, new StringArrayAdapter().nullSafe())
 					.setPrettyPrinting()
 					.create();
 		return sGson;
 	}
 
 	private GsonUtils() {
+	}
+
+	protected static class StringArrayAdapter extends TypeAdapter<String[]> {
+		@Override
+		public void write(JsonWriter out, String[] value) throws IOException {
+			if (value == null) {
+				out.nullValue();
+				return;
+			}
+
+			out.value(TextUtils.join(",", value));
+		}
+
+		@Override
+		public String[] read(JsonReader in) throws IOException {
+			if (in.peek() == JsonToken.NULL) {
+				in.nextNull();
+				return null;
+			}
+
+			String categories = in.nextString();
+			return categories.split(",");
+		}
 	}
 }

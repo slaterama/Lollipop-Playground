@@ -46,6 +46,25 @@
 
 	<string name="explore_activity_title">Explore</string>
 
+	<string name="explore_best_around">Best Around %s</string>
+	<string name="explore_featured_collections">Featured Collections</string>
+	<string name="explore_featured_mappers">Featured Mappers</string>
+	<string name="explore_featured_deals">Featured Deals</string>
+	<string name="explore_view_all">view all</string>
+	<string name="explore_my_places">My Places</string>
+	<string name="explore_friends_places">Friends\' Places</string>
+
+	<!--
+	================================================================================
+	Card strings
+	================================================================================
+	-->
+
+	<string name="card_follow">Follow</string>
+	<string name="card_following">Following</string>
+	<string name="card_created_by">Created by</string>
+	<string name="card_deal_by">Created by</string>
+
 	<!--
 	================================================================================
 	Preferences strings
