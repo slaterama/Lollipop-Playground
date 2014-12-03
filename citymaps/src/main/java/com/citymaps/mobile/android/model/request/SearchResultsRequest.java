@@ -27,7 +27,6 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 		sGson = newDefaultGsonBuilder()
 				.registerTypeAdapterFactory(new StringArrayTypeAdapterFactory())
 				.registerTypeAdapter(Deal[].class, new DealsDeserializer())
-				.registerTypeAdapterFactory(new DateTypeAdapterFactory())
 				.create();
 	}
 

@@ -161,7 +161,7 @@ public class UserRequest extends CitymapsGsonRequest<User> {
 
 	@Override
 	protected Response<User> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
-		Gson gson = GsonUtils.getGson();
+		Gson gson = getGson();
 		switch (mVersion) {
 			case V1:
 				// V1 api calls return "successful" responses with a code != 0 if there was an error

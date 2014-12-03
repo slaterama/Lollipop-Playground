@@ -10,7 +10,7 @@ import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.User;
-import com.citymaps.mobile.android.util.GsonUtils;
+//import com.citymaps.mobile.android.util.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
@@ -41,8 +41,7 @@ public class UsersRequest extends CitymapsGsonRequest<User[]> {
 
 	@Override
 	protected Response<User[]> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
-		Gson gson = GsonUtils.getGson();
-		FriendsWrapper result = gson.fromJson(jsonObject, FriendsWrapper.class);
+		FriendsWrapper result = getGson().fromJson(jsonObject, FriendsWrapper.class);
 		FriendsWrapper.Suggestion suggestion = result.getData();
 		User[] items = (suggestion == null ? null : suggestion.getFriends());
 		return Response.success(items, HttpHeaderParser.parseCacheHeaders(response));

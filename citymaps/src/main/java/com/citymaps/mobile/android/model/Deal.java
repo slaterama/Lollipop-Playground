@@ -2,7 +2,6 @@ package com.citymaps.mobile.android.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
 import java.util.Observable;
 
 public class Deal extends Observable {
@@ -23,7 +22,7 @@ public class Deal extends Observable {
 	private String mDescription;
 
 	@SerializedName(END_TIME)
-	private Date mEndTime;
+	private long mEndTimeMillis;
 
 	@SerializedName(FULFILLMENT_URL)
 	private String mFulfillmentUrl;
@@ -35,7 +34,7 @@ public class Deal extends Observable {
 	private String mSource;
 
 	@SerializedName(START_TIME)
-	private Date mStartTime;
+	private long mStartTimeMillis;
 
 	@SerializedName(THUMBNAIL_IMAGE)
 	private String mThumbnailImage;
@@ -60,12 +59,12 @@ public class Deal extends Observable {
 		notifyObservers(DESCRIPTION);
 	}
 
-	public Date getEndTime() {
-		return mEndTime;
+	public long getEndTimeMillis() {
+		return mEndTimeMillis;
 	}
 
-	public void setEndTime(Date endTime) {
-		mEndTime = endTime;
+	public void setEndTimeMillis(long endTimeMillis) {
+		mEndTimeMillis = endTimeMillis;
 		setChanged();
 		notifyObservers(END_TIME);
 	}
@@ -100,12 +99,12 @@ public class Deal extends Observable {
 		notifyObservers(SOURCE);
 	}
 
-	public Date getStartTime() {
-		return mStartTime;
+	public long getStartTimeMillis() {
+		return mStartTimeMillis;
 	}
 
-	public void setStartTime(Date startTime) {
-		mStartTime = startTime;
+	public void setStartTimeMillis(long startTimeMillis) {
+		mStartTimeMillis = startTimeMillis;
 		setChanged();
 		notifyObservers(START_TIME);
 	}

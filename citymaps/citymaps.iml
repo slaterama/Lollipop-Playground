@@ -89,6 +89,7 @@
     <orderEntry type="library" exported="" name="commons-codec-1.9" level="project" />
     <orderEntry type="library" exported="" name="bugsnag-1.2.8" level="project" />
     <orderEntry type="library" exported="" name="sdk-android-13.11" level="project" />
+    <orderEntry type="library" exported="" name="joda-time-2.6" level="project" />
     <orderEntry type="library" exported="" name="bolts-android-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3" level="project" />
     <orderEntry type="library" exported="" name="play-services-6.1.71" level="project" />

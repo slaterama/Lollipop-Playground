@@ -115,7 +115,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		private float mMapRadius;
 		private int mMapZoom;
 
-		private int mCompletedRequests = 1;
+		private int mCompletedRequests = 0;
 
 		private SearchResult[] mFeaturedHeroItems;
 		private SearchResult[] mFeaturedCollections;

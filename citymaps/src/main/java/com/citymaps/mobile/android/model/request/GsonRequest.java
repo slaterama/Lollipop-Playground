@@ -4,13 +4,14 @@ import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -25,6 +26,7 @@ public abstract class GsonRequest<T> extends Request<T> {
 	protected static GsonBuilder newDefaultGsonBuilder() {
 		return new GsonBuilder()
 				.setDateFormat(DATE_FORMAT_PATTERN)
+				.registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
 				.setPrettyPrinting();
 	}
 
@@ -75,14 +77,6 @@ public abstract class GsonRequest<T> extends Request<T> {
 		mHeaders = headers;
 		mParams = params;
 		mListener = listener;
-
-		/*
-		GsonBuilder builder = new GsonBuilder()
-				.setDateFormat(DATE_FORMAT_PATTERN)
-				.setPrettyPrinting();
-		customizeGson(builder);
-		mGson = builder.create();
-		*/
 	}
 
 	@Override
@@ -151,5 +145,12 @@ public abstract class GsonRequest<T> extends Request<T> {
 			sGson = newDefaultGsonBuilder().create();
 		}
 		return sGson;
+	}
+
+	protected static class DateTimeDeserializer implements JsonDeserializer<DateTime> {
+		@Override
+		public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			return new DateTime(json.getAsString(), DateTimeZone.UTC);
+		}
 	}
 }

@@ -5,7 +5,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.model.Deal;
-import com.citymaps.mobile.android.util.GsonUtils;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -15,9 +14,9 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.Map;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 
 	protected static final String MEMBER_NAME_CODE_V1 = "code";
@@ -33,7 +32,6 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 
 	@Override
 	protected VolleyError processParsedNetworkError(VolleyError volleyError, JsonObject jsonObject) {
-		Gson gson = GsonUtils.getGson();
 		switch (mVersion) {
 			case V1:
 				// Not sure if this code is ever executed
@@ -41,7 +39,7 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 			case V2:
 			default:
 				// Parse into an error result
-				ResultError result = gson.fromJson(jsonObject, ResultError.class);
+				ResultError result = getGson().fromJson(jsonObject, ResultError.class);
 				String message = result.getMessage();
 				String reason = result.getReason();
 				String error = (TextUtils.isEmpty(reason)
@@ -52,7 +50,6 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 	}
 
 	public abstract static class ResultBaseV1 extends ResultBase {
-
 		@SerializedName("count")
 		private int mCount;
 
@@ -364,40 +361,6 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 				deals = new Deal[]{sGson.fromJson(json, Deal.class)};
 			}
 			return deals;
-		}
-	}
-
-	protected static class DateTypeAdapterFactory implements TypeAdapterFactory {
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-			if (!Date.class.isAssignableFrom(type.getRawType())) {
-				return null;
-			}
-
-			final TypeAdapter<Date> delegate = gson.getDelegateAdapter(this, TypeToken.get(Date.class));
-
-			TypeAdapter<Date> adapter = new TypeAdapter<Date>() {
-				@Override
-				public void write(JsonWriter out, Date value) throws IOException {
-					delegate.write(out, value);
-				}
-
-				@Override
-				public Date read(JsonReader in) throws IOException {
-					JsonToken jsonToken = in.peek();
-					switch (jsonToken) {
-						case NUMBER:
-							long millis = in.nextLong();
-							return new Date(millis);
-						case STRING:
-						default:
-							return delegate.read(in);
-					}
-				}
-			};
-
-			return (TypeAdapter<T>) adapter;
 		}
 	}
 }

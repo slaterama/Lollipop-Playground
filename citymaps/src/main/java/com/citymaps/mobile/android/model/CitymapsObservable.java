@@ -1,8 +1,8 @@
 package com.citymaps.mobile.android.model;
 
 import com.google.gson.annotations.SerializedName;
+import org.joda.time.DateTime;
 
-import java.util.Date;
 import java.util.Observable;
 
 /**
@@ -17,26 +17,26 @@ public abstract class CitymapsObservable extends Observable
 	public static final String UPDATED_AT = "updated_at";
 
 	@SerializedName(CREATED_AT)
-	private Date mCreatedAt;
+	private DateTime mCreatedAt;
 
 	@SerializedName(UPDATED_AT)
-	private Date mUpdatedAt;
+	private DateTime mUpdatedAt;
 
-	public Date getCreatedAt() {
+	public DateTime getCreatedAt() {
 		return mCreatedAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(DateTime createdAt) {
 		mCreatedAt = createdAt;
 		setChanged();
 		notifyObservers(CREATED_AT);
 	}
 
-	public Date getUpdatedAt() {
+	public DateTime getUpdatedAt() {
 		return mUpdatedAt;
 	}
 
-	public void setUpdatedAt(Date updatedAt) {
+	public void setUpdatedAt(DateTime updatedAt) {
 		mUpdatedAt = updatedAt;
 		setChanged();
 		notifyObservers(UPDATED_AT);
