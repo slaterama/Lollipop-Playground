@@ -4,11 +4,18 @@ import android.text.TextUtils;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.config.Api;
+import com.citymaps.mobile.android.model.Deal;
 import com.citymaps.mobile.android.util.GsonUtils;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.Map;
 
 public class CitymapsGsonRequest<T> extends GsonRequest<T> {
@@ -306,5 +313,91 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 
 	public static abstract class SearchSuccess<D> extends SearchResultBase {
 		public abstract D getData();
+	}
+
+	protected static class StringArrayTypeAdapterFactory implements TypeAdapterFactory {
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+			if (!String[].class.isAssignableFrom(type.getRawType())) {
+				return null;
+			}
+
+			final TypeAdapter<String[]> delegate = gson.getDelegateAdapter(this, TypeToken.get(String[].class));
+
+			final TypeAdapter<String[]> adapter = new TypeAdapter<String[]>() {
+				@Override
+				public void write(JsonWriter out, String[] value) throws IOException {
+					delegate.write(out, value);
+				}
+
+				@Override
+				public String[] read(JsonReader in) throws IOException {
+					JsonToken jsonToken = in.peek();
+					switch (jsonToken) {
+						case STRING:
+							String string = in.nextString();
+							return string.split(",");
+						default:
+							return delegate.read(in);
+					}
+				}
+			};
+
+			return (TypeAdapter<T>) adapter;
+		}
+	}
+
+	protected static class DealsDeserializer implements JsonDeserializer<Deal[]> {
+		private static Gson sGson;
+
+		static {
+			sGson = new Gson();
+		}
+
+		@Override
+		public Deal[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			Deal[] deals = null;
+			if (json.isJsonArray()) {
+				deals = sGson.fromJson(json, Deal[].class);
+			} else if (json.isJsonObject()) {
+				deals = new Deal[]{sGson.fromJson(json, Deal.class)};
+			}
+			return deals;
+		}
+	}
+
+	protected static class DateTypeAdapterFactory implements TypeAdapterFactory {
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+			if (!Date.class.isAssignableFrom(type.getRawType())) {
+				return null;
+			}
+
+			final TypeAdapter<Date> delegate = gson.getDelegateAdapter(this, TypeToken.get(Date.class));
+
+			TypeAdapter<Date> adapter = new TypeAdapter<Date>() {
+				@Override
+				public void write(JsonWriter out, Date value) throws IOException {
+					delegate.write(out, value);
+				}
+
+				@Override
+				public Date read(JsonReader in) throws IOException {
+					JsonToken jsonToken = in.peek();
+					switch (jsonToken) {
+						case NUMBER:
+							long millis = in.nextLong();
+							return new Date(millis);
+						case STRING:
+						default:
+							return delegate.read(in);
+					}
+				}
+			};
+
+			return (TypeAdapter<T>) adapter;
+		}
 	}
 }

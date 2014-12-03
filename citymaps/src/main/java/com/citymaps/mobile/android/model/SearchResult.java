@@ -4,6 +4,7 @@ import com.citymaps.citymapsengine.LonLat;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class SearchResult extends CitymapsObservable {
 
 	public static final String OBJECT_ID = "object_id";
@@ -243,7 +244,7 @@ public class SearchResult extends CitymapsObservable {
 		return mDeals;
 	}
 
-	public void setDeals(Deal[] deals) {
+	public void setDeal(Deal[] deals) {
 		mDeals = deals;
 		setChanged();
 		notifyObservers(DEALS);

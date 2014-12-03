@@ -2,19 +2,31 @@ package com.citymaps.mobile.android.model.request;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.citymaps.mobile.android.util.GsonUtils;
 import com.citymaps.mobile.android.util.LogEx;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-public class GsonRequest<T> extends Request<T> {
+@SuppressWarnings("SpellCheckingInspection")
+public abstract class GsonRequest<T> extends Request<T> {
+
+	protected static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+	protected static Gson sGson;
 
 	protected static JsonParser sJsonParser;
+
+	protected static GsonBuilder newDefaultGsonBuilder() {
+		return new GsonBuilder()
+				.setDateFormat(DATE_FORMAT_PATTERN)
+				.setPrettyPrinting();
+	}
 
 	protected final Class<T> mClass;
 	private Map<String, String> mHeaders;
@@ -63,6 +75,14 @@ public class GsonRequest<T> extends Request<T> {
 		mHeaders = headers;
 		mParams = params;
 		mListener = listener;
+
+		/*
+		GsonBuilder builder = new GsonBuilder()
+				.setDateFormat(DATE_FORMAT_PATTERN)
+				.setPrettyPrinting();
+		customizeGson(builder);
+		mGson = builder.create();
+		*/
 	}
 
 	@Override
@@ -85,7 +105,7 @@ public class GsonRequest<T> extends Request<T> {
 		try {
 			JsonObject jsonObject = newJsonObject(response);
 			if (LogEx.isLoggable(LogEx.VERBOSE)) {
-				LogEx.v(String.format("response=%s", GsonUtils.getGson().toJson(jsonObject)));
+				LogEx.v(String.format("response=%s", getGson().toJson(jsonObject)));
 			}
 			return processParsedNetworkResponse(response, jsonObject);
 		} catch (UnsupportedEncodingException e) {
@@ -97,12 +117,12 @@ public class GsonRequest<T> extends Request<T> {
 
 	@Override
 	protected VolleyError parseNetworkError(VolleyError volleyError) {
-		if (volleyError.networkResponse == null /*|| !(volleyError instanceof ServerError)*/) {
+		if (volleyError.networkResponse == null /* || !(volleyError instanceof ServerError)*/) {
 			return super.parseNetworkError(volleyError);
 		} else try {
 			JsonObject jsonObject = newJsonObject(volleyError.networkResponse);
 			if (LogEx.isLoggable(LogEx.WARN)) {
-				LogEx.w(String.format("error=%s", GsonUtils.getGson().toJson(jsonObject)));
+				LogEx.w(String.format("error=%s", getGson().toJson(jsonObject)));
 			}
 			return processParsedNetworkError(volleyError, jsonObject);
 		} catch (UnsupportedEncodingException e) {
@@ -114,7 +134,7 @@ public class GsonRequest<T> extends Request<T> {
 
 	protected Response<T> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
 		try {
-			Gson gson = GsonUtils.getGson();
+			Gson gson = getGson();
 			T result = gson.fromJson(jsonObject, mClass);
 			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 		} catch (JsonSyntaxException e) {
@@ -124,5 +144,12 @@ public class GsonRequest<T> extends Request<T> {
 
 	protected VolleyError processParsedNetworkError(VolleyError volleyError, JsonObject jsonObject) {
 		return volleyError;
+	}
+
+	protected Gson getGson() {
+		if (sGson == null) {
+			sGson = newDefaultGsonBuilder().create();
+		}
+		return sGson;
 	}
 }

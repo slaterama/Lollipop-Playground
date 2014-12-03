@@ -8,12 +8,13 @@ import java.util.Observable;
 public class Deal extends Observable {
 
 	private static final String DEAL_ID = "deal_id";
-	private static final String LABEL = "label";
 	private static final String DESCRIPTION = "description";
-	private static final String THUMBNAIL_IMAGE = "thumbnail_image";
-	private static final String FULFILLMENT_URL = "fulfillment_url";
-	private static final String SOURCE = "source";
 	private static final String END_TIME = "end_time";
+	private static final String FULFILLMENT_URL = "fulfillment_url";
+	private static final String LABEL = "label";
+	private static final String SOURCE = "source";
+	private static final String START_TIME = "start_time";
+	private static final String THUMBNAIL_IMAGE = "thumbnail_image";
 
 	@SerializedName(DEAL_ID)
 	private String mId;
@@ -32,6 +33,9 @@ public class Deal extends Observable {
 
 	@SerializedName(SOURCE)
 	private String mSource;
+
+	@SerializedName(START_TIME)
+	private Date mStartTime;
 
 	@SerializedName(THUMBNAIL_IMAGE)
 	private String mThumbnailImage;
@@ -94,6 +98,16 @@ public class Deal extends Observable {
 		mSource = source;
 		setChanged();
 		notifyObservers(SOURCE);
+	}
+
+	public Date getStartTime() {
+		return mStartTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		mStartTime = startTime;
+		setChanged();
+		notifyObservers(START_TIME);
 	}
 
 	public String getThumbnailImage() {

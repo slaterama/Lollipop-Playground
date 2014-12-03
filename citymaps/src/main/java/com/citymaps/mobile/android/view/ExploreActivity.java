@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
@@ -13,7 +14,9 @@ import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
 import com.citymaps.mobile.android.model.SearchResult;
-import com.citymaps.mobile.android.model.request.SearchRequest;
+import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.request.SearchResultsRequest;
+import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
@@ -85,6 +88,10 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	protected void onRequestsComplete() {
+		LogEx.d();
+	}
+
 	public static class HelperFragment extends Fragment {
 		public static final String FRAGMENT_TAG = HelperFragment.class.getName();
 
@@ -108,6 +115,13 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		private float mMapRadius;
 		private int mMapZoom;
 
+		private int mCompletedRequests = 1;
+
+		private SearchResult[] mFeaturedHeroItems;
+		private SearchResult[] mFeaturedCollections;
+		private User[] mFeaturedMappers;
+		private SearchResult[] mFeaturedDeals;
+
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
@@ -130,32 +144,95 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				mMapRadius = args.getFloat(ARG_MAP_RADIUS);
 				mMapZoom = args.getInt(ARG_MAP_ZOOM);
 			}
-
-			LogEx.d(String.format("mMapLocation=%s, mMapRadius=%f, mMapZoom=%d", mMapLocation, mMapRadius, mMapZoom));
 		}
 
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-			LogEx.d();
 
-			SearchRequest heroItemsRequest = SearchRequest.newFeaturedHeroItemsRequest(getActivity(), mMapLocation, mMapZoom, mMapRadius, 0, 20,
+			int offset = 0;
+			int limit = 6;
+			SearchResultsRequest featuredHeroItemsRequest = SearchResultsRequest.newFeaturedHeroItemsRequest(getActivity(),
+					mMapLocation, mMapZoom, mMapRadius, offset, limit,
 					new Response.Listener<SearchResult[]>() {
 						@Override
 						public void onResponse(SearchResult[] response) {
-							LogEx.d(String.format("response=%s", response));
+							mFeaturedHeroItems = response;
+							onRequestComplete();
 						}
 					},
 					new Response.ErrorListener() {
 						@Override
 						public void onErrorResponse(VolleyError error) {
 							LogEx.d(String.format("error=%s", error));
+							onRequestComplete();
 						}
 					});
 
+			limit = 12;
+			SearchResultsRequest featuredCollectionsRequest = SearchResultsRequest.newFeaturedCollectionsRequest(getActivity(),
+					mMapLocation, mMapZoom, mMapRadius, offset, limit,
+					new Response.Listener<SearchResult[]>() {
+						@Override
+						public void onResponse(SearchResult[] response) {
+							mFeaturedCollections = response;
+							onRequestComplete();
+						}
+					},
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							LogEx.d(String.format("error=%s", error));
+							onRequestComplete();
+						}
+					});
 
+			UsersRequest featuredMappersRequest = UsersRequest.newFeaturedMappersRequest(getActivity(),
+					mMapLocation, mMapRadius, offset, limit,
+					new Response.Listener<User[]>() {
+						@Override
+						public void onResponse(User[] response) {
+							mFeaturedMappers = response;
+							onRequestComplete();
+						}
+					},
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							LogEx.d(String.format("error=%s", error));
+							onRequestComplete();
+						}
+					});
 
-			VolleyManager.getInstance(getActivity()).getRequestQueue().add(heroItemsRequest);
+			SearchResultsRequest featuredDealsRequest = SearchResultsRequest.newFeaturedDealsRequest(getActivity(),
+					mMapLocation, mMapZoom, mMapRadius, offset, limit,
+					new Response.Listener<SearchResult[]>() {
+						@Override
+						public void onResponse(SearchResult[] response) {
+							mFeaturedDeals = response;
+							onRequestComplete();
+						}
+					},
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							LogEx.d(String.format("error=%s", error));
+							onRequestComplete();
+						}
+					});
+
+			RequestQueue queue = VolleyManager.getInstance(getActivity()).getRequestQueue();
+			queue.add(featuredHeroItemsRequest);
+			queue.add(featuredCollectionsRequest);
+			queue.add(featuredMappersRequest);
+			queue.add(featuredDealsRequest);
+		}
+
+		private void onRequestComplete() {
+			mCompletedRequests++;
+			if (mCompletedRequests == 4) {
+				mActivity.onRequestsComplete();
+			}
 		}
 	}
 }

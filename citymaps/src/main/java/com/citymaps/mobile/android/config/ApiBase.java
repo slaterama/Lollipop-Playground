@@ -30,7 +30,7 @@ public class ApiBase extends Api {
 		addEndpoint(new Endpoint(Type.EXPLORE_FEATURED_COLLECTIONS, Server.Type.SEARCH, "explore/featured/maps?lon=%f&lat=%f&zoom=%d&radius=%f&search_id=%s&offset=%d&limit=%d"));
 		addEndpoint(new Endpoint(Type.EXPLORE_FEATURED_DEALS, Server.Type.SEARCH, "explore/featured/deals?lon=%f&lat=%f&zoom=%d&radius=%f&search_id=%s&offset=%d&limit=%d"));
 		addEndpoint(new Endpoint(Type.EXPLORE_FEATURED_HERO_ITEMS, Server.Type.SEARCH, "explore/featured?lon=%f&lat=%f&zoom=%d&radius=%f&search_id=%s&offset=%d&limit=%d"));
-		addEndpoint(new Endpoint(Type.EXPLORE_FEATURED_MAPPERS, Server.Type.SEARCH, "v2/user/suggest/explorer/friends?lon=%f&lat=%f&radius=%f&offset=%d&limit=%d"));
+		addEndpoint(new Endpoint(Type.EXPLORE_FEATURED_MAPPERS, "v2/user/suggest/explorer/friends?lon=%f&lat=%f&radius=%f&offset=%d&limit=%d"));
 		addEndpoint(new Endpoint(Type.PLACE, "business/%s"));
 		addEndpoint(new Endpoint(Type.USER, "v2/user/%s"));
 		addEndpoint(new Endpoint(Type.USER_LOGIN, "v2/user/login", APPEND_STANDARD));
