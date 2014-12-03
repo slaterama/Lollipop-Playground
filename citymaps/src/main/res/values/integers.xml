@@ -4,4 +4,13 @@
 	<!-- Default alpha value of app bar over map -->
 	<integer name="ab_alpha">128</integer>
 
+	<!-- The default number of cards across in ExploreActivity -->
+	<integer name="explore_default_cards_across">2</integer>
+
+	<!-- The number of cards across in the various ExploreActivity recycler views -->
+	<integer name="explore_best_around_cards_across">1</integer>
+	<integer name="explore_featured_collections_cards_across">@integer/explore_default_cards_across</integer>
+	<integer name="explore_featured_mappers_cards_across">@integer/explore_default_cards_across</integer>
+	<integer name="explore_featured_deals_cards_across">@integer/explore_default_cards_across</integer>
+
 </resources>

@@ -47,6 +47,7 @@
 	<string name="explore_activity_title">Explore</string>
 
 	<string name="explore_best_around">Best Around %s</string>
+	<string name="explore_best_around_me">Best Around Me</string>
 	<string name="explore_featured_collections">Featured Collections</string>
 	<string name="explore_featured_mappers">Featured Mappers</string>
 	<string name="explore_featured_deals">Featured Deals</string>

@@ -2,10 +2,15 @@ package com.citymaps.mobile.android.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -20,12 +25,23 @@ import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
+import com.segment.android.info.Screen;
 
 import java.util.UUID;
 
 public class ExploreActivity extends TrackedActionBarActivity {
 
 	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
+
+	private RecyclerView mBestAroundRecyclerView;
+	private RecyclerView mFeaturedCollectionsRecyclerView;
+	private RecyclerView mFeaturedMappersRecyclerView;
+	private RecyclerView mFeaturedDealsRecyclerView;
+
+	private int mBestAroundCardsAcross;
+	private int mFeaturedCollectionsCardsAcross;
+	private int mFeaturedMappersCardsAcross;
+	private int mFeaturedDealsCardsAcross;
 
 	private ParcelableLonLat mMapLocation;
 	private float mMapRadius;
@@ -37,6 +53,32 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_explore);
+
+		mBestAroundRecyclerView = (RecyclerView) findViewById(R.id.explore_best_around_recycler);
+		mFeaturedCollectionsRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_collections_recycler);
+		mFeaturedMappersRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler);
+		mFeaturedDealsRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_deals_recycler);
+
+		mBestAroundRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+		mFeaturedCollectionsRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+		mFeaturedMappersRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+		mFeaturedDealsRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+
+		// TODO TEMP
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		int tempHeight = (int) (200 * metrics.density);
+		mBestAroundRecyclerView.getLayoutParams().height = tempHeight;
+		mFeaturedCollectionsRecyclerView.getLayoutParams().height = tempHeight;
+		mFeaturedMappersRecyclerView.getLayoutParams().height = tempHeight;
+		mFeaturedDealsRecyclerView.getLayoutParams().height = tempHeight;
+		// END TEMP
+
+		Resources resources = getResources();
+		mBestAroundCardsAcross = resources.getInteger(R.integer.explore_best_around_cards_across);
+		mFeaturedCollectionsCardsAcross = resources.getInteger(R.integer.explore_featured_collections_cards_across);
+		mFeaturedMappersCardsAcross = resources.getInteger(R.integer.explore_featured_mappers_cards_across);
+		mFeaturedDealsCardsAcross = resources.getInteger(R.integer.explore_featured_deals_cards_across);
 
 		Intent intent = getIntent();
 		if (intent != null) {
@@ -90,6 +132,26 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 	protected void onRequestsComplete() {
 		LogEx.d();
+	}
+
+	public static class BestAroundAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+			return null;
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+
+		}
+
+		@Override
+		public int getItemCount() {
+			return 0;
+		}
 	}
 
 	public static class HelperFragment extends Fragment {
