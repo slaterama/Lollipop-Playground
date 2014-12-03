@@ -56,10 +56,10 @@ public interface CitymapsObject {
 		UNKNOWN(0, R.plurals.cmobj_unknown, R.plurals.cmobj_unknown_capital),
 
 		/**
-		 * Indicates an object that represents a business.
+		 * Indicates an object that represents a place (i.e. business).
 		 */
 		@SerializedName("1")
-		BUSINESS(1, R.plurals.cmobj_business, R.plurals.cmobj_business_capital),
+		PLACE(1, R.plurals.cmobj_place, R.plurals.cmobj_place_capital),
 
 		/**
 		 * Indicates an object that represents a collection.

@@ -212,6 +212,11 @@ public class SearchResultCollection extends SearchResult {
 		notifyObservers(OWNER_USERNAME);
 	}
 
+	@Override
+	public ObjectType getType() {
+		return ObjectType.COLLECTION;
+	}
+
 	public String getUserId() {
 		return mUserId;
 	}

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			 xmlns:support="http://schemas.android.com/apk/res-auto"
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
@@ -14,8 +15,6 @@
 		<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:paddingLeft="@dimen/activity_horizontal_margin"
-				android:paddingRight="@dimen/activity_horizontal_margin"
 				android:paddingTop="@dimen/activity_vertical_margin"
 				android:paddingBottom="@dimen/activity_vertical_margin"
 				android:orientation="vertical">
@@ -23,6 +22,10 @@
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:orientation="horizontal">
 
 				<TextView
@@ -45,11 +48,21 @@
 					android:id="@+id/explore_best_around_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp" />
+					tools:layout_height="150dp"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
+					android:clipToPadding="false" />
 
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/component_baseline_grid"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:orientation="horizontal">
 
 				<Button
@@ -71,6 +84,10 @@
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:orientation="horizontal">
 
 				<TextView
@@ -93,11 +110,20 @@
 					android:id="@+id/explore_featured_collections_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp" />
+					tools:layout_height="150dp"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
+					android:clipToPadding="false" />
 
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:orientation="horizontal">
 
 				<TextView
@@ -120,11 +146,20 @@
 					android:id="@+id/explore_featured_mappers_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp" />
+					tools:layout_height="150dp"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
+					android:clipToPadding="false" />
 
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:orientation="horizontal">
 
 				<TextView
@@ -147,7 +182,12 @@
 					android:id="@+id/explore_featured_deals_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp" />
+					tools:layout_height="150dp"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
+					android:clipToPadding="false" />
 
 		</LinearLayout>
 

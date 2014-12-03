@@ -4,7 +4,7 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:support="http://schemas.android.com/apk/res-auto"
 		xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="308dp"
+		android:layout_width="150dp"
 		android:layout_height="match_parent"
 		support:cardBackgroundColor="#FFC0C0C0"
 		support:cardElevation="2dp"

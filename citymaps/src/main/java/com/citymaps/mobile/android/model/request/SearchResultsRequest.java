@@ -78,7 +78,6 @@ public class SearchResultsRequest extends CitymapsGsonRequest<List<SearchResult>
 
 	@Override
 	protected Gson createGson() {
-
 		RuntimeTypeAdapterFactory<SearchResult> searchResultFactory = RuntimeTypeAdapterFactory.of(SearchResult.class, "type")
 				.registerSubtype(SearchResultPlace.class, "1")
 				.registerSubtype(SearchResultCollection.class, "2");

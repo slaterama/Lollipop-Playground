@@ -8,9 +8,9 @@
 		<item quantity="other">unknown</item>
 	</plurals>
 
-	<plurals name="cmobj_business">
-		<item quantity="one">business</item>
-		<item quantity="other">businesses</item>
+	<plurals name="cmobj_place">
+		<item quantity="one">place</item>
+		<item quantity="other">places</item>
 	</plurals>
 
 	<plurals name="cmobj_collection">
@@ -75,9 +75,9 @@
 		<item quantity="other">Unknown</item>
 	</plurals>
 
-	<plurals name="cmobj_business_capital">
-		<item quantity="one">Business</item>
-		<item quantity="other">Businesses</item>
+	<plurals name="cmobj_place_capital">
+		<item quantity="one">Place</item>
+		<item quantity="other">Places</item>
 	</plurals>
 
 	<plurals name="cmobj_collection_capital">

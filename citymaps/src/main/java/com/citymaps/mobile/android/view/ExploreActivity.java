@@ -1,16 +1,16 @@
 package com.citymaps.mobile.android.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.*;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -25,9 +25,9 @@ import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
+import com.citymaps.mobile.android.view.cards.explore.BestAroundCollectionViewHolder;
 
 import java.util.List;
-import java.util.UUID;
 
 public class ExploreActivity extends TrackedActionBarActivity {
 
@@ -85,10 +85,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			mMapLocation = IntentUtils.getMapLocation(intent);
 			mMapRadius = IntentUtils.getMapRadius(intent, MapUtils.DEFAULT_SEARCH_RADIUS);
 			mMapZoom = IntentUtils.getMapZoom(intent, MapUtils.DEFAULT_SEARCH_ZOOM);
-
-			String searchId = UUID.randomUUID().toString();
-
-			LogEx.d(String.format("mMapLocation=%s, mMapRadius=%f, mMapZoom=%d, searchId=%s", mMapLocation, mMapRadius, mMapZoom, searchId));
 		}
 
 		if (savedInstanceState == null) {
@@ -132,25 +128,206 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 	protected void onRequestsComplete() {
 		LogEx.d();
+
+		if (mHelperFragment.mFeaturedHeroItems != null) {
+			mBestAroundRecyclerView.setAdapter(new BestAroundAdapter(this, mHelperFragment.mFeaturedHeroItems));
+		}
+		if (mHelperFragment.mFeaturedCollections != null) {
+			mFeaturedCollectionsRecyclerView.setAdapter(new FeaturedCollectionsAdapter(this, mHelperFragment.mFeaturedCollections));
+		}
+		if (mHelperFragment.mFeaturedMappers != null) {
+			mFeaturedMappersRecyclerView.setAdapter(new FeaturedMappersAdapter(this, mHelperFragment.mFeaturedMappers));
+		}
+		if (mHelperFragment.mFeaturedDeals != null) {
+			mFeaturedDealsRecyclerView.setAdapter(new FeaturedDealsAdapter(this, mHelperFragment.mFeaturedDeals));
+		}
 	}
 
 	public static class BestAroundAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		private Context mContext;
+		private List<SearchResult> mSearchResults;
+		private int mComponentBaselineGrid;
 
-
-
-		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-			return null;
-		}
-
-		@Override
-		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-
+		public BestAroundAdapter(Context context, List<SearchResult> searchResults) {
+			super();
+			mContext = context;
+			mSearchResults = searchResults;
+			mComponentBaselineGrid = context.getResources().getDimensionPixelOffset(R.dimen.component_baseline_grid);
 		}
 
 		@Override
 		public int getItemCount() {
-			return 0;
+			return mSearchResults == null ? 0 : mSearchResults.size();
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			SearchResult result = mSearchResults.get(position);
+			return result.getType().value();
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			// TODO TEMP
+
+			View view = LayoutInflater.from(mContext).inflate(R.layout.explore_card_best_around_collection, viewGroup, false);
+			return new BestAroundCollectionViewHolder(view);
+			// END TEMP
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+			SearchResult searchResult = mSearchResults.get(position);
+			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
+			holder.getNameView().setText(searchResult.getName());
+
+			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				LogEx.d();
+				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
+				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
+				viewHolder.itemView.setLayoutParams(lp);
+			}
+		}
+	}
+
+	public static class FeaturedCollectionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		private Context mContext;
+		private List<SearchResult> mSearchResults;
+		private int mComponentBaselineGrid;
+
+		public FeaturedCollectionsAdapter(Context context, List<SearchResult> searchResults) {
+			super();
+			mContext = context;
+			mSearchResults = searchResults;
+			mComponentBaselineGrid = context.getResources().getDimensionPixelOffset(R.dimen.component_baseline_grid);
+		}
+
+		@Override
+		public int getItemCount() {
+			return mSearchResults == null ? 0 : mSearchResults.size();
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			SearchResult result = mSearchResults.get(position);
+			return result.getType().value();
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			// TODO TEMP
+			View view = LayoutInflater.from(mContext).inflate(R.layout.explore_card_featured_collection, viewGroup, false);
+			return new BestAroundCollectionViewHolder(view);
+			// END TEMP
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+			SearchResult searchResult = mSearchResults.get(position);
+			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
+			holder.getNameView().setText(searchResult.getName());
+
+			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				LogEx.d();
+				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
+				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
+				viewHolder.itemView.setLayoutParams(lp);
+			}
+		}
+	}
+
+	public static class FeaturedMappersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		private Context mContext;
+		private List<User> mFeaturedMappers;
+		private int mComponentBaselineGrid;
+
+		public FeaturedMappersAdapter(Context context, List<User> featuredMappers) {
+			super();
+			mContext = context;
+			mFeaturedMappers = featuredMappers;
+			mComponentBaselineGrid = context.getResources().getDimensionPixelOffset(R.dimen.component_baseline_grid);
+		}
+
+		@Override
+		public int getItemCount() {
+			return mFeaturedMappers == null ? 0 : mFeaturedMappers.size();
+		}
+
+		/*
+		@Override
+		public int getItemViewType(int position) {
+			User user = mFeaturedMappers.get(position);
+			return user.getType().value();
+		}
+		*/
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			// TODO TEMP
+
+			View view = LayoutInflater.from(mContext).inflate(R.layout.explore_card_featured_mapper, viewGroup, false);
+			return new BestAroundCollectionViewHolder(view);
+			// END TEMP
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+			User user = mFeaturedMappers.get(position);
+			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
+			holder.getNameView().setText(user.getName());
+
+			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				LogEx.d();
+				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
+				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
+				viewHolder.itemView.setLayoutParams(lp);
+			}
+		}
+	}
+
+	public static class FeaturedDealsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		private Context mContext;
+		private List<SearchResult> mSearchResults;
+		private int mComponentBaselineGrid;
+
+		public FeaturedDealsAdapter(Context context, List<SearchResult> searchResults) {
+			super();
+			mContext = context;
+			mSearchResults = searchResults;
+			mComponentBaselineGrid = context.getResources().getDimensionPixelOffset(R.dimen.component_baseline_grid);
+		}
+
+		@Override
+		public int getItemCount() {
+			return mSearchResults == null ? 0 : mSearchResults.size();
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			SearchResult result = mSearchResults.get(position);
+			return result.getType().value();
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			// TODO TEMP
+			View view = LayoutInflater.from(mContext).inflate(R.layout.explore_card_featured_deal, viewGroup, false);
+			return new BestAroundCollectionViewHolder(view);
+			// END TEMP
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+			SearchResult searchResult = mSearchResults.get(position);
+			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
+			holder.getNameView().setText(searchResult.getName());
+
+			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				LogEx.d();
+				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
+				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
+				viewHolder.itemView.setLayoutParams(lp);
+			}
 		}
 	}
 

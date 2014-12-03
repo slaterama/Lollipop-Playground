@@ -403,6 +403,11 @@ public class SearchResultPlace extends SearchResult {
 		notifyObservers(TAGS);
 	}
 
+	@Override
+	public ObjectType getType() {
+		return ObjectType.PLACE;
+	}
+
 	public int getVisibility() {
 		return mVisibility;
 	}
