@@ -4,31 +4,21 @@ import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.util.LogEx;
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.util.Map;
 
 @SuppressWarnings("SpellCheckingInspection")
 public abstract class GsonRequest<T> extends Request<T> {
 
-	protected static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-
-	protected static Gson sGson;
-
 	protected static JsonParser sJsonParser;
-
-	protected static GsonBuilder newDefaultGsonBuilder() {
-		return new GsonBuilder()
-				.setDateFormat(DATE_FORMAT_PATTERN)
-				.registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
-				.setPrettyPrinting();
-	}
 
 	protected final Class<T> mClass;
 	private Map<String, String> mHeaders;
@@ -52,6 +42,8 @@ public abstract class GsonRequest<T> extends Request<T> {
 		String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 		return getJsonParser().parse(json).getAsJsonObject();
 	}
+
+	private Gson mGson;
 
 	/**
 	 * /**
@@ -141,16 +133,39 @@ public abstract class GsonRequest<T> extends Request<T> {
 	}
 
 	protected Gson getGson() {
-		if (sGson == null) {
-			sGson = newDefaultGsonBuilder().create();
+		if (mGson == null) {
+			mGson = createGson();
 		}
-		return sGson;
+		return mGson;
 	}
 
-	protected static class DateTimeDeserializer implements JsonDeserializer<DateTime> {
+	protected Gson createGson() {
+		return new GsonBuilder()
+				.setPrettyPrinting()
+				.registerTypeAdapter(DateTime.class, new DateTimeTypeAdapter())
+				.create();
+	}
+
+	/* Reusable classes for Gson serialization/deserialization */
+
+	protected static class DateTimeTypeAdapter extends TypeAdapter<DateTime> {
 		@Override
-		public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			return new DateTime(json.getAsString(), DateTimeZone.UTC);
+		public void write(JsonWriter out, DateTime value) throws IOException {
+			if (value == null) {
+				out.nullValue();
+			} else {
+				out.value(value.toString(ISODateTimeFormat.dateTimeNoMillis()));
+			}
+		}
+
+		@Override
+		public DateTime read(JsonReader in) throws IOException {
+			if (in.peek() == JsonToken.NULL) {
+				in.nextNull();
+				return null;
+			} else {
+				return new DateTime(in.nextString(), DateTimeZone.UTC);
+			}
 		}
 	}
 }

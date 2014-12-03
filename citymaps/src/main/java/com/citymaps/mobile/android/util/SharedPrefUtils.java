@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import com.citymaps.mobile.android.model.Config;
+import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -101,7 +102,7 @@ public class SharedPrefUtils {
 		map.put("timestamp", SharedPrefUtils.getLong(sp, Pref.CONFIG_TIMESTAMP, 0));
 		map.put("upgradePrompt", SharedPrefUtils.getString(sp, Pref.CONFIG_UPGRADE_PROMPT, ""));
 		String json = new JSONObject(map).toString();
-		return GsonUtils.getGson().fromJson(json, Config.class);
+		return new Gson().fromJson(json, Config.class);
 	}
 
 	private SharedPrefUtils() {

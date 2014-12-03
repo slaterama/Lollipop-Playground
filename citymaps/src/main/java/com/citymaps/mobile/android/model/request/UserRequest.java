@@ -15,7 +15,6 @@ import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.ThirdParty;
 import com.citymaps.mobile.android.model.User;
-import com.citymaps.mobile.android.util.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;

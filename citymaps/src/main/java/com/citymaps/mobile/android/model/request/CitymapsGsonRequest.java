@@ -5,7 +5,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.model.Deal;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -13,7 +16,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Map;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -345,22 +347,48 @@ public class CitymapsGsonRequest<T> extends GsonRequest<T> {
 		}
 	}
 
-	protected static class DealsDeserializer implements JsonDeserializer<Deal[]> {
-		private static Gson sGson;
-
-		static {
-			sGson = new Gson();
-		}
-
+	/**
+	 * A TypeAdapterFactory for serializing and deserializing Deals. Can handle a single Deal object or
+	 * an array of Deal objects and always returns the results in an array.
+	 */
+	protected static class DealsTypeAdapterFactory implements TypeAdapterFactory {
+		@SuppressWarnings("unchecked")
 		@Override
-		public Deal[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			Deal[] deals = null;
-			if (json.isJsonArray()) {
-				deals = sGson.fromJson(json, Deal[].class);
-			} else if (json.isJsonObject()) {
-				deals = new Deal[]{sGson.fromJson(json, Deal.class)};
+		public <T> TypeAdapter<T> create(final Gson gson, TypeToken<T> type) {
+			if (!Deal[].class.isAssignableFrom(type.getRawType())) {
+				return null;
 			}
-			return deals;
+
+			final TypeAdapter<Deal[]> delegate = gson.getDelegateAdapter(this, TypeToken.get(Deal[].class));
+
+			final TypeAdapter<Deal[]> adapter = new TypeAdapter<Deal[]>() {
+				@Override
+				public void write(JsonWriter out, Deal[] value) throws IOException {
+					if (value == null) {
+						out.nullValue();
+						return;
+					}
+					delegate.write(out, value);
+				}
+
+				@Override
+				public Deal[] read(JsonReader in) throws IOException {
+					JsonToken token = in.peek();
+					switch (token) {
+						case NULL:
+							in.nextNull();
+							return null;
+						case BEGIN_OBJECT:
+							Deal deal = gson.fromJson(in, Deal.class);
+							return new Deal[]{deal};
+						case BEGIN_ARRAY:
+						default:
+							return delegate.read(in);
+					}
+				}
+			};
+
+			return (TypeAdapter<T>) adapter;
 		}
 	}
 }

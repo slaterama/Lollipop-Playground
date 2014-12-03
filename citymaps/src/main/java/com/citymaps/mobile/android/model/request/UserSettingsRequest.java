@@ -11,7 +11,6 @@ import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.UserSettings;
-import com.citymaps.mobile.android.util.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
@@ -52,7 +51,7 @@ public class UserSettingsRequest extends CitymapsGsonRequest<UserSettings> {
 
 	@Override
 	protected Response<UserSettings> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
-		Gson gson = GsonUtils.getGson();
+		Gson gson = getGson();
 		switch (mVersion) {
 			case V1:
 				// V1 api calls return "successful" responses with a code != 0 if there was an error

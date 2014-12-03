@@ -12,23 +12,16 @@ import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.Deal;
 import com.citymaps.mobile.android.model.SearchResult;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.joda.time.DateTime;
 
 import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
-
-	protected static final Gson sGson;
-
-	static {
-		sGson = newDefaultGsonBuilder()
-				.registerTypeAdapterFactory(new StringArrayTypeAdapterFactory())
-				.registerTypeAdapter(Deal[].class, new DealsDeserializer())
-				.create();
-	}
 
 	public static SearchResultsRequest newFeaturedCollectionsRequest(Context context, LonLat location, int zoom, float radius, int offset, int limit,
 															  Response.Listener<SearchResult[]> listener, Response.ErrorListener errorListener) {
@@ -77,8 +70,13 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 	}
 
 	@Override
-	protected Gson getGson() {
-		return sGson;
+	protected Gson createGson() {
+		return new GsonBuilder()
+				.setPrettyPrinting()
+				.registerTypeAdapter(DateTime.class, new DateTimeTypeAdapter())
+				.registerTypeAdapterFactory(new StringArrayTypeAdapterFactory())
+				.registerTypeAdapterFactory(new DealsTypeAdapterFactory())
+				.create();
 	}
 
 	public static class SearchResultWrapper extends SearchSuccess<SearchResult[]> {
