@@ -26,6 +26,7 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ExploreActivity extends TrackedActionBarActivity {
@@ -178,10 +179,10 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		private int mCompletedRequests = 0;
 
-		private SearchResult[] mFeaturedHeroItems;
-		private SearchResult[] mFeaturedCollections;
-		private User[] mFeaturedMappers;
-		private SearchResult[] mFeaturedDeals;
+		private List<SearchResult> mFeaturedHeroItems;
+		private List<SearchResult> mFeaturedCollections;
+		private List<User> mFeaturedMappers;
+		private List<SearchResult> mFeaturedDeals;
 
 		@Override
 		public void onAttach(Activity activity) {
@@ -215,9 +216,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			int limit = 6;
 			SearchResultsRequest featuredHeroItemsRequest = SearchResultsRequest.newFeaturedHeroItemsRequest(getActivity(),
 					mMapLocation, mMapZoom, mMapRadius, offset, limit,
-					new Response.Listener<SearchResult[]>() {
+					new Response.Listener<List<SearchResult>>() {
 						@Override
-						public void onResponse(SearchResult[] response) {
+						public void onResponse(List<SearchResult> response) {
 							mFeaturedHeroItems = response;
 							onRequestComplete();
 						}
@@ -233,9 +234,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			limit = 12;
 			SearchResultsRequest featuredCollectionsRequest = SearchResultsRequest.newFeaturedCollectionsRequest(getActivity(),
 					mMapLocation, mMapZoom, mMapRadius, offset, limit,
-					new Response.Listener<SearchResult[]>() {
+					new Response.Listener<List<SearchResult>>() {
 						@Override
-						public void onResponse(SearchResult[] response) {
+						public void onResponse(List<SearchResult> response) {
 							mFeaturedCollections = response;
 							onRequestComplete();
 						}
@@ -250,9 +251,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 			UsersRequest featuredMappersRequest = UsersRequest.newFeaturedMappersRequest(getActivity(),
 					mMapLocation, mMapRadius, offset, limit,
-					new Response.Listener<User[]>() {
+					new Response.Listener<List<User>>() {
 						@Override
-						public void onResponse(User[] response) {
+						public void onResponse(List<User> response) {
 							mFeaturedMappers = response;
 							onRequestComplete();
 						}
@@ -267,9 +268,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 			SearchResultsRequest featuredDealsRequest = SearchResultsRequest.newFeaturedDealsRequest(getActivity(),
 					mMapLocation, mMapZoom, mMapRadius, offset, limit,
-					new Response.Listener<SearchResult[]>() {
+					new Response.Listener<List<SearchResult>>() {
 						@Override
-						public void onResponse(SearchResult[] response) {
+						public void onResponse(List<SearchResult> response) {
 							mFeaturedDeals = response;
 							onRequestComplete();
 						}

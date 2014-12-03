@@ -17,16 +17,21 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import org.joda.time.DateTime;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
+public class SearchResultsRequest extends CitymapsGsonRequest<List<SearchResult>> {
+
+	public static final Type TYPE = new TypeToken<List<SearchResult>>(){}.getType();
 
 	public static SearchResultsRequest newFeaturedCollectionsRequest(Context context, LonLat location, int zoom, float radius, int offset, int limit,
-															  Response.Listener<SearchResult[]> listener, Response.ErrorListener errorListener) {
+															  Response.Listener<List<SearchResult>> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String searchId = UUID.randomUUID().toString();
 		String urlString = environment.buildUrlString(Endpoint.Type.EXPLORE_FEATURED_COLLECTIONS,
@@ -35,7 +40,7 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 	}
 
 	public static SearchResultsRequest newFeaturedDealsRequest(Context context, LonLat location, int zoom, float radius, int offset, int limit,
-															  Response.Listener<SearchResult[]> listener, Response.ErrorListener errorListener) {
+															  Response.Listener<List<SearchResult>> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String searchId = UUID.randomUUID().toString();
 		String urlString = environment.buildUrlString(Endpoint.Type.EXPLORE_FEATURED_DEALS,
@@ -44,7 +49,7 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 	}
 
 	public static SearchResultsRequest newFeaturedHeroItemsRequest(Context context, LonLat location, int zoom, float radius, int offset, int limit,
-															Response.Listener<SearchResult[]> listener, Response.ErrorListener errorListener) {
+															Response.Listener<List<SearchResult>> listener, Response.ErrorListener errorListener) {
 		Environment environment = SessionManager.getInstance(context).getEnvironment();
 		String searchId = UUID.randomUUID().toString();
 		String urlString = environment.buildUrlString(Endpoint.Type.EXPLORE_FEATURED_HERO_ITEMS,
@@ -54,20 +59,20 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 
 	public SearchResultsRequest(Api.Version version, int method, String url,
 								Map<String, String> headers, Map<String, String> params,
-								Response.Listener<SearchResult[]> listener, Response.ErrorListener errorListener) {
-		super(version, method, url, SearchResult[].class, headers, params, listener, errorListener);
+								Response.Listener<List<SearchResult>> listener, Response.ErrorListener errorListener) {
+		super(version, method, url, TYPE, headers, params, listener, errorListener);
 	}
 
 	public SearchResultsRequest(int method, String url,
 								Map<String, String> headers, Map<String, String> params,
-								Response.Listener<SearchResult[]> listener, Response.ErrorListener errorListener) {
-		super(Api.Version.V2, method, url, SearchResult[].class, headers, params, listener, errorListener);
+								Response.Listener<List<SearchResult>> listener, Response.ErrorListener errorListener) {
+		super(Api.Version.V2, method, url, TYPE, headers, params, listener, errorListener);
 	}
 
 	@Override
-	protected Response<SearchResult[]> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
+	protected Response<List<SearchResult>> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
 		SearchResultWrapper result = getGson().fromJson(jsonObject, SearchResultWrapper.class);
-		SearchResult[] items = result.getData();
+		List<SearchResult> items = result.getData();
 		return Response.success(items, HttpHeaderParser.parseCacheHeaders(response));
 	}
 
@@ -87,12 +92,12 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 				.create();
 	}
 
-	public static class SearchResultWrapper extends SearchSuccess<SearchResult[]> {
+	public static class SearchResultWrapper extends SearchSuccess<List<SearchResult>> {
 		@SerializedName("items")
-		private SearchResult[] mItems;
+		private List<SearchResult> mItems;
 
 		@Override
-		public SearchResult[] getData() {
+		public List<SearchResult> getData() {
 			return mItems;
 		}
 	}
