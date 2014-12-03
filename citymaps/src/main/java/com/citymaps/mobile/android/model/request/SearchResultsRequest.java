@@ -9,8 +9,10 @@ import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Api;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
-import com.citymaps.mobile.android.model.Deal;
 import com.citymaps.mobile.android.model.SearchResult;
+import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.model.SearchResultPlace;
+import com.citymaps.mobile.android.util.RuntimeTypeAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -71,11 +73,17 @@ public class SearchResultsRequest extends CitymapsGsonRequest<SearchResult[]> {
 
 	@Override
 	protected Gson createGson() {
+
+		RuntimeTypeAdapterFactory<SearchResult> searchResultFactory = RuntimeTypeAdapterFactory.of(SearchResult.class, "type")
+				.registerSubtype(SearchResultPlace.class, "1")
+				.registerSubtype(SearchResultCollection.class, "2");
+
 		return new GsonBuilder()
 				.setPrettyPrinting()
 				.registerTypeAdapter(DateTime.class, new DateTimeTypeAdapter())
 				.registerTypeAdapterFactory(new StringArrayTypeAdapterFactory())
 				.registerTypeAdapterFactory(new DealsTypeAdapterFactory())
+				.registerTypeAdapterFactory(searchResultFactory)
 				.create();
 	}
 
