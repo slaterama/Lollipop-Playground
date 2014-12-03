@@ -16,19 +16,20 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class CitymapsGsonRequest<T> extends GsonRequest<T> {
+public abstract class CitymapsGsonRequest<T> extends GsonRequest<T> {
 
 	protected static final String MEMBER_NAME_CODE_V1 = "code";
 
 	Api.Version mVersion;
 
-	public CitymapsGsonRequest(Api.Version version, int method, String url, Class<T> clazz,
+	public CitymapsGsonRequest(Api.Version version, int method, String url, Type type,
 							   Map<String, String> headers, Map<String, String> params,
 							   Response.Listener<T> listener, Response.ErrorListener errorListener) {
-		super(method, url, clazz, headers, params, listener, errorListener);
+		super(method, url, type, headers, params, listener, errorListener);
 		mVersion = version;
 	}
 

@@ -13,6 +13,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -20,7 +21,7 @@ public abstract class GsonRequest<T> extends Request<T> {
 
 	protected static JsonParser sJsonParser;
 
-	protected final Class<T> mClass;
+	protected final Type mType;
 	private Map<String, String> mHeaders;
 	private Map<String, String> mParams;
 	private final Response.Listener<T> mListener;
@@ -51,11 +52,11 @@ public abstract class GsonRequest<T> extends Request<T> {
 	 *
 	 * @param method        The method of the request to make.
 	 * @param url           URL of the request to make.
-	 * @param clazz         Relevant class object, for Gson's reflection.
+	 * @param type          Relevant Type object, for Gson's reflection.
 	 * @param listener
 	 * @param errorListener
 	 */
-	public GsonRequest(int method, String url, Class<T> clazz,
+	public GsonRequest(int method, String url, Type type,
 					   Map<String, String> headers, Map<String, String> params,
 					   Response.Listener<T> listener, Response.ErrorListener errorListener) {
 		super(method, url, errorListener);
@@ -65,7 +66,7 @@ public abstract class GsonRequest<T> extends Request<T> {
 			LogEx.v(String.format("url=%s, headers=%s, params=%s", url, headers, params));
 		}
 
-		mClass = clazz;
+		mType = type;
 		mHeaders = headers;
 		mParams = params;
 		mListener = listener;
@@ -121,7 +122,7 @@ public abstract class GsonRequest<T> extends Request<T> {
 	protected Response<T> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
 		try {
 			Gson gson = getGson();
-			T result = gson.fromJson(jsonObject, mClass);
+			T result = gson.fromJson(jsonObject, mType); //mClass);
 			return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
 		} catch (JsonSyntaxException e) {
 			return Response.error(new ParseError(e));

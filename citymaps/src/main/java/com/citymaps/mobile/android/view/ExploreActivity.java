@@ -25,7 +25,6 @@ import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
-import com.segment.android.info.Screen;
 
 import java.util.UUID;
 
