@@ -2,10 +2,12 @@ package com.citymaps.mobile.android.model;
 
 import com.citymaps.citymapsengine.LonLat;
 import com.google.gson.annotations.SerializedName;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SearchResultPlace extends SearchResult {
 
+	public static final String BUSINESS_ID = "business_id";
+
+	public static final String ACTIVITY = "activity";
 	public static final String ADDRESS = "address";
 	public static final String ANALYTICS_PARTNERS = "analytics_partners";
 	public static final String ATTRIBUTION = "attribution";
@@ -32,6 +34,12 @@ public class SearchResultPlace extends SearchResult {
 	public static final String RATING_0_5 = "rating_0_5";
 	public static final String TAGS = "tags";
 	public static final String VISIBILITY = "visibility";
+
+	@SerializedName(BUSINESS_ID)
+	private String mBusinessId;
+
+	@SerializedName(ACTIVITY)
+	private Object mActivity;
 
 	@SerializedName(ADDRESS)
 	private String mAddress;
@@ -109,6 +117,32 @@ public class SearchResultPlace extends SearchResult {
 
 	@SerializedName(VISIBILITY)
 	private int mVisibility;
+
+	@Override
+	public void setId(String id) {
+		super.setId(id);
+		mBusinessId = id;
+		setChanged();
+		notifyObservers(BUSINESS_ID);
+	}
+
+	public String getBusinessId() {
+		return mBusinessId;
+	}
+
+	public void setBusinessId(String businessId) {
+		setId(businessId);
+	}
+
+	public Object getActivity() {
+		return mActivity;
+	}
+
+	public void setActivity(Object activity) {
+		mActivity = activity;
+		setChanged();
+		notifyObservers(ACTIVITY);
+	}
 
 	public String getAddress() {
 		return mAddress;
@@ -214,7 +248,7 @@ public class SearchResultPlace extends SearchResult {
 		return mDeals;
 	}
 
-	public void setDeal(Deal[] deals) {
+	public void setDeals(Deal[] deals) {
 		mDeals = deals;
 		setChanged();
 		notifyObservers(DEALS);
