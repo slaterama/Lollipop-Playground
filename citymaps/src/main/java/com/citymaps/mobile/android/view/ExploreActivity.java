@@ -95,6 +95,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 					.commit();
 		} else {
 			mHelperFragment = (HelperFragment) getSupportFragmentManager().getFragment(savedInstanceState, STATE_KEY_HELPER_FRAGMENT);
+			onRequestsComplete();
 		}
 	}
 

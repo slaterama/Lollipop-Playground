@@ -56,7 +56,7 @@
 		</activity>
 		<activity
 				android:name="com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity"
-				android:screenOrientation="portrait"
+				android:screenOrientation="sensorPortrait"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
 		<activity

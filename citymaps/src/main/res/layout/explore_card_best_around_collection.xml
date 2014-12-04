@@ -8,7 +8,8 @@
 		android:layout_height="match_parent"
 		support:cardBackgroundColor="#FFC0C0C0"
 		support:cardElevation="2dp"
-		support:cardUseCompatPadding="true">
+		support:cardUseCompatPadding="true"
+		support:cardPreventCornerOverlap="false">
 
 	<android.support.v7.widget.CardView
 			android:layout_width="match_parent"
