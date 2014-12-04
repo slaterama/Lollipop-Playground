@@ -112,7 +112,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		int tempHeight = (int) (200 * metrics.density);
-		mBestAroundRecyclerView.getLayoutParams().height = tempHeight;
+//		mBestAroundRecyclerView.getLayoutParams().height = tempHeight;
 		mFeaturedCollectionsRecyclerView.getLayoutParams().height = tempHeight;
 		mFeaturedMappersRecyclerView.getLayoutParams().height = tempHeight;
 		mFeaturedDealsRecyclerView.getLayoutParams().height = tempHeight;
@@ -178,11 +178,14 @@ public class ExploreActivity extends TrackedActionBarActivity
 				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross, mComponentBaselineGrid);
 
 				View view = mInflater.inflate(R.layout.card_explore_best_around_collection, mBestAroundRecyclerView, false);
-				RelativeLayout primaryContent = (RelativeLayout) view.findViewById(R.id.explore_best_around_primary_content);
-				primaryContent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, mBestAroundDefaultCardWidth));
-				view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-				int height = view.getMeasuredHeight();
-				LogEx.d(String.format("height=%d", height));
+				LinearLayout mainContainer = (LinearLayout) view.findViewById(R.id.explore_best_around_main_container);
+				RelativeLayout infoContainer = (RelativeLayout) view.findViewById(R.id.explore_best_around_info_container);
+				infoContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, mBestAroundDefaultCardWidth));
+				view.measure(0, 0);
+				int height = mainContainer.getMeasuredHeight(); // - 24;
+				LogEx.d(String.format("mBestAroundDefaultCardWidth=%d, height=%d", mBestAroundDefaultCardWidth, height));
+				LogEx.d(String.format("paddingLeft=%d, paddingTop=%d, paddingRight=%d, paddingBottom=%d",
+						view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom()));
 
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mBestAroundRecyclerView.getLayoutParams();
 				lp.height = height;
