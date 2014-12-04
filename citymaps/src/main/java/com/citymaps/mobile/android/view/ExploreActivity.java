@@ -12,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.*;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,6 +30,7 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.view.cards.explore.BestAroundCollectionViewHolder;
+import com.citymaps.mobile.android.widget.RatioFrameLayout;
 
 import java.util.List;
 
@@ -50,10 +54,12 @@ public class ExploreActivity extends TrackedActionBarActivity
 	private RecyclerView mFeaturedMappersRecyclerView;
 	private RecyclerView mFeaturedDealsRecyclerView;
 
+	private float mDefaultCardsAcross;
 	private float mBestAroundCardsAcross;
 	private float mFeaturedCollectionsCardsAcross;
 	private float mFeaturedMappersCardsAcross;
 	private float mFeaturedDealsCardsAcross;
+	private int mBestAroundDefaultCardWidth;
 	private int mBestAroundCardWidth;
 	private int mFeaturedCollectionCardWidth;
 	private int mFeaturedMapperCardWidth;
@@ -76,6 +82,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 		mComponentBaselineGrid = resources.getDimensionPixelOffset(R.dimen.component_baseline_grid);
 
 		TypedValue outValue = new TypedValue();
+		resources.getValue(R.dimen.explore_default_cards_across, outValue, true);
+		mDefaultCardsAcross = outValue.getFloat();
 		resources.getValue(R.dimen.explore_best_around_cards_across, outValue, true);
 		mBestAroundCardsAcross = outValue.getFloat();
 		resources.getValue(R.dimen.explore_featured_collections_cards_across, outValue, true);
@@ -166,7 +174,23 @@ public class ExploreActivity extends TrackedActionBarActivity
 	public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 		if (v.getWidth() > 0) {
 			if (v == mBestAroundRecyclerView) {
+				mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross, mComponentBaselineGrid);
 				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross, mComponentBaselineGrid);
+
+				View view = mInflater.inflate(R.layout.card_explore_best_around_collection, mBestAroundRecyclerView, false);
+				RelativeLayout primaryContent = (RelativeLayout) view.findViewById(R.id.explore_best_around_primary_content);
+				primaryContent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, mBestAroundDefaultCardWidth));
+				view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+				int height = view.getMeasuredHeight();
+				LogEx.d(String.format("height=%d", height));
+
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mBestAroundRecyclerView.getLayoutParams();
+				lp.height = height;
+				mBestAroundRecyclerView.setLayoutParams(lp);
+
+				// TODO Since image is set to match_parent but card is wrap_content, the entire photo is shown and the imageview
+				// is too tall. Need to constrain that imageview size somehow.
+
 			} else if (v == mFeaturedCollectionsRecyclerView) {
 				mFeaturedCollectionCardWidth = getCardWidth(v, mFeaturedCollectionsCardsAcross, mComponentBaselineGrid);
 			} else if (v == mFeaturedMappersRecyclerView) {
@@ -183,10 +207,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	protected void onRequestsComplete() {
-		LogEx.d();
-
-		if (mHelperFragment.mFeaturedHeroItems != null) {
-			mBestAroundRecyclerView.setAdapter(new BestAroundAdapter(mHelperFragment.mFeaturedHeroItems));
+		if (mHelperFragment.mBestAround != null) {
+			mBestAroundRecyclerView.setAdapter(new BestAroundAdapter(mHelperFragment.mBestAround));
 		}
 		if (mHelperFragment.mFeaturedCollections != null) {
 			mFeaturedCollectionsRecyclerView.setAdapter(new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections));
@@ -233,12 +255,13 @@ public class ExploreActivity extends TrackedActionBarActivity
 		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 			SearchResult searchResult = mSearchResults.get(position);
 			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
+
 			holder.getNameView().setText(searchResult.getName());
 
 			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
-				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
-				viewHolder.itemView.setLayoutParams(lp);
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
+				MarginLayoutParamsCompat.setMarginStart(mlp, position == 0 ? 0 : mComponentBaselineGrid);
+				viewHolder.itemView.setLayoutParams(mlp);
 			}
 		}
 	}
@@ -400,7 +423,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		private int mCompletedRequests = 0;
 
-		private List<SearchResult> mFeaturedHeroItems;
+		private List<SearchResult> mBestAround;
 		private List<SearchResult> mFeaturedCollections;
 		private List<User> mFeaturedMappers;
 		private List<SearchResult> mFeaturedDeals;
@@ -440,7 +463,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 					new Response.Listener<List<SearchResult>>() {
 						@Override
 						public void onResponse(List<SearchResult> response) {
-							mFeaturedHeroItems = response;
+							mBestAround = response;
 							onRequestComplete();
 						}
 					},

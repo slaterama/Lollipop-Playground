@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-	<!-- The default number of cards across in ExploreActivity -->
-	<integer name="explore_default_cards_across">3</integer>
-
-</resources>

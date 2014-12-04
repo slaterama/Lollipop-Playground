@@ -9,6 +9,8 @@
 	<!-- Equivalent to @color/material_blue_grey_500 with 50% alpha -->
 	<color name="material_blue_grey_500_translucent">#80607d8b</color>
 
+	<color name="text_light">#FFF</color>
+
 	<color name="citymaps_red">#EA3425</color>
 	<color name="citymaps_dark_grey">#333237</color>
 
