@@ -12,6 +12,10 @@
 	================================================================================
 	-->
 
+	<dimen name="explore_card_inner_margin">8dp</dimen>
+	<dimen name="explore_card_default_elevation">2dp</dimen>
+	<dimen name="explore_card_max_elevation">12dp</dimen>
+
 	<!-- The default number of cards across in ExploreActivity -->
 	<item name="explore_default_cards_across" format="float" type="dimen">2.0</item>
 

@@ -10,4 +10,8 @@
 	<bool name="authenticate_allow_orientation_change">false</bool>
 	<bool name="login_allow_orientation_change">false</bool>
 
+	<!-- Explore bools -->
+
+	<bool name="explore_card_use_compat_padding">true</bool>
+
 </resources>

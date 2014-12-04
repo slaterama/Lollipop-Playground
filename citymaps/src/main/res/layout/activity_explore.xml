@@ -48,13 +48,13 @@
 					android:id="@+id/explore_best_around_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp"
+					tools:layout_height="225dp"
 					android:paddingLeft="@dimen/activity_horizontal_margin"
 					android:paddingStart="@dimen/activity_horizontal_margin"
 					android:paddingRight="@dimen/activity_horizontal_margin"
 					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:clipToPadding="false"
-					android:background="#080"/>
+					android:background="#10008000"/>
 
 			<LinearLayout
 					android:layout_width="match_parent"
@@ -111,7 +111,7 @@
 					android:id="@+id/explore_featured_collections_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp"
+					tools:layout_height="225dp"
 					android:paddingLeft="@dimen/activity_horizontal_margin"
 					android:paddingStart="@dimen/activity_horizontal_margin"
 					android:paddingRight="@dimen/activity_horizontal_margin"
@@ -147,7 +147,7 @@
 					android:id="@+id/explore_featured_mappers_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp"
+					tools:layout_height="225dp"
 					android:paddingLeft="@dimen/activity_horizontal_margin"
 					android:paddingStart="@dimen/activity_horizontal_margin"
 					android:paddingRight="@dimen/activity_horizontal_margin"
@@ -183,7 +183,7 @@
 					android:id="@+id/explore_featured_deals_recycler"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					tools:layout_height="150dp"
+					tools:layout_height="225dp"
 					android:paddingLeft="@dimen/activity_horizontal_margin"
 					android:paddingStart="@dimen/activity_horizontal_margin"
 					android:paddingRight="@dimen/activity_horizontal_margin"

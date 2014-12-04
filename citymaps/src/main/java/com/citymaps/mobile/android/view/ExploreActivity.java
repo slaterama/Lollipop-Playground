@@ -9,12 +9,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
+import android.support.v7.widget.RecyclerView.Adapter;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.*;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -29,41 +26,50 @@ import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
-import com.citymaps.mobile.android.view.cards.explore.BestAroundCollectionViewHolder;
-import com.citymaps.mobile.android.widget.RatioFrameLayout;
+import com.citymaps.mobile.android.util.ResourcesUtils;
+import com.citymaps.mobile.android.view.cards.BestAroundCollectionFixedHeightCardView;
+import com.citymaps.mobile.android.view.cards.CollectionFixedHeightCardView;
+import com.citymaps.mobile.android.view.cards.DealFixedHeightCardView;
+import com.citymaps.mobile.android.view.cards.UserFixedHeightCardView;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExploreActivity extends TrackedActionBarActivity
 		implements View.OnLayoutChangeListener {
 
 	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
 
+	/*
 	private static int getCardWidth(View view, float cardsAcross, int cardMargin) {
 		int initialWidth = view.getWidth() - view.getPaddingLeft() - view.getPaddingRight();
 		int totalMargin = ((int) Math.ceil(cardsAcross) - 1) * cardMargin;
 		return (int) ((initialWidth - totalMargin) / cardsAcross);
 	}
+	*/
 
 	private LayoutInflater mInflater;
-	
-	private int mComponentBaselineGrid;
 
-	private RecyclerView mBestAroundRecyclerView;
-	private RecyclerView mFeaturedCollectionsRecyclerView;
-	private RecyclerView mFeaturedMappersRecyclerView;
-	private RecyclerView mFeaturedDealsRecyclerView;
+	private boolean mUseCompatPadding;
+	private int mCardMaxElevation;
+	private int mCardPerceivedMargin;
+	private int mCardActualMargin;
 
 	private float mDefaultCardsAcross;
 	private float mBestAroundCardsAcross;
 	private float mFeaturedCollectionsCardsAcross;
 	private float mFeaturedMappersCardsAcross;
 	private float mFeaturedDealsCardsAcross;
+
 	private int mBestAroundDefaultCardWidth;
 	private int mBestAroundCardWidth;
 	private int mFeaturedCollectionCardWidth;
 	private int mFeaturedMapperCardWidth;
 	private int mFeaturedDealCardWidth;
+
+	private Map<RecyclerType, RecyclerView> mRecyclerViews;
+	private Map<RecyclerType, Adapter> mAdapters;
 
 	private ParcelableLonLat mMapLocation;
 	private float mMapRadius;
@@ -78,45 +84,55 @@ public class ExploreActivity extends TrackedActionBarActivity
 		
 		mInflater = LayoutInflater.from(this);
 
+		// Get dimensions and other resources for recycler view card layout
+
 		Resources resources = getResources();
-		mComponentBaselineGrid = resources.getDimensionPixelOffset(R.dimen.component_baseline_grid);
+		mUseCompatPadding = resources.getBoolean(R.bool.explore_card_use_compat_padding);
+		mCardMaxElevation = resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation);
+		mCardPerceivedMargin = resources.getDimensionPixelOffset(R.dimen.explore_card_inner_margin);
+		mCardActualMargin = mCardPerceivedMargin - (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
+		mDefaultCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_default_cards_across, 2.0f);
+		mBestAroundCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_best_around_cards_across, 1.0f);
+		mFeaturedCollectionsCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_collections_cards_across, 2.0f);
+		mFeaturedMappersCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_mappers_cards_across, 2.0f);
+		mFeaturedDealsCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_deals_cards_across, 2.0f);
 
-		TypedValue outValue = new TypedValue();
-		resources.getValue(R.dimen.explore_default_cards_across, outValue, true);
-		mDefaultCardsAcross = outValue.getFloat();
-		resources.getValue(R.dimen.explore_best_around_cards_across, outValue, true);
-		mBestAroundCardsAcross = outValue.getFloat();
-		resources.getValue(R.dimen.explore_featured_collections_cards_across, outValue, true);
-		mFeaturedCollectionsCardsAcross = outValue.getFloat();
-		resources.getValue(R.dimen.explore_featured_mappers_cards_across, outValue, true);
-		mFeaturedMappersCardsAcross = outValue.getFloat();
-		resources.getValue(R.dimen.explore_featured_deals_cards_across, outValue, true);
-		mFeaturedDealsCardsAcross = outValue.getFloat();
+		// Set up views
 
-		mBestAroundRecyclerView = (RecyclerView) findViewById(R.id.explore_best_around_recycler);
-		mFeaturedCollectionsRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_collections_recycler);
-		mFeaturedMappersRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler);
-		mFeaturedDealsRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_deals_recycler);
+		int length = RecyclerType.values().length;
+		mRecyclerViews = new LinkedHashMap<RecyclerType, RecyclerView>(length);
+		mRecyclerViews.put(RecyclerType.BEST_AROUND, (RecyclerView) findViewById(R.id.explore_best_around_recycler));
+		mRecyclerViews.put(RecyclerType.FEATURED_COLLECTIONS, (RecyclerView) findViewById(R.id.explore_featured_collections_recycler));
+		mRecyclerViews.put(RecyclerType.FEATURED_MAPPERS, (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler));
+		mRecyclerViews.put(RecyclerType.FEATURED_DEALS, (RecyclerView) findViewById(R.id.explore_featured_deals_recycler));
+		for (RecyclerView view : mRecyclerViews.values()) {
+			view.addOnLayoutChangeListener(this);
+			view.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
-		mBestAroundRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-		mFeaturedCollectionsRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-		mFeaturedMappersRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-		mFeaturedDealsRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+			// TODO TEMP
+			view.getLayoutParams().height = (int) (resources.getDisplayMetrics().density * 225);
 
-		mBestAroundRecyclerView.addOnLayoutChangeListener(this);
-		mFeaturedCollectionsRecyclerView.addOnLayoutChangeListener(this);
-		mFeaturedMappersRecyclerView.addOnLayoutChangeListener(this);
-		mFeaturedDealsRecyclerView.addOnLayoutChangeListener(this);
+			if (mUseCompatPadding) {
+				int paddingLeft = view.getPaddingLeft();
+				int paddingTop = view.getPaddingTop();
+				int paddingRight = view.getPaddingRight();
+				int paddingBottom = view.getPaddingBottom();
+				paddingLeft -= mCardMaxElevation;
+				paddingRight -= mCardMaxElevation;
+				view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+			}
+		}
 
-		// TODO TEMP
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		int tempHeight = (int) (200 * metrics.density);
-//		mBestAroundRecyclerView.getLayoutParams().height = tempHeight;
-		mFeaturedCollectionsRecyclerView.getLayoutParams().height = tempHeight;
-		mFeaturedMappersRecyclerView.getLayoutParams().height = tempHeight;
-		mFeaturedDealsRecyclerView.getLayoutParams().height = tempHeight;
-		// END TEMP
+		// Set up adapters
+
+		mAdapters = new LinkedHashMap<RecyclerType, Adapter>(length);
+		mAdapters.put(RecyclerType.BEST_AROUND, new BestAroundAdapter());
+		mAdapters.put(RecyclerType.FEATURED_COLLECTIONS, new FeaturedCollectionsAdapter());
+		mAdapters.put(RecyclerType.FEATURED_MAPPERS, new FeaturedMappersAdapter());
+		mAdapters.put(RecyclerType.FEATURED_DEALS, new FeaturedDealsAdapter());
+		for (RecyclerType type : RecyclerType.values()) {
+			mRecyclerViews.get(type).setAdapter(mAdapters.get(type));
+		}
 
 		Intent intent = getIntent();
 		if (intent != null) {
@@ -173,10 +189,11 @@ public class ExploreActivity extends TrackedActionBarActivity
 	@Override
 	public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 		if (v.getWidth() > 0) {
-			if (v == mBestAroundRecyclerView) {
-				mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross, mComponentBaselineGrid);
-				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross, mComponentBaselineGrid);
+			if (v == mRecyclerViews.get(RecyclerType.BEST_AROUND)) {
+				mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross);
+				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross);
 
+				/*
 				View view = mInflater.inflate(R.layout.card_explore_best_around_collection, mBestAroundRecyclerView, false);
 				LinearLayout mainContainer = (LinearLayout) view.findViewById(R.id.explore_best_around_main_container);
 				RelativeLayout infoContainer = (RelativeLayout) view.findViewById(R.id.explore_best_around_info_container);
@@ -186,20 +203,20 @@ public class ExploreActivity extends TrackedActionBarActivity
 				LogEx.d(String.format("mBestAroundDefaultCardWidth=%d, height=%d", mBestAroundDefaultCardWidth, height));
 				LogEx.d(String.format("paddingLeft=%d, paddingTop=%d, paddingRight=%d, paddingBottom=%d",
 						view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom()));
-
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mBestAroundRecyclerView.getLayoutParams();
-				lp.height = height;
+				lp.height = 200;
 				mBestAroundRecyclerView.setLayoutParams(lp);
+				*/
 
 				// TODO Since image is set to match_parent but card is wrap_content, the entire photo is shown and the imageview
 				// is too tall. Need to constrain that imageview size somehow.
 
-			} else if (v == mFeaturedCollectionsRecyclerView) {
-				mFeaturedCollectionCardWidth = getCardWidth(v, mFeaturedCollectionsCardsAcross, mComponentBaselineGrid);
-			} else if (v == mFeaturedMappersRecyclerView) {
-				mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross, mComponentBaselineGrid);
-			} else if (v == mFeaturedDealsRecyclerView) {
-				mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross, mComponentBaselineGrid);
+			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_COLLECTIONS)) {
+				mFeaturedCollectionCardWidth= getCardWidth(v, mFeaturedCollectionsCardsAcross);
+			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_MAPPERS)) {
+				mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross);
+			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_DEALS)) {
+				mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross);
 			}
 
 			// There should never be an instance where there are existing cards in the recycler views
@@ -209,122 +226,99 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 	}
 
+	private int getCardWidth(View view, float cardsAcross) {
+		int elevationFactor = (mUseCompatPadding ? mCardMaxElevation : 0);
+		int perceivedPaddingLeft = view.getPaddingLeft() + elevationFactor;
+		int perceivedPaddingRight = view.getPaddingRight() + elevationFactor;
+		int marginCount = (int) (Math.ceil(cardsAcross)) - 1;
+		int perceivedTotalMargin = mCardPerceivedMargin * marginCount;
+		int perceivedAvailableWidth = view.getWidth() - perceivedPaddingLeft - perceivedPaddingRight - perceivedTotalMargin;
+		int perceivedCardWidth = (int) (perceivedAvailableWidth / cardsAcross);
+		return perceivedCardWidth + 2 * elevationFactor;
+	}
+
 	protected void onRequestsComplete() {
-		if (mHelperFragment.mBestAround != null) {
-			mBestAroundRecyclerView.setAdapter(new BestAroundAdapter(mHelperFragment.mBestAround));
-		}
-		if (mHelperFragment.mFeaturedCollections != null) {
-			mFeaturedCollectionsRecyclerView.setAdapter(new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections));
-		}
-		if (mHelperFragment.mFeaturedMappers != null) {
-			mFeaturedMappersRecyclerView.setAdapter(new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers));
-		}
-		if (mHelperFragment.mFeaturedDeals != null) {
-			mFeaturedDealsRecyclerView.setAdapter(new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals));
-		}
+		((BestAroundAdapter) mAdapters.get(RecyclerType.BEST_AROUND)).setData(mHelperFragment.mBestAround);
+		((FeaturedCollectionsAdapter) mAdapters.get(RecyclerType.FEATURED_COLLECTIONS)).setData(mHelperFragment.mFeaturedCollections);
+		((FeaturedMappersAdapter) mAdapters.get(RecyclerType.FEATURED_MAPPERS)).setData(mHelperFragment.mFeaturedMappers);
+		((FeaturedDealsAdapter) mAdapters.get(RecyclerType.FEATURED_DEALS)).setData(mHelperFragment.mFeaturedDeals);
 	}
 
-	public class BestAroundAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		private List<SearchResult> mSearchResults;
+	protected abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		protected List<D> mData;
 
-		public BestAroundAdapter(List<SearchResult> searchResults) {
-			super();
-			mSearchResults = searchResults;
+		public void setData(List<D> data) {
+			mData = data;
+			notifyDataSetChanged();
+		}
+
+		public List<D> getData() {
+			return mData;
 		}
 
 		@Override
 		public int getItemCount() {
-			return mSearchResults == null ? 0 : mSearchResults.size();
+			return (mData == null ? 0 : mData.size());
+		}
+	}
+
+	public class BestAroundAdapter extends ExploreAdapter<SearchResult> {
+		@Override
+		public int getItemViewType(int position) {
+			SearchResult result = mData.get(position);
+			return result.getType().value();
 		}
 
 		@Override
+		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			View view = new BestAroundCollectionFixedHeightCardView(ExploreActivity.this);
+			view.setLayoutParams(new RecyclerView.LayoutParams(mBestAroundCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
+			return new ViewHolder(view) {};
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			SearchResult searchResult = mData.get(position);
+			BestAroundCollectionFixedHeightCardView cardView = (BestAroundCollectionFixedHeightCardView) holder.itemView;
+			cardView.getNameView().setText(searchResult.getName());
+			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
+				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
+				cardView.setLayoutParams(mlp);
+			}
+		}
+	}
+
+	public class FeaturedCollectionsAdapter extends ExploreAdapter<SearchResult> {
+		@Override
 		public int getItemViewType(int position) {
-			SearchResult result = mSearchResults.get(position);
+			SearchResult result = mData.get(position);
 			return result.getType().value();
 		}
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			// TODO TEMP
-
-			View view = mInflater.inflate(R.layout.card_explore_best_around_collection, viewGroup, false);
-			RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(mBestAroundCardWidth, RecyclerView.LayoutParams.MATCH_PARENT);
-			view.setLayoutParams(lp);
-			return new BestAroundCollectionViewHolder(view);
-			// END TEMP
+			View view = new CollectionFixedHeightCardView(ExploreActivity.this);
+			view.setLayoutParams(new RecyclerView.LayoutParams(mFeaturedCollectionCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
+			return new ViewHolder(view) {};
 		}
 
 		@Override
-		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-			SearchResult searchResult = mSearchResults.get(position);
-			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
-
-			holder.getNameView().setText(searchResult.getName());
-
-			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
-				MarginLayoutParamsCompat.setMarginStart(mlp, position == 0 ? 0 : mComponentBaselineGrid);
-				viewHolder.itemView.setLayoutParams(mlp);
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			SearchResult searchResult = mData.get(position);
+			CollectionFixedHeightCardView cardView = (CollectionFixedHeightCardView) holder.itemView;
+			cardView.getNameView().setText(searchResult.getName());
+			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
+				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
+				cardView.setLayoutParams(mlp);
 			}
 		}
 	}
 
-	public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		private List<SearchResult> mSearchResults;
-
-		public FeaturedCollectionsAdapter(List<SearchResult> searchResults) {
-			super();
-			mSearchResults = searchResults;
-		}
-
-		@Override
-		public int getItemCount() {
-			return mSearchResults == null ? 0 : mSearchResults.size();
-		}
-
-		@Override
-		public int getItemViewType(int position) {
-			SearchResult result = mSearchResults.get(position);
-			return result.getType().value();
-		}
-
-		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			// TODO TEMP
-			View view = mInflater.inflate(R.layout.card_explore_featured_collection, viewGroup, false);
-			RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(mFeaturedCollectionCardWidth, RecyclerView.LayoutParams.MATCH_PARENT);
-			view.setLayoutParams(lp);
-			return new BestAroundCollectionViewHolder(view);
-			// END TEMP
-		}
-
-		@Override
-		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-			SearchResult searchResult = mSearchResults.get(position);
-			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
-			holder.getNameView().setText(searchResult.getName());
-
-			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
-				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
-				viewHolder.itemView.setLayoutParams(lp);
-			}
-		}
-	}
-
-	public class FeaturedMappersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		private List<User> mFeaturedMappers;
-
-		public FeaturedMappersAdapter(List<User> featuredMappers) {
-			super();
-			mFeaturedMappers = featuredMappers;
-		}
-
-		@Override
-		public int getItemCount() {
-			return mFeaturedMappers == null ? 0 : mFeaturedMappers.size();
-		}
-
+	public class FeaturedMappersAdapter extends ExploreAdapter<User> {
 		/*
 		@Override
 		public int getItemViewType(int position) {
@@ -335,68 +329,49 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			// TODO TEMP
-
-			View view = mInflater.inflate(R.layout.card_explore_featured_mapper, viewGroup, false);
-			RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(mFeaturedMapperCardWidth, RecyclerView.LayoutParams.MATCH_PARENT);
-			view.setLayoutParams(lp);
-			return new BestAroundCollectionViewHolder(view);
-			// END TEMP
+			View view = new UserFixedHeightCardView(ExploreActivity.this);
+			view.setLayoutParams(new RecyclerView.LayoutParams(mFeaturedMapperCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
+			return new ViewHolder(view) {};
 		}
 
 		@Override
-		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-			User user = mFeaturedMappers.get(position);
-			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
-			holder.getNameView().setText(user.getName());
-
-			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
-				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
-				viewHolder.itemView.setLayoutParams(lp);
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			User user = mData.get(position);
+			UserFixedHeightCardView cardView = (UserFixedHeightCardView) holder.itemView;
+			cardView.getNameView().setText(user.getName());
+			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
+				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
+				cardView.setLayoutParams(mlp);
 			}
 		}
 	}
 
-	public class FeaturedDealsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		private List<SearchResult> mSearchResults;
-
-		public FeaturedDealsAdapter(List<SearchResult> searchResults) {
-			super();
-			mSearchResults = searchResults;
-		}
-
-		@Override
-		public int getItemCount() {
-			return mSearchResults == null ? 0 : mSearchResults.size();
-		}
-
+	public class FeaturedDealsAdapter extends ExploreAdapter<SearchResult> {
 		@Override
 		public int getItemViewType(int position) {
-			SearchResult result = mSearchResults.get(position);
+			SearchResult result = mData.get(position);
 			return result.getType().value();
 		}
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			// TODO TEMP
-			View view = mInflater.inflate(R.layout.card_explore_featured_deal, viewGroup, false);
-			RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(mFeaturedDealCardWidth, RecyclerView.LayoutParams.MATCH_PARENT);
-			view.setLayoutParams(lp);
-			return new BestAroundCollectionViewHolder(view);
-			// END TEMP
+			View view = new DealFixedHeightCardView(ExploreActivity.this);
+			view.setLayoutParams(new RecyclerView.LayoutParams(mFeaturedDealCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
+			return new ViewHolder(view) {};
 		}
 
 		@Override
-		public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-			SearchResult searchResult = mSearchResults.get(position);
-			BestAroundCollectionViewHolder holder = (BestAroundCollectionViewHolder) viewHolder;
-			holder.getNameView().setText(searchResult.getName());
-
-			if (viewHolder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewHolder.itemView.getLayoutParams();
-				MarginLayoutParamsCompat.setMarginStart(lp, position == 0 ? 0 : mComponentBaselineGrid);
-				viewHolder.itemView.setLayoutParams(lp);
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			SearchResult searchResult = mData.get(position);
+			DealFixedHeightCardView cardView = (DealFixedHeightCardView) holder.itemView;
+			cardView.getNameView().setText(searchResult.getName());
+			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
+				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
+				cardView.setLayoutParams(mlp);
 			}
 		}
 	}
@@ -543,5 +518,12 @@ public class ExploreActivity extends TrackedActionBarActivity
 				mActivity.onRequestsComplete();
 			}
 		}
+	}
+
+	private static enum RecyclerType {
+		BEST_AROUND,
+		FEATURED_COLLECTIONS,
+		FEATURED_MAPPERS,
+		FEATURED_DEALS
 	}
 }

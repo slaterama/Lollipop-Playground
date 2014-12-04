@@ -70,6 +70,8 @@ public abstract class GsonRequest<T> extends Request<T> {
 		mHeaders = headers;
 		mParams = params;
 		mListener = listener;
+
+		setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 5, 1.5f));
 	}
 
 	@Override
