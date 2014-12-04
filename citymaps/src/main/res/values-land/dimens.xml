@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!--
+	================================================================================
+	Explore dimensions
+	================================================================================
+	-->
+
+	<!-- The default number of cards across in ExploreActivity -->
+	<item name="explore_default_cards_across" format="float" type="dimen">3.0</item>
+
+	<!-- The number of cards across in the various ExploreActivity recycler views -->
+	<item name="explore_best_around_cards_across" format="float" type="dimen">2.0</item>
+
+</resources>

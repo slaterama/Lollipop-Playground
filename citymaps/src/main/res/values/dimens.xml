@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+	<!-- Default screen margins, per the Android Design guidelines. -->
+	<dimen name="activity_horizontal_margin">16dp</dimen>
+	<dimen name="activity_vertical_margin">16dp</dimen>
 
 	<dimen name="signin_authenticate_button_width">290dp</dimen>
+
+	<!--
+	================================================================================
+	Explore dimensions
+	================================================================================
+	-->
+
+	<!-- The default number of cards across in ExploreActivity -->
+	<item name="explore_default_cards_across" format="float" type="dimen">2.0</item>
+
+	<!-- The number of cards across in the various ExploreActivity recycler views -->
+	<item name="explore_best_around_cards_across" format="float" type="dimen">1.0</item>
+	<item name="explore_featured_collections_cards_across" format="float" type="dimen">@dimen/explore_default_cards_across</item>
+	<item name="explore_featured_mappers_cards_across" format="float" type="dimen">@dimen/explore_default_cards_across</item>
+	<item name="explore_featured_deals_cards_across" format="float" type="dimen">@dimen/explore_default_cards_across</item>
 
 </resources>
