@@ -8,6 +8,8 @@ import com.citymaps.mobile.android.R;
 
 public abstract class CitymapsCardView extends CardView {
 
+	protected int mBaseSize;
+
 	public CitymapsCardView(Context context) {
 		super(context);
 		init(context);
@@ -30,10 +32,7 @@ public abstract class CitymapsCardView extends CardView {
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
 	}
 
-	public void setBaseCardWidth(int width) {
-		onSetBaseCardWidth(width);
-		forceLayout(); // ??
+	public void setBaseSize(int size) {
+		mBaseSize = size;
 	}
-
-	protected abstract void onSetBaseCardWidth(int width);
 }

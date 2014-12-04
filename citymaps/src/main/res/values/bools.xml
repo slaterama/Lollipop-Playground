@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	
-	<!-- Onboarding bools -->
-	
+
+	<!--
+	================================================================================
+	Onboarding/housekeeping bools
+	================================================================================
+	-->
+
 	<bool name="launch_allow_orientation_change">false</bool>
 	<bool name="hard_update_allow_orientation_change">false</bool>
 	<bool name="tour_allow_orientation_change">false</bool>
@@ -10,7 +14,11 @@
 	<bool name="authenticate_allow_orientation_change">false</bool>
 	<bool name="login_allow_orientation_change">false</bool>
 
-	<!-- Explore bools -->
+	<!--
+	================================================================================
+	Explore bools
+	================================================================================
+	-->
 
 	<bool name="explore_card_use_compat_padding">true</bool>
 

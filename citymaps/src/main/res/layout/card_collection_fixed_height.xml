@@ -39,7 +39,7 @@
 		</RelativeLayout>
 
 		<RelativeLayout
-				android:id="@+id/card_collection_fixed_height_avatar"
+				android:id="@+id/card_collection_fixed_height_avatar_container"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:padding="@dimen/component_baseline_grid">

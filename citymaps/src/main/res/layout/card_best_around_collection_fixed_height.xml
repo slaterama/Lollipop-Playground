@@ -11,6 +11,7 @@
 		support:cardPreventCornerOverlap="true">
 
 	<ImageView
+			android:id="@+id/card_best_around_collection_fixed_height_image"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:scaleType="centerCrop"
@@ -33,13 +34,15 @@
 					android:layout_height="wrap_content"
 					android:layout_centerInParent="true"
 					android:gravity="center"
-					android:textAppearance="?android:textAppearanceLarge"
+					android:maxLines="2"
+					android:ellipsize="end"
+					android:textAppearance="?android:textAppearanceLargeInverse"
 					tools:text="Name"/>
 
 		</RelativeLayout>
 
 		<RelativeLayout
-				android:id="@+id/card_best_around_collection_fixed_height_avatar"
+				android:id="@+id/card_best_around_collection_fixed_height_avatar_container"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:padding="@dimen/component_baseline_grid">

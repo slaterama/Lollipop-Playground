@@ -30,8 +30,8 @@ public class CollectionFixedHeightCardView extends CitymapsCardView {
 	}
 
 	@Override
-	protected void onSetBaseCardWidth(int width) {
-
+	public void setBaseSize(int size) {
+		super.setBaseSize(size);
 	}
 
 	public TextView getNameView() {
