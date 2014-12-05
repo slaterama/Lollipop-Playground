@@ -3,6 +3,10 @@ package com.citymaps.mobile.android.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -12,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.*;
+import android.widget.ImageView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,6 +32,9 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.util.ResourcesUtils;
+import com.citymaps.mobile.android.util.drawable.CircularDrawable;
+import com.citymaps.mobile.android.util.drawable.RoundedSquareDrawable;
+import com.citymaps.mobile.android.util.drawable.SquareDrawable;
 import com.citymaps.mobile.android.view.cards.BestAroundCollectionFixedHeightCardView;
 import com.citymaps.mobile.android.view.cards.CollectionFixedHeightCardView;
 import com.citymaps.mobile.android.view.cards.DealFixedHeightCardView;
@@ -207,8 +215,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 	private int getCardWidth(View view, float cardsAcross) {
 		/*
 		 * NOTE: This returns the "perceived" card width. That is, the width of the card minus any shadow/elevation element.
-		 * When setting the actual width of cards (i.e. in the createViewHolder method of the various adapters), the
-		 * elevation padding will need to be added if appropriate.
+		 * When setting the actual width of cards (i.e. in the createViewHolder method of the various adapters),
+		 * any "compat" padding will need to be added if appropriate.
 		 */
 
 		int elevationFactor = (mUseCompatPadding ? mCardMaxElevation : 0);
@@ -267,6 +275,16 @@ public class ExploreActivity extends TrackedActionBarActivity
 			BestAroundCollectionFixedHeightCardView cardView = (BestAroundCollectionFixedHeightCardView) holder.itemView;
 			cardView.getImageView().setImageResource(R.drawable.forrest_point);
 			cardView.getNameView().setText(searchResult.getName());
+
+			Drawable drawable = getResources().getDrawable(R.drawable.default_fb_avatar);
+			if (drawable instanceof BitmapDrawable) {
+				ImageView avatarView = cardView.getAvatarView();
+				int size = avatarView.getLayoutParams().width;
+				Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+				SquareDrawable avatarDrawable = new CircularDrawable(bitmap, size, 1.0f, Color.LTGRAY);
+				cardView.getAvatarView().setImageDrawable(avatarDrawable);
+			}
+
 			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
 				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());

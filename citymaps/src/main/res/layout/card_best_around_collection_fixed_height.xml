@@ -2,13 +2,7 @@
 
 <merge
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:support="http://schemas.android.com/apk/res-auto"
-		xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		support:cardElevation="2dp"
-		support:cardUseCompatPadding="true"
-		support:cardPreventCornerOverlap="true">
+		xmlns:tools="http://schemas.android.com/tools">
 
 	<ImageView
 			android:id="@+id/card_best_around_collection_fixed_height_image"
@@ -48,9 +42,11 @@
 				android:padding="@dimen/component_baseline_grid">
 
 			<ImageView
+					android:id="@+id/card_best_around_collection_fixed_height_avatar"
 					android:layout_width="@dimen/mini_floating_action_button_size"
 					android:layout_height="@dimen/mini_floating_action_button_size"
-					android:background="@android:color/white"
+					android:scaleType="fitCenter"
+					tools:src="@drawable/default_fb_avatar"
 					android:contentDescription="@null"/>
 
 		</RelativeLayout>

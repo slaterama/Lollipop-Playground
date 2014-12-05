@@ -7,31 +7,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.util.LogEx;
 
 public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
 
 	public static int getDesiredHeight(Context context, int size) {
 		BestAroundCollectionFixedHeightCardView cardView = new BestAroundCollectionFixedHeightCardView(context);
-
-		int height;
-		cardView.measure(0, 0);
-		height = cardView.getMeasuredHeight();
-
-		LogEx.d(String.format("Before setting height: width=%d, height=%d", cardView.getMeasuredWidth(), height));
-
 		cardView.setBaseSize(size);
 		cardView.measure(0, 0);
-		height = cardView.getMeasuredHeight();
-
-		LogEx.d(String.format("Before setting height: width=%d, height=%d", cardView.getMeasuredWidth(), height));
-
-		return height;
+		return cardView.getMeasuredHeight();
 	}
 
 	private TextView mNameView;
 	private ImageView mImageView;
 	private ViewGroup mInfoContainerView;
+	private ImageView mAvatarView;
 
 	public BestAroundCollectionFixedHeightCardView(Context context) {
 		super(context);
@@ -52,6 +41,7 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
 		mImageView = (ImageView) view.findViewById(R.id.card_best_around_collection_fixed_height_image);
 		mInfoContainerView = (ViewGroup) view.findViewById(R.id.card_best_around_collection_fixed_height_info_container);
 		mNameView = (TextView) view.findViewById(R.id.card_best_around_collection_fixed_height_name);
+		mAvatarView = (ImageView) view.findViewById(R.id.card_best_around_collection_fixed_height_avatar);
 	}
 
 	@Override
@@ -70,5 +60,9 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
 
 	public TextView getNameView() {
 		return mNameView;
+	}
+
+	public ImageView getAvatarView() {
+		return mAvatarView;
 	}
 }
