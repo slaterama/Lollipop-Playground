@@ -5,8 +5,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.model.User;
 
-public class UserFixedHeightCardView extends CitymapsCardView {
+public class UserFixedHeightCardView extends CitymapsCardView<User> {
 
 	private TextView mNameView;
 
@@ -36,5 +37,10 @@ public class UserFixedHeightCardView extends CitymapsCardView {
 
 	public TextView getNameView() {
 		return mNameView;
+	}
+
+	@Override
+	protected void onBindData(User data) {
+
 	}
 }

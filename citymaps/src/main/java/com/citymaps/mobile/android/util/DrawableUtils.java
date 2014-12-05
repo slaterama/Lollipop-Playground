@@ -13,7 +13,7 @@ public class DrawableUtils {
 		RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources,
 				bitmap.getWidth() == bitmap.getHeight()
 						? bitmap
-						: ThumbnailUtils.extractThumbnail(bitmap, size, size, ThumbnailUtils.OPTIONS_RECYCLE_INPUT));
+						: ThumbnailUtils.extractThumbnail(bitmap, size, size));
 		drawable.setAntiAlias(true);
 		drawable.setCornerRadius(size / 2.0f);
 		return drawable;

@@ -34,8 +34,8 @@ public class VolleyManager {
 	private ImageLoader mImageLoader;
 
 	private VolleyManager() {
-		mRequestQueue = getRequestQueue();
-		mImageLoader = new ImageLoader(mRequestQueue, new CitymapsImageCache());
+		//mRequestQueue = getRequestQueue();
+		//mImageLoader = new ImageLoader(mRequestQueue, new CitymapsImageCache());
 	}
 
 	public Context getContext() {
@@ -49,6 +49,13 @@ public class VolleyManager {
 			mRequestQueue = Volley.newRequestQueue(sContext, new CustomHurlStack());
 		}
 		return mRequestQueue;
+	}
+
+	public ImageLoader getImageLoader() {
+		if (mImageLoader == null) {
+			mImageLoader = new ImageLoader(getRequestQueue(), new CitymapsImageCache());
+		}
+		return mImageLoader;
 	}
 
 	private static class CustomHurlStack extends HurlStack {

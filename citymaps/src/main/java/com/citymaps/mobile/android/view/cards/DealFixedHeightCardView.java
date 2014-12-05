@@ -5,8 +5,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.model.SearchResult;
 
-public class DealFixedHeightCardView extends CitymapsCardView {
+public class DealFixedHeightCardView extends CitymapsCardView<SearchResult> {
 
 	private TextView mNameView;
 
@@ -36,5 +37,10 @@ public class DealFixedHeightCardView extends CitymapsCardView {
 
 	public TextView getNameView() {
 		return mNameView;
+	}
+
+	@Override
+	protected void onBindData(SearchResult data) {
+
 	}
 }

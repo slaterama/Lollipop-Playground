@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import com.citymaps.mobile.android.R;
 
-public abstract class CitymapsCardView extends CardView {
+public abstract class CitymapsCardView<D> extends CardView {
 
+	protected D mData;
 	protected int mBaseSize;
 
 	public CitymapsCardView(Context context) {
@@ -33,7 +35,13 @@ public abstract class CitymapsCardView extends CardView {
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
 
-		TypedArray a = context.obtainStyledAttributes(new int[]{android.R.attr.selectableItemBackground, android.R.attr.selectableItemBackgroundBorderless});
+		int[] attrs;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			attrs = new int[]{android.R.attr.selectableItemBackgroundBorderless};
+		} else {
+			attrs = new int[]{android.R.attr.selectableItemBackground};
+		}
+		TypedArray a = context.obtainStyledAttributes(attrs);
 		Drawable selectableItemBackgroundBorderLess = a.getDrawable(0);
 		a.recycle();
 
@@ -44,4 +52,15 @@ public abstract class CitymapsCardView extends CardView {
 	public void setBaseSize(int size) {
 		mBaseSize = size;
 	}
+
+	public D getData() {
+		return mData;
+	}
+
+	public void setData(D data) {
+		mData = data;
+		onBindData(data);
+	}
+
+	protected abstract void onBindData(D data);
 }

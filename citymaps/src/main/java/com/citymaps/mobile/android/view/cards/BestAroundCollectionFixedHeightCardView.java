@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.model.SearchResult;
+import com.citymaps.mobile.android.util.DrawableUtils;
 
-public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
+public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<SearchResult> {
 
 	public static int getDesiredHeight(Context context, int size) {
 		BestAroundCollectionFixedHeightCardView cardView = new BestAroundCollectionFixedHeightCardView(context);
@@ -17,9 +19,9 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
 		return cardView.getMeasuredHeight();
 	}
 
-	private TextView mNameView;
 	private ImageView mImageView;
 	private ViewGroup mInfoContainerView;
+	private TextView mNameView;
 	private ImageView mAvatarView;
 
 	public BestAroundCollectionFixedHeightCardView(Context context) {
@@ -38,10 +40,10 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
 	public void init(Context context) {
 		super.init(context);
 		View view = View.inflate(context, R.layout.card_best_around_collection_fixed_height, this);
-		mImageView = (ImageView) view.findViewById(R.id.card_best_around_collection_fixed_height_image);
+		mImageView = (ImageView) view.findViewById(R.id.card_image);
 		mInfoContainerView = (ViewGroup) view.findViewById(R.id.card_best_around_collection_fixed_height_info_container);
-		mNameView = (TextView) view.findViewById(R.id.card_best_around_collection_fixed_height_name);
-		mAvatarView = (ImageView) view.findViewById(R.id.card_best_around_collection_fixed_height_avatar);
+		mNameView = (TextView) view.findViewById(R.id.card_name);
+		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
 	}
 
 	@Override
@@ -64,5 +66,15 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView {
 
 	public ImageView getAvatarView() {
 		return mAvatarView;
+	}
+
+	@Override
+	protected void onBindData(SearchResult data) {
+		mImageView.setImageResource(R.drawable.forrest_point);
+		mNameView.setText(data.getName());
+
+		// TODO TEMP
+		mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+				getResources(), R.drawable.default_fb_avatar));
 	}
 }

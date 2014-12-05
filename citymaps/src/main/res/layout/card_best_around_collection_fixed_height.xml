@@ -5,14 +5,14 @@
 		xmlns:tools="http://schemas.android.com/tools">
 
 	<ImageView
-			android:id="@+id/card_best_around_collection_fixed_height_image"
+			android:id="@id/card_image"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:scaleType="centerCrop"
 			android:contentDescription="@null"/>
 
 	<LinearLayout
-			android:id="@+id/card_best_around_collection_fixed_height_main_container"
+			android:id="@id/card_main_container"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
@@ -20,10 +20,11 @@
 		<RelativeLayout
 				android:id="@+id/card_best_around_collection_fixed_height_info_container"
 				android:layout_width="match_parent"
-				android:layout_height="150dp">
+				android:layout_height="150dp"
+				android:padding="@dimen/component_baseline_grid">
 
 			<TextView
-					android:id="@+id/card_best_around_collection_fixed_height_name"
+					android:id="@id/card_name"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_centerInParent="true"
@@ -36,18 +37,18 @@
 		</RelativeLayout>
 
 		<RelativeLayout
-				android:id="@+id/card_best_around_collection_fixed_height_avatar_container"
+				android:id="@id/card_avatar_container"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:padding="@dimen/component_baseline_grid">
 
 			<ImageView
-					android:id="@+id/card_best_around_collection_fixed_height_avatar"
-					android:layout_width="@dimen/mini_fab_size"
-					android:layout_height="@dimen/mini_fab_size"
-					android:scaleType="fitCenter"
+					android:id="@id/card_avatar"
+					android:layout_width="@dimen/mini_avatar_size"
+					android:layout_height="@dimen/mini_avatar_size"
+					android:scaleType="centerCrop"
 					tools:src="@drawable/default_fb_avatar"
-					android:background="@drawable/border_round_ltgrey_1px"
+					android:background="@drawable/avatar_border_round_ltgrey_1px"
 					android:padding="1px"
 					android:contentDescription="@null"/>
 
