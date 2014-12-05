@@ -47,6 +47,8 @@
 					android:layout_height="@dimen/mini_floating_action_button_size"
 					android:scaleType="fitCenter"
 					tools:src="@drawable/default_fb_avatar"
+					android:background="@drawable/border_round_ltgrey_1px"
+					android:padding="1px"
 					android:contentDescription="@null"/>
 
 		</RelativeLayout>

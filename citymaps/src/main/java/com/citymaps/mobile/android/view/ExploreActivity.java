@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,13 +30,7 @@ import com.citymaps.mobile.android.model.SearchResult;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.SearchResultsRequest;
 import com.citymaps.mobile.android.model.request.UsersRequest;
-import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.MapUtils;
-import com.citymaps.mobile.android.util.ResourcesUtils;
-import com.citymaps.mobile.android.util.drawable.CircularDrawable;
-import com.citymaps.mobile.android.util.drawable.RoundedSquareDrawable;
-import com.citymaps.mobile.android.util.drawable.SquareDrawable;
+import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.view.cards.BestAroundCollectionFixedHeightCardView;
 import com.citymaps.mobile.android.view.cards.CollectionFixedHeightCardView;
 import com.citymaps.mobile.android.view.cards.DealFixedHeightCardView;
@@ -275,15 +271,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 			BestAroundCollectionFixedHeightCardView cardView = (BestAroundCollectionFixedHeightCardView) holder.itemView;
 			cardView.getImageView().setImageResource(R.drawable.forrest_point);
 			cardView.getNameView().setText(searchResult.getName());
-
-			Drawable drawable = getResources().getDrawable(R.drawable.default_fb_avatar);
-			if (drawable instanceof BitmapDrawable) {
-				ImageView avatarView = cardView.getAvatarView();
-				int size = avatarView.getLayoutParams().width;
-				Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-				SquareDrawable avatarDrawable = new CircularDrawable(bitmap, size, 1.0f, Color.LTGRAY);
-				cardView.getAvatarView().setImageDrawable(avatarDrawable);
-			}
+			cardView.getAvatarView().setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+					getResources(), R.drawable.default_fb_avatar));
 
 			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();

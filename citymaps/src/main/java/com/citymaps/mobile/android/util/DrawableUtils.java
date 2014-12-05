@@ -1,0 +1,38 @@
+package com.citymaps.mobile.android.util;
+
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+
+public class DrawableUtils {
+
+	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, Bitmap bitmap, int size) {
+		RoundedBitmapDrawable rbd = RoundedBitmapDrawableFactory.create(resources,
+				ThumbnailUtils.extractThumbnail(bitmap, size, size, ThumbnailUtils.OPTIONS_RECYCLE_INPUT));
+		rbd.setAntiAlias(true);
+		rbd.setCornerRadius(size / 2.0f);
+		return rbd;
+	}
+
+	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, Bitmap bitmap) {
+		int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+		return createCircularBitmapDrawable(resources, bitmap, size);
+	}
+
+	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, int resId, int size) {
+		Bitmap bitmap = BitmapFactory.decodeResource(resources, resId);
+		return createCircularBitmapDrawable(resources, bitmap, size);
+	}
+
+	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, int resId) {
+		Bitmap bitmap = BitmapFactory.decodeResource(resources, resId);
+		int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+		return createCircularBitmapDrawable(resources, bitmap, size);
+	}
+
+	private DrawableUtils() {
+	}
+}
