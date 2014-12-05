@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<style name="Widget.FloatingActionButton" parent="@android:style/Widget">
+		<item name="fabBackgroundColor">@color/fab_light_background</item>
+		<!--<item name="cardCornerRadius">@dimen/cardview_default_radius</item>-->
+		<item name="fabElevation">@dimen/fab_default_elevation</item>
+		<item name="fabMaxElevation">@dimen/fab_default_elevation</item>
+		<item name="fabUseCompatPadding">false</item>
+		<!--<item name="fabPreventCornerOverlap">true</item>-->
+		<item name="android:foreground">?android:selectableItemBackground</item>
+	</style>
+
+	<style name="Widget.FloatingActionButton.Light">
+		<item name="fabBackgroundColor">@color/fab_light_background</item>
+	</style>
+
+	<style name="Widget.FloatingActionButton.Dark">
+		<item name="fabBackgroundColor">@color/fab_dark_background</item>
+	</style>
+
 	<style name="Widget.AppBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
 		<item name="background">@drawable/ab_background</item>
 	</style>
@@ -10,10 +28,6 @@
 
 	<style name="Widget.AppBar.Transparent">
 		<item name="background">@android:color/transparent</item>
-	</style>
-
-	<style name="Widget.FloatingActionButton" parent="@android:style/Widget.ImageButton">
-		<item name="fabType">normal</item>
 	</style>
 
 	<style name="Widget.FloatingActionButtonCompat" parent="@android:style/Widget.ImageButton">
@@ -48,9 +62,11 @@
 		<item name="android:background">@drawable/btn_citymaps_grey_default_holo_light</item>
 	</style>
 
-	<style name="Widget.Holo.FloatingActionButton" parent="@android:style/Widget.Holo.ImageButton">
-		<item name="fabType">normal</item>
-	</style>
+	<style name="Widget.Holo.FloatingActionButton" parent="@style/Widget.FloatingActionButton" />
+
+	<style name="Widget.Holo.FloatingActionButton.Light" parent="@style/Widget.FloatingActionButton.Light" />
+
+	<style name="Widget.Holo.FloatingActionButton.Dark" parent="@style/Widget.FloatingActionButton.Dark" />
 
 	<style name="Widget.Holo.FloatingActionButtonCompat" parent="@android:style/Widget.Holo.ImageButton">
 		<item name="fabType">normal</item>

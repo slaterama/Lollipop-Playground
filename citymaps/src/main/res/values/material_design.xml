@@ -12,8 +12,11 @@
 	<dimen name="vertical_keyline">16dp</dimen>
 	<dimen name="horizontal_keyline">16dp</dimen>
 
-	<dimen name="floating_action_button_size">56dp</dimen>
-	<dimen name="mini_floating_action_button_size">40dp</dimen>
+	<dimen name="fab_size">56dp</dimen>
+	<dimen name="mini_fab_size">40dp</dimen>
+	<dimen name="fab_icon_size">24dp</dimen>
+
+	<dimen name="state_pressed_elevation">8dp</dimen>
 
 	<dimen name="default_elevation">12dp</dimen>
 

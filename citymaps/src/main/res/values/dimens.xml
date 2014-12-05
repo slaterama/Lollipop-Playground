@@ -8,6 +8,16 @@
 
 	<!--
 	================================================================================
+	FloatingActionButton dimensions
+	================================================================================
+	-->
+
+	<!-- Elevation value to use for FloatingActionButton. Pre-L, it is equal to shadow size. -->
+	<dimen name="fab_default_elevation">2dp</dimen>
+	<dimen name="fab_max_elevation">8dp</dimen>
+
+	<!--
+	================================================================================
 	Explore dimensions
 	================================================================================
 	-->

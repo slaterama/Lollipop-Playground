@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<style name="Widget.Material.FloatingActionButton" parent="@android:style/Widget.Material.ImageButton">
-		<item name="fabType">normal</item>
+	<style name="Widget.Material.FloatingActionButton" parent="@style/Widget.FloatingActionButton">
+		<item name="android:foreground">?android:selectableItemBackgroundBorderless</item>
+	</style>
+
+	<style name="Widget.Material.FloatingActionButton.Light" parent="@style/Widget.FloatingActionButton.Light">
+		<item name="android:foreground">?android:selectableItemBackgroundBorderless</item>
+	</style>
+
+	<style name="Widget.Material.FloatingActionButton.Dark" parent="@style/Widget.FloatingActionButton.Dark">
+		<item name="android:foreground">?android:selectableItemBackgroundBorderless</item>
 	</style>
 
 	<style name="Widget.Material.FloatingActionButtonCompat" parent="@android:style/Widget.Material.ImageButton">

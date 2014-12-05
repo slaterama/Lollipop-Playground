@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Outline;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.RelativeLayout;
 import com.citymaps.citymapsengine.CitymapsMapView;
 import com.citymaps.mobile.android.R;
@@ -27,7 +25,7 @@ import com.citymaps.mobile.android.map.SimpleMapViewOwner;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.widget.FloatingActionButton;
-import com.citymaps.mobile.android.widget.FloatingActionButtonCompat;
+//import com.citymaps.mobile.android.widget.FloatingActionButtonCompat;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -195,7 +193,7 @@ public class MainFragment extends Fragment {
 		mBottomToolbar.inflateMenu(R.menu.main);
 		 */
 
-		FloatingActionButtonCompat fab = (FloatingActionButtonCompat) view.findViewById(R.id.explore_btn);
+		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.explore_btn);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

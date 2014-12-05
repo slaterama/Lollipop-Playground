@@ -22,4 +22,11 @@
 
 	<color name="divider_light_grey">#CCC</color>
 
+	<!-- FloatingActionButton colors -->
+
+	<!-- Background color for light FloatingActionButton. -->
+	<color name="fab_light_background">#FFFAFAFA</color>
+	<!-- Background color for dark FloatingActionButton. -->
+	<color name="fab_dark_background">#FF202020</color>
+
 </resources>

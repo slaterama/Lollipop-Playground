@@ -43,8 +43,8 @@
 
 			<ImageView
 					android:id="@+id/card_best_around_collection_fixed_height_avatar"
-					android:layout_width="@dimen/mini_floating_action_button_size"
-					android:layout_height="@dimen/mini_floating_action_button_size"
+					android:layout_width="@dimen/mini_fab_size"
+					android:layout_height="@dimen/mini_fab_size"
 					android:scaleType="fitCenter"
 					tools:src="@drawable/default_fb_avatar"
 					android:background="@drawable/border_round_ltgrey_1px"

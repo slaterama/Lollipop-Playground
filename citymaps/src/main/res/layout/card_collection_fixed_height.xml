@@ -45,8 +45,8 @@
 				android:padding="@dimen/component_baseline_grid">
 
 			<ImageView
-					android:layout_width="@dimen/mini_floating_action_button_size"
-					android:layout_height="@dimen/mini_floating_action_button_size"
+					android:layout_width="@dimen/mini_fab_size"
+					android:layout_height="@dimen/mini_fab_size"
 					android:background="@android:color/white"
 					android:contentDescription="@null"/>
 

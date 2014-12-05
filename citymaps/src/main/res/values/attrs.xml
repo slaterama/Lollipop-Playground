@@ -18,10 +18,23 @@
 	<attr name="fabType" format="enum">
 		<enum name="normal" value="0"/>
 		<enum name="mini" value="1"/>
-		<enum name="custom" value="2"/>
 	</attr>
-	<attr name="pressedColor" format="color|reference" />
-	<attr name="rippleColor" format="color|reference" />
+	<attr name="pressedColor" format="color" />
+	<attr name="rippleColor" format="color" />
+
+	<!-- Background color for FloatingActionButton. -->
+	<attr name="fabBackgroundColor" format="color" />
+	<!-- Corner radius for FloatingActionButton. -->
+	<attr name="fabCornerRadius" format="dimension" />
+	<!-- Elevation for FloatingActionButton. -->
+	<attr name="fabElevation" format="dimension" />
+	<!-- Maximum Elevation for FloatingActionButton. -->
+	<attr name="fabMaxElevation" format="dimension" />
+	<!-- Add padding in API v21+ as well to have the same measurements with previous versions. -->
+	<attr name="fabUseCompatPadding" format="boolean" />
+	<!-- Add padding to FloatingActionButton on v20 and before to prevent intersections between the Card content and rounded corners. -->
+	<!--<attr name="fabPreventCornerOverlap" format="boolean" />-->
+	<!-- Inner padding between the edges of the Button and children of the FloatingActionButton. -->
 
 	<declare-styleable name="RatioFrameLayout">
 		<attr name="ratio" />
@@ -42,7 +55,7 @@
 		<attr name="android:singleLine" />
 	</declare-styleable>
 
-	<declare-styleable name="FloatingActionButton">
+	<declare-styleable name="FloatingActionButtonCompat">
 		<attr name="fabType" />
 		<!--<attr name="elevation" format="dimension" />-->
 		<attr name="android:color" />
@@ -50,12 +63,20 @@
 		<attr name="rippleColor" />
 	</declare-styleable>
 
-	<declare-styleable name="FloatingActionButtonCompat">
+	<declare-styleable name="FloatingActionButton">
+		<attr name="android:foreground" />
+		<attr name="android:stateListAnimator" />
 		<attr name="fabType" />
-		<!--<attr name="elevation" format="dimension" />-->
-		<attr name="android:color" />
-		<attr name="pressedColor" />
-		<attr name="rippleColor" />
+		<attr name="fabBackgroundColor" />
+		<!--<attr name="fabCornerRadius" />-->
+		<attr name="fabElevation" />
+		<attr name="fabMaxElevation" />
+		<attr name="fabUseCompatPadding" />
+		<attr name="contentPadding" />
+		<attr name="contentPaddingLeft" />
+		<attr name="contentPaddingRight" />
+		<attr name="contentPaddingTop" />
+		<attr name="contentPaddingBottom" />
 	</declare-styleable>
 
 </resources>

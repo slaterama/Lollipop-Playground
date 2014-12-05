@@ -10,11 +10,13 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 public class DrawableUtils {
 
 	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, Bitmap bitmap, int size) {
-		RoundedBitmapDrawable rbd = RoundedBitmapDrawableFactory.create(resources,
-				ThumbnailUtils.extractThumbnail(bitmap, size, size, ThumbnailUtils.OPTIONS_RECYCLE_INPUT));
-		rbd.setAntiAlias(true);
-		rbd.setCornerRadius(size / 2.0f);
-		return rbd;
+		RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources,
+				bitmap.getWidth() == bitmap.getHeight()
+						? bitmap
+						: ThumbnailUtils.extractThumbnail(bitmap, size, size, ThumbnailUtils.OPTIONS_RECYCLE_INPUT));
+		drawable.setAntiAlias(true);
+		drawable.setCornerRadius(size / 2.0f);
+		return drawable;
 	}
 
 	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, Bitmap bitmap) {

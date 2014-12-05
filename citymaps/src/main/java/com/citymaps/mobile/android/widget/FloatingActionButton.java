@@ -1,103 +1,64 @@
-/*
- * See http://www.bignerdranch.com/blog/floating-action-buttons-in-android-l/ for a non-support-friendly
- * (i.e. Android Lollipop only) version of creating a Floating Action Button. Need to provide backwards support.
- */
-
 package com.citymaps.mobile.android.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Outline;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.SparseArray;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
-import android.widget.ImageButton;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.util.LogEx;
 
-@TargetApi(Build.VERSION_CODES.L)
-public class FloatingActionButton extends ImageButton {
-
-	protected static int darkenColor(int color) {
-		float[] hsv = new float[3];
-		Color.colorToHSV(color, hsv);
-		hsv[2] *= 0.8f;
-		return Color.HSVToColor(hsv);
-	}
-
-	protected static Drawable createBackground(int color, int rippleColor) {
-		final ShapeDrawable content = new ShapeDrawable(new OvalShape());
-		content.getPaint().setColor(color);
-		return content;
-		//return new RippleDrawable(ColorStateList.valueOf(rippleColor), content, null);
-	}
+public class FloatingActionButton extends CardView {
 
 	protected Type mType;
 
-	protected int mColor;
-
-	protected int mRippleColor;
-
-	protected int mMarginsSet;
-
-	protected ViewOutlineProvider mOutlineProvider;
-
 	public FloatingActionButton(Context context) {
 		super(context);
-		init(context);
+		initialize(context, null, 0);
 	}
 
 	public FloatingActionButton(Context context, AttributeSet attrs) {
-		this(context, attrs, R.attr.floatingActionButtonStyle);
-		init(context);
-	}
-
-	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		initAttributes(context, attrs, defStyleAttr, 0);
-		init(context);
+		super(context, attrs);
+		initialize(context, attrs, R.attr.floatingActionButtonStyle);
 	}
 
 	@TargetApi(Build.VERSION_CODES.L)
-	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context, attrs, defStyleAttr, defStyleRes);
-		initAttributes(context, attrs, defStyleAttr, defStyleRes);
-		init(context);
+	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		initialize(context, attrs, defStyleAttr);
 	}
 
-	protected void initAttributes(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, defStyleRes);
-
-		int typeInt = a.getInt(R.styleable.FloatingActionButton_fabType, Type.NORMAL.mValue);
-		setType(Type.fromValue(typeInt));
-
-		Rect padding = new Rect(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom());
-		LogEx.d(String.format("padding=%s", padding));
-
-		mColor = a.getColor(R.styleable.FloatingActionButton_android_color, Color.GRAY);
-		mRippleColor = a.getColor(R.styleable.FloatingActionButton_rippleColor, darkenColor(mColor));
-		setBackground(createBackground(mColor, mRippleColor));
-
+	protected void initialize(Context context, AttributeSet attrs, int defStyleAttr) {
+		Resources resources = getResources();
+		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, 0);
+		Type type = Type.fromValue(a.getInt(R.styleable.FloatingActionButton_fabType, 0), Type.NORMAL);
+		setType(type);
+		Drawable foreground = a.getDrawable(R.styleable.FloatingActionButton_android_foreground);
+		setForeground(foreground);
+		int color = a.getColor(R.styleable.FloatingActionButton_fabBackgroundColor,
+				resources.getColor(R.color.fab_light_background));
+		setFabBackgroundColor(color);
+		float elevation = a.getDimension(R.styleable.FloatingActionButton_fabElevation,
+				resources.getDimensionPixelOffset(R.dimen.fab_default_elevation));
+		setFabElevation(elevation);
+		float maxElevation = a.getDimension(R.styleable.FloatingActionButton_fabMaxElevation,
+				resources.getDimensionPixelOffset(R.dimen.fab_default_elevation));
+		setMaxFabElevation(maxElevation);
+		boolean useCompatPadding = a.getBoolean(R.styleable.FloatingActionButton_fabUseCompatPadding, false);
+		setUseCompatPadding(useCompatPadding);
+		int defaultPadding = a.getDimensionPixelSize(R.styleable.FloatingActionButton_contentPadding, 0);
+		int paddingLeft = a.getDimensionPixelSize(R.styleable.FloatingActionButton_contentPaddingLeft, defaultPadding);
+		int paddingTop = a.getDimensionPixelSize(R.styleable.FloatingActionButton_contentPaddingTop, defaultPadding);
+		int paddingRight = a.getDimensionPixelSize(R.styleable.FloatingActionButton_contentPaddingRight, defaultPadding);
+		int paddingBottom = a.getDimensionPixelSize(R.styleable.FloatingActionButton_contentPaddingBottom, defaultPadding);
+		setContentPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 		a.recycle();
-	}
 
-	protected void init(Context context) {
-		mOutlineProvider = new FabOutlineProvider();
-
-		setOutlineProvider(mOutlineProvider);
-		setClipToOutline(true);
+		super.setPreventCornerOverlap(false);
 	}
 
 	public Type getType() {
@@ -105,121 +66,198 @@ public class FloatingActionButton extends ImageButton {
 	}
 
 	public void setType(Type type) {
-		if (type == null) {
-			type = Type.NORMAL;
-		}
-		if (type != mType) {
-			mType = type;
-			forceLayout();
-		}
+		mType = type;
+		requestLayout();
 	}
 
-	public int getColor() {
-		return mColor;
-	}
-
-	public void setColor(int color) {
-		if (color != mColor) {
-			mColor = color;
-			setBackground(createBackground(mColor, mRippleColor));
-		}
-	}
-
-	public int getRippleColor() {
-		return mRippleColor;
-	}
-
-	public void setRippleColor(int rippleColor) {
-		if (rippleColor != mRippleColor) {
-			mRippleColor = rippleColor;
-			setBackground(createBackground(mColor, mRippleColor));
-		}
+	public void setFabBackgroundColor(int color) {
+		setCardBackgroundColor(color);
 	}
 
 	/*
+	Not applicable
 	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+	public void setPadding(int left, int top, int right, int bottom) {
+		super.setPadding(left, top, right, bottom);
+	}
+
+	@Override
+	public void setPaddingRelative(int start, int top, int end, int bottom) {
+		super.setPaddingRelative(start, top, end, bottom);
+	}
+	*/
+
+	/*
+	Works just like CardView
+	@Override
+	public boolean getUseCompatPadding() {
+		return super.getUseCompatPadding();
+	}
+
+	@Override
+	public void setUseCompatPadding(boolean useCompatPadding) {
+		super.setUseCompatPadding(useCompatPadding);
+	}
+
+	@Override
+	public void setContentPadding(int left, int top, int right, int bottom) {
+		super.setContentPadding(left, top, right, bottom);
+	}
+	 */
+
+	/*
+	Works just like CardView
+	@Override
+	public int getContentPaddingLeft() {
+		return super.getContentPaddingLeft();
+	}
+
+	@Override
+	public int getContentPaddingRight() {
+		return super.getContentPaddingRight();
+	}
+
+	@Override
+	public int getContentPaddingTop() {
+		return super.getContentPaddingTop();
+	}
+
+	@Override
+	public int getContentPaddingBottom() {
+		return super.getContentPaddingBottom();
 	}
 	*/
 
 	@Override
-	public void setLayoutParams(ViewGroup.LayoutParams params) {
-		super.setLayoutParams(params);
-		// TODO deal with shadow, etc.
+	public void setRadius(float radius) {
+		// super.setRadius(radius);
+	}
+
+	/*
+	Works just like CardView
+	@Override
+	public float getRadius() {
+		return super.getRadius();
+	}
+
+	@Override
+	public void setShadowPadding(int left, int top, int right, int bottom) {
+		super.setShadowPadding(left, top, right, bottom);
+	}
+	*/
+
+	/* Rename to fabXXX() */
+	/*
+	@Override
+	public void setCardElevation(float radius) {
+		super.setCardElevation(radius);
+	}
+
+	@Override
+	public float getCardElevation() {
+		return super.getCardElevation();
+	}
+
+	@Override
+	public void setMaxCardElevation(float radius) {
+		super.setMaxCardElevation(radius);
+	}
+
+	@Override
+	public float getMaxCardElevation() {
+		return super.getMaxCardElevation();
+	}
+	*/
+	/* End Rename to fabXXX() */
+
+	public void setFabElevation(float elevation) {
+		super.setCardElevation(elevation);
+	}
+
+	public float getFabElevation() {
+		return super.getCardElevation();
+	}
+
+	public void setMaxFabElevation(float elevation) {
+		super.setMaxCardElevation(elevation);
+	}
+
+	public float getMaxFabElevation() {
+		return super.getMaxCardElevation();
+	}
+
+	/*
+	Not sure if I want to prevent these or not
+	@Override
+	public boolean getPreventCornerOverlap() {
+		return super.getPreventCornerOverlap();
+	}
+	*/
+
+	@Override
+	public void setPreventCornerOverlap(boolean preventCornerOverlap) {
+		// super.setPreventCornerOverlap(preventCornerOverlap);
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-		final int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
-		final int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
-		final int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
-		final int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
-
-		int desiredWidth;
-		int desiredHeight;
-		switch (mType) {
-			case MINI:
-				desiredWidth = desiredHeight = getResources().getDimensionPixelSize(R.dimen.mini_floating_action_button_size);
-				break;
-			case NORMAL:
-			default:
-				desiredWidth = desiredHeight = getResources().getDimensionPixelSize(R.dimen.floating_action_button_size);
-		}
-
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 		int measuredWidth;
 		int measuredHeight;
-		switch (widthSpecMode) {
+		switch (widthMode) {
 			case MeasureSpec.EXACTLY:
-				measuredWidth = getMeasuredWidth();
+				measuredWidth = widthSize;
 				break;
 			case MeasureSpec.AT_MOST:
-				measuredWidth = Math.min(desiredWidth, widthSpecSize);
+				measuredWidth = Math.min(getPaddingLeft() + mType.getSize(getContext()) + getPaddingRight(), widthSize);
 				break;
 			case MeasureSpec.UNSPECIFIED:
 			default:
-				measuredWidth = desiredWidth;
+				measuredWidth = getPaddingLeft() + mType.getSize(getContext()) + getPaddingRight();
 		}
-
-		switch (heightSpecMode) {
+		switch (heightMode) {
 			case MeasureSpec.EXACTLY:
-				measuredHeight = getMeasuredHeight();
+				measuredHeight = heightSize;
 				break;
 			case MeasureSpec.AT_MOST:
-				measuredHeight = Math.min(desiredHeight, heightSpecSize);
+				measuredHeight = Math.min(getPaddingTop() + mType.getSize(getContext()) + getPaddingBottom(), heightSize);
 				break;
 			case MeasureSpec.UNSPECIFIED:
 			default:
-				measuredHeight = desiredHeight;
+				measuredHeight = getPaddingTop() + mType.getSize(getContext()) + getPaddingBottom();
 		}
-
 		setMeasuredDimension(measuredWidth, measuredHeight);
 	}
 
-	/*
 	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
-	}
-	*/
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
 
-	protected class FabOutlineProvider extends ViewOutlineProvider {
-		@Override
-		public void getOutline(View view, Outline outline) {
-			int diameter = getResources().getDimensionPixelSize(R.dimen.floating_action_button_size);
-			outline.setOval(0, 0, diameter, diameter);
-		}
+		int pl = getPaddingLeft();
+		int pt = getPaddingTop();
+		int pr = getPaddingRight();
+		int pb = getPaddingBottom();
+		float maxE = getMaxFabElevation();
+		boolean preventCornerOverlap = getPreventCornerOverlap();
+		LogEx.d(String.format("pl=%d, pt=%d, pr=%d, pb=%d, maxE=%f, preventCornerOverlap=%b", pl, pt, pr, pb, maxE, preventCornerOverlap));
+
+		int width = w - getPaddingLeft() - getPaddingRight();
+		int height = h - getPaddingTop() - getPaddingBottom();
+		float radius = Math.min(width, height) / 2.0f;
+		super.setRadius(radius);
 	}
 
 	public static enum Type {
-		NORMAL(0),
-		MINI(1);
+		NORMAL(0, R.dimen.fab_size),
+		MINI(1, R.dimen.mini_fab_size);
 
 		private static SparseArray<Type> sTypeArray;
 
-		private static Type fromValue(int value) {
+		public static Type fromValue(int value, Type defaultType) {
 			if (sTypeArray == null) {
 				Type[] types = values();
 				sTypeArray = new SparseArray<Type>(types.length);
@@ -227,17 +265,31 @@ public class FloatingActionButton extends ImageButton {
 					sTypeArray.put(type.mValue, type);
 				}
 			}
-			return sTypeArray.get(value);
+			return sTypeArray.get(value, defaultType);
+		}
+
+		public static Type fromValue(int value) {
+			return fromValue(value, null);
 		}
 
 		private int mValue;
+		private int mSizeResId;
 
-		private Type(int value) {
+		private Type(int value, int sizeResId) {
 			mValue = value;
+			mSizeResId = sizeResId;
 		}
 
 		public int getValue() {
 			return mValue;
+		}
+
+		public int getSizeResId() {
+			return mSizeResId;
+		}
+
+		public int getSize(Context context) {
+			return context.getResources().getDimensionPixelSize(mSizeResId);
 		}
 	}
 }

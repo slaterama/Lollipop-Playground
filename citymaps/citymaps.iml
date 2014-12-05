@@ -75,15 +75,15 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="crittercism-android-agent-4.5.3" level="project" />
     <orderEntry type="library" exported="" name="bugsnag-android-2.2.0" level="project" />
-    <orderEntry type="library" exported="" name="cardview-v7-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="localytics-1.4.4" level="project" />
-    <orderEntry type="library" exported="" name="recyclerview-v7-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="all-1.4.4" level="project" />
     <orderEntry type="library" exported="" name="core-1.4.4" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="android-sdk-1.4.1" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
     <orderEntry type="library" exported="" name="commons-lang3-3.3.2" level="project" />
+    <orderEntry type="library" exported="" name="cardview-v7-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="mixpanel-android-4.2.1" level="project" />
@@ -91,9 +91,9 @@
     <orderEntry type="library" exported="" name="bugsnag-1.2.8" level="project" />
     <orderEntry type="library" exported="" name="sdk-android-13.11" level="project" />
     <orderEntry type="library" exported="" name="joda-time-2.6" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="bolts-android-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-6.1.71" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-21.0.0" level="project" />
     <orderEntry type="module" module-name="volley" exported="" />
     <orderEntry type="module" module-name="mapenginelibrary" exported="" />
     <orderEntry type="module" module-name="facebook" exported="" />

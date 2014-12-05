@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:tools="http://schemas.android.com/tools"
 				xmlns:citymaps="http://schemas.android.com/apk/res-auto"
+				xmlns:tools="http://schemas.android.com/tools"
 				android:id="@id/mapcontainer"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
@@ -17,8 +17,7 @@
 			android:layout_alignParentEnd="true"
 			android:layout_alignParentBottom="true" /> -->
 
-	<!--
-	<com.citymaps.mobile.android.widget.FloatingActionButtonCompat
+	<com.citymaps.mobile.android.widget.FloatingActionButton
 			android:id="@+id/explore_btn"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -28,30 +27,18 @@
 			android:layout_marginBottom="@dimen/vertical_keyline"
 			android:layout_marginRight="@dimen/horizontal_keyline"
 			android:layout_marginEnd="@dimen/vertical_keyline"
-			android:src="@drawable/ic_explore_white_24dp"
-			android:tint="@android:color/white"
-			android:elevation="16dp"
-			android:background="?android:attr/selectableItemBackground"
-			android:color="@color/color_accent"
-			citymaps:type="normal"
-			tools:ignore="UnusedAttribute" />
-	-->
+			android:stateListAnimator="@animator/elevation"
+			citymaps:fabUseCompatPadding="true"
+			citymaps:fabBackgroundColor="@color/color_accent">
 
-	<com.citymaps.mobile.android.widget.FloatingActionButtonCompat
-			android:id="@+id/explore_btn"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_alignParentEnd="true"
-			android:layout_alignParentBottom="true"
-			android:layout_marginBottom="@dimen/vertical_keyline"
-			android:layout_marginRight="@dimen/horizontal_keyline"
-			android:layout_marginEnd="@dimen/vertical_keyline"
-			android:src="@drawable/ic_explore_white_24dp"
-			android:tint="@android:color/white"
-			android:elevation="16dp"
-			android:color="@color/color_accent"
-			citymaps:fabType="normal"
-			tools:ignore="UnusedAttribute" />
+		<ImageView
+				android:layout_width="@dimen/fab_icon_size"
+				android:layout_height="@dimen/fab_icon_size"
+				android:src="@drawable/ic_explore_white_24dp"
+				android:layout_gravity="center"
+				android:duplicateParentState="true"
+				android:contentDescription="@null" />
+
+	</com.citymaps.mobile.android.widget.FloatingActionButton>
 
 </RelativeLayout>
