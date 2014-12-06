@@ -104,13 +104,17 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 		mAvatarUsernameView.setText(data.getOwnerUsername());
 
 		String avatarUrl = mData.getOwnerAvatar();
-		if (!TextUtils.isEmpty(avatarUrl)) {
+		if (TextUtils.isEmpty(avatarUrl)) {
+			mAvatarView.setImageDrawable(null);
+		} else {
 			VolleyManager.getInstance(getContext()).getImageLoader().get(avatarUrl,
 					new ImageLoader.ImageListener() {
 						@Override
 						public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
 							Bitmap bitmap = response.getBitmap();
-							if (bitmap != null) {
+							if (bitmap == null) {
+								mAvatarView.setImageDrawable(null);
+							} else {
 								mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 										getResources(), bitmap));
 							}
