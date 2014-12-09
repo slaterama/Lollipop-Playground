@@ -11,7 +11,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -19,6 +22,10 @@ import java.net.URL;
 public class VolleyManager {
 
 	private static Context sContext;
+
+	static {
+		HttpURLConnection.setFollowRedirects(true);
+	}
 
 	public static synchronized VolleyManager getInstance(Context context) {
 		sContext = context.getApplicationContext();
@@ -59,10 +66,34 @@ public class VolleyManager {
 	}
 
 	private static class CustomHurlStack extends HurlStack {
-		@Override
-		protected HttpURLConnection createConnection(URL url) throws IOException {
-			HttpURLConnection connection = super.createConnection(url);
+		private final OkUrlFactory mFactory;
+
+		public CustomHurlStack() {
+			this(new OkHttpClient());
+		}
+
+		public CustomHurlStack(OkHttpClient client) {
+			if (client == null) {
+				throw new NullPointerException("Client may not be null");
+			}
+
+			// As per https://gist.github.com/JakeWharton/5616899
+			// and https://github.com/square/okhttp/issues/184
+			try {
+				SSLContext sslContext = SSLContext.getInstance("TLS");
+				sslContext.init(null, null, null);
+				client.setSslSocketFactory(sslContext.getSocketFactory());
+			} catch (Exception e) {
+				throw new AssertionError(); // The system has no TLS. Just give up.
+			}
+
+			mFactory = new OkUrlFactory(client);
+		}
+
+		@Override protected HttpURLConnection createConnection(URL url) throws IOException {
+			HttpURLConnection connection = mFactory.open(url);
 			connection.setRequestProperty("Accept-Encoding", "");
+			connection.setInstanceFollowRedirects(true);
 			return connection;
 		}
 	}

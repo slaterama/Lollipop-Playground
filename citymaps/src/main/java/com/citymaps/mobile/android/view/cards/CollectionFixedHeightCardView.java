@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
@@ -16,6 +17,8 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 import com.citymaps.mobile.android.util.DrawableUtils;
 import com.citymaps.mobile.android.util.LogEx;
+
+import java.net.HttpURLConnection;
 
 public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResultCollection> {
 
@@ -99,15 +102,15 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
 		mNameView.setText(data.getName());
 		mDescriptionView.setText(data.getDescription());
-//		mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
-//				getResources(), R.drawable.default_fb_avatar));
 		mAvatarUsernameView.setText(data.getOwnerUsername());
 
 		String avatarUrl = mData.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {
-			mAvatarView.setImageDrawable(null);
+			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
-			VolleyManager.getInstance(getContext()).getImageLoader().get(avatarUrl,
+			final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
+			loader.get(avatarUrl,
 					new ImageLoader.ImageListener() {
 						@Override
 						public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
@@ -122,13 +125,10 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 
 						@Override
 						public void onErrorResponse(VolleyError error) {
-							// Nothing for now
-							LogEx.d();
+							mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+									getResources(), R.drawable.default_user_avatar_mini));
 						}
 					});
 		}
-
-//		ImageLoader.ImageContainer container = VolleyManager.getInstance(getContext()).getImageLoader().get(mData.getOwnerAvatar(),
-// 				ImageLoader.getImageListener(mImageView, R.drawable.def_image, R.drawable.err_image));
 	}
 }

@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48"
-   height="48"
-   viewBox="0 0 48 48"
+   width="56"
+   height="56"
+   viewBox="0 0 56 56"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
@@ -45,7 +45,7 @@
      id="namedview8"
      showgrid="false"
      inkscape:zoom="4.9166667"
-     inkscape:cx="15.733118"
+     inkscape:cx="22.750067"
      inkscape:cy="24"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -53,18 +53,34 @@
      inkscape:current-layer="g3764" />
   <g
      id="g3764"
-     transform="matrix(1.2,0,0,1.2,-4.8,0)">
+     transform="matrix(1.2,0,0,1.2,-4.8,8)">
     <rect
-       y="0"
+       y="-6.6666665"
        x="4"
-       height="40"
-       width="40"
+       height="46.666668"
+       width="46.666668"
        id="rect2989"
-       style="fill:#b3b3b3;fill-opacity:1;stroke:none" />
+       style="fill:#b3b3b3;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/Users/sslater/Development/IdeaProjects/Citymaps/citymaps/src/main/res/drawable-xxxhdpi/default_user_avatar.png"
+       inkscape:export-xdpi="360"
+       inkscape:export-ydpi="360" />
+    <rect
+       style="fill:#b3b3b3;fill-opacity:1;stroke:none"
+       id="rect3003"
+       width="33.333332"
+       height="33.333332"
+       x="10.666667"
+       y="6.357829e-07"
+       inkscape:export-filename="/Users/sslater/Development/IdeaProjects/Citymaps/citymaps/src/main/res/drawable-xxxhdpi/default_user_avatar_mini.png"
+       inkscape:export-xdpi="360"
+       inkscape:export-ydpi="360" />
     <path
        style="fill:#ffffff;fill-opacity:1"
        id="path4"
-       d="m 24,24 c 4.42,0 8,-3.59 8,-8 0,-4.42 -3.58,-8 -8,-8 -4.42,0 -8,3.58 -8,8 0,4.41 3.58,8 8,8 z m 0,4 C 18.67,28 8,30.67 8,36 v 4 H 40 V 36 C 40,30.67 29.33,28 24,28 z"
-       inkscape:connector-curvature="0" />
+       d="M 27.333333,16.666667 C 29.635417,16.666667 31.5,14.796875 31.5,12.5 c 0,-2.302083 -1.864583,-4.1666668 -4.166667,-4.1666668 -2.302083,0 -4.166666,1.8645838 -4.166666,4.1666668 0,2.296875 1.864583,4.166667 4.166666,4.166667 z m 0,2.083333 C 24.557292,18.75 19,20.140625 19,22.916667 V 25 h 16.666667 v -2.083333 c 0,-2.776042 -5.557292,-4.166667 -8.333334,-4.166667 z"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/Users/sslater/Development/IdeaProjects/Citymaps/citymaps/src/main/res/drawable-xxxhdpi/default_user_avatar.png"
+       inkscape:export-xdpi="360"
+       inkscape:export-ydpi="360" />
   </g>
 </svg>

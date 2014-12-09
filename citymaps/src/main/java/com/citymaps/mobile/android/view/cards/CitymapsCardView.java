@@ -1,5 +1,8 @@
 package com.citymaps.mobile.android.view.cards;
 
+import android.animation.AnimatorInflater;
+import android.animation.StateListAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -44,6 +47,10 @@ public abstract class CitymapsCardView<D> extends CardView {
 		TypedArray a = context.obtainStyledAttributes(attrs);
 		Drawable selectableItemBackgroundBorderLess = a.getDrawable(0);
 		a.recycle();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			setStateListAnimator(AnimatorInflater.loadStateListAnimator(context, R.animator.elevation));
+		}
 
 		setForeground(selectableItemBackgroundBorderLess);
 		setClickable(true);
