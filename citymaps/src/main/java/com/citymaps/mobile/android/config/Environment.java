@@ -58,6 +58,7 @@ public abstract class Environment {
 		addServer(new Server(Server.Type.MAP_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.BUSINESS_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
 		addServer(new Server(Server.Type.REGION_TILE, "tilecache.citymaps.com", Server.Protocol.SECURE));
+		addServer(new Server(Server.Type.FOURSQUARE, "api.foursquare.com", Server.Protocol.SECURE));
 		mApi = onCreateApi();
 		if (mApi == null) {
 			throw new IllegalStateException("Descendants of Environment must create a valid Api");

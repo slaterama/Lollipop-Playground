@@ -44,6 +44,9 @@ android {
         buildConfigField "String", "FEEDBACK_SUBJECT_USER", "\"Feedback from user\""
         buildConfigField "String", "FEEDBACK_SUBJECT_VISITOR", "\"Feedback from visitor\""
         buildConfigField "String", "DEVELOPER_PASSWORD", "\"general!tso\""
+        buildConfigField "String", "FOURSQUARE_API_CLIENT_ID", "\"H1HBBZ12EDOMWS11CCAYM4TCLBMSXJINGNSHFJZ2JF5A1QHI\""
+        buildConfigField "String", "FOURSQUARE_API_CLIENT_SECRET", "\"22XOWY04G1GMDPS5P5G1EQR3CAI1FA0CUA1UBPBYKJQJZEWB\""
+        buildConfigField "String", "FOURSQUARE_VERSION", "\"20141209\""
     }
 
     signingConfigs {

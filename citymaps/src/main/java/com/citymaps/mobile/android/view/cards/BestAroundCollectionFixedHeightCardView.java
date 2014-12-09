@@ -76,5 +76,7 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 		// TODO TEMP
 		mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 				getResources(), R.drawable.default_fb_avatar));
+
+
 	}
 }

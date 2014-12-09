@@ -72,7 +72,8 @@ public class Server {
 		ASSETS,
 		MAP_TILE,
 		BUSINESS_TILE,
-		REGION_TILE
+		REGION_TILE,
+		FOURSQUARE
 	}
 
 	public static enum Protocol {
