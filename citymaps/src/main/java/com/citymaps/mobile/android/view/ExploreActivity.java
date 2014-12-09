@@ -191,16 +191,19 @@ public class ExploreActivity extends TrackedActionBarActivity
 			if (v == mRecyclerViews.get(RecyclerType.BEST_AROUND)) {
 				mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross);
 				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross);
-				int optimalHeight = BestAroundCollectionFixedHeightCardView.getDesiredHeight(this, mBestAroundDefaultCardWidth);
-				v.getLayoutParams().height = optimalHeight + v.getPaddingTop() + v.getPaddingBottom();
+				int desiredHeight = BestAroundCollectionFixedHeightCardView.getDesiredHeight(this, mBestAroundDefaultCardWidth);
+				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
 				v.setLayoutParams(v.getLayoutParams());
 			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_COLLECTIONS)) {
 				mFeaturedCollectionCardWidth= getCardWidth(v, mFeaturedCollectionsCardsAcross);
-				int optimalHeight = CollectionFixedHeightCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
-				v.getLayoutParams().height = optimalHeight + v.getPaddingTop() + v.getPaddingBottom();
+				int desiredHeight = CollectionFixedHeightCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
+				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
 				v.setLayoutParams(v.getLayoutParams());
 			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_MAPPERS)) {
 				mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross);
+				int desiredHeight = UserFixedHeightCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
+				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
+				v.setLayoutParams(v.getLayoutParams());
 			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_DEALS)) {
 				mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross);
 			}
@@ -335,7 +338,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			User user = mData.get(position);
 			UserFixedHeightCardView cardView = (UserFixedHeightCardView) holder.itemView;
-			cardView.getNameView().setText(user.getName());
+			cardView.setData(user);
+
 			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
 				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());

@@ -1,27 +1,19 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageRequest;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 import com.citymaps.mobile.android.util.DrawableUtils;
-import com.citymaps.mobile.android.util.LogEx;
-
-import java.net.HttpURLConnection;
 
 public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResultCollection> {
 
@@ -38,7 +30,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 	private TextView mNameView;
 	private TextView mDescriptionView;
 	private ImageView mAvatarView;
-	private TextView mAvatarUsernameView;
+	private TextView mUsernameView;
 
 	public CollectionFixedHeightCardView(Context context) {
 		super(context);
@@ -62,7 +54,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 		mNameView = (TextView) view.findViewById(R.id.card_name);
 		mDescriptionView = (TextView) view.findViewById(R.id.card_description);
 		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
-		mAvatarUsernameView = (TextView) view.findViewById(R.id.card_avatar_username);
+		mUsernameView = (TextView) view.findViewById(R.id.card_username);
 	}
 
 	@Override
@@ -95,8 +87,8 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 		return mAvatarView;
 	}
 
-	public TextView getAvatarUsernameView() {
-		return mAvatarUsernameView;
+	public TextView getUsernameView() {
+		return mUsernameView;
 	}
 
 	@Override
@@ -105,7 +97,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
 		mNameView.setText(data.getName());
 		mDescriptionView.setText(data.getDescription());
-		mAvatarUsernameView.setText(data.getOwnerUsername());
+		mUsernameView.setText(data.getOwnerUsername());
 
 		String avatarUrl = mData.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {

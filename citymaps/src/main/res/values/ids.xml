@@ -30,6 +30,9 @@
 	<item type="id" name="card_avatar" />
 
 	<!-- The username associated with an avatar in a card. Should be a TextView -->
-	<item type="id" name="card_avatar_username" />
+	<item type="id" name="card_username" />
+
+	<!-- The container holding the card's action(s) area. Should be a ViewGroup -->
+	<item type="id" name="card_action_container" />
 
 </resources>

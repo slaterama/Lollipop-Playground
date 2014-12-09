@@ -107,10 +107,22 @@ public class User extends CitymapsObservable {
 	private String mEmail;
 
 	/**
+	 * Whether this user is a Facebook friend of the current user (if a user is currently logged in).
+	 */
+	@SerializedName("is_facebook_friend")
+	private boolean mFacebookFriend;
+
+	/**
 	 * The user's first name.
 	 */
 	@SerializedName("first_name")
 	private String mFirstName;
+
+	/**
+	 * Whether or not this user is being followed by the current user (if a user is currently logged in).
+	 */
+	@SerializedName("is_followed)")
+	private boolean mFollowed;
 
 	/**
 	 * The total number of users that are following this user.
@@ -217,6 +229,12 @@ public class User extends CitymapsObservable {
 	private boolean mRolloutUser;
 
 	/**
+	 * The source of this user, when this user was returned as part of a search.
+	 */
+	@SerializedName("source_id")
+	private int mSourceId;
+
+	/**
 	 * The state in which this user is located.
 	 */
 	@SerializedName("state")
@@ -302,7 +320,7 @@ public class User extends CitymapsObservable {
 	}
 
 	/**
-	 * Returns this user's dipaly name.
+	 * Returns this user's display name.
 	 * @return The display name, optionally using a Context to resolve the full name format.
 	 */
 	public String getName(Context context) {
@@ -578,6 +596,23 @@ public class User extends CitymapsObservable {
 	}
 
 	/**
+	 * Gets whether this user is a Facebook friend of the current user,
+	 * or {@code false} if no user is currently logged in.
+	 * @return Whether this user is a Facebook friend.
+	 */
+	public boolean isFacebookFriend() {
+		return mFacebookFriend;
+	}
+
+	/**
+	 * Sets whether this user is a Facebook friend of the current user.
+	 * @param facebookFriend Whether this user is a Facebook friend.
+	 */
+	public void setFacebookFriend(boolean facebookFriend) {
+		mFacebookFriend = facebookFriend;
+	}
+
+	/**
 	 * Returns this user's first name.
 	 * @return The first name.
 	 */
@@ -591,6 +626,23 @@ public class User extends CitymapsObservable {
 	 */
 	public void setFirstName(String firstName) {
 		mFirstName = firstName;
+	}
+
+	/**
+	 * Gets whether this user is followed by the current user,
+	 * or {@code false} if no user is currently logged in.
+	 * @return Whether this user is followed by the current user.
+	 */
+	public boolean isFollowed() {
+		return mFollowed;
+	}
+
+	/**
+	 * Sets whether this user is followed by the current user.
+	 * @param followed Whether this user is followed by the current user.
+	 */
+	public void setFollowed(boolean followed) {
+		mFollowed = followed;
 	}
 
 	/**
@@ -837,6 +889,22 @@ public class User extends CitymapsObservable {
 	 */
 	public void setRolloutUser(boolean rolloutUser) {
 		mRolloutUser = rolloutUser;
+	}
+
+	/**
+	 * Gets the id of the source that returned this user, if this user was returned as part of a search.
+	 * @return The source ID.
+	 */
+	public int getSourceId() {
+		return mSourceId;
+	}
+
+	/**
+	 * Sets the id of the source that returned this user, if this user was returned as part of a search.
+	 * @param sourceId The source ID.
+	 */
+	public void setSourceId(int sourceId) {
+		mSourceId = sourceId;
 	}
 
 	/**
