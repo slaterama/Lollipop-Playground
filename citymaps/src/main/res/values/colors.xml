@@ -4,6 +4,8 @@
 	<color name="color_primary_dark">@color/material_light_blue_700</color>
 	<color name="color_accent">@color/material_pink_A200</color>
 
+	<color name="color_default_not_found_bacground">#A4A4A4</color>
+
 	<color name="color_button_normal">@color/material_light_blue_700</color>
 
 	<!-- Equivalent to @color/material_blue_grey_500 with 50% alpha -->

@@ -1,18 +1,29 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.animation.AnimatorInflater;
-import android.animation.StateListAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.util.DrawableUtils;
 
 public abstract class CitymapsCardView<D> extends CardView {
+
+	protected static Drawable mMiniAvatarNoImageDrawable;
+
+	protected static Drawable getMiniAvatarNoImageDrawable(Resources resources) {
+		if (mMiniAvatarNoImageDrawable == null) {
+			int size = resources.getDimensionPixelSize(R.dimen.mini_avatar_size);
+			Bitmap bitmap = DrawableUtils.createBitmapWithBackgroundColor(resources, resources.getColor(R.color.color_default_not_found_bacground), size, size, R.drawable.ic_no_image_white_24dp);
+			mMiniAvatarNoImageDrawable = DrawableUtils.createCircularBitmapDrawable(resources, bitmap);
+		}
+		return mMiniAvatarNoImageDrawable;
+	}
 
 	protected D mData;
 	protected int mBaseSize;

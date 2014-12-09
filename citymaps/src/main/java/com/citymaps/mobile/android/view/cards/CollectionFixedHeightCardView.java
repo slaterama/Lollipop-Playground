@@ -1,7 +1,10 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -125,8 +128,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 
 						@Override
 						public void onErrorResponse(VolleyError error) {
-							mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
-									getResources(), R.drawable.default_user_avatar_mini));
+							mAvatarView.setImageDrawable(getMiniAvatarNoImageDrawable(getResources()));
 						}
 					});
 		}
