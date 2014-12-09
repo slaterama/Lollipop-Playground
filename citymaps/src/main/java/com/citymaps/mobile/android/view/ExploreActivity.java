@@ -3,22 +3,15 @@ package com.citymaps.mobile.android.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.*;
-import android.widget.ImageView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -28,10 +21,14 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
 import com.citymaps.mobile.android.model.SearchResult;
 import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.model.SearchResultPlace;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.SearchResultsRequest;
 import com.citymaps.mobile.android.model.request.UsersRequest;
-import com.citymaps.mobile.android.util.*;
+import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.MapUtils;
+import com.citymaps.mobile.android.util.ResourcesUtils;
 import com.citymaps.mobile.android.view.cards.BestAroundCollectionFixedHeightCardView;
 import com.citymaps.mobile.android.view.cards.CollectionFixedHeightCardView;
 import com.citymaps.mobile.android.view.cards.DealFixedHeightCardView;
@@ -107,7 +104,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 			view.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
 			// TODO TEMP
-			view.getLayoutParams().height = (int) (resources.getDisplayMetrics().density * 225);
+			//view.getLayoutParams().height = (int) (resources.getDisplayMetrics().density * 225);
 
 			if (mUseCompatPadding) {
 				int paddingLeft = view.getPaddingLeft();
@@ -187,7 +184,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 	@Override
 	public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-		if (v.getWidth() > 0) {
+		if (right - left > 0) {
 			if (v == mRecyclerViews.get(RecyclerType.BEST_AROUND)) {
 				mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross);
 				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross);
@@ -201,11 +198,14 @@ public class ExploreActivity extends TrackedActionBarActivity
 				v.setLayoutParams(v.getLayoutParams());
 			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_MAPPERS)) {
 				mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross);
-				int desiredHeight = UserFixedHeightCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
+				int desiredHeight = UserFixedHeightCardView.getDesiredHeight(this, mFeaturedMapperCardWidth);
 				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
 				v.setLayoutParams(v.getLayoutParams());
 			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_DEALS)) {
 				mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross);
+				int desiredHeight = DealFixedHeightCardView.getDesiredHeight(this, mFeaturedDealCardWidth);
+				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
+				v.setLayoutParams(v.getLayoutParams());
 			}
 
 			// There should never be an instance where there are existing cards in the recycler views
@@ -366,9 +366,10 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-			SearchResult searchResult = mData.get(position);
+			SearchResultPlace searchResult = (SearchResultPlace) mData.get(position);
 			DealFixedHeightCardView cardView = (DealFixedHeightCardView) holder.itemView;
-			cardView.getNameView().setText(searchResult.getName());
+			cardView.setData(searchResult);
+
 			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
 				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());

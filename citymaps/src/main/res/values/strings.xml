@@ -64,11 +64,12 @@
 	<string name="card_follow_user">Follow %s</string>
 	<string name="card_unfollow_user">Unfollow %s</string>
 	<string name="card_created_by">Created by</string>
-	<string name="card_deal_by">Created by</string>
+	<string name="card_deal_by">Deal by</string>
 	<plurals name="card_followers">
 		<item quantity="one">%d follower</item>
 		<item quantity="other">%d followers</item>
 	</plurals>
+	<string name="card_currency_symbol">$</string>
 
 	<!--
 	================================================================================
