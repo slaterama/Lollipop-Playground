@@ -2,6 +2,11 @@
 //  with immutable parameters in Java (in this case, the application context) as described here:
 //  http://unafbapune.blogspot.com/2007/09/parametric-initialization-on-demand.html
 
+//  Note: Much of the logic/decisions here come from the following blog:
+//  http://blog.lemberg.co.uk/volley-part-1-quickstart
+//  http://blog.lemberg.co.uk/volley-part-2-application-model
+//  http://blog.lemberg.co.uk/volley-part-3-image-loader
+
 package com.citymaps.mobile.android.app;
 
 import android.content.Context;
