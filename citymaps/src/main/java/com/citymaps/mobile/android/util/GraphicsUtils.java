@@ -56,24 +56,17 @@ public class GraphicsUtils {
 	}
 
 	public static Bitmap createBlurredBitmap(Context context, Bitmap in, int width, int height) {
-		LogEx.d(String.format("in.width=%d, in.height=%d", in.getWidth(), in.getHeight()));
-
-		Bitmap extractedBitmap = ThumbnailUtils.extractThumbnail(in, width, height);
-
-
-		Bitmap out = Bitmap.createBitmap(extractedBitmap.getWidth(), extractedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+		Bitmap thumb = ThumbnailUtils.extractThumbnail(in, width, height);
+		Bitmap out = Bitmap.createBitmap(thumb.getWidth(), thumb.getHeight(), Bitmap.Config.ARGB_8888);
 		RenderScript rs = RenderScript.create(context.getApplicationContext());
 		ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-
-
-
-		Allocation allocationIn = Allocation.createFromBitmap(rs, extractedBitmap);
+		Allocation allocationIn = Allocation.createFromBitmap(rs, thumb);
 		Allocation allocationOut = Allocation.createFromBitmap(rs, out);
 		blurScript.setRadius(25.0f);
 		blurScript.setInput(allocationIn);
 		blurScript.forEach(allocationOut);
 		allocationOut.copyTo(out);
-		//in.recycle();
+		in.recycle();
 		rs.destroy();
 		return out;
 	}
