@@ -8,12 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.LogEx;
+
+import java.util.List;
 
 public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResultCollection> {
 
@@ -25,7 +31,6 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 	}
 
 	private ViewGroup mMainContainerView;
-	private ImageView mImageView;
 	private TextView mNumMarkersView;
 	private TextView mNameView;
 	private TextView mDescriptionView;
@@ -92,19 +97,51 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 	}
 
 	@Override
-	protected void onBindData(SearchResultCollection data) {
-		mImageView.setImageResource(R.drawable.forrest_point);
-		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
-		mNameView.setText(data.getName());
-		mDescriptionView.setText(data.getDescription());
-		mUsernameView.setText(data.getOwnerUsername());
+	protected void onBindData(final SearchResultCollection searchResult) {
+		mNumMarkersView.setText(String.valueOf(searchResult.getNumMarkers()));
+		mNameView.setText(searchResult.getName());
+		mDescriptionView.setText(searchResult.getDescription());
+		mUsernameView.setText(searchResult.getOwnerUsername());
 
-		String avatarUrl = mData.getOwnerAvatar();
+		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
+		final String coverImageUrl = searchResult.getCoverImageUrl();
+		if (TextUtils.isEmpty(coverImageUrl)) {
+			final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
+			if (TextUtils.isEmpty(foursquarePhotoUrl)) {
+				mImageView.setImageDrawable(null);
+
+				String foursquareId = searchResult.getFoursquareId();
+				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
+						new Response.Listener<List<FoursquarePhoto>>() {
+							@Override
+							public void onResponse(List<FoursquarePhoto> response) {
+								if (response != null && response.size() > 0) {
+									FoursquarePhoto photo = response.get(0);
+									String foursquarePhotoUtil = photo.getPhotoUrl();
+									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
+									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(mImageView));
+								}
+							}
+						},
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								LogEx.d();
+							}
+						});
+				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+			} else {
+				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(mImageView));
+			}
+		} else {
+			mImageContainer = loader.get(coverImageUrl, new CardImageListener(mImageView));
+		}
+
+		String avatarUrl = searchResult.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {
 			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
-			final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
 			loader.get(avatarUrl,
 					new ImageLoader.ImageListener() {
 						@Override

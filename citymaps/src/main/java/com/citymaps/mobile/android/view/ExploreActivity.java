@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
@@ -19,20 +20,14 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
-import com.citymaps.mobile.android.model.SearchResult;
-import com.citymaps.mobile.android.model.SearchResultCollection;
-import com.citymaps.mobile.android.model.SearchResultPlace;
-import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.*;
 import com.citymaps.mobile.android.model.request.SearchResultsRequest;
 import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.util.ResourcesUtils;
-import com.citymaps.mobile.android.view.cards.BestAroundCollectionFixedHeightCardView;
-import com.citymaps.mobile.android.view.cards.CollectionFixedHeightCardView;
-import com.citymaps.mobile.android.view.cards.DealFixedHeightCardView;
-import com.citymaps.mobile.android.view.cards.UserFixedHeightCardView;
+import com.citymaps.mobile.android.view.cards.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,7 +70,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_explore);
-		
+
 		mInflater = LayoutInflater.from(this);
 
 		// Get dimensions and other resources for recycler view card layout
@@ -192,7 +187,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
 				v.setLayoutParams(v.getLayoutParams());
 			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_COLLECTIONS)) {
-				mFeaturedCollectionCardWidth= getCardWidth(v, mFeaturedCollectionsCardsAcross);
+				mFeaturedCollectionCardWidth = getCardWidth(v, mFeaturedCollectionsCardsAcross);
 				int desiredHeight = CollectionFixedHeightCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
 				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
 				v.setLayoutParams(v.getLayoutParams());
@@ -265,7 +260,21 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			BestAroundCollectionFixedHeightCardView view = new BestAroundCollectionFixedHeightCardView(ExploreActivity.this);
+			CitymapsCardView view;
+			CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
+			switch (type) {
+				case PLACE: {
+					view = new BestAroundPlaceFixedHeightCardView(ExploreActivity.this);
+					break;
+				}
+				case COLLECTION: {
+					view = new BestAroundCollectionFixedHeightCardView(ExploreActivity.this);
+					break;
+				}
+				default:
+					throw new IllegalStateException("Only expecting places or collections in Best Around adapter");
+			}
+
 			view.setBaseSize(mBestAroundDefaultCardWidth);
 			int actualCardWidth = mBestAroundCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
@@ -275,14 +284,19 @@ public class ExploreActivity extends TrackedActionBarActivity
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			SearchResult searchResult = mData.get(position);
-			BestAroundCollectionFixedHeightCardView cardView = (BestAroundCollectionFixedHeightCardView) holder.itemView;
-			cardView.setData(searchResult);
 
-			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
-				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
+			if (holder.itemView instanceof BestAroundPlaceFixedHeightCardView) {
+				((BestAroundPlaceFixedHeightCardView) holder.itemView).setData((SearchResultPlace) searchResult);
+			} else if (holder.itemView instanceof BestAroundCollectionFixedHeightCardView) {
+				((BestAroundCollectionFixedHeightCardView) holder.itemView).setData((SearchResultCollection) searchResult);
+			}
+
+			if (holder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
+				int margin = (int) (mCardPerceivedMargin -
+						2 * (holder.itemView instanceof CardView ? ((CardView) holder.itemView).getMaxCardElevation() : 0));
 				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
-				cardView.setLayoutParams(mlp);
+				holder.itemView.setLayoutParams(mlp);
 			}
 		}
 	}
@@ -299,7 +313,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 			View view = new CollectionFixedHeightCardView(ExploreActivity.this);
 			int actualCardWidth = mFeaturedCollectionCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {};
+			return new ViewHolder(view) {
+			};
 		}
 
 		@Override
@@ -331,7 +346,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 			View view = new UserFixedHeightCardView(ExploreActivity.this);
 			int actualCardWidth = mFeaturedMapperCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {};
+			return new ViewHolder(view) {
+			};
 		}
 
 		@Override
@@ -361,7 +377,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 			View view = new DealFixedHeightCardView(ExploreActivity.this);
 			int actualCardWidth = mFeaturedDealCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {};
+			return new ViewHolder(view) {
+			};
 		}
 
 		@Override

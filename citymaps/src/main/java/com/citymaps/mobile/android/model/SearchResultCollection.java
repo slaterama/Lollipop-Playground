@@ -39,6 +39,8 @@ public class SearchResultCollection extends SearchResult {
 	@SerializedName(FOURSQUARE_ID)
 	private String mFoursquareId;
 
+	private String mFoursquarePhotoUrl;
+
 	@SerializedName(IS_SAVED)
 	private boolean mSaved;
 
@@ -130,6 +132,14 @@ public class SearchResultCollection extends SearchResult {
 		mFoursquareId = foursquareId;
 		setChanged();
 		notifyObservers(FOURSQUARE_ID);
+	}
+
+	public String getFoursquarePhotoUrl() {
+		return mFoursquarePhotoUrl;
+	}
+
+	public void setFoursquarePhotoUrl(String foursquarePhotoUrl) {
+		mFoursquarePhotoUrl = foursquarePhotoUrl;
 	}
 
 	public boolean isSaved() {

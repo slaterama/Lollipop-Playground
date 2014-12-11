@@ -2,12 +2,17 @@ package com.citymaps.mobile.android.model.request;
 
 import android.content.Context;
 import android.net.Uri;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.config.Endpoint;
 import com.citymaps.mobile.android.config.Environment;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -20,8 +25,7 @@ public class FoursquarePhotosRequest extends GsonRequest<List<FoursquarePhoto>> 
 	protected static final String OFFSET = "offset";
 	protected static final String LIMIT = "limit";
 
-	public static final Type TYPE = new TypeToken<List<FoursquarePhoto>>() {
-	}.getType();
+	public static final Type TYPE = new TypeToken<List<FoursquarePhoto>>() {}.getType();
 
 	protected static FoursquarePhotosRequest getFoursquarePhotosRequest(Context context, String foursquareId, boolean includeLimit, int limit,
 																		boolean includeOffset, int offset, Group group,
@@ -62,8 +66,55 @@ public class FoursquarePhotosRequest extends GsonRequest<List<FoursquarePhoto>> 
 		super(method, url, TYPE, headers, params, listener, errorListener);
 	}
 
+	@Override
+	protected Response<List<FoursquarePhoto>> processParsedNetworkResponse(NetworkResponse response, JsonObject jsonObject) {
+		try {
+			PhotosWrapper result = getGson().fromJson(jsonObject, PhotosWrapper.class);
+			List<FoursquarePhoto> items = result.mResponse.mPhotos.mItems;
+			return Response.success(items, HttpHeaderParser.parseCacheHeaders(response));
+		} catch (NullPointerException e) {
+			return Response.error(new VolleyError(response));
+		}
+	}
+
 	public static class PhotosWrapper {
-		// TODO
+		public static final String META = "meta";
+		public static final String RESPONSE = "response";
+
+		@SerializedName(META)
+		private Meta mMeta;
+
+		@SerializedName(RESPONSE)
+		private Response mResponse;
+
+		public static class Meta {
+			public static final String CODE = "code";
+
+			@SerializedName(CODE)
+			private int mCode;
+		}
+
+		public static class Response {
+			public static final String PHOTOS = "photos";
+
+			@SerializedName(PHOTOS)
+			private Photos mPhotos;
+
+			public static class Photos {
+				public static final String COUNT = "count";
+				public static final String ITEMS = "items";
+				public static final String DUPES_REMOVED = "dupesRemoved";
+
+				@SerializedName(COUNT)
+				private int mCount;
+
+				@SerializedName(ITEMS)
+				private List<FoursquarePhoto> mItems;
+
+				@SerializedName(DUPES_REMOVED)
+				private int mDupesRemoved;
+			}
+		}
 	}
 
 	public static enum Group {

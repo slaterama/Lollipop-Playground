@@ -13,14 +13,14 @@ import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
-import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.model.SearchResultPlace;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.DrawableUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
 
-public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<SearchResultCollection> {
+public class BestAroundPlaceFixedHeightCardView extends CitymapsCardView<SearchResultPlace> {
 
 	public static int getDesiredHeight(Context context, int size) {
 		BestAroundCollectionFixedHeightCardView cardView = new BestAroundCollectionFixedHeightCardView(context);
@@ -33,15 +33,15 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 	private TextView mNameView;
 	private ImageView mAvatarView;
 
-	public BestAroundCollectionFixedHeightCardView(Context context) {
+	public BestAroundPlaceFixedHeightCardView(Context context) {
 		super(context);
 	}
 
-	public BestAroundCollectionFixedHeightCardView(Context context, AttributeSet attrs) {
+	public BestAroundPlaceFixedHeightCardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public BestAroundCollectionFixedHeightCardView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public BestAroundPlaceFixedHeightCardView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 	}
 
@@ -78,7 +78,7 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 	}
 
 	@Override
-	protected void onBindData(final SearchResultCollection searchResult) {
+	protected void onBindData(final SearchResultPlace searchResult) {
 		mNameView.setText(searchResult.getName());
 
 		// TODO TEMP
@@ -86,37 +86,32 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 				getResources(), R.drawable.default_fb_avatar));
 
 		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
-		final String coverImageUrl = searchResult.getCoverImageUrl();
-		if (TextUtils.isEmpty(coverImageUrl)) {
-			final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
-			if (TextUtils.isEmpty(foursquarePhotoUrl)) {
-				mImageView.setImageDrawable(null);
+		final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
+		if (TextUtils.isEmpty(foursquarePhotoUrl)) {
+			mImageView.setImageDrawable(null);
 
-				String foursquareId = searchResult.getFoursquareId();
-				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
-						new Response.Listener<List<FoursquarePhoto>>() {
-							@Override
-							public void onResponse(List<FoursquarePhoto> response) {
-								if (response != null && response.size() > 0) {
-									FoursquarePhoto photo = response.get(0);
-									String foursquarePhotoUtil = photo.getPhotoUrl();
-									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(mImageView));
-								}
+			String foursquareId = searchResult.getFoursquareId();
+			FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
+					new Response.Listener<List<FoursquarePhoto>>() {
+						@Override
+						public void onResponse(List<FoursquarePhoto> response) {
+							if (response != null && response.size() > 0) {
+								FoursquarePhoto photo = response.get(0);
+								String foursquarePhotoUrl = photo.getPhotoUrl();
+								searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
+								mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(mImageView));
 							}
-						},
-						new Response.ErrorListener() {
-							@Override
-							public void onErrorResponse(VolleyError error) {
-								LogEx.d();
-							}
-						});
-				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
-			} else {
-				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(mImageView));
-			}
+						}
+					},
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							LogEx.d();
+						}
+					});
+			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
-			mImageContainer = loader.get(coverImageUrl, new CardImageListener(mImageView));
+			mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(mImageView));
 		}
 	}
 }

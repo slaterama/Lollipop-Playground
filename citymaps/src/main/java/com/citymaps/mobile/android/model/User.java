@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A user of the Citymaps application.
@@ -208,7 +210,7 @@ public class User extends CitymapsObservable {
 	 * {@link #mPostcardUrl} does not contain a value.
 	 */
 	@SerializedName("postcard_template")
-	private String mPostcardTemplate;
+	private PostcardTemplate mPostcardTemplate;
 
 	/**
 	 * The URL of the image to display as the default header background for this user.
@@ -830,7 +832,7 @@ public class User extends CitymapsObservable {
 	 * {@link #mPostcardUrl} does not contain a value.
 	 * @return The postcard template.
 	 */
-	public String getPostcardTemplate() {
+	public PostcardTemplate getPostcardTemplate() {
 		return mPostcardTemplate;
 	}
 
@@ -839,7 +841,7 @@ public class User extends CitymapsObservable {
 	 * {@link #mPostcardUrl} does not contain a value.
 	 * @param template The new postcard template.
 	 */
-	public void setPostcardTemplate(String template) {
+	public void setPostcardTemplate(PostcardTemplate template) {
 		mPostcardTemplate = template;
 	}
 
@@ -1182,6 +1184,90 @@ public class User extends CitymapsObservable {
 
 		public int getIntValue() {
 			return mIntValue;
+		}
+	}
+
+	public static enum PostcardTemplate {
+		@SerializedName("Default")
+		DEFAULT("Default", R.drawable.pc_01_berry),
+
+		@SerializedName("Cloud")
+		CLOUD ("Cloud", R.drawable.pc_02_cloud),
+
+		@SerializedName("Glass")
+		GLASS("Glass", R.drawable.pc_03_glass),
+
+		@SerializedName("Sky")
+		SKY("Sky", R.drawable.pc_04_sky),
+
+		@SerializedName("Sea")
+		SEA("Sea", R.drawable.pc_05_sea),
+
+		@SerializedName("Rust")
+		RUST("Rust", R.drawable.pc_06_rust),
+
+		@SerializedName("Slate")
+		SLATE("Slate", R.drawable.pc_07_slate),
+
+		@SerializedName("Madison Avenue")
+		MADISON_AVENUE("Madison Avenue", R.drawable.pc_01_madison),
+
+		@SerializedName("Dumbo")
+		DUMBO("Dumbo", R.drawable.pc_02_dumbo),
+
+		@SerializedName("Roller Coaster")
+		ROLLER_COASTER("Roller Coaster", R.drawable.pc_03_santacruz_coaster),
+
+		@SerializedName("Desert Road")
+		DESERT("Desert Road", R.drawable.pc_04_desert),
+
+		@SerializedName("Mountain Ave")
+		MOUNTAIN_AVE("Mountain Ave", R.drawable.pc_05_mountain_ave),
+
+		@SerializedName("Empire")
+		EMPIRE("Empire", R.drawable.pc_06_empire),
+
+		@SerializedName("Jersey Shore")
+		JERSEY_SHORE("Jersey Shore", R.drawable.pc_07_jerseyshore),
+
+		@SerializedName("Flower")
+		FLOWER("Flower", R.drawable.pc_08_flower),
+
+		@SerializedName("Skyline")
+		SKYLINE("Skyline", R.drawable.pc_09_skyline);
+
+		private static Map<String, PostcardTemplate> mNameMap;
+
+		public static PostcardTemplate fromName(String name) {
+			if (mNameMap == null) {
+				PostcardTemplate[] templates = values();
+				mNameMap = new HashMap<String, PostcardTemplate>(templates.length);
+				for (PostcardTemplate template : templates) {
+					mNameMap.put(template.mName, template);
+				}
+			}
+			return mNameMap.get(name);
+		}
+
+		private String mName;
+		private int mResId;
+
+		private PostcardTemplate(String name, int resId) {
+			mName = name;
+			mResId = resId;
+		}
+
+		public String getName() {
+			return mName;
+		}
+
+		public int getResId() {
+			return mResId;
+		}
+
+		@Override
+		public String toString() {
+			return mName;
 		}
 	}
 }

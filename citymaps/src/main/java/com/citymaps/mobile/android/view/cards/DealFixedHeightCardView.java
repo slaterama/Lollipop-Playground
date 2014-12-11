@@ -1,15 +1,25 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.Deal;
+import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultPlace;
+import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.LogEx;
+
+import java.util.List;
 
 public class DealFixedHeightCardView extends CitymapsCardView<SearchResultPlace> {
 
@@ -21,7 +31,6 @@ public class DealFixedHeightCardView extends CitymapsCardView<SearchResultPlace>
 	}
 
 	private ViewGroup mMainContainerView;
-	private ImageView mImageView;
 	private TextView mNameView;
 //	private TextView mDescriptionView;
 	private ImageView mAvatarView;
@@ -84,16 +93,49 @@ public class DealFixedHeightCardView extends CitymapsCardView<SearchResultPlace>
 	}
 
 	@Override
-	protected void onBindData(SearchResultPlace data) {
-		mImageView.setImageResource(R.drawable.forrest_point);
-		mUsernameView.setText(data.getName());
+	protected void onBindData(final SearchResultPlace searchResult) {
+		mUsernameView.setText(searchResult.getName());
 
-		Deal[] deals = data.getDeals();
-		if (deals != null && deals.length > 0) {
-			Deal deal = deals[0];
-			mNameView.setText(deal.getLabel());
+		Deal[] deals = searchResult.getDeals();
+		if (deals == null || deals.length < 1) {
+			return;
+		}
+
+		Deal deal = deals[0];
+		mNameView.setText(deal.getLabel());
+
+		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
+		final String imageUrl = deal.getThumbnailImage(Deal.GrouponThumbnailSize.XLARGE);
+		if (TextUtils.isEmpty(imageUrl)) {
+			final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
+			if (TextUtils.isEmpty(foursquarePhotoUrl)) {
+				mImageView.setImageDrawable(null);
+
+				String foursquareId = searchResult.getFoursquareId();
+				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
+						new Response.Listener<List<FoursquarePhoto>>() {
+							@Override
+							public void onResponse(List<FoursquarePhoto> response) {
+								if (response != null && response.size() > 0) {
+									FoursquarePhoto photo = response.get(0);
+									String foursquarePhotoUtil = photo.getPhotoUrl();
+									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
+									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(mImageView));
+								}
+							}
+						},
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								LogEx.d();
+							}
+						});
+				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+			} else {
+				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(mImageView));
+			}
 		} else {
-			mNameView.setText("");
+			mImageContainer = loader.get(imageUrl, new CardImageListener(mImageView));
 		}
 
 		// TODO TEMP
@@ -101,7 +143,7 @@ public class DealFixedHeightCardView extends CitymapsCardView<SearchResultPlace>
 				getResources(), R.drawable.default_fb_avatar));
 
 		/*
-		String avatarUrl = mData.getOwnerAvatar();
+		String avatarUrl = searchResult.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {
 			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));

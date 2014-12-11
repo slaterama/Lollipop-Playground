@@ -80,6 +80,8 @@ public class SearchResultPlace extends SearchResult {
 	@SerializedName(FOURSQUARE_ID)
 	private String mFoursquareId;
 
+	private String mFoursquarePhotoUrl;
+
 	@SerializedName(LAT)
 	private double mLat;
 
@@ -272,6 +274,14 @@ public class SearchResultPlace extends SearchResult {
 		mFoursquareId = foursquareId;
 		setChanged();
 		notifyObservers(FOURSQUARE_ID);
+	}
+
+	public String getFoursquarePhotoUrl() {
+		return mFoursquarePhotoUrl;
+	}
+
+	public void setFoursquarePhotoUrl(String foursquarePhotoUrl) {
+		mFoursquarePhotoUrl = foursquarePhotoUrl;
 	}
 
 	public void setLat(double lat) {

@@ -9,13 +9,13 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 import com.citymaps.mobile.android.R;
 
 /**
  * TODO: document your custom view class.
  */
-public class RatioFrameLayout extends ImageView {
+public class RatioFrameLayout extends FrameLayout {
 
 	private float mRatio;
 

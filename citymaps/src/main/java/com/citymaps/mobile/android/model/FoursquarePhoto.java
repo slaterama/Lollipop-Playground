@@ -53,6 +53,14 @@ public class FoursquarePhoto {
 		return mSource;
 	}
 
+	public String getPhotoUrl(int width, int height) {
+		return String.format("%s%dx%d%s", mPrefix, width, height, mSuffix);
+	}
+
+	public String getPhotoUrl() {
+		return getPhotoUrl(mWidth, mHeight);
+	}
+
 	public String getPrefix() {
 		return mPrefix;
 	}

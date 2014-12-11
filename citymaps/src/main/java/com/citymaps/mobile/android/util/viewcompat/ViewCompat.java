@@ -7,8 +7,6 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewParent;
 
-import java.lang.reflect.Field;
-
 /**
  * Class that allows for determining whether a view is attached to a window in pre-KitKat builds.
  * Though logic is accessed via static methods, this singleton implements the "Initialization-on-demand holder idiom"

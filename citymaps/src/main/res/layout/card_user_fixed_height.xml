@@ -20,6 +20,34 @@
 			android:showDividers="middle"
 			android:divider="@drawable/divider_horizontal_grey_1px">
 
+		<FrameLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@color/default_image_background">
+
+			<com.citymaps.mobile.android.widget.RatioImageView
+					android:id="@id/card_image"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:scaleType="centerCrop"
+					citymaps:ratio="1.0"
+					android:contentDescription="@null"
+					android:visibility="invisible"/>
+
+			<ImageView
+					android:id="@id/card_avatar"
+					android:layout_width="@dimen/avatar_size"
+					android:layout_height="@dimen/avatar_size"
+					android:layout_gravity="center"
+					android:padding="2dp"
+					android:scaleType="centerCrop"
+					tools:src="@drawable/default_fb_avatar"
+					android:contentDescription="@null"
+					android:background="@drawable/avatar_border_round_white_2dp" />
+
+		</FrameLayout>
+
+		<!--
 		<RelativeLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
@@ -33,7 +61,7 @@
 					citymaps:ratio="1.0"
 					tools:src="@drawable/forrest_point" />
 
-			<ImageButton
+			<ImageView
 					android:id="@id/card_avatar"
 					android:layout_width="@dimen/avatar_size"
 					android:layout_height="@dimen/avatar_size"
@@ -45,6 +73,7 @@
 					android:background="@drawable/avatar_border_round_white_2dp" />
 
 		</RelativeLayout>
+		-->
 
 		<FrameLayout
 				android:layout_width="match_parent"

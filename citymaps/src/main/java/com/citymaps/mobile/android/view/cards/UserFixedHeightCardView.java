@@ -26,7 +26,6 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 	}
 
 	private ViewGroup mMainContainerView;
-	private ImageView mImageView;
 	private ImageView mAvatarView;
 	private TextView mNameView;
 	private TextView mUsernameView;
@@ -103,12 +102,23 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 		boolean followed = user.isFollowed();
 		mFollowButton.setText(getResources().getString(followed ? R.string.card_unfollow_user : R.string.card_follow_user, username));
 
+		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
+		String postcardUrl = user.getPostcardUrl();
+		if (TextUtils.isEmpty(postcardUrl)) {
+			User.PostcardTemplate postcardTemplate = user.getPostcardTemplate();
+			if (postcardTemplate == null) {
+				postcardTemplate = User.PostcardTemplate.DEFAULT;
+			}
+			mImageView.setImageResource(postcardTemplate.getResId());
+		} else {
+			mImageContainer = loader.get(postcardUrl, new CardImageListener(mImageView));
+		}
+
 		String avatarUrl = user.getAvatarUrl();
 		if (TextUtils.isEmpty(avatarUrl)) {
 			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
-			final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
 			loader.get(avatarUrl,
 					new ImageLoader.ImageListener() {
 						@Override

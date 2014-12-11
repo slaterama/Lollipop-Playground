@@ -15,6 +15,10 @@ public class Deal extends Observable {
 	private static final String START_TIME = "start_time";
 	private static final String THUMBNAIL_IMAGE = "thumbnail_image";
 
+	private static final String GROUPON_REGEX = "^http[s]?:\\/\\/img\\.grouponcdn\\.com\\/.*t\\d+x\\d+\\.jpg$";
+	private static final String GROUPON_REMOVE_THUMBNAIL_REGEX = "\\/v1\\/t\\d+x\\d+\\.jpg$";
+	private static final String GROUPON_REPLACE_THUMBNAIL_SIZE_REGEX = "t\\d+x\\d+";
+
 	@SerializedName(DEAL_ID)
 	private String mId;
 
@@ -79,6 +83,16 @@ public class Deal extends Observable {
 		notifyObservers(FULFILLMENT_URL);
 	}
 
+	public String getImageUrl() {
+		final String imageUrl;
+		if (mThumbnailImage.matches(GROUPON_REGEX)) {
+			imageUrl = mThumbnailImage.replaceAll(GROUPON_REMOVE_THUMBNAIL_REGEX, "");
+		} else {
+			imageUrl = mThumbnailImage;
+		}
+		return imageUrl;
+	}
+
 	public String getLabel() {
 		return mLabel;
 	}
@@ -113,9 +127,33 @@ public class Deal extends Observable {
 		return mThumbnailImage;
 	}
 
+	public String getThumbnailImage(GrouponThumbnailSize size) {
+		if (size != null && mThumbnailImage.matches(GROUPON_REGEX)) {
+			return mThumbnailImage.replaceAll(GROUPON_REPLACE_THUMBNAIL_SIZE_REGEX, String.format("c%dx%d", size.mSize, size.mSize));
+		}
+		return mThumbnailImage;
+	}
+
 	public void setThumbnailImage(String thumbnailImage) {
 		mThumbnailImage = thumbnailImage;
 		setChanged();
 		notifyObservers(THUMBNAIL_IMAGE);
+	}
+
+	public static enum GrouponThumbnailSize {
+		SMALL(50),
+		NORMAL(100),
+		LARGE(200),
+		XLARGE(300);
+
+		private int mSize;
+
+		private GrouponThumbnailSize(int size) {
+			mSize = size;
+		}
+
+		public int getSize() {
+			return mSize;
+		}
 	}
 }
