@@ -119,7 +119,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 									FoursquarePhoto photo = response.get(0);
 									String foursquarePhotoUtil = photo.getPhotoUrl();
 									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(mImageView));
+									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(getContext(), mImageView));
 								}
 							}
 						},
@@ -131,10 +131,10 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 						});
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			} else {
-				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(mImageView));
+				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(getContext(), mImageView));
 			}
 		} else {
-			mImageContainer = loader.get(coverImageUrl, new CardImageListener(mImageView));
+			mImageContainer = loader.get(coverImageUrl, new CardImageListener(getContext(), mImageView));
 		}
 
 		String avatarUrl = searchResult.getOwnerAvatar();

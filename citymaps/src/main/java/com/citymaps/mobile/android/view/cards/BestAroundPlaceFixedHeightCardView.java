@@ -99,7 +99,7 @@ public class BestAroundPlaceFixedHeightCardView extends CitymapsCardView<SearchR
 								FoursquarePhoto photo = response.get(0);
 								String foursquarePhotoUrl = photo.getPhotoUrl();
 								searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-								mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(mImageView));
+								mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(getContext(), mImageView));
 							}
 						}
 					},
@@ -111,7 +111,7 @@ public class BestAroundPlaceFixedHeightCardView extends CitymapsCardView<SearchR
 					});
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
-			mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(mImageView));
+			mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(getContext(), mImageView));
 		}
 	}
 }

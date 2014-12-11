@@ -12,12 +12,14 @@ import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.LogEx;
 
 public abstract class CitymapsCardView<D> extends CardView {
 
@@ -95,57 +97,113 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	protected abstract void onBindData(D data);
 
-	protected class CardImageListener implements ImageLoader.ImageListener {
+	protected static class CardImageListener implements ImageLoader.ImageListener,
+			Animation.AnimationListener {
+		protected Context mContext;
 		protected ImageView mImageView;
+		protected Animation mAnimation;
+		protected ImageState mImageState;
 
-		public CardImageListener(ImageView imageView) {
+		public CardImageListener(Context context, ImageView imageView) {
 			super();
+			if (imageView == null) {
+				throw new NullPointerException("imageView can not be null");
+			}
+			mContext = context;
 			mImageView = imageView;
 			mImageView.clearAnimation();
-			onNoImage();
+			mAnimation = AnimationUtils.loadAnimation(context, R.anim.grow_fade_in_center);
+			mAnimation.setAnimationListener(this);
+			clearImage();
 		}
 
 		@Override
 		public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-			if (mImageView != null && response.getBitmap() != null) {
-				mImageView.setImageBitmap(response.getBitmap());
-				if (!isImmediate) {
-					mImageView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.grow_fade_in_center));
-				}
-				mImageView.setVisibility(View.VISIBLE);
+			Bitmap bitmap = response.getBitmap();
+			if (bitmap == null) {
+				// Bitmap needs to be loaded
+				setImageState(ImageState.LOADING);
+			} else {
+				setImage(bitmap, !isImmediate);
 			}
 		}
 
 		@Override
 		public void onErrorResponse(VolleyError error) {
-			onNoImage();
-		}
-
-		public void onNoImage() {
-			if (mImageView != null) {
-				mImageView.setVisibility(View.INVISIBLE);
-				mImageView.setImageDrawable(null);
-			}
-		}
-	}
-
-	protected class GradientCardImageListener extends CardImageListener {
-		public GradientCardImageListener(ImageView imageView) {
-			super(imageView);
+			clearImage();
 		}
 
 		@Override
-		public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-			if (mImageView != null && response.getBitmap() != null) {
-				Drawable[] layers = new Drawable[2];
-				layers[0] = new BitmapDrawable(getResources(), response.getBitmap());
-				layers[1] = getResources().getDrawable(R.drawable.card_image_gradient);
-				LayerDrawable drawable = new LayerDrawable(layers);
-				mImageView.setImageDrawable(drawable);
-				if (!isImmediate) {
-					mImageView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.grow_fade_in_center));
-				}
-				mImageView.setVisibility(View.VISIBLE);
+		public void onAnimationStart(Animation animation) {
+			setImageState(ImageState.ANIMATING);
+		}
+
+		@Override
+		public void onAnimationEnd(Animation animation) {
+			setImageState(ImageState.FINISHED);
+		}
+
+		@Override
+		public void onAnimationRepeat(Animation animation) {
+
+		}
+
+		public void setImage(Bitmap bitmap, boolean animate) {
+			mImageView.setImageBitmap(bitmap);
+			mImageView.setVisibility(View.VISIBLE);
+			if (animate) {
+				mImageView.startAnimation(mAnimation);
+			} else {
+				setImageState(ImageState.FINISHED);
+			}
+		}
+
+		public void clearImage() {
+			setImageState(ImageState.PENDING);
+			mImageView.setVisibility(View.INVISIBLE);
+			mImageView.setImageDrawable(null);
+		}
+
+		public ImageState getImageState() {
+			return mImageState;
+		}
+
+		public void setImageState(ImageState state) {
+			if (state != mImageState) {
+				mImageState = state;
+				onImageStateChange(state);
+			}
+		}
+
+		public void onImageStateChange(ImageState state) {
+
+		}
+
+		protected static enum ImageState {
+			PENDING,
+			LOADING,
+			LOADED,
+			ANIMATING,
+			FINISHED
+		}
+	}
+
+	protected static class GradientCardImageListener extends CardImageListener {
+		public GradientCardImageListener(Context context, ImageView imageView) {
+			super(context, imageView);
+		}
+
+		@Override
+		public void setImage(Bitmap bitmap, boolean animate) {
+			Resources resources = mContext.getResources();
+			Drawable[] layers = new Drawable[2];
+			layers[0] = new BitmapDrawable(resources, bitmap);
+			layers[1] = resources.getDrawable(R.drawable.card_image_gradient);
+			LayerDrawable drawable = new LayerDrawable(layers);
+			mImageView.setImageDrawable(drawable);
+			mImageView.setVisibility(View.VISIBLE);
+			if (animate) {
+				mImageView.startAnimation(mAnimation);
 			}
 		}
 	}
