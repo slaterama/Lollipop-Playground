@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.util;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,8 +9,12 @@ import android.graphics.Paint;
 import android.media.ThumbnailUtils;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v8.renderscript.Allocation;
+import android.support.v8.renderscript.Element;
+import android.support.v8.renderscript.RenderScript;
+import android.support.v8.renderscript.ScriptIntrinsicBlur;
 
-public class DrawableUtils {
+public class GraphicsUtils {
 
 	public static RoundedBitmapDrawable createCircularBitmapDrawable(Resources resources, Bitmap bitmap, int size) {
 		RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources,
@@ -50,6 +55,29 @@ public class DrawableUtils {
 		return bitmap;
 	}
 
-	private DrawableUtils() {
+	public static Bitmap createBlurredBitmap(Context context, Bitmap in, int width, int height) {
+		LogEx.d(String.format("in.width=%d, in.height=%d", in.getWidth(), in.getHeight()));
+
+		Bitmap extractedBitmap = ThumbnailUtils.extractThumbnail(in, width, height);
+
+
+		Bitmap out = Bitmap.createBitmap(extractedBitmap.getWidth(), extractedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+		RenderScript rs = RenderScript.create(context.getApplicationContext());
+		ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+
+
+
+		Allocation allocationIn = Allocation.createFromBitmap(rs, extractedBitmap);
+		Allocation allocationOut = Allocation.createFromBitmap(rs, out);
+		blurScript.setRadius(25.0f);
+		blurScript.setInput(allocationIn);
+		blurScript.forEach(allocationOut);
+		allocationOut.copyTo(out);
+		//in.recycle();
+		rs.destroy();
+		return out;
+	}
+
+	private GraphicsUtils() {
 	}
 }

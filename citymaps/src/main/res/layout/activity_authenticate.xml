@@ -91,9 +91,8 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
-				android:showDividers="beginning|middle|end"
-				android:divider="@drawable/divider_padding_default"
-				android:layoutDirection="locale">
+				android:layoutDirection="locale"
+				tools:ignore="UnusedAttribute">
 
 			<TextView
 					android:layout_width="wrap_content"
@@ -106,10 +105,6 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:minWidth="0dp"
-					android:paddingLeft="@dimen/component_baseline_grid"
-					android:paddingStart="@dimen/component_baseline_grid"
-					android:paddingRight="@dimen/component_baseline_grid"
-					android:paddingEnd="@dimen/component_baseline_grid"
 					android:textStyle="bold"
 					android:text="@string/signin_authenticate_signin"
 					style="?android:borderlessButtonStyle"
@@ -127,10 +122,6 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:minWidth="0dp"
-					android:paddingLeft="@dimen/component_baseline_grid"
-					android:paddingStart="@dimen/component_baseline_grid"
-					android:paddingRight="@dimen/component_baseline_grid"
-					android:paddingEnd="@dimen/component_baseline_grid"
 					android:text="@string/signin_authenticate_skip"
 					style="?android:borderlessButtonStyle"
 					android:onClick="onButtonClick"/>

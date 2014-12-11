@@ -15,7 +15,7 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
-import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
@@ -82,7 +82,7 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 		mNameView.setText(searchResult.getName());
 
 		// TODO TEMP
-		mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+		mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 				getResources(), R.drawable.default_fb_avatar));
 
 		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
@@ -101,7 +101,8 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 									FoursquarePhoto photo = response.get(0);
 									String foursquarePhotoUtil = photo.getPhotoUrl();
 									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(getContext(), mImageView));
+									mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUtil,
+											new CardImageListener(getContext()).setView(mImageView)));
 								}
 							}
 						},
@@ -113,10 +114,12 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 						});
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			} else {
-				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(getContext(), mImageView));
+				mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUrl,
+						new CardImageListener(getContext()).setView(mImageView)));
 			}
 		} else {
-			mImageContainer = loader.get(coverImageUrl, new CardImageListener(getContext(), mImageView));
+			mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(coverImageUrl,
+					new CardImageListener(getContext()).setView(mImageView)));
 		}
 	}
 }

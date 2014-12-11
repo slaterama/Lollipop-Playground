@@ -15,7 +15,7 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultPlace;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
-import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
@@ -82,7 +82,7 @@ public class BestAroundPlaceFixedHeightCardView extends CitymapsCardView<SearchR
 		mNameView.setText(searchResult.getName());
 
 		// TODO TEMP
-		mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+		mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 				getResources(), R.drawable.default_fb_avatar));
 
 		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
@@ -99,7 +99,8 @@ public class BestAroundPlaceFixedHeightCardView extends CitymapsCardView<SearchR
 								FoursquarePhoto photo = response.get(0);
 								String foursquarePhotoUrl = photo.getPhotoUrl();
 								searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-								mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(getContext(), mImageView));
+								mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUrl,
+										new GradientCardImageListener(getContext()).setView(mImageView)));
 							}
 						}
 					},
@@ -111,7 +112,8 @@ public class BestAroundPlaceFixedHeightCardView extends CitymapsCardView<SearchR
 					});
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
-			mImageContainer = loader.get(foursquarePhotoUrl, new GradientCardImageListener(getContext(), mImageView));
+			mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUrl,
+					new GradientCardImageListener(getContext()).setView(mImageView)));
 		}
 	}
 }

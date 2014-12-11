@@ -12,13 +12,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.Volley;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
-import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 public class UserFixedHeightCardView extends CitymapsCardView<User> {
+
+	protected static final String KEY_AVATAR_IMAGE = "avatarImage";
 
 	public static int getDesiredHeight(Context context, int size) {
 		CollectionFixedHeightCardView cardView = new CollectionFixedHeightCardView(context);
@@ -34,8 +37,13 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 	private TextView mFollowersView;
 	private Button mFollowButton;
 
+	/*
 	private CardImageListener.ImageState mMainImageState;
 	private CardImageListener.ImageState mAvatarImageState;
+	*/
+
+	private UserCardImageListener mUserCardImageListener;
+	private UserCardAvatarImageListener mUserCardAvatarImageListener;
 
 	private Animation mAvatarAnimation;
 
@@ -54,6 +62,9 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 	@Override
 	public void init(Context context) {
 		super.init(context);
+
+		mUserCardImageListener = new UserCardImageListener(context);
+		mUserCardAvatarImageListener = new UserCardAvatarImageListener(context);
 
 		mAvatarAnimation = AnimationUtils.loadAnimation(context, R.anim.grow_from_zero);
 
@@ -101,6 +112,7 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 		return mFollowButton;
 	}
 
+	/*
 	private void checkAvatarImageStatus() {
 		// Animate if:
 		// mImageView has an image (state is finished)
@@ -123,6 +135,11 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 
 		LogEx.d(String.format("mMainImageState=%s, mAvatarImageState=%s", mMainImageState, mAvatarImageState));
 	}
+	*/
+
+	private void checkImages() {
+		// mUserCardImageListener.
+	}
 
 	@Override
 	protected void onBindData(User user) {
@@ -143,46 +160,57 @@ public class UserFixedHeightCardView extends CitymapsCardView<User> {
 			}
 			mImageView.setImageResource(postcardTemplate.getResId());
 		} else {
-			mImageContainer = loader.get(postcardUrl, new UserCardImageListener(mImageView));
+			mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(postcardUrl,
+					mUserCardImageListener.setView(mImageView)));
 		}
 
 		String avatarUrl = user.getAvatarUrl();
 		if (TextUtils.isEmpty(avatarUrl)) {
-			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
-			loader.get(avatarUrl, new UserCardAvatarImageListener(getContext(), mAvatarView));
+			mImageContainerMap.put(KEY_AVATAR_IMAGE, loader.get(avatarUrl, mUserCardAvatarImageListener.setView(mAvatarView)));
 		}
 	}
 
  	private class UserCardImageListener extends CardImageListener {
-		public UserCardImageListener(ImageView imageView) {
-			super(getContext(), imageView);
+		public UserCardImageListener(Context context) {
+			super(context);
 		}
 
 		@Override
-		public void onImageStateChange(ImageState state) {
-			mMainImageState = state;
-			checkAvatarImageStatus();
+		protected void setImage(Bitmap bitmap, boolean animate) {
+			this.mImageView.setImageBitmap(GraphicsUtils.createBlurredBitmap(getContext(), bitmap, 200, 200));
+			this.mImageView.setVisibility(View.VISIBLE);
+			if (animate && mAnimation != null) {
+				startAnimation();
+			}
 		}
 	}
 
 	private class UserCardAvatarImageListener extends CardImageListener {
-		public UserCardAvatarImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
+		public UserCardAvatarImageListener(Context context) {
+			super(context);
+		}
+
+		@Override
+		public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+			super.onResponse(response, isImmediate);
 		}
 
 		@Override
 		public void setImage(Bitmap bitmap, boolean animate) {
-			this.mImageView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+			this.mImageView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 					getResources(), bitmap));
-			setImageState(animate ? ImageState.FINISHED : ImageState.LOADED);
+			this.mImageView.setVisibility(View.VISIBLE);
+			if (animate && mAnimation != null) {
+				startAnimation();
+			}
 		}
 
 		@Override
-		public void onImageStateChange(ImageState state) {
-			mAvatarImageState = state;
-			checkAvatarImageStatus();
+		protected Animation onCreateAnimation() {
+			return AnimationUtils.loadAnimation(mContext, R.anim.grow_from_zero);
 		}
 	}
 }

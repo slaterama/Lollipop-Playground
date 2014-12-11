@@ -74,6 +74,8 @@ public class VolleyManager {
 
 	private ImageLoader mImageLoader;
 
+	private ImageLoader.ImageCache mImageCache;
+
 	private VolleyManager() {
 		//mRequestQueue = getRequestQueue();
 		//mImageLoader = new ImageLoader(mRequestQueue, new CitymapsImageCache());
@@ -94,9 +96,16 @@ public class VolleyManager {
 
 	public ImageLoader getImageLoader() {
 		if (mImageLoader == null) {
-			mImageLoader = new ImageLoader(getRequestQueue(), new BitmapLruCache()); //new CitymapsImageCache());
+			mImageLoader = new ImageLoader(getRequestQueue(), getImageCache());
 		}
 		return mImageLoader;
+	}
+
+	public ImageLoader.ImageCache getImageCache() {
+		if (mImageCache == null) {
+			mImageCache = new BitmapLruCache();
+		}
+		return mImageCache;
 	}
 
 	private static class CustomHurlStack extends HurlStack {

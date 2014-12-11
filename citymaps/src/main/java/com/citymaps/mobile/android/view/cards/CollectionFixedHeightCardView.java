@@ -16,7 +16,7 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
-import com.citymaps.mobile.android.util.DrawableUtils;
+import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
@@ -119,7 +119,8 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 									FoursquarePhoto photo = response.get(0);
 									String foursquarePhotoUtil = photo.getPhotoUrl();
 									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainer = loader.get(foursquarePhotoUtil, new CardImageListener(getContext(), mImageView));
+									mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUtil,
+											new CardImageListener(getContext()).setView(mImageView)));
 								}
 							}
 						},
@@ -131,15 +132,17 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 						});
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			} else {
-				mImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(getContext(), mImageView));
+				mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUrl,
+						new CardImageListener(getContext()).setView(mImageView)));
 			}
 		} else {
-			mImageContainer = loader.get(coverImageUrl, new CardImageListener(getContext(), mImageView));
+			mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(coverImageUrl,
+					new CardImageListener(getContext()).setView(mImageView)));
 		}
 
 		String avatarUrl = searchResult.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {
-			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			loader.get(avatarUrl,
@@ -150,7 +153,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 							if (bitmap == null) {
 								mAvatarView.setImageDrawable(null);
 							} else {
-								mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
+								mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 										getResources(), bitmap));
 							}
 						}
