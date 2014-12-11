@@ -7,19 +7,26 @@ package com.citymaps.mobile.android.app;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
+import com.android.volley.Network;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
+import com.android.volley.toolbox.*;
+import com.citymaps.mobile.android.util.LogEx;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class VolleyManager {
+
+	// Default maximum disk usage in bytes
+	private static final int DEFAULT_DISK_USAGE_BYTES = 25 * 1024 * 1024;
+
+	// Default cache folder name
+	private static final String DEFAULT_CACHE_DIR = "photos";
 
 	private static Context sContext;
 
@@ -34,6 +41,28 @@ public class VolleyManager {
 
 	private static final class LazyHolder {
 		private static final VolleyManager INSTANCE = new VolleyManager();
+	}
+
+	// Most code copied from "Volley.newRequestQueue(..)", we only changed cache directory
+	private static RequestQueue newRequestQueue(Context context) {
+		// define cache folder
+		File rootCache = context.getExternalCacheDir();
+		if (rootCache == null) {
+			LogEx.w("Can't find External Cache Dir, "
+					+ "switching to application specific cache directory");
+			rootCache = context.getCacheDir();
+		}
+
+		File cacheDir = new File(rootCache, DEFAULT_CACHE_DIR);
+		boolean success = (cacheDir.mkdirs() || cacheDir.isDirectory());
+
+		HttpStack stack = new CustomHurlStack();
+		Network network = new BasicNetwork(stack);
+		DiskBasedCache diskBasedCache = new DiskBasedCache(cacheDir, DEFAULT_DISK_USAGE_BYTES);
+		RequestQueue queue = new RequestQueue(diskBasedCache, network);
+		queue.start();
+
+		return queue;
 	}
 
 	private RequestQueue mRequestQueue;
@@ -53,14 +82,14 @@ public class VolleyManager {
 		if (mRequestQueue == null) {
 			// sContext is already the application context; no need to convert to
 			// application context here
-			mRequestQueue = Volley.newRequestQueue(sContext, new CustomHurlStack());
+			mRequestQueue = newRequestQueue(sContext); //Volley.newRequestQueue(sContext, new CustomHurlStack());
 		}
 		return mRequestQueue;
 	}
 
 	public ImageLoader getImageLoader() {
 		if (mImageLoader == null) {
-			mImageLoader = new ImageLoader(getRequestQueue(), new CitymapsImageCache());
+			mImageLoader = new ImageLoader(getRequestQueue(), new BitmapLruCache()); //new CitymapsImageCache());
 		}
 		return mImageLoader;
 	}
@@ -90,7 +119,8 @@ public class VolleyManager {
 			mFactory = new OkUrlFactory(client);
 		}
 
-		@Override protected HttpURLConnection createConnection(URL url) throws IOException {
+		@Override
+		protected HttpURLConnection createConnection(URL url) throws IOException {
 			HttpURLConnection connection = mFactory.open(url);
 			connection.setRequestProperty("Accept-Encoding", "");
 			connection.setInstanceFollowRedirects(true);
@@ -98,21 +128,35 @@ public class VolleyManager {
 		}
 	}
 
-	private static class CitymapsImageCache implements ImageLoader.ImageCache {
-		private final LruCache<String, Bitmap> mCache;
+	private static class BitmapLruCache extends LruCache<String, Bitmap>
+			implements ImageLoader.ImageCache {
 
-		public CitymapsImageCache() {
-			mCache = new LruCache<String, Bitmap>(20);
+		public BitmapLruCache() {
+			this(getDefaultLruCacheSize());
+		}
+
+		public BitmapLruCache(int sizeInKiloBytes) {
+			super(sizeInKiloBytes);
+		}
+
+		@Override
+		protected int sizeOf(String key, Bitmap value) {
+			return value.getRowBytes() * value.getHeight() / 1024;
 		}
 
 		@Override
 		public Bitmap getBitmap(String url) {
-			return mCache.get(url);
+			return get(url);
 		}
 
 		@Override
 		public void putBitmap(String url, Bitmap bitmap) {
-			mCache.put(url, bitmap);
+			put(url, bitmap);
+		}
+
+		public static int getDefaultLruCacheSize() {
+			final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+			return maxMemory / 8;
 		}
 	}
 }
