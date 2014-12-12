@@ -22,6 +22,10 @@
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:gravity="center_vertical"
 					android:orientation="horizontal">
 
@@ -30,8 +34,6 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:layout_marginLeft="@dimen/activity_horizontal_margin"
-						android:layout_marginStart="@dimen/activity_horizontal_margin"
 						android:text="@string/explore_best_around_me" />
 
 				<Button
@@ -83,6 +85,10 @@
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:gravity="center_vertical"
 					android:orientation="horizontal">
 
@@ -91,8 +97,6 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:layout_marginLeft="@dimen/activity_horizontal_margin"
-						android:layout_marginStart="@dimen/activity_horizontal_margin"
 						android:text="@string/explore_featured_collections" />
 
 				<Button
@@ -118,6 +122,10 @@
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:gravity="center_vertical"
 					android:orientation="horizontal">
 
@@ -126,8 +134,6 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:layout_marginLeft="@dimen/activity_horizontal_margin"
-						android:layout_marginStart="@dimen/activity_horizontal_margin"
 						android:text="@string/explore_featured_mappers" />
 
 				<Button
@@ -153,6 +159,10 @@
 			<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:paddingLeft="@dimen/activity_horizontal_margin"
+					android:paddingStart="@dimen/activity_horizontal_margin"
+					android:paddingRight="@dimen/activity_horizontal_margin"
+					android:paddingEnd="@dimen/activity_horizontal_margin"
 					android:gravity="center_vertical"
 					android:orientation="horizontal">
 
@@ -161,8 +171,6 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:layout_marginLeft="@dimen/activity_horizontal_margin"
-						android:layout_marginStart="@dimen/activity_horizontal_margin"
 						android:text="@string/explore_featured_deals" />
 
 				<Button

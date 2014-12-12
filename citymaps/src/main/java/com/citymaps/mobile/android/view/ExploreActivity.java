@@ -3,6 +3,7 @@ package com.citymaps.mobile.android.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -29,21 +35,18 @@ import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.util.ResourcesUtils;
 import com.citymaps.mobile.android.view.cards.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExploreActivity extends TrackedActionBarActivity
 		implements View.OnLayoutChangeListener {
 
-	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
+	private static final int CAROUSEL_INITIAL_LOAD_DELAY = 250;
 
-	private LayoutInflater mInflater;
+	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
 
 	private boolean mUseCompatPadding;
 	private int mCardMaxElevation;
 	private int mCardPerceivedMargin;
-	private int mCardActualMargin;
 
 	private float mDefaultCardsAcross;
 	private float mBestAroundCardsAcross;
@@ -71,15 +74,12 @@ public class ExploreActivity extends TrackedActionBarActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_explore);
 
-		mInflater = LayoutInflater.from(this);
-
 		// Get dimensions and other resources for recycler view card layout
 
 		Resources resources = getResources();
 		mUseCompatPadding = resources.getBoolean(R.bool.explore_card_use_compat_padding);
 		mCardMaxElevation = resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation);
 		mCardPerceivedMargin = resources.getDimensionPixelOffset(R.dimen.explore_card_inner_margin);
-		mCardActualMargin = mCardPerceivedMargin - (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 		mDefaultCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_default_cards_across, 2.0f);
 		mBestAroundCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_best_around_cards_across, 1.0f);
 		mFeaturedCollectionsCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_collections_cards_across, 2.0f);
@@ -97,10 +97,6 @@ public class ExploreActivity extends TrackedActionBarActivity
 		for (RecyclerView view : mRecyclerViews.values()) {
 			view.addOnLayoutChangeListener(this);
 			view.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-
-			// TODO TEMP
-			//view.getLayoutParams().height = (int) (resources.getDisplayMetrics().density * 225);
-
 			if (mUseCompatPadding) {
 				int paddingLeft = view.getPaddingLeft();
 				int paddingTop = view.getPaddingTop();
@@ -114,11 +110,12 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		// Set up adapters
 
+		boolean animateOnInitialLoad = (savedInstanceState == null);
 		mAdapters = new LinkedHashMap<RecyclerType, Adapter>(length);
-		mAdapters.put(RecyclerType.BEST_AROUND, new BestAroundAdapter());
-		mAdapters.put(RecyclerType.FEATURED_COLLECTIONS, new FeaturedCollectionsAdapter());
-		mAdapters.put(RecyclerType.FEATURED_MAPPERS, new FeaturedMappersAdapter());
-		mAdapters.put(RecyclerType.FEATURED_DEALS, new FeaturedDealsAdapter());
+		mAdapters.put(RecyclerType.BEST_AROUND, new BestAroundAdapter(animateOnInitialLoad));
+		mAdapters.put(RecyclerType.FEATURED_COLLECTIONS, new FeaturedCollectionsAdapter(animateOnInitialLoad));
+		mAdapters.put(RecyclerType.FEATURED_MAPPERS, new FeaturedMappersAdapter(animateOnInitialLoad));
+		mAdapters.put(RecyclerType.FEATURED_DEALS, new FeaturedDealsAdapter(animateOnInitialLoad));
 		for (RecyclerType type : RecyclerType.values()) {
 			mRecyclerViews.get(type).setAdapter(mAdapters.get(type));
 		}
@@ -143,7 +140,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 			new Handler().post(new Runnable() {
 				@Override
 				public void run() {
-					onRequestsComplete();
+					onRequestsComplete(true);
 				}
 			});
 		}
@@ -226,15 +223,61 @@ public class ExploreActivity extends TrackedActionBarActivity
 		return (int) (perceivedAvailableWidth / cardsAcross);
 	}
 
-	protected void onRequestsComplete() {
-		((BestAroundAdapter) mAdapters.get(RecyclerType.BEST_AROUND)).setData(mHelperFragment.mBestAround);
-		((FeaturedCollectionsAdapter) mAdapters.get(RecyclerType.FEATURED_COLLECTIONS)).setData(mHelperFragment.mFeaturedCollections);
-		((FeaturedMappersAdapter) mAdapters.get(RecyclerType.FEATURED_MAPPERS)).setData(mHelperFragment.mFeaturedMappers);
-		((FeaturedDealsAdapter) mAdapters.get(RecyclerType.FEATURED_DEALS)).setData(mHelperFragment.mFeaturedDeals);
+	protected void onRequestsComplete(boolean isImmediate) {
+		LogEx.d();
+		if (isImmediate) {
+			((BestAroundAdapter) mAdapters.get(RecyclerType.BEST_AROUND)).setData(mHelperFragment.mBestAround);
+			((FeaturedCollectionsAdapter) mAdapters.get(RecyclerType.FEATURED_COLLECTIONS)).setData(mHelperFragment.mFeaturedCollections);
+			((FeaturedMappersAdapter) mAdapters.get(RecyclerType.FEATURED_MAPPERS)).setData(mHelperFragment.mFeaturedMappers);
+			((FeaturedDealsAdapter) mAdapters.get(RecyclerType.FEATURED_DEALS)).setData(mHelperFragment.mFeaturedDeals);
+		} else {
+			new AsyncTask<RecyclerType, RecyclerType, Void>() {
+				@Override
+				protected Void doInBackground(RecyclerType... params) {
+					for (RecyclerType type : params) {
+						publishProgress(type);
+						try {
+							Thread.sleep(CAROUSEL_INITIAL_LOAD_DELAY);
+						} catch (InterruptedException e) {
+							// No action
+						}
+					}
+					return null;
+				}
+
+				@Override
+				protected void onProgressUpdate(RecyclerType... values) {
+					RecyclerType type = values[0];
+					switch (type) {
+						case BEST_AROUND:
+							((BestAroundAdapter) mAdapters.get(RecyclerType.BEST_AROUND)).setData(mHelperFragment.mBestAround);
+							break;
+						case FEATURED_COLLECTIONS:
+							((FeaturedCollectionsAdapter) mAdapters.get(RecyclerType.FEATURED_COLLECTIONS)).setData(mHelperFragment.mFeaturedCollections);
+							break;
+						case FEATURED_MAPPERS:
+							((FeaturedMappersAdapter) mAdapters.get(RecyclerType.FEATURED_MAPPERS)).setData(mHelperFragment.mFeaturedMappers);
+							break;
+						case FEATURED_DEALS:
+							((FeaturedDealsAdapter) mAdapters.get(RecyclerType.FEATURED_DEALS)).setData(mHelperFragment.mFeaturedDeals);
+							break;
+					}
+				}
+			}.execute(RecyclerType.BEST_AROUND, RecyclerType.FEATURED_COLLECTIONS, RecyclerType.FEATURED_MAPPERS, RecyclerType.FEATURED_DEALS);
+		}
 	}
 
 	protected abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		protected boolean mAnimateOnInitialLoad;
+		protected Set<ViewHolder> mHolders;
+
 		protected List<D> mData;
+
+		public ExploreAdapter(boolean animateOnInitialLoad) {
+			super();
+			mAnimateOnInitialLoad = animateOnInitialLoad;
+			mHolders = new HashSet<ViewHolder>();
+		}
 
 		public void setData(List<D> data) {
 			mData = data;
@@ -249,9 +292,23 @@ public class ExploreActivity extends TrackedActionBarActivity
 		public int getItemCount() {
 			return (mData == null ? 0 : mData.size());
 		}
+
+		@Override
+		public void onBindViewHolder(ViewHolder holder, int position) {
+			if (!mHolders.contains(holder)) {
+				Animation animation = AnimationUtils.loadAnimation(ExploreActivity.this, R.anim.overshoot_in_right);
+				animation.setStartOffset(position * 100);
+				holder.itemView.startAnimation(animation);
+				mHolders.add(holder);
+			}
+		}
 	}
 
 	public class BestAroundAdapter extends ExploreAdapter<SearchResult> {
+		public BestAroundAdapter(boolean animateOnInitialLoad) {
+			super(animateOnInitialLoad);
+		}
+
 		@Override
 		public int getItemViewType(int position) {
 			SearchResult result = mData.get(position);
@@ -278,11 +335,13 @@ public class ExploreActivity extends TrackedActionBarActivity
 			view.setBaseSize(mBestAroundDefaultCardWidth);
 			int actualCardWidth = mBestAroundCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {};
+			return new ViewHolder(view) {
+			};
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			super.onBindViewHolder(holder, position);
 			SearchResult searchResult = mData.get(position);
 
 			if (holder.itemView instanceof BestAroundPlaceCardView) {
@@ -302,6 +361,10 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class FeaturedCollectionsAdapter extends ExploreAdapter<SearchResult> {
+		public FeaturedCollectionsAdapter(boolean animateOnInitialLoad) {
+			super(animateOnInitialLoad);
+		}
+
 		@Override
 		public int getItemViewType(int position) {
 			SearchResult result = mData.get(position);
@@ -319,6 +382,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			super.onBindViewHolder(holder, position);
 			SearchResultCollection searchResult = (SearchResultCollection) mData.get(position);
 			CollectionCardView cardView = (CollectionCardView) holder.itemView;
 			cardView.setData(searchResult);
@@ -333,13 +397,9 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class FeaturedMappersAdapter extends ExploreAdapter<User> {
-		/*
-		@Override
-		public int getItemViewType(int position) {
-			User user = mFeaturedMappers.get(position);
-			return user.getType().value();
+		public FeaturedMappersAdapter(boolean animateOnInitialLoad) {
+			super(animateOnInitialLoad);
 		}
-		*/
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -352,6 +412,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			super.onBindViewHolder(holder, position);
 			User user = mData.get(position);
 			UserCardView cardView = (UserCardView) holder.itemView;
 			cardView.setData(user);
@@ -366,6 +427,10 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class FeaturedDealsAdapter extends ExploreAdapter<SearchResult> {
+		public FeaturedDealsAdapter(boolean animateOnInitialLoad) {
+			super(animateOnInitialLoad);
+		}
+
 		@Override
 		public int getItemViewType(int position) {
 			SearchResult result = mData.get(position);
@@ -383,6 +448,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			super.onBindViewHolder(holder, position);
 			SearchResultPlace searchResult = (SearchResultPlace) mData.get(position);
 			DealCardView cardView = (DealCardView) holder.itemView;
 			cardView.setData(searchResult);
@@ -403,7 +469,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		private static final String ARG_MAP_RADIUS = "mapRadius";
 		private static final String ARG_MAP_ZOOM = "mapZoom";
 
-		public static final HelperFragment newInstance(ParcelableLonLat location, float radius, int zoom) {
+		public static HelperFragment newInstance(ParcelableLonLat location, float radius, int zoom) {
 			HelperFragment fragment = new HelperFragment();
 			Bundle args = new Bundle(3);
 			args.putParcelable(ARG_MAP_LOCATION, location);
@@ -535,7 +601,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		private void onRequestComplete() {
 			mCompletedRequests++;
 			if (mCompletedRequests == 4) {
-				mActivity.onRequestsComplete();
+				mActivity.onRequestsComplete(false);
 			}
 		}
 	}
