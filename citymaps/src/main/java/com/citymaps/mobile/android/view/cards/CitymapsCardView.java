@@ -20,13 +20,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.util.GraphicsUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class CitymapsCardView<D> extends CardView {
-
-	protected static final String KEY_MAIN_IMAGE = "mainImage";
 
 	protected static Drawable mMiniAvatarNoImageDrawable;
 
@@ -41,9 +35,6 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	protected D mData;
 	protected int mBaseSize;
-
-	protected ImageView mImageView;
-	protected Map<String, ImageLoader.ImageContainer> mImageContainerMap;
 
 	public CitymapsCardView(Context context) {
 		super(context);
@@ -61,8 +52,6 @@ public abstract class CitymapsCardView<D> extends CardView {
 	}
 
 	public void init(Context context) {
-		mImageContainerMap = new HashMap<String, ImageLoader.ImageContainer>();
-
 		Resources resources = context.getResources();
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
@@ -93,10 +82,6 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	public void setData(D data) {
 		mData = data;
-		Collection<ImageLoader.ImageContainer> containers = mImageContainerMap.values();
-		for (ImageLoader.ImageContainer container : containers) {
-			container.cancelRequest();
-		}
 		onBindData(data);
 	}
 

@@ -1,7 +1,6 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,53 +10,57 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.Deal;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
-import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.model.SearchResultPlace;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
 
-public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResultCollection> {
+public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 
 	public static int getDesiredHeight(Context context, int size) {
-		CollectionFixedHeightCardView cardView = new CollectionFixedHeightCardView(context);
+		DealCardView cardView = new DealCardView(context);
 		cardView.setBaseSize(size);
 		cardView.measure(0, 0);
 		return cardView.getMeasuredHeight();
 	}
 
 	private ViewGroup mMainContainerView;
-	private TextView mNumMarkersView;
+	private ImageView mMainImageView;
 	private TextView mNameView;
-	private TextView mDescriptionView;
+//	private TextView mDescriptionView;
 	private ImageView mAvatarView;
 	private TextView mUsernameView;
 
-	public CollectionFixedHeightCardView(Context context) {
+	private ImageContainer mMainImageContainer;
+	private ImageContainer mAvatarImageContainer;
+
+	public DealCardView(Context context) {
 		super(context);
 	}
 
-	public CollectionFixedHeightCardView(Context context, AttributeSet attrs) {
+	public DealCardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public CollectionFixedHeightCardView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public DealCardView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 	}
 
 	@Override
 	public void init(Context context) {
 		super.init(context);
-		View view = View.inflate(context, R.layout.card_collection_fixed_height, this);
+		View view = View.inflate(context, R.layout.card_deal_fixed_height, this);
 		mMainContainerView = (ViewGroup) view.findViewById(R.id.card_main_container);
-		mImageView = (ImageView) view.findViewById(R.id.card_image);
-		mNumMarkersView = (TextView) view.findViewById(R.id.card_marker_count);
+		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
 		mNameView = (TextView) view.findViewById(R.id.card_name);
-		mDescriptionView = (TextView) view.findViewById(R.id.card_description);
+//		mDescriptionView = (TextView) view.findViewById(R.id.card_description);
 		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
 		mUsernameView = (TextView) view.findViewById(R.id.card_username);
 	}
@@ -72,21 +75,19 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 		return mMainContainerView;
 	}
 
-	public ImageView getImageView() {
-		return mImageView;
-	}
-
-	public TextView getNumMarkersView() {
-		return mNumMarkersView;
+	public ImageView getMainImageView() {
+		return mMainImageView;
 	}
 
 	public TextView getNameView() {
 		return mNameView;
 	}
 
+	/*
 	public TextView getDescriptionView() {
 		return mDescriptionView;
 	}
+	*/
 
 	public ImageView getAvatarView() {
 		return mAvatarView;
@@ -97,18 +98,31 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 	}
 
 	@Override
-	protected void onBindData(final SearchResultCollection searchResult) {
-		mNumMarkersView.setText(String.valueOf(searchResult.getNumMarkers()));
-		mNameView.setText(searchResult.getName());
-		mDescriptionView.setText(searchResult.getDescription());
-		mUsernameView.setText(searchResult.getOwnerUsername());
+	protected void onBindData(final SearchResultPlace searchResult) {
+		if (mMainImageContainer != null) {
+			mMainImageContainer.cancelRequest();
+		}
+
+		if (mAvatarImageContainer != null) {
+			mAvatarImageContainer.cancelRequest();
+		}
+
+		mUsernameView.setText(searchResult.getName());
+
+		Deal[] deals = searchResult.getDeals();
+		if (deals == null || deals.length < 1) {
+			return;
+		}
+
+		Deal deal = deals[0];
+		mNameView.setText(deal.getLabel());
 
 		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
-		final String coverImageUrl = searchResult.getCoverImageUrl();
-		if (TextUtils.isEmpty(coverImageUrl)) {
+		final String imageUrl = deal.getThumbnailImage(Deal.GrouponThumbnailSize.XLARGE);
+		if (TextUtils.isEmpty(imageUrl)) {
 			final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
 			if (TextUtils.isEmpty(foursquarePhotoUrl)) {
-				mImageView.setImageDrawable(null);
+				mMainImageView.setImageDrawable(null);
 
 				String foursquareId = searchResult.getFoursquareId();
 				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
@@ -119,8 +133,8 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 									FoursquarePhoto photo = response.get(0);
 									String foursquarePhotoUtil = photo.getPhotoUrl();
 									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUtil,
-											new CardImageListener(getContext()).setView(mImageView)));
+									mMainImageContainer = loader.get(foursquarePhotoUtil,
+											new CardImageListener(getContext()).setView(mMainImageView));
 								}
 							}
 						},
@@ -132,19 +146,25 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 						});
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			} else {
-				mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUrl,
-						new CardImageListener(getContext()).setView(mImageView)));
+				mMainImageContainer = loader.get(foursquarePhotoUrl,
+						new CardImageListener(getContext()).setView(mMainImageView));
 			}
 		} else {
-			mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(coverImageUrl,
-					new CardImageListener(getContext()).setView(mImageView)));
+			mMainImageContainer = loader.get(imageUrl,
+					new CardImageListener(getContext()).setView(mMainImageView));
 		}
 
+		// TODO TEMP
+		mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
+				getResources(), R.drawable.default_fb_avatar));
+
+		/*
 		String avatarUrl = searchResult.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {
-			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
+			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
+			final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
 			loader.get(avatarUrl,
 					new ImageLoader.ImageListener() {
 						@Override
@@ -153,7 +173,7 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 							if (bitmap == null) {
 								mAvatarView.setImageDrawable(null);
 							} else {
-								mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
+								mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
 										getResources(), bitmap));
 							}
 						}
@@ -164,5 +184,6 @@ public class CollectionFixedHeightCardView extends CitymapsCardView<SearchResult
 						}
 					});
 		}
+		*/
 	}
 }

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
@@ -20,10 +20,10 @@ import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
 
-public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<SearchResultCollection> {
+public class BestAroundCollectionCardView extends CitymapsCardView<SearchResultCollection> {
 
 	public static int getDesiredHeight(Context context, int size) {
-		BestAroundCollectionFixedHeightCardView cardView = new BestAroundCollectionFixedHeightCardView(context);
+		BestAroundCollectionCardView cardView = new BestAroundCollectionCardView(context);
 		cardView.setBaseSize(size);
 		cardView.measure(0, 0);
 		return cardView.getMeasuredHeight();
@@ -31,17 +31,21 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 
 	private ViewGroup mInfoContainerView;
 	private TextView mNameView;
+	private ImageView mMainImageView;
 	private ImageView mAvatarView;
 
-	public BestAroundCollectionFixedHeightCardView(Context context) {
+	private ImageContainer mMainImageContainer;
+	private ImageContainer mAvatarImageContainer;
+
+	public BestAroundCollectionCardView(Context context) {
 		super(context);
 	}
 
-	public BestAroundCollectionFixedHeightCardView(Context context, AttributeSet attrs) {
+	public BestAroundCollectionCardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public BestAroundCollectionFixedHeightCardView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public BestAroundCollectionCardView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 	}
 
@@ -49,7 +53,7 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 	public void init(Context context) {
 		super.init(context);
 		View view = View.inflate(context, R.layout.card_best_around_collection_fixed_height, this);
-		mImageView = (ImageView) view.findViewById(R.id.card_image);
+		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
 		mInfoContainerView = (ViewGroup) view.findViewById(R.id.card_best_around_collection_fixed_height_info_container);
 		mNameView = (TextView) view.findViewById(R.id.card_name);
 		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
@@ -61,8 +65,8 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 		mInfoContainerView.getLayoutParams().height = size;
 	}
 
-	public ImageView getImageView() {
-		return mImageView;
+	public ImageView getMainImageView() {
+		return mMainImageView;
 	}
 
 	public ViewGroup getInfoContainerView() {
@@ -79,18 +83,26 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 
 	@Override
 	protected void onBindData(final SearchResultCollection searchResult) {
+		if (mMainImageContainer != null) {
+			mMainImageContainer.cancelRequest();
+		}
+
+		if (mAvatarImageContainer != null) {
+			mAvatarImageContainer.cancelRequest();
+		}
+
 		mNameView.setText(searchResult.getName());
 
 		// TODO TEMP
 		mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 				getResources(), R.drawable.default_fb_avatar));
 
-		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
+		final VolleyManager.CustomImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
 		final String coverImageUrl = searchResult.getCoverImageUrl();
 		if (TextUtils.isEmpty(coverImageUrl)) {
 			final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
 			if (TextUtils.isEmpty(foursquarePhotoUrl)) {
-				mImageView.setImageDrawable(null);
+				mMainImageView.setImageDrawable(null);
 
 				String foursquareId = searchResult.getFoursquareId();
 				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
@@ -101,8 +113,8 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 									FoursquarePhoto photo = response.get(0);
 									String foursquarePhotoUtil = photo.getPhotoUrl();
 									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUtil,
-											new CardImageListener(getContext()).setView(mImageView)));
+									mMainImageContainer = loader.get(foursquarePhotoUtil,
+											new CardImageListener(getContext()).setView(mMainImageView));
 								}
 							}
 						},
@@ -114,12 +126,10 @@ public class BestAroundCollectionFixedHeightCardView extends CitymapsCardView<Se
 						});
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			} else {
-				mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(foursquarePhotoUrl,
-						new CardImageListener(getContext()).setView(mImageView)));
+				mMainImageContainer = loader.get(foursquarePhotoUrl, new CardImageListener(getContext()).setView(mMainImageView));
 			}
 		} else {
-			mImageContainerMap.put(KEY_MAIN_IMAGE, loader.get(coverImageUrl,
-					new CardImageListener(getContext()).setView(mImageView)));
+			mMainImageContainer = loader.get(coverImageUrl, new CardImageListener(getContext()).setView(mMainImageView));
 		}
 	}
 }
