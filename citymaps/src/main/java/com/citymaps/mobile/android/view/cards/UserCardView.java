@@ -1,6 +1,9 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -10,7 +13,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.android.volley.toolbox.Volley;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
@@ -58,7 +63,7 @@ public class UserCardView extends CitymapsCardView<User> {
 		mUserCardImageListener = new CardImageListener(context);
 		mUserCardAvatarImageListener = new UserCardAvatarImageListener(context);
 
-		View view = View.inflate(context, R.layout.card_user_fixed_height, this);
+		View view = View.inflate(context, R.layout.card_user, this);
 		mMainContainerView = (ViewGroup) view.findViewById(R.id.card_main_container);
 		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
 		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
@@ -127,7 +132,16 @@ public class UserCardView extends CitymapsCardView<User> {
 			if (postcardTemplate == null) {
 				postcardTemplate = User.PostcardTemplate.DEFAULT;
 			}
-			mMainImageView.setImageResource(postcardTemplate.getResId());
+			ImageLoader.ImageCache cache = VolleyManager.getInstance(getContext()).getImageCache();
+			String cacheKey = "#" + VolleyManager.OPTION_BLUR25 + postcardTemplate.toString();
+			Bitmap postcardBitmap = cache.getBitmap(cacheKey);
+			boolean isImmediate = (postcardBitmap != null);
+			if (!isImmediate) {
+				BitmapDrawable postcardDrawable = (BitmapDrawable) getResources().getDrawable(postcardTemplate.getResId());
+				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
+				cache.putBitmap(cacheKey, postcardBitmap);
+			}
+			mUserCardImageListener.setView(mMainImageView).setImage(postcardBitmap, isImmediate);
 		} else {
 			mMainImageContainer = loader.get(postcardUrl,
 					mUserCardImageListener.setView(mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25);

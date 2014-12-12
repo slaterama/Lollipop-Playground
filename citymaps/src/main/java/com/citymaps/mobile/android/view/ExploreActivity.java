@@ -3,11 +3,13 @@ package com.citymaps.mobile.android.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +43,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		implements View.OnLayoutChangeListener {
 
 	private static final int CAROUSEL_INITIAL_LOAD_DELAY = 250;
+	private static final int CAROUSEL_ITEM_LOAD_DELAY = 100;
 
 	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
 
@@ -268,6 +271,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	protected abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		protected RecyclerView mRecyclerView;
 		protected boolean mAnimateOnInitialLoad;
 		protected Set<ViewHolder> mHolders;
 
@@ -294,12 +298,24 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
+		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			if (mRecyclerView == null) {
+				mRecyclerView = (RecyclerView) viewGroup;
+			}
+			return null;
+		}
+
+		@Override
 		public void onBindViewHolder(ViewHolder holder, int position) {
-			if (!mHolders.contains(holder)) {
-				Animation animation = AnimationUtils.loadAnimation(ExploreActivity.this, R.anim.overshoot_in_right);
-				animation.setStartOffset(position * 100);
-				holder.itemView.startAnimation(animation);
-				mHolders.add(holder);
+			if (mAnimateOnInitialLoad && !mHolders.contains(holder)) {
+				int scrollDirection = (ViewCompat.getLayoutDirection(mRecyclerView) == ViewCompat.LAYOUT_DIRECTION_LTR ? -1 : 1);
+				boolean isAtStart = !mRecyclerView.canScrollHorizontally(scrollDirection);
+				if (isAtStart) {
+					Animation animation = AnimationUtils.loadAnimation(ExploreActivity.this, R.anim.overshoot_in_right);
+					animation.setStartOffset(position * CAROUSEL_ITEM_LOAD_DELAY);
+					holder.itemView.startAnimation(animation);
+					mHolders.add(holder);
+				}
 			}
 		}
 	}
@@ -317,6 +333,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			super.onCreateViewHolder(viewGroup, viewType);
 			CitymapsCardView view;
 			CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
 			switch (type) {
@@ -372,7 +389,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			super.onCreateViewHolder(viewGroup, viewType);
 			View view = new CollectionCardView(ExploreActivity.this);
 			int actualCardWidth = mFeaturedCollectionCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
@@ -402,7 +420,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			super.onCreateViewHolder(viewGroup, viewType);
 			View view = new UserCardView(ExploreActivity.this);
 			int actualCardWidth = mFeaturedMapperCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
@@ -438,7 +457,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+			super.onCreateViewHolder(viewGroup, viewType);
 			View view = new DealCardView(ExploreActivity.this);
 			int actualCardWidth = mFeaturedDealCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));

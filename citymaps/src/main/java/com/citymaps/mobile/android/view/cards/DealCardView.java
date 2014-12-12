@@ -56,7 +56,7 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 	@Override
 	public void init(Context context) {
 		super.init(context);
-		View view = View.inflate(context, R.layout.card_deal_fixed_height, this);
+		View view = View.inflate(context, R.layout.card_deal, this);
 		mMainContainerView = (ViewGroup) view.findViewById(R.id.card_main_container);
 		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
 		mNameView = (TextView) view.findViewById(R.id.card_name);

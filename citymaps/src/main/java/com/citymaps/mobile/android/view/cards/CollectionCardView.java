@@ -57,7 +57,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 	@Override
 	public void init(Context context) {
 		super.init(context);
-		View view = View.inflate(context, R.layout.card_collection_fixed_height, this);
+		View view = View.inflate(context, R.layout.card_collection, this);
 		mMainContainerView = (ViewGroup) view.findViewById(R.id.card_main_container);
 		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
 		mNumMarkersView = (TextView) view.findViewById(R.id.card_marker_count);

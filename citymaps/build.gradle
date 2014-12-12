@@ -22,8 +22,16 @@ android {
 
     defaultConfig {
         applicationId "com.citymaps.mobile.android"
+
         minSdkVersion 17
         targetSdkVersion 21
+
+        /*
+        renderscriptTargetApi 21
+        renderscriptSupportMode true
+        renderscriptSupportModeEnabled true
+        */
+
         versionCode 6
         versionName "2.0"
         resValue "string", "facebook_app_id", "\"102833083180718\""

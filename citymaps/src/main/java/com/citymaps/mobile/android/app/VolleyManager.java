@@ -250,7 +250,7 @@ public class VolleyManager {
 		}
 	}
 
-	private static abstract class BitmapEditor {
+	public static abstract class BitmapEditor {
 		public static BitmapEditor newEditor(Context context, String option) {
 			if (TextUtils.equals(option, OPTION_BLUR25)) {
 				return new Blur25BitmapEditor(context);
@@ -298,7 +298,7 @@ public class VolleyManager {
 			blurScript.forEach(allocationOut);
 			allocationOut.copyTo(out);
 			in.recycle();
-			rs.destroy();
+//			rs.destroy();
 			return out;
 		}
 	}
