@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -14,14 +15,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.AttributeSet;
+import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -329,7 +329,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public int getItemCount() {
-			return (mData == null ? 0 : mData.size());
+			return (mData == null ? 0 : mData.size() + 1);
 		}
 
 		@Override
@@ -352,6 +352,14 @@ public class ExploreActivity extends TrackedActionBarActivity
 					mHolders.add(holder);
 				}
 			}
+
+			if (holder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
+				int margin = (int) (mCardPerceivedMargin -
+						2 * (holder.itemView instanceof CardView ? ((CardView) holder.itemView).getMaxCardElevation() : 0));
+				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
+				holder.itemView.setLayoutParams(mlp);
+			}
 		}
 	}
 
@@ -361,34 +369,46 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
+		public int getItemCount() {
+			return (mData == null ? 0 : mData.size());
+		}
+
+		@Override
 		public int getItemViewType(int position) {
+			if (position >= mData.size()) {
+				return Integer.MAX_VALUE;
+			}
 			SearchResult result = mData.get(position);
 			return result.getType().value();
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			super.onCreateViewHolder(viewGroup, viewType);
-			CitymapsCardView view;
-			CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
-			switch (type) {
-				case PLACE: {
-					view = new BestAroundPlaceCardView(ExploreActivity.this);
-					break;
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			super.onCreateViewHolder(parent, viewType);
+			CitymapsCardView cardView;
+			if (viewType == Integer.MAX_VALUE) {
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				viewAllCardView.setData(CarouselType.BEST_AROUND);
+				cardView = viewAllCardView;
+			} else {
+				CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
+				switch (type) {
+					case PLACE: {
+						cardView = new BestAroundPlaceCardView(ExploreActivity.this);
+						break;
+					}
+					case COLLECTION: {
+						cardView = new BestAroundCollectionCardView(ExploreActivity.this);
+						break;
+					}
+					default:
+						throw new IllegalStateException("Only expecting places or collections in Best Around adapter");
 				}
-				case COLLECTION: {
-					view = new BestAroundCollectionCardView(ExploreActivity.this);
-					break;
-				}
-				default:
-					throw new IllegalStateException("Only expecting places or collections in Best Around adapter");
+				cardView.setBaseSize(mBestAroundDefaultCardWidth);
 			}
-
-			view.setBaseSize(mBestAroundDefaultCardWidth);
 			int actualCardWidth = mBestAroundCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
-			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {
-			};
+			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
+			return new ViewHolder(cardView) {};
 		}
 
 		@Override
@@ -401,14 +421,6 @@ public class ExploreActivity extends TrackedActionBarActivity
 			} else if (holder.itemView instanceof BestAroundCollectionCardView) {
 				((BestAroundCollectionCardView) holder.itemView).setData((SearchResultCollection) searchResult);
 			}
-
-			if (holder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
-				int margin = (int) (mCardPerceivedMargin -
-						2 * (holder.itemView instanceof CardView ? ((CardView) holder.itemView).getMaxCardElevation() : 0));
-				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
-				holder.itemView.setLayoutParams(mlp);
-			}
 		}
 	}
 
@@ -419,32 +431,36 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public int getItemViewType(int position) {
+			if (position >= mData.size()) {
+				return Integer.MAX_VALUE;
+			}
 			SearchResult result = mData.get(position);
 			return result.getType().value();
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			super.onCreateViewHolder(viewGroup, viewType);
-			View view = new CollectionCardView(ExploreActivity.this);
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			super.onCreateViewHolder(parent, viewType);
+			CitymapsCardView cardView;
+			if (viewType == Integer.MAX_VALUE) {
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				viewAllCardView.setData(CarouselType.FEATURED_COLLECTIONS);
+				cardView = viewAllCardView;
+			} else {
+				cardView = new CollectionCardView(ExploreActivity.this);
+			}
 			int actualCardWidth = mFeaturedCollectionCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
-			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {
-			};
+			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
+			return new ViewHolder(cardView) {};
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			super.onBindViewHolder(holder, position);
-			SearchResultCollection searchResult = (SearchResultCollection) mData.get(position);
-			CollectionCardView cardView = (CollectionCardView) holder.itemView;
-			cardView.setData(searchResult);
-
-			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
-				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
-				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
-				cardView.setLayoutParams(mlp);
+			if (holder.itemView instanceof CollectionCardView) {
+				SearchResultCollection searchResult = (SearchResultCollection) mData.get(position);
+				CollectionCardView cardView = (CollectionCardView) holder.itemView;
+				cardView.setData(searchResult);
 			}
 		}
 	}
@@ -455,27 +471,36 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			super.onCreateViewHolder(viewGroup, viewType);
-			View view = new UserCardView(ExploreActivity.this);
+		public int getItemViewType(int position) {
+			if (position >= mData.size()) {
+				return Integer.MAX_VALUE;
+			}
+			return CitymapsObject.ObjectType.USER.value();
+		}
+
+		@Override
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			super.onCreateViewHolder(parent, viewType);
+			CitymapsCardView cardView;
+			if (viewType == Integer.MAX_VALUE) {
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				viewAllCardView.setData(CarouselType.FEATURED_MAPPERS);
+				cardView = viewAllCardView;
+			} else {
+				cardView = new UserCardView(ExploreActivity.this);
+			}
 			int actualCardWidth = mFeaturedMapperCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
-			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {
-			};
+			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
+			return new ViewHolder(cardView) {};
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			super.onBindViewHolder(holder, position);
-			User user = mData.get(position);
-			UserCardView cardView = (UserCardView) holder.itemView;
-			cardView.setData(user);
-
-			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
-				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
-				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
-				cardView.setLayoutParams(mlp);
+			if (holder.itemView instanceof UserCardView) {
+				User user = mData.get(position);
+				UserCardView cardView = (UserCardView) holder.itemView;
+				cardView.setData(user);
 			}
 		}
 	}
@@ -487,32 +512,36 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public int getItemViewType(int position) {
+			if (position >= mData.size()) {
+				return Integer.MAX_VALUE;
+			}
 			SearchResult result = mData.get(position);
 			return result.getType().value();
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			super.onCreateViewHolder(viewGroup, viewType);
-			View view = new DealCardView(ExploreActivity.this);
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			super.onCreateViewHolder(parent, viewType);
+			CitymapsCardView cardView;
+			if (viewType == Integer.MAX_VALUE) {
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				viewAllCardView.setData(CarouselType.FEATURED_DEALS);
+				cardView = viewAllCardView;
+			} else {
+				cardView = new DealCardView(ExploreActivity.this);
+			}
 			int actualCardWidth = mFeaturedDealCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
-			view.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.WRAP_CONTENT));
-			return new ViewHolder(view) {
-			};
+			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
+			return new ViewHolder(cardView) {};
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			super.onBindViewHolder(holder, position);
-			SearchResultPlace searchResult = (SearchResultPlace) mData.get(position);
-			DealCardView cardView = (DealCardView) holder.itemView;
-			cardView.setData(searchResult);
-
-			if (cardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
-				int margin = (int) (mCardPerceivedMargin - 2 * cardView.getMaxCardElevation());
-				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
-				cardView.setLayoutParams(mlp);
+			if (holder.itemView instanceof DealCardView) {
+				SearchResultPlace searchResult = (SearchResultPlace) mData.get(position);
+				DealCardView cardView = (DealCardView) holder.itemView;
+				cardView.setData(searchResult);
 			}
 		}
 	}
@@ -666,6 +695,49 @@ public class ExploreActivity extends TrackedActionBarActivity
 		public ProgressBar mProgressBar;
 		public RecyclerView mRecyclerView;
 		public Adapter mAdapter;
+	}
+
+	public static class ViewAllCardView extends CitymapsCardView<CarouselType> {
+
+		private TextView mLabelView;
+
+		public ViewAllCardView(Context context) {
+			super(context);
+		}
+
+		public ViewAllCardView(Context context, AttributeSet attrs) {
+			super(context, attrs);
+		}
+
+		public ViewAllCardView(Context context, AttributeSet attrs, int defStyleAttr) {
+			super(context, attrs, defStyleAttr);
+		}
+
+		@Override
+		public void init(Context context) {
+			super.init(context);
+			View.inflate(context, R.layout.card_view_all, this);
+			setCardBackgroundColor(getResources().getColor(R.color.color_primary));
+			mLabelView = (TextView) findViewById(R.id.card_view_all_label);
+		}
+
+		@Override
+		protected void onBindData(CarouselType data) {
+			switch (data) {
+				case BEST_AROUND:
+					mLabelView.setText(R.string.card_view_all_best_around);
+					break;
+				case FEATURED_COLLECTIONS:
+					mLabelView.setText(R.string.card_view_all_featured_collections);
+					break;
+				case FEATURED_MAPPERS:
+					mLabelView.setText(R.string.card_view_all_featured_mappers);
+					break;
+				case FEATURED_DEALS:
+					mLabelView.setText(R.string.card_view_all_featured_deals);
+					break;
+			}
+		}
 	}
 
 	private static enum CarouselType {
