@@ -3,7 +3,6 @@ package com.citymaps.mobile.android.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.PointF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -63,8 +64,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 	private int mFeaturedMapperCardWidth;
 	private int mFeaturedDealCardWidth;
 
-	private Map<RecyclerType, RecyclerView> mRecyclerViews;
-	private Map<RecyclerType, Adapter> mAdapters;
+	private Map<CarouselType, Carousel> mCarousels;
 
 	private ParcelableLonLat mMapLocation;
 	private float mMapRadius;
@@ -89,38 +89,55 @@ public class ExploreActivity extends TrackedActionBarActivity
 		mFeaturedMappersCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_mappers_cards_across, 2.0f);
 		mFeaturedDealsCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_deals_cards_across, 2.0f);
 
-		// Set up views
-
-		int length = RecyclerType.values().length;
-		mRecyclerViews = new LinkedHashMap<RecyclerType, RecyclerView>(length);
-		mRecyclerViews.put(RecyclerType.BEST_AROUND, (RecyclerView) findViewById(R.id.explore_best_around_recycler));
-		mRecyclerViews.put(RecyclerType.FEATURED_COLLECTIONS, (RecyclerView) findViewById(R.id.explore_featured_collections_recycler));
-		mRecyclerViews.put(RecyclerType.FEATURED_MAPPERS, (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler));
-		mRecyclerViews.put(RecyclerType.FEATURED_DEALS, (RecyclerView) findViewById(R.id.explore_featured_deals_recycler));
-		for (RecyclerView view : mRecyclerViews.values()) {
-			view.addOnLayoutChangeListener(this);
-			view.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-			if (mUseCompatPadding) {
-				int paddingLeft = view.getPaddingLeft();
-				int paddingTop = view.getPaddingTop();
-				int paddingRight = view.getPaddingRight();
-				int paddingBottom = view.getPaddingBottom();
-				paddingLeft -= mCardMaxElevation;
-				paddingRight -= mCardMaxElevation;
-				view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-			}
-		}
-
-		// Set up adapters
+		// Set up carousels
 
 		boolean animateOnInitialLoad = (savedInstanceState == null);
-		mAdapters = new LinkedHashMap<RecyclerType, Adapter>(length);
-		mAdapters.put(RecyclerType.BEST_AROUND, new BestAroundAdapter(animateOnInitialLoad));
-		mAdapters.put(RecyclerType.FEATURED_COLLECTIONS, new FeaturedCollectionsAdapter(animateOnInitialLoad));
-		mAdapters.put(RecyclerType.FEATURED_MAPPERS, new FeaturedMappersAdapter(animateOnInitialLoad));
-		mAdapters.put(RecyclerType.FEATURED_DEALS, new FeaturedDealsAdapter(animateOnInitialLoad));
-		for (RecyclerType type : RecyclerType.values()) {
-			mRecyclerViews.get(type).setAdapter(mAdapters.get(type));
+		int length = CarouselType.values().length;
+		mCarousels = new LinkedHashMap<CarouselType, Carousel>(length);
+		Carousel newCarousel = new Carousel();
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_best_around_carousel_container);
+		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_best_around_progressbar);
+		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_best_around_recycler);
+		newCarousel.mAdapter = new BestAroundAdapter(animateOnInitialLoad);
+		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
+		mCarousels.put(CarouselType.BEST_AROUND, newCarousel);
+
+		newCarousel = new Carousel();
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_collections_carousel_container);
+		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_collections_progressbar);
+		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_collections_recycler);
+		newCarousel.mAdapter = new FeaturedCollectionsAdapter(animateOnInitialLoad);
+		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
+		mCarousels.put(CarouselType.FEATURED_COLLECTIONS, newCarousel);
+
+		newCarousel = new Carousel();
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_mappers_carousel_container);
+		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_mappers_progressbar);
+		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler);
+		newCarousel.mAdapter = new FeaturedMappersAdapter(animateOnInitialLoad);
+		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
+		mCarousels.put(CarouselType.FEATURED_MAPPERS, newCarousel);
+
+		newCarousel = new Carousel();
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_deals_carousel_container);
+		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_deals_progressbar);
+		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_deals_recycler);
+		newCarousel.mAdapter = new FeaturedDealsAdapter(animateOnInitialLoad);
+		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
+		mCarousels.put(CarouselType.FEATURED_DEALS, newCarousel);
+
+		for (Carousel carousel : mCarousels.values()) {
+			carousel.mContainer.addOnLayoutChangeListener(this);
+			carousel.mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+			if (mUseCompatPadding) {
+				int paddingLeft = carousel.mRecyclerView.getPaddingLeft();
+				int paddingTop = carousel.mRecyclerView.getPaddingTop();
+				int paddingRight = carousel.mRecyclerView.getPaddingRight();
+				int paddingBottom = carousel.mRecyclerView.getPaddingBottom();
+				paddingLeft -= mCardMaxElevation;
+				paddingRight -= mCardMaxElevation;
+				carousel.mRecyclerView.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+			}
 		}
 
 		// Get map data from intent passed to Activity
@@ -180,27 +197,36 @@ public class ExploreActivity extends TrackedActionBarActivity
 	@Override
 	public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 		if (right - left > 0) {
-			if (v == mRecyclerViews.get(RecyclerType.BEST_AROUND)) {
-				mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross);
-				mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross);
-				int desiredHeight = BestAroundCollectionCardView.getDesiredHeight(this, mBestAroundDefaultCardWidth);
-				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
-				v.setLayoutParams(v.getLayoutParams());
-			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_COLLECTIONS)) {
-				mFeaturedCollectionCardWidth = getCardWidth(v, mFeaturedCollectionsCardsAcross);
-				int desiredHeight = CollectionCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
-				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
-				v.setLayoutParams(v.getLayoutParams());
-			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_MAPPERS)) {
-				mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross);
-				int desiredHeight = UserCardView.getDesiredHeight(this, mFeaturedMapperCardWidth);
-				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
-				v.setLayoutParams(v.getLayoutParams());
-			} else if (v == mRecyclerViews.get(RecyclerType.FEATURED_DEALS)) {
-				mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross);
-				int desiredHeight = DealCardView.getDesiredHeight(this, mFeaturedDealCardWidth);
-				v.getLayoutParams().height = desiredHeight + v.getPaddingTop() + v.getPaddingBottom();
-				v.setLayoutParams(v.getLayoutParams());
+			for (CarouselType type : CarouselType.values()) {
+				Carousel carousel = mCarousels.get(type);
+				if (v == carousel.mContainer) {
+					int desiredHeight = 0;
+					switch (type) {
+						case BEST_AROUND:
+							mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross);
+							mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross);
+							desiredHeight = BestAroundPlaceCardView.getDesiredHeight(this, mBestAroundDefaultCardWidth);
+							break;
+						case FEATURED_COLLECTIONS:
+							mFeaturedCollectionCardWidth = getCardWidth(v, mFeaturedCollectionsCardsAcross);
+							desiredHeight = CollectionCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
+							break;
+						case FEATURED_MAPPERS:
+							mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross);
+							desiredHeight = UserCardView.getDesiredHeight(this, mFeaturedMapperCardWidth);
+							break;
+						case FEATURED_DEALS:
+							mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross);
+							desiredHeight = DealCardView.getDesiredHeight(this, mFeaturedDealCardWidth);
+							break;
+					}
+					ViewGroup.LayoutParams layoutParams = carousel.mContainer.getLayoutParams();
+					layoutParams.height = desiredHeight +
+							carousel.mRecyclerView.getPaddingTop() + carousel.mRecyclerView.getPaddingBottom() +
+							carousel.mContainer.getPaddingTop() + carousel.mContainer.getPaddingBottom();
+					carousel.mContainer.setLayoutParams(layoutParams);
+					break;
+				}
 			}
 
 			// There should never be an instance where there are existing cards in the recycler views
@@ -227,17 +253,24 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	protected void onRequestsComplete(boolean isImmediate) {
-		LogEx.d();
 		if (isImmediate) {
-			((BestAroundAdapter) mAdapters.get(RecyclerType.BEST_AROUND)).setData(mHelperFragment.mBestAround);
-			((FeaturedCollectionsAdapter) mAdapters.get(RecyclerType.FEATURED_COLLECTIONS)).setData(mHelperFragment.mFeaturedCollections);
-			((FeaturedMappersAdapter) mAdapters.get(RecyclerType.FEATURED_MAPPERS)).setData(mHelperFragment.mFeaturedMappers);
-			((FeaturedDealsAdapter) mAdapters.get(RecyclerType.FEATURED_DEALS)).setData(mHelperFragment.mFeaturedDeals);
+			Carousel carousel = mCarousels.get(CarouselType.BEST_AROUND);
+			carousel.mProgressBar.setVisibility(View.GONE);
+			((BestAroundAdapter) carousel.mAdapter).setData(mHelperFragment.mBestAround);
+			carousel = mCarousels.get(CarouselType.FEATURED_COLLECTIONS);
+			carousel.mProgressBar.setVisibility(View.GONE);
+			((FeaturedCollectionsAdapter) carousel.mAdapter).setData(mHelperFragment.mFeaturedCollections);
+			carousel = mCarousels.get(CarouselType.FEATURED_MAPPERS);
+			carousel.mProgressBar.setVisibility(View.GONE);
+			((FeaturedMappersAdapter) carousel.mAdapter).setData(mHelperFragment.mFeaturedMappers);
+			carousel = mCarousels.get(CarouselType.FEATURED_DEALS);
+			carousel.mProgressBar.setVisibility(View.GONE);
+			((FeaturedDealsAdapter) carousel.mAdapter).setData(mHelperFragment.mFeaturedDeals);
 		} else {
-			new AsyncTask<RecyclerType, RecyclerType, Void>() {
+			new AsyncTask<CarouselType, CarouselType, Void>() {
 				@Override
-				protected Void doInBackground(RecyclerType... params) {
-					for (RecyclerType type : params) {
+				protected Void doInBackground(CarouselType... params) {
+					for (CarouselType type : params) {
 						publishProgress(type);
 						try {
 							Thread.sleep(CAROUSEL_INITIAL_LOAD_DELAY);
@@ -249,24 +282,26 @@ public class ExploreActivity extends TrackedActionBarActivity
 				}
 
 				@Override
-				protected void onProgressUpdate(RecyclerType... values) {
-					RecyclerType type = values[0];
+				protected void onProgressUpdate(CarouselType... values) {
+					CarouselType type = values[0];
+					Carousel carousel = mCarousels.get(type);
+					carousel.mProgressBar.setVisibility(View.GONE);
 					switch (type) {
 						case BEST_AROUND:
-							((BestAroundAdapter) mAdapters.get(RecyclerType.BEST_AROUND)).setData(mHelperFragment.mBestAround);
+							((BestAroundAdapter) carousel.mAdapter).setData(mHelperFragment.mBestAround);
 							break;
 						case FEATURED_COLLECTIONS:
-							((FeaturedCollectionsAdapter) mAdapters.get(RecyclerType.FEATURED_COLLECTIONS)).setData(mHelperFragment.mFeaturedCollections);
+							((FeaturedCollectionsAdapter) carousel.mAdapter).setData(mHelperFragment.mFeaturedCollections);
 							break;
 						case FEATURED_MAPPERS:
-							((FeaturedMappersAdapter) mAdapters.get(RecyclerType.FEATURED_MAPPERS)).setData(mHelperFragment.mFeaturedMappers);
+							((FeaturedMappersAdapter) carousel.mAdapter).setData(mHelperFragment.mFeaturedMappers);
 							break;
 						case FEATURED_DEALS:
-							((FeaturedDealsAdapter) mAdapters.get(RecyclerType.FEATURED_DEALS)).setData(mHelperFragment.mFeaturedDeals);
+							((FeaturedDealsAdapter) carousel.mAdapter).setData(mHelperFragment.mFeaturedDeals);
 							break;
 					}
 				}
-			}.execute(RecyclerType.BEST_AROUND, RecyclerType.FEATURED_COLLECTIONS, RecyclerType.FEATURED_MAPPERS, RecyclerType.FEATURED_DEALS);
+			}.execute(CarouselType.BEST_AROUND, CarouselType.FEATURED_COLLECTIONS, CarouselType.FEATURED_MAPPERS, CarouselType.FEATURED_DEALS);
 		}
 	}
 
@@ -625,8 +660,15 @@ public class ExploreActivity extends TrackedActionBarActivity
 			}
 		}
 	}
+	
+	private static class Carousel {
+		public FrameLayout mContainer;
+		public ProgressBar mProgressBar;
+		public RecyclerView mRecyclerView;
+		public Adapter mAdapter;
+	}
 
-	private static enum RecyclerType {
+	private static enum CarouselType {
 		BEST_AROUND,
 		FEATURED_COLLECTIONS,
 		FEATURED_MAPPERS,

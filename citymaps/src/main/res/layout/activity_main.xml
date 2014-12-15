@@ -8,8 +8,8 @@
 				tools:ignore="MergeRootFrame">
 
 	<SurfaceView
-			android:layout_width="0px"
-			android:layout_height="0px" />
+			android:layout_width="1px"
+			android:layout_height="1px" />
 
 	<fragment
 			android:id="@+id/fragment_main"
