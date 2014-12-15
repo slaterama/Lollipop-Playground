@@ -13,6 +13,7 @@
 			android:gravity="center_horizontal"
 			tools:text="@string/card_view_all_best_around"
 			android:textAppearance="?android:textAppearanceMediumInverse"
+			android:textColor="@android:color/white"
 			android:textStyle="bold" />
 
 </merge>

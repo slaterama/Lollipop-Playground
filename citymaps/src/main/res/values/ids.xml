@@ -35,4 +35,10 @@
 	<!-- The container holding the card's action(s) area. Should be a ViewGroup -->
 	<item type="id" name="card_action_container" />
 
+	<!-- This id is how ExploreActivity determines that a RecyclerView has been scrolled -->
+	<item type="id" name="explore_has_scrolled" />
+
+	<!-- This id is how ExploreActivity determines that an item in each carousel needs to be animated in -->
+	<item type="id" name="explore_card_should_animate" />
+
 </resources>

@@ -72,6 +72,15 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 	private HelperFragment mHelperFragment;
 
+	private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+		@Override
+		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+			super.onScrolled(recyclerView, dx, dy);
+			recyclerView.setTag(R.id.explore_has_scrolled, true);
+			recyclerView.setOnScrollListener(null);
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,7 +107,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_best_around_carousel_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_best_around_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_best_around_recycler);
-		newCarousel.mAdapter = new BestAroundAdapter(animateOnInitialLoad);
+		newCarousel.mAdapter = new BestAroundAdapter(newCarousel, animateOnInitialLoad);
 		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
 		mCarousels.put(CarouselType.BEST_AROUND, newCarousel);
 
@@ -106,7 +115,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_collections_carousel_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_collections_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_collections_recycler);
-		newCarousel.mAdapter = new FeaturedCollectionsAdapter(animateOnInitialLoad);
+		newCarousel.mAdapter = new FeaturedCollectionsAdapter(newCarousel, animateOnInitialLoad);
 		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
 		mCarousels.put(CarouselType.FEATURED_COLLECTIONS, newCarousel);
 
@@ -114,7 +123,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_mappers_carousel_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_mappers_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler);
-		newCarousel.mAdapter = new FeaturedMappersAdapter(animateOnInitialLoad);
+		newCarousel.mAdapter = new FeaturedMappersAdapter(newCarousel, animateOnInitialLoad);
 		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
 		mCarousels.put(CarouselType.FEATURED_MAPPERS, newCarousel);
 
@@ -122,12 +131,13 @@ public class ExploreActivity extends TrackedActionBarActivity
 		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_deals_carousel_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_deals_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_deals_recycler);
-		newCarousel.mAdapter = new FeaturedDealsAdapter(animateOnInitialLoad);
+		newCarousel.mAdapter = new FeaturedDealsAdapter(newCarousel, animateOnInitialLoad);
 		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
 		mCarousels.put(CarouselType.FEATURED_DEALS, newCarousel);
 
 		for (Carousel carousel : mCarousels.values()) {
 			carousel.mContainer.addOnLayoutChangeListener(this);
+			carousel.mRecyclerView.setOnScrollListener(mOnScrollListener);
 			carousel.mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 			if (mUseCompatPadding) {
 				int paddingLeft = carousel.mRecyclerView.getPaddingLeft();
@@ -203,20 +213,20 @@ public class ExploreActivity extends TrackedActionBarActivity
 					int desiredHeight = 0;
 					switch (type) {
 						case BEST_AROUND:
-							mBestAroundDefaultCardWidth = getCardWidth(v, mDefaultCardsAcross);
-							mBestAroundCardWidth = getCardWidth(v, mBestAroundCardsAcross);
+							mBestAroundDefaultCardWidth = getCardWidth(carousel.mRecyclerView, mDefaultCardsAcross);
+							mBestAroundCardWidth = getCardWidth(carousel.mRecyclerView, mBestAroundCardsAcross);
 							desiredHeight = BestAroundPlaceCardView.getDesiredHeight(this, mBestAroundDefaultCardWidth);
 							break;
 						case FEATURED_COLLECTIONS:
-							mFeaturedCollectionCardWidth = getCardWidth(v, mFeaturedCollectionsCardsAcross);
+							mFeaturedCollectionCardWidth = getCardWidth(carousel.mRecyclerView, mFeaturedCollectionsCardsAcross);
 							desiredHeight = CollectionCardView.getDesiredHeight(this, mFeaturedCollectionCardWidth);
 							break;
 						case FEATURED_MAPPERS:
-							mFeaturedMapperCardWidth = getCardWidth(v, mFeaturedMappersCardsAcross);
+							mFeaturedMapperCardWidth = getCardWidth(carousel.mRecyclerView, mFeaturedMappersCardsAcross);
 							desiredHeight = UserCardView.getDesiredHeight(this, mFeaturedMapperCardWidth);
 							break;
 						case FEATURED_DEALS:
-							mFeaturedDealCardWidth = getCardWidth(v, mFeaturedDealsCardsAcross);
+							mFeaturedDealCardWidth = getCardWidth(carousel.mRecyclerView, mFeaturedDealsCardsAcross);
 							desiredHeight = DealCardView.getDesiredHeight(this, mFeaturedDealCardWidth);
 							break;
 					}
@@ -306,16 +316,15 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	protected abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		protected RecyclerView mRecyclerView;
+		protected Carousel mCarousel;
 		protected boolean mAnimateOnInitialLoad;
-		protected Set<ViewHolder> mHolders;
 
 		protected List<D> mData;
 
-		public ExploreAdapter(boolean animateOnInitialLoad) {
+		public ExploreAdapter(Carousel carousel, boolean animateOnInitialLoad) {
 			super();
+			mCarousel = carousel;
 			mAnimateOnInitialLoad = animateOnInitialLoad;
-			mHolders = new HashSet<ViewHolder>();
 		}
 
 		public void setData(List<D> data) {
@@ -333,24 +342,13 @@ public class ExploreActivity extends TrackedActionBarActivity
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-			if (mRecyclerView == null) {
-				mRecyclerView = (RecyclerView) viewGroup;
-			}
-			return null;
-		}
-
-		@Override
 		public void onBindViewHolder(ViewHolder holder, int position) {
-			if (mAnimateOnInitialLoad && !mHolders.contains(holder)) {
-				int scrollDirection = (ViewCompat.getLayoutDirection(mRecyclerView) == ViewCompat.LAYOUT_DIRECTION_LTR ? -1 : 1);
-				boolean isAtStart = !mRecyclerView.canScrollHorizontally(scrollDirection);
-				if (isAtStart) {
-					Animation animation = AnimationUtils.loadAnimation(ExploreActivity.this, R.anim.overshoot_in_right);
-					animation.setStartOffset(position * CAROUSEL_ITEM_LOAD_DELAY);
-					holder.itemView.startAnimation(animation);
-					mHolders.add(holder);
-				}
+			Boolean shouldAnimate = (Boolean) holder.itemView.getTag(R.id.explore_card_should_animate);
+			if (shouldAnimate != null && shouldAnimate == Boolean.TRUE) {
+				holder.itemView.setTag(R.id.explore_card_should_animate, false);
+				Animation animation = AnimationUtils.loadAnimation(ExploreActivity.this, R.anim.overshoot_in_right);
+				animation.setStartOffset(position * CAROUSEL_ITEM_LOAD_DELAY);
+				holder.itemView.startAnimation(animation);
 			}
 
 			if (holder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
@@ -364,8 +362,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class BestAroundAdapter extends ExploreAdapter<SearchResult> {
-		public BestAroundAdapter(boolean animateOnInitialLoad) {
-			super(animateOnInitialLoad);
+		public BestAroundAdapter(Carousel carousel, boolean animateOnInitialLoad) {
+			super(carousel, animateOnInitialLoad);
 		}
 
 		@Override
@@ -384,7 +382,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			super.onCreateViewHolder(parent, viewType);
+			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
 				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
@@ -406,9 +404,16 @@ public class ExploreActivity extends TrackedActionBarActivity
 				}
 				cardView.setBaseSize(mBestAroundDefaultCardWidth);
 			}
+			if (mAnimateOnInitialLoad) {
+				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
+				if (hasScrolled == null || hasScrolled == Boolean.FALSE) {
+					cardView.setTag(R.id.explore_card_should_animate, true);
+				}
+			}
 			int actualCardWidth = mBestAroundCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
-			return new ViewHolder(cardView) {};
+			return new ViewHolder(cardView) {
+			};
 		}
 
 		@Override
@@ -425,8 +430,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class FeaturedCollectionsAdapter extends ExploreAdapter<SearchResult> {
-		public FeaturedCollectionsAdapter(boolean animateOnInitialLoad) {
-			super(animateOnInitialLoad);
+		public FeaturedCollectionsAdapter(Carousel carousel, boolean animateOnInitialLoad) {
+			super(carousel, animateOnInitialLoad);
 		}
 
 		@Override
@@ -440,7 +445,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			super.onCreateViewHolder(parent, viewType);
+			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
 				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
@@ -449,9 +454,16 @@ public class ExploreActivity extends TrackedActionBarActivity
 			} else {
 				cardView = new CollectionCardView(ExploreActivity.this);
 			}
+			if (mAnimateOnInitialLoad) {
+				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
+				if (hasScrolled == null || hasScrolled == Boolean.FALSE) {
+					cardView.setTag(R.id.explore_card_should_animate, true);
+				}
+			}
 			int actualCardWidth = mFeaturedCollectionCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
-			return new ViewHolder(cardView) {};
+			return new ViewHolder(cardView) {
+			};
 		}
 
 		@Override
@@ -466,8 +478,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class FeaturedMappersAdapter extends ExploreAdapter<User> {
-		public FeaturedMappersAdapter(boolean animateOnInitialLoad) {
-			super(animateOnInitialLoad);
+		public FeaturedMappersAdapter(Carousel carousel, boolean animateOnInitialLoad) {
+			super(carousel, animateOnInitialLoad);
 		}
 
 		@Override
@@ -480,7 +492,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			super.onCreateViewHolder(parent, viewType);
+			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
 				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
@@ -489,9 +501,16 @@ public class ExploreActivity extends TrackedActionBarActivity
 			} else {
 				cardView = new UserCardView(ExploreActivity.this);
 			}
+			if (mAnimateOnInitialLoad) {
+				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
+				if (hasScrolled == null || hasScrolled == Boolean.FALSE) {
+					cardView.setTag(R.id.explore_card_should_animate, true);
+				}
+			}
 			int actualCardWidth = mFeaturedMapperCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
-			return new ViewHolder(cardView) {};
+			return new ViewHolder(cardView) {
+			};
 		}
 
 		@Override
@@ -506,8 +525,8 @@ public class ExploreActivity extends TrackedActionBarActivity
 	}
 
 	public class FeaturedDealsAdapter extends ExploreAdapter<SearchResult> {
-		public FeaturedDealsAdapter(boolean animateOnInitialLoad) {
-			super(animateOnInitialLoad);
+		public FeaturedDealsAdapter(Carousel carousel, boolean animateOnInitialLoad) {
+			super(carousel, animateOnInitialLoad);
 		}
 
 		@Override
@@ -521,7 +540,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			super.onCreateViewHolder(parent, viewType);
+			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
 				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
@@ -530,9 +549,16 @@ public class ExploreActivity extends TrackedActionBarActivity
 			} else {
 				cardView = new DealCardView(ExploreActivity.this);
 			}
+			if (mAnimateOnInitialLoad) {
+				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
+				if (hasScrolled == null || hasScrolled == Boolean.FALSE) {
+					cardView.setTag(R.id.explore_card_should_animate, true);
+				}
+			}
 			int actualCardWidth = mFeaturedDealCardWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, RecyclerView.LayoutParams.MATCH_PARENT));
-			return new ViewHolder(cardView) {};
+			return new ViewHolder(cardView) {
+			};
 		}
 
 		@Override
@@ -689,7 +715,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 			}
 		}
 	}
-	
+
 	private static class Carousel {
 		public FrameLayout mContainer;
 		public ProgressBar mProgressBar;
