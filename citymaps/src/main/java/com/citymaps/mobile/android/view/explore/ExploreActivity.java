@@ -38,8 +38,7 @@ import com.citymaps.mobile.android.util.ResourcesUtils;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ExploreActivity extends TrackedActionBarActivity {
 
@@ -67,6 +66,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	private RecyclerViewEx mFeaturedMappersRecyclerView;
 	private RecyclerViewEx mFeaturedDealsRecyclerView;
 
+	private HeroAdapter mHeroAdapter;
+	private FeaturedCollectionsAdapter mFeaturedCollectionsAdapter;
+	private FeaturedMappersAdapter mFeaturedMappersAdapter;
+	private FeaturedDealsAdapter mFeaturedDealsAdapter;
+
 	private int mHeroDefaultCardSize;
 	private Rect mHeroCardRect;
 	private Rect mFeaturedCollectionsCardRect;
@@ -79,7 +83,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 	private HelperFragment mHelperFragment;
 
-	private AnimatorSet mProgressBarAnimatorSet;
+	private AnimationHelper mAnimationHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,24 +126,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		mFeaturedMappersRecyclerView.setOnSizeChangedListener(mRecyclerView_OnSizeChangedListener);
 		mFeaturedDealsRecyclerView.setOnSizeChangedListener(mRecyclerView_OnSizeChangedListener);
 
-		mHeroRecyclerView.addOnLayoutChangeListener(mRecyclerView_OnLayoutChangeListener);
-		mFeaturedCollectionsRecyclerView.addOnLayoutChangeListener(mRecyclerView_OnLayoutChangeListener);
-		mFeaturedMappersRecyclerView.addOnLayoutChangeListener(mRecyclerView_OnLayoutChangeListener);
-		mFeaturedDealsRecyclerView.addOnLayoutChangeListener(mRecyclerView_OnLayoutChangeListener);
-
-		// Set up animators
-
-		ProgressBar[] progressBars = new ProgressBar[] {mHeroProgressBar, mFeaturedCollectionsProgressBar,
-				mFeaturedMappersProgressBar, mFeaturedDealsProgressBar};
-		Animator[] animators = new Animator[progressBars.length];
-		for (int i = 0; i < progressBars.length; i++) {
-			animators[i] = AnimatorInflater.loadAnimator(this, R.animator.shrink_to_zero);
-			animators[i].setTarget(progressBars[i]);
-		}
-		mProgressBarAnimatorSet = new AnimatorSet();
-		mProgressBarAnimatorSet.playTogether(animators);
-		mProgressBarAnimatorSet.addListener(mProgressBar_AnimatorListener);
-
 		// Get map data from intent passed to Activity
 
 		Intent intent = getIntent();
@@ -165,6 +151,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 					onRequestsComplete(true);
 				}
 			});
+		}
+
+		// Set up animation helper
+
+		if (savedInstanceState == null) {
+			mAnimationHelper = new AnimationHelper();
 		}
 	}
 
@@ -197,10 +189,10 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	}
 
 	protected void onRequestsComplete(boolean isImmediate) {
-		if (isImmediate) {
-			populateData(false);
+		if (mAnimationHelper == null) {
+			populateData();
 		} else {
-			mProgressBarAnimatorSet.start();
+			mAnimationHelper.mProgressBarAnimatorSet.start();
 		}
 	}
 
@@ -220,7 +212,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		return Math.max((int) (perceivedAvailableWidth / cardsAcross), 0);
 	}
 
-	private void populateData(boolean animate) {
+	private void populateData() {
 		mHeroProgressBar.setVisibility(View.GONE);
 		mFeaturedCollectionsProgressBar.setVisibility(View.GONE);
 		mFeaturedMappersProgressBar.setVisibility(View.GONE);
@@ -250,10 +242,42 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			mHeroLabelView.setText(getString(R.string.explore_best_around, city));
 		}
 
-		mHeroRecyclerView.setAdapter(new HeroAdapter(mHelperFragment.mHeroItems));
-		mFeaturedCollectionsRecyclerView.setAdapter(new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections));
-		mFeaturedMappersRecyclerView.setAdapter(new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers));
-		mFeaturedDealsRecyclerView.setAdapter(new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals));
+		// TODO ANIMATION
+		// Listen for the first onLayoutChange for each RecyclerView so we can add children
+		// to the set of views waiting for all images to load
+		// If there are no items, mark that RecyclerView as "done" (i.e. not awaiting onLayoutChange)
+		if (mAnimationHelper != null) {
+			int pendingRecyclerViewCount = 0;
+			if (mHelperFragment.mHeroItems != null && mHelperFragment.mHeroItems.size() > 0) {
+				mAnimationHelper.addPendingRecyclerView(mHeroRecyclerView);
+				pendingRecyclerViewCount++;
+			}
+			if (mHelperFragment.mFeaturedCollections != null && mHelperFragment.mFeaturedCollections.size() > 0) {
+				mAnimationHelper.addPendingRecyclerView(mFeaturedCollectionsRecyclerView);
+				pendingRecyclerViewCount++;
+			}
+			if (mHelperFragment.mFeaturedMappers != null && mHelperFragment.mFeaturedMappers.size() > 0) {
+				mAnimationHelper.addPendingRecyclerView(mFeaturedMappersRecyclerView);
+				pendingRecyclerViewCount++;
+			}
+			if (mHelperFragment.mFeaturedDeals != null && mHelperFragment.mFeaturedDeals.size() > 0) {
+				mAnimationHelper.addPendingRecyclerView(mFeaturedDealsRecyclerView);
+				pendingRecyclerViewCount++;
+			}
+			if (pendingRecyclerViewCount == 0) {
+				LogEx.d("!!!!! No RecyclerViews had any data !!!!!");
+			}
+		}
+
+		mHeroAdapter = new HeroAdapter(mHelperFragment.mHeroItems);
+		mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections);
+		mFeaturedMappersAdapter = new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers);
+		mFeaturedDealsAdapter = new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals);
+
+		mHeroRecyclerView.setAdapter(mHeroAdapter);
+		mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter);
+		mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
+		mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
 	}
 
 	private OnSizeChangedListener mRecyclerView_OnSizeChangedListener = new OnSizeChangedListener() {
@@ -297,28 +321,10 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 	};
 
-	private View.OnLayoutChangeListener mRecyclerView_OnLayoutChangeListener = new View.OnLayoutChangeListener() {
+	private CitymapsCardView.OnLoadCompleteListener mCardView_OnLoadCompleteListener = new CitymapsCardView.OnLoadCompleteListener() {
 		@Override
-		public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-		}
-	};
-
-	private Animator.AnimatorListener mProgressBar_AnimatorListener = new Animator.AnimatorListener() {
-		@Override
-		public void onAnimationStart(Animator animation) {
-		}
-
-		@Override
-		public void onAnimationEnd(Animator animation) {
-			populateData(true);
-		}
-
-		@Override
-		public void onAnimationCancel(Animator animation) {
-		}
-
-		@Override
-		public void onAnimationRepeat(Animator animation) {
+		public void onLoadComplete(CitymapsCardView v) {
+			LogEx.d(String.format("v=%s", v));
 		}
 	};
 
@@ -331,12 +337,18 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	private abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		protected static final int VIEW_TYPE_VIEW_ALL = Integer.MIN_VALUE;
 
-		protected List<D> mItems;
 		protected boolean mHasViewAllCard = true;
+		protected boolean mIsInInitialLoad;
+		protected List<D> mItems;
 
 		public ExploreAdapter(List<D> items) {
 			super();
+			mIsInInitialLoad = true;
 			mItems = items;
+		}
+
+		public void setInInitialLoad(boolean isInInitialLoad) {
+			mIsInInitialLoad = isInInitialLoad;
 		}
 
 		public List<D> getItems() {
@@ -362,7 +374,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			int count = 0;
 			if (mItems != null) {
 				count = mItems.size();
-				if (mHasViewAllCard) {
+				if (count > 0 && mHasViewAllCard) {
 					count++;
 				}
 			}
@@ -536,6 +548,99 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public ExploreViewHolder(View itemView) {
 			super(itemView);
 		}
+	}
+
+	/**
+	 * ******************************************************************************
+	 * Animation helper
+	 * ******************************************************************************
+	 */
+
+	public class AnimationHelper implements View.OnLayoutChangeListener {
+
+		private Set<View> mPendingRecyclerViews;
+
+		private AnimatorSet mProgressBarAnimatorSet;
+
+		private Set<CitymapsCardView> mPendingCardViews;
+
+		public AnimationHelper() {
+			super();
+
+			mPendingRecyclerViews = new HashSet<View>();
+
+			ProgressBar[] progressBars = new ProgressBar[] {mHeroProgressBar, mFeaturedCollectionsProgressBar,
+					mFeaturedMappersProgressBar, mFeaturedDealsProgressBar};
+			Animator[] animators = new Animator[progressBars.length];
+			for (int i = 0; i < progressBars.length; i++) {
+				animators[i] = AnimatorInflater.loadAnimator(ExploreActivity.this, R.animator.shrink_to_zero);
+				animators[i].setTarget(progressBars[i]);
+			}
+			mProgressBarAnimatorSet = new AnimatorSet();
+			mProgressBarAnimatorSet.playTogether(animators);
+			mProgressBarAnimatorSet.addListener(mProgressBar_AnimatorListener);
+
+			mPendingCardViews = new HashSet<CitymapsCardView>();
+		}
+
+		public void addPendingRecyclerView(RecyclerView recyclerView) {
+			mPendingRecyclerViews.add(recyclerView);
+			recyclerView.addOnLayoutChangeListener(this);
+		}
+
+		@Override
+		public void onLayoutChange(View v, int left, int top, int right, int bottom,
+								   int oldLeft, int oldTop, int oldRight, int oldBottom) {
+			if (v instanceof ViewGroup) {
+				ViewGroup viewGroup = (ViewGroup) v;
+				int childCount = viewGroup.getChildCount();
+				if (childCount > 0) {
+					// Temporarily hide the RecyclerView until all cards have loaded their images
+//					v.setVisibility(View.INVISIBLE);
+
+					for (int i = 0; i < childCount; i++) {
+						View child = viewGroup.getChildAt(i);
+						if (child instanceof CitymapsCardView) {
+							CitymapsCardView cardView = (CitymapsCardView) child;
+							if (!cardView.isLoadComplete()) {
+								mPendingCardViews.add(cardView);
+							}
+						}
+					}
+
+					v.removeOnLayoutChangeListener(this);
+				}
+			}
+			mPendingRecyclerViews.remove(v);
+			if (mPendingRecyclerViews.size() == 0) {
+				LogEx.d("!!!!! All views have been laid out !!!!!");
+
+				if (mPendingCardViews.size() == 0) {
+					LogEx.d("!!!!! All cards have completed loading !!!!!");
+				} else {
+					LogEx.d(String.format("Number of pending card views=%d", mPendingCardViews.size()));
+				}
+			}
+		}
+
+		private Animator.AnimatorListener mProgressBar_AnimatorListener = new Animator.AnimatorListener() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				populateData();
+			}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+			}
+		};
 	}
 
 	/**
