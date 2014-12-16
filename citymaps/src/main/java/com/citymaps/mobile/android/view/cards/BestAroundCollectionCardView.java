@@ -22,13 +22,6 @@ import java.util.List;
 
 public class BestAroundCollectionCardView extends CitymapsCardView<SearchResultCollection> {
 
-	public static int getDesiredHeight(Context context, int size) {
-		BestAroundCollectionCardView cardView = new BestAroundCollectionCardView(context);
-		cardView.setBaseSize(size);
-		cardView.measure(0, 0);
-		return cardView.getMeasuredHeight();
-	}
-
 	private ViewGroup mInfoContainerView;
 	private TextView mNameView;
 	private ImageView mMainImageView;

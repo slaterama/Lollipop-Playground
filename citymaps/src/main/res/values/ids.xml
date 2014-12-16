@@ -8,11 +8,17 @@
 	<!-- Card ids -->
 
 	<!-- This view will help dictate the desired height of a card if its width is set.
-	     Ideally should be a RatioFrameLayout or RatioImageView -->
+	     Ideally should be a RatioFrameLayout or RatioImageView --> <!-- TODO Remove -->
 	<item type="id" name="card_height_regulator" />
 
-	<!-- The main container of a card. Should be a ViewGroup -->
+	<!-- The main container of a card. Should be a ViewGroup --> <!-- TODO Remove -->
 	<item type="id" name="card_main_container" />
+
+	<!-- The part of a card that holds the primary information. Should be a ViewGroup -->
+	<item type="id" name="card_info_container" />
+
+	<!-- The container holding the card's avatar area. Should be a ViewGroup -->
+	<item type="id" name="card_avatar_container" />
 
 	<!-- The main image associated with a card. Should be an ImageView -->
 	<item type="id" name="card_image" />
@@ -22,9 +28,6 @@
 
 	<!-- The description associated with a card. Should be a TextView -->
 	<item type="id" name="card_description" />
-
-	<!-- The container holding the card's avatar area. Should be a ViewGroup -->
-	<item type="id" name="card_avatar_container" />
 
 	<!-- The primary avatar associated with a card. Should be an ImageView -->
 	<item type="id" name="card_avatar" />

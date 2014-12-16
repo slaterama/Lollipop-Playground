@@ -24,8 +24,8 @@ import com.citymaps.mobile.android.map.ParcelableMapPosition;
 import com.citymaps.mobile.android.map.SimpleMapViewOwner;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.MapUtils;
+import com.citymaps.mobile.android.view.explore.ExploreActivity;
 import com.citymaps.mobile.android.widget.FloatingActionButton;
-//import com.citymaps.mobile.android.widget.FloatingActionButtonCompat;
 
 /**
  * A simple {@link Fragment} subclass.

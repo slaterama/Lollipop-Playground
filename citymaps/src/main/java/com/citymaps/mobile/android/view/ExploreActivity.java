@@ -97,7 +97,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		mCardMaxElevation = resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation);
 		mCardPerceivedMargin = resources.getDimensionPixelOffset(R.dimen.explore_card_inner_margin);
 		mDefaultCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_default_cards_across, 2.0f);
-		mBestAroundCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_best_around_cards_across, 1.0f);
+		mBestAroundCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_hero_cards_across, 1.0f);
 		mFeaturedCollectionsCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_collections_cards_across, 2.0f);
 		mFeaturedMappersCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_mappers_cards_across, 2.0f);
 		mFeaturedDealsCardsAcross = ResourcesUtils.getFloat(resources, R.dimen.explore_featured_deals_cards_across, 2.0f);
@@ -108,15 +108,15 @@ public class ExploreActivity extends TrackedActionBarActivity
 		int length = CarouselType.values().length;
 		mCarousels = new LinkedHashMap<CarouselType, Carousel>(length);
 		Carousel newCarousel = new Carousel();
-		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_best_around_carousel_container);
-		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_best_around_progressbar);
-		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_best_around_recycler);
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_hero_container);
+		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_hero_progressbar);
+		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_hero_recycler);
 		newCarousel.mAdapter = new BestAroundAdapter(newCarousel, animateOnInitialLoad);
 		newCarousel.mRecyclerView.setAdapter(newCarousel.mAdapter);
 		mCarousels.put(CarouselType.BEST_AROUND, newCarousel);
 
 		newCarousel = new Carousel();
-		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_collections_carousel_container);
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_collections_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_collections_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_collections_recycler);
 		newCarousel.mAdapter = new FeaturedCollectionsAdapter(newCarousel, animateOnInitialLoad);
@@ -124,7 +124,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		mCarousels.put(CarouselType.FEATURED_COLLECTIONS, newCarousel);
 
 		newCarousel = new Carousel();
-		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_mappers_carousel_container);
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_mappers_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_mappers_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_mappers_recycler);
 		newCarousel.mAdapter = new FeaturedMappersAdapter(newCarousel, animateOnInitialLoad);
@@ -132,7 +132,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		mCarousels.put(CarouselType.FEATURED_MAPPERS, newCarousel);
 
 		newCarousel = new Carousel();
-		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_deals_carousel_container);
+		newCarousel.mContainer = (FrameLayout) findViewById(R.id.explore_featured_deals_container);
 		newCarousel.mProgressBar = (ProgressBar) findViewById(R.id.explore_featured_deals_progressbar);
 		newCarousel.mRecyclerView = (RecyclerView) findViewById(R.id.explore_featured_deals_recycler);
 		newCarousel.mAdapter = new FeaturedDealsAdapter(newCarousel, animateOnInitialLoad);

@@ -11,6 +11,6 @@
 	<item name="explore_default_cards_across" format="float" type="dimen">3.0</item>
 
 	<!-- The number of cards across in the various ExploreActivity recycler views -->
-	<item name="explore_best_around_cards_across" format="float" type="dimen">1.5</item>
+	<item name="explore_hero_cards_across" format="float" type="dimen">1.5</item>
 
 </resources>

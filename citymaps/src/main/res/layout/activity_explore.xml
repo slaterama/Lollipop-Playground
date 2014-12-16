@@ -37,7 +37,7 @@
 
 				<!--
 				<Button
-						android:id="@+id/explore_best_around_view_all_button"
+						android:id="@+id/explore_hero_view_all_button"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						style="?android:borderlessButtonStyle"
@@ -47,15 +47,15 @@
 			</LinearLayout>
 
 			<FrameLayout
-					android:id="@+id/explore_best_around_carousel_container"
+					android:id="@+id/explore_hero_container"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					tools:layout_height="225dp">
+					android:layout_height="wrap_content">
 
-				<android.support.v7.widget.RecyclerView
-						android:id="@+id/explore_best_around_recycler"
+				<com.citymaps.mobile.android.widget.RecyclerViewEx
+						android:id="@+id/explore_hero_recycler"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
+						tools:layout_height="225dp"
 						android:paddingLeft="@dimen/activity_horizontal_margin"
 						android:paddingStart="@dimen/activity_horizontal_margin"
 						android:paddingRight="@dimen/activity_horizontal_margin"
@@ -63,7 +63,7 @@
 						android:clipToPadding="false" />
 
 				<ProgressBar
-						android:id="@+id/explore_best_around_progressbar"
+						android:id="@+id/explore_hero_progressbar"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
@@ -125,15 +125,15 @@
 			</LinearLayout>
 
 			<FrameLayout
-					android:id="@+id/explore_featured_collections_carousel_container"
+					android:id="@+id/explore_featured_collections_container"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					tools:layout_height="225dp">
+					android:layout_height="wrap_content">
 
-				<android.support.v7.widget.RecyclerView
+				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_featured_collections_recycler"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
+						tools:layout_height="225dp"
 						android:paddingLeft="@dimen/activity_horizontal_margin"
 						android:paddingStart="@dimen/activity_horizontal_margin"
 						android:paddingRight="@dimen/activity_horizontal_margin"
@@ -177,15 +177,15 @@
 			</LinearLayout>
 
 			<FrameLayout
-					android:id="@+id/explore_featured_mappers_carousel_container"
+					android:id="@+id/explore_featured_mappers_container"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					tools:layout_height="225dp">
+					android:layout_height="wrap_content">
 
-				<android.support.v7.widget.RecyclerView
+				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_featured_mappers_recycler"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
+						tools:layout_height="225dp"
 						android:paddingLeft="@dimen/activity_horizontal_margin"
 						android:paddingStart="@dimen/activity_horizontal_margin"
 						android:paddingRight="@dimen/activity_horizontal_margin"
@@ -229,15 +229,15 @@
 			</LinearLayout>
 
 			<FrameLayout
-					android:id="@+id/explore_featured_deals_carousel_container"
+					android:id="@+id/explore_featured_deals_container"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					tools:layout_height="225dp">
+					android:layout_height="wrap_content">
 
-				<android.support.v7.widget.RecyclerView
+				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_featured_deals_recycler"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
+						tools:layout_height="225dp"
 						android:paddingLeft="@dimen/activity_horizontal_margin"
 						android:paddingStart="@dimen/activity_horizontal_margin"
 						android:paddingRight="@dimen/activity_horizontal_margin"
