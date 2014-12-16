@@ -236,15 +236,6 @@ public class FloatingActionButton extends CardView {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-
-		int pl = getPaddingLeft();
-		int pt = getPaddingTop();
-		int pr = getPaddingRight();
-		int pb = getPaddingBottom();
-		float maxE = getMaxFabElevation();
-		boolean preventCornerOverlap = getPreventCornerOverlap();
-		LogEx.d(String.format("pl=%d, pt=%d, pr=%d, pb=%d, maxE=%f, preventCornerOverlap=%b", pl, pt, pr, pb, maxE, preventCornerOverlap));
-
 		int width = w - getPaddingLeft() - getPaddingRight();
 		int height = h - getPaddingTop() - getPaddingBottom();
 		float radius = Math.min(width, height) / 2.0f;

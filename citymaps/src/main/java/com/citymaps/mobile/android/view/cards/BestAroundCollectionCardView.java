@@ -52,7 +52,7 @@ public class BestAroundCollectionCardView extends CitymapsCardView<SearchResultC
 	@Override
 	public void init(Context context) {
 		super.init(context);
-		View view = View.inflate(context, R.layout.card_best_around_collection, this);
+		View view = View.inflate(context, R.layout.card_hero_collection, this);
 		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
 		mInfoContainerView = (ViewGroup) view.findViewById(R.id.card_best_around_collection_fixed_height_info_container);
 		mNameView = (TextView) view.findViewById(R.id.card_name);
