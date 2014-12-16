@@ -71,7 +71,7 @@
 	</plurals>
 	<string name="card_currency_symbol">$</string>
 
-	<string name="card_view_all_best_around">View All Best Around Me</string>
+	<string name="card_view_all_hero">View All Best Around</string>
 	<string name="card_view_all_featured_collections">View All Featured Collections</string>
 	<string name="card_view_all_featured_mappers">View All Featured Mappers</string>
 	<string name="card_view_all_featured_deals">View All Featued Deals</string>

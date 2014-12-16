@@ -26,15 +26,11 @@ public class CollectionHeroCardView extends HeroCardView {
 	}
 
 	@Override
-	protected void inflateView(Context context) {
-		View.inflate(context, R.layout.card_hero_collection_new, this);
-	}
-
-	@Override
 	protected void init(Context context) {
-		super.init(context);
+		View.inflate(context, R.layout.card_hero_collection_new, this);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
 		mNameView = (TextView) findViewById(R.id.card_name);
+		super.init(context);
 	}
 
 	@Override

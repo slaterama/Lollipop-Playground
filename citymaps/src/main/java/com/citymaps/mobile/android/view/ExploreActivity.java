@@ -755,7 +755,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		protected void onBindData(CarouselType data) {
 			switch (data) {
 				case BEST_AROUND:
-					mLabelView.setText(R.string.card_view_all_best_around);
+					mLabelView.setText(R.string.card_view_all_hero);
 					break;
 				case FEATURED_COLLECTIONS:
 					mLabelView.setText(R.string.card_view_all_featured_collections);

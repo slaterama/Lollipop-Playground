@@ -42,13 +42,8 @@ public class CollectionCardView extends CitymapsCardView {
 	}
 
 	@Override
-	protected void inflateView(Context context) {
-		View.inflate(context, R.layout.card_collection_new, this);
-	}
-
-	@Override
 	protected void init(Context context) {
-		super.init(context);
+		View.inflate(context, R.layout.card_collection_new, this);		super.init(context);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
@@ -57,6 +52,7 @@ public class CollectionCardView extends CitymapsCardView {
 		mDescriptionView = (TextView) findViewById(R.id.card_description);
 		mAvatarView = (ImageView) findViewById(R.id.card_avatar);
 		mUsernameView = (TextView) findViewById(R.id.card_username);
+		super.init(context);
 	}
 
 	@Override

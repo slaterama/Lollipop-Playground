@@ -41,19 +41,15 @@ public class DealCardView extends CitymapsCardView {
 	}
 
 	@Override
-	protected void inflateView(Context context) {
-		View.inflate(context, R.layout.card_deal_new, this);
-	}
-
-	@Override
 	protected void init(Context context) {
-		super.init(context);
+		View.inflate(context, R.layout.card_deal_new, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
 		mNameView = (TextView) findViewById(R.id.card_name);
 		mAvatarView = (ImageView) findViewById(R.id.card_avatar);
 		mPlaceNameView = (TextView) findViewById(R.id.card_place_name);
+		super.init(context);
 	}
 
 	@Override

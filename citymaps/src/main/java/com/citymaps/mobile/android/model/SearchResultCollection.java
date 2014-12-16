@@ -2,6 +2,8 @@ package com.citymaps.mobile.android.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class SearchResultCollection extends SearchResult {
 
 	public static final String MAP_ID = "map_id";
@@ -34,7 +36,7 @@ public class SearchResultCollection extends SearchResult {
 	private String mDescription;
 
 	@SerializedName(EDITORS)
-	private Object[] mEditors;
+	private List<User> mEditors;
 
 	@SerializedName(FOURSQUARE_ID)
 	private String mFoursquareId;
@@ -114,11 +116,11 @@ public class SearchResultCollection extends SearchResult {
 		notifyObservers(DESCRIPTION);
 	}
 
-	public Object[] getEditors() {
+	public List<User> getEditors() {
 		return mEditors;
 	}
 
-	public void setEditors(Object[] editors) {
+	public void setEditors(List<User> editors) {
 		mEditors = editors;
 		setChanged();
 		notifyObservers(EDITORS);
