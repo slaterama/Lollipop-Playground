@@ -1,13 +1,25 @@
 package com.citymaps.mobile.android.view.explore;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
+import com.citymaps.mobile.android.util.GraphicsUtils;
+import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.imagelistener.AnimatingImageListener;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class CollectionCardView extends CitymapsCardView<SearchResultCollection> {
 
@@ -41,7 +53,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 
 	@Override
 	protected void init(Context context) {
-		View.inflate(context, R.layout.card_collection_new, this);		super.init(context);
+		View.inflate(context, R.layout.card_collection_new, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
@@ -60,12 +72,75 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 	}
 
 	@Override
-	public void onBindData(SearchResultCollection data, boolean animateImages) {
+	public void onBindData(final SearchResultCollection data, boolean animateImages) {
+		super.onBindData(data, animateImages);
+
 		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
 		mNameView.setText(data.getName());
 		mDescriptionView.setText(data.getDescription());
 		mUsernameView.setText(data.getOwnerUsername());
 
-		// TODO Image stuff
+		mPendingImageViews.addAll(Arrays.asList(mMainImageView, mAvatarView));
+
+		final String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
+		if (TextUtils.isEmpty(foursquarePhotoUrl)) {
+			String foursquareId = data.getFoursquareId();
+			FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(),
+					foursquareId, 1,
+					new Response.Listener<List<FoursquarePhoto>>() {
+						@Override
+						public void onResponse(List<FoursquarePhoto> response) {
+							if (response == null || response.size() == 0) {
+								// TODO Default image?
+							} else {
+								FoursquarePhoto photo = response.get(0);
+								String foursquarePhotoUrl = photo.getPhotoUrl();
+								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
+								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+										new ImageListener(getContext(), mMainImageView)));
+							}
+						}
+					},
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							if (LogEx.isLoggable(LogEx.ERROR)) {
+								LogEx.e(error.getMessage(), error);
+							}
+						}
+					});
+			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+		} else {
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+					new ImageListener(getContext(), mMainImageView)));
+		}
+
+		String avatarUrl = data.getOwnerAvatar();
+		if (TextUtils.isEmpty(avatarUrl)) {
+			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
+					getResources(), R.drawable.default_user_avatar_mini));
+		} else {
+			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+			mImageContainers.add(mImageLoader.get(avatarUrl, new ImageListener(getContext(), mAvatarView),
+					size, size, VolleyManager.OPTION_CIRCLE));
+		}
+	}
+
+	protected class ImageListener extends AnimatingImageListener {
+		public ImageListener(Context context, ImageView imageView, int animationResId) {
+			super(context, imageView, animationResId);
+		}
+
+		public ImageListener(Context context, ImageView imageView) {
+			super(context, imageView);
+		}
+
+		@Override
+		public void onLoadComplete() {
+			mPendingImageViews.remove(getImageView());
+			if (mPendingImageViews.size() == 0) {
+				setLoadComplete();
+			}
+		}
 	}
 }

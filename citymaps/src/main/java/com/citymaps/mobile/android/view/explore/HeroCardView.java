@@ -35,8 +35,6 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 
 	protected TextView mNameView;
 
-	protected Set<ImageView> mPendingImageViews;
-
 	public HeroCardView(Context context) {
 		super(context);
 	}
@@ -55,7 +53,6 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mNameView = (TextView) findViewById(R.id.card_name);
-		mPendingImageViews = new HashSet<ImageView>();
 	}
 
 	@Override
@@ -66,18 +63,12 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 
 	@Override
 	public void onBindData(final D data, boolean animateImages) {
-		Iterator<ImageLoader.ImageContainer> iterator = mImageContainers.iterator();
-		while (iterator.hasNext()) {
-			ImageLoader.ImageContainer container = iterator.next();
-			container.cancelRequest();
-			iterator.remove();
-		}
-
-		mPendingImageViews.addAll(Arrays.asList(mMainImageView));
+		super.onBindData(data, animateImages);
 
 		mNameView.setText(data.getName());
 
-		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
+		mPendingImageViews.addAll(Arrays.asList(mMainImageView));
+
 		final String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
 		if (TextUtils.isEmpty(foursquarePhotoUrl)) {
 			String foursquareId = data.getFoursquareId();
@@ -87,12 +78,13 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 						@Override
 						public void onResponse(List<FoursquarePhoto> response) {
 							if (response == null || response.size() == 0) {
-								// TODO Default image/
+								// TODO Default image?
 							} else {
 								FoursquarePhoto photo = response.get(0);
 								String foursquarePhotoUrl = photo.getPhotoUrl();
 								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
-								mImageContainers.add(loader.get(foursquarePhotoUrl,
+
+								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
 										new MainImageListener(getContext(), mMainImageView)));
 							}
 						}
@@ -107,27 +99,32 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 					});
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
-			mImageContainers.add(loader.get(foursquarePhotoUrl,
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
 					new MainImageListener(getContext(), mMainImageView)));
 		}
 	}
 
-	protected void onLoadComplete(ImageView imageView) {
-		int sizeBeforeRemove = mPendingImageViews.size();
-		mPendingImageViews.remove(imageView);
-		if (mOnLoadCompleteListener != null && sizeBeforeRemove == 1 && mPendingImageViews.size() == 0) {
-			mOnLoadCompleteListener.onLoadComplete(this);
-		}
+	@Override
+	protected void resetView() {
+		super.resetView();
+		mMainImageView.setImageDrawable(null);
 	}
 
 	protected class MainImageListener extends GradientAnimatingImageListener {
+		public MainImageListener(Context context, ImageView imageView, int animationResId) {
+			super(context, imageView, animationResId);
+		}
+
 		public MainImageListener(Context context, ImageView imageView) {
 			super(context, imageView);
 		}
 
 		@Override
 		public void onLoadComplete() {
-			HeroCardView.this.onLoadComplete(getImageView());
+			mPendingImageViews.remove(getImageView());
+			if (mPendingImageViews.size() == 0) {
+				setLoadComplete();
+			}
 		}
 	}
 }

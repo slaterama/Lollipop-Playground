@@ -167,8 +167,6 @@ public class VolleyManager {
 			return container;
 		}
 
-
-
 		private static String getCacheKey(String url, int maxWidth, int maxHeight, String... options) {
 			final String prefix;
 			final String optionsString;
