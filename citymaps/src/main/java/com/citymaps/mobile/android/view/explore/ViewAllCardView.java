@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
 
-public class ViewAllCardView extends CitymapsCardView {
+public class ViewAllCardView extends CitymapsCardView<Integer> {
 
 	private TextView mLabelView;
 
@@ -35,7 +35,8 @@ public class ViewAllCardView extends CitymapsCardView {
 
 	}
 
-	public void bindView(int resId) {
-		mLabelView.setText(resId);
+	@Override
+	public void onBindData(Integer data, boolean animateImages) {
+		mLabelView.setText(data);
 	}
 }

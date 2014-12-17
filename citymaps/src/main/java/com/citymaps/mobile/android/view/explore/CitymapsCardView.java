@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.view.View;
 import com.citymaps.mobile.android.R;
 
-public abstract class CitymapsCardView extends CardView {
+public abstract class CitymapsCardView<D> extends CardView {
 
 	private boolean mLoadComplete = false;
+
+	private D mData;
 
 	private OnLoadCompleteListener mOnLoadCompleteListener;
 
@@ -35,15 +36,26 @@ public abstract class CitymapsCardView extends CardView {
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
 	}
 
-	public boolean isLoadComplete() {
-		return mLoadComplete;
+	public D getData() {
+		return mData;
+	}
+
+	public void setData(D data, boolean animateImages) {
+		mData = data;
+		onBindData(data, animateImages);
 	}
 
 	public void setOnLoadCompleteListener(OnLoadCompleteListener onLoadCompleteListener) {
 		mOnLoadCompleteListener = onLoadCompleteListener;
 	}
 
+	public boolean isLoadComplete() {
+		return mLoadComplete;
+	}
+
 	public abstract void setDefaultCardSize(int size);
+
+	public abstract void onBindData(D data, boolean animateImages);
 
 	public static interface OnLoadCompleteListener {
 		public void onLoadComplete(CitymapsCardView v);

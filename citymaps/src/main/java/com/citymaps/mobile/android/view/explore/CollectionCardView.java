@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 
-public class CollectionCardView extends CitymapsCardView {
+public class CollectionCardView extends CitymapsCardView<SearchResultCollection> {
 
 	public static int getDesiredHeight(Context context, int defaultCardSize) {
 		CollectionCardView cardView = new CollectionCardView(context);
@@ -26,8 +26,6 @@ public class CollectionCardView extends CitymapsCardView {
 	private TextView mDescriptionView;
 	private ImageView mAvatarView;
 	private TextView mUsernameView;
-
-	private SearchResultCollection mData;
 
 	public CollectionCardView(Context context) {
 		super(context);
@@ -61,8 +59,8 @@ public class CollectionCardView extends CitymapsCardView {
 		mMainContainerView.requestLayout();
 	}
 
-	public void bindData(SearchResultCollection data) {
-		mData = data;
+	@Override
+	public void onBindData(SearchResultCollection data, boolean animateImages) {
 		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
 		mNameView.setText(data.getName());
 		mDescriptionView.setText(data.getDescription());

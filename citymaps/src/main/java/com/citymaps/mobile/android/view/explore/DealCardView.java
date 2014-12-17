@@ -10,7 +10,7 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.Deal;
 import com.citymaps.mobile.android.model.SearchResultPlace;
 
-public class DealCardView extends CitymapsCardView {
+public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 
 	public static int getDesiredHeight(Context context, int defaultCardSize) {
 		DealCardView cardView = new DealCardView(context);
@@ -25,8 +25,6 @@ public class DealCardView extends CitymapsCardView {
 	private TextView mNameView;
 	private ImageView mAvatarView;
 	private TextView mPlaceNameView;
-
-	private SearchResultPlace mData;
 
 	public DealCardView(Context context) {
 		super(context);
@@ -58,16 +56,16 @@ public class DealCardView extends CitymapsCardView {
 		mMainContainerView.requestLayout();
 	}
 
-	public void bindData(SearchResultPlace data) {
-		mData = data;
+	@Override
+	public void onBindData(SearchResultPlace data, boolean animate) {
 		mPlaceNameView.setText(data.getName());
 		Deal[] deals = data.getDeals();
 		if (deals != null && deals.length > 0) {
-			bindData(deals[0]);
+			bindDeal(deals[0], animate);
 		}
 	}
 
-	protected void bindData(Deal deal) {
+	protected void bindDeal(Deal deal, boolean animateImages) {
 		mNameView.setText(deal.getLabel());
 
 		// TODO Image stuff

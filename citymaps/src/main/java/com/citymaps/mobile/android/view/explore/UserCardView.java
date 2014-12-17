@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.User;
 
-public class UserCardView extends CitymapsCardView {
+public class UserCardView extends CitymapsCardView<User> {
 
 	public static int getDesiredHeight(Context context, int defaultCardSize) {
 		UserCardView cardView = new UserCardView(context);
@@ -27,8 +27,6 @@ public class UserCardView extends CitymapsCardView {
 	private TextView mUsernameView;
 	private TextView mFollowersView;
 	private Button mFollowButton;
-
-	private User mData;
 
 	public UserCardView(Context context) {
 		super(context);
@@ -62,8 +60,8 @@ public class UserCardView extends CitymapsCardView {
 		mMainContainerView.requestLayout();
 	}
 
-	public void bindData(User data) {
-		mData = data;
+	@Override
+	public void onBindData(User data, boolean animateImages) {
 		mNameView.setText(data.getName());
 		String username = data.getUsername();
 		mUsernameView.setText(username);

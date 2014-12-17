@@ -6,9 +6,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.model.SearchResult;
+import com.citymaps.mobile.android.model.SearchResultCollection;
 
-public class CollectionHeroCardView extends HeroCardView {
+public class CollectionHeroCardView extends HeroCardView<SearchResultCollection> {
 
 	private ImageView mMainImageView;
 	private TextView mNameView;
@@ -34,8 +34,7 @@ public class CollectionHeroCardView extends HeroCardView {
 	}
 
 	@Override
-	public void bindData(SearchResult data) {
-		super.bindData(data);
+	public void onBindData(SearchResultCollection data, boolean animateImages) {
 		mNameView.setText(data.getName());
 	}
 }

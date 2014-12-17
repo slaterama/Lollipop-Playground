@@ -329,9 +329,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	};
 
 	/**
-	 * *****************************************************************************
+	 * ********************************************************************************
 	 * RecyclerView adapters
-	 * ******************************************************************************
+	 * ********************************************************************************
 	 */
 
 	private abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -437,13 +437,14 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			boolean animate = true; // TODO
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof CollectionHeroCardView) {
-				((CollectionHeroCardView) holder.itemView).bindData(mItems.get(position));
+				((CollectionHeroCardView) holder.itemView).setData((SearchResultCollection) mItems.get(position), animate);
 			} else if (holder.itemView instanceof PlaceHeroCardView) {
-				((PlaceHeroCardView) holder.itemView).bindData(mItems.get(position));
+				((PlaceHeroCardView) holder.itemView).setData((SearchResultPlace) mItems.get(position), animate);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).bindView(R.string.card_view_all_hero);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_hero, animate);
 			}
 		}
 	}
@@ -471,11 +472,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			boolean animate = true; // TODO
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof CollectionCardView) {
-				((CollectionCardView) holder.itemView).bindData(mItems.get(position));
+				((CollectionCardView) holder.itemView).setData(mItems.get(position), animate);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).bindView(R.string.card_view_all_featured_collections);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_collections, animate);
 			}
 		}
 	}
@@ -503,11 +505,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			boolean animate = true; // TODO
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof UserCardView) {
-				((UserCardView) holder.itemView).bindData(mItems.get(position));
+				((UserCardView) holder.itemView).setData(mItems.get(position), animate);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).bindView(R.string.card_view_all_featured_mappers);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_mappers, animate);
 			}
 		}
 	}
@@ -535,11 +538,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			boolean animate = true; // TODO
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof DealCardView) {
-				((DealCardView) holder.itemView).bindData(mItems.get(position));
+				((DealCardView) holder.itemView).setData(mItems.get(position), animate);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).bindView(R.string.card_view_all_featured_deals);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_deals, false);
 			}
 		}
 	}
