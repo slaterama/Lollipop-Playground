@@ -1,14 +1,27 @@
 package com.citymaps.mobile.android.view.explore;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.Deal;
+import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultPlace;
+import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
+import com.citymaps.mobile.android.util.GraphicsUtils;
+import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.imagelistener.AnimatingImageListener;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 
@@ -57,17 +70,99 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 	}
 
 	@Override
-	public void onBindData(SearchResultPlace data, boolean animate) {
+	public void onBindData(final SearchResultPlace data, final boolean animateImages) {
+		super.onBindData(data, animateImages);
+
+		mPendingImageViews.addAll(Arrays.asList(mMainImageView, mAvatarView));
+
 		mPlaceNameView.setText(data.getName());
+
+		final boolean useAvatarImageAsMainImage;
+
 		Deal[] deals = data.getDeals();
 		if (deals != null && deals.length > 0) {
-			bindDeal(deals[0], animate);
+			Deal deal = deals[0];
+			mNameView.setText(deal.getLabel());
+
+			final String imageUrl = deal.getThumbnailImage(Deal.GrouponThumbnailSize.XLARGE);
+			if (TextUtils.isEmpty(imageUrl)) {
+				useAvatarImageAsMainImage = true;
+			} else {
+				useAvatarImageAsMainImage = false;
+				mImageContainers.add(mImageLoader.get(imageUrl,
+						new ImageListener(getContext(), mMainImageView)));
+			}
+		} else {
+			useAvatarImageAsMainImage = true;
+		}
+
+		String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
+		if (TextUtils.isEmpty(foursquarePhotoUrl)) {
+			String foursquareId = data.getFoursquareId();
+			FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(),
+					foursquareId, 1,
+					new Response.Listener<List<FoursquarePhoto>>() {
+						@Override
+						public void onResponse(List<FoursquarePhoto> response) {
+							String avatarImageUrl;
+							if (response == null || response.size() == 0) {
+								avatarImageUrl = data.getLogoImageUrl(getContext());
+							} else {
+								FoursquarePhoto photo = response.get(0);
+								avatarImageUrl = photo.getPhotoUrl();
+								data.setFoursquarePhotoUrl(avatarImageUrl);
+							}
+							int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+							mImageContainers.add(mImageLoader.get(avatarImageUrl,
+									new ImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+							if (useAvatarImageAsMainImage) {
+								mImageContainers.add(mImageLoader.get(avatarImageUrl,
+										new ImageListener(getContext(), mMainImageView)));
+							}
+						}
+					},
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							if (LogEx.isLoggable(LogEx.ERROR)) {
+								LogEx.e(error.getMessage(), error);
+							}
+						}
+					});
+			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+		} else {
+			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+					new ImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+			if (useAvatarImageAsMainImage) {
+				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+						new ImageListener(getContext(), mMainImageView)));
+			}
 		}
 	}
 
-	protected void bindDeal(Deal deal, boolean animateImages) {
-		mNameView.setText(deal.getLabel());
+	@Override
+	protected void resetView() {
+		super.resetView();
+		mMainImageView.setImageDrawable(null);
+		mAvatarView.setImageDrawable(null);
+	}
 
-		// TODO Image stuff
+	protected class ImageListener extends AnimatingImageListener {
+		public ImageListener(Context context, ImageView imageView, int animationResId) {
+			super(context, imageView, animationResId);
+		}
+
+		public ImageListener(Context context, ImageView imageView) {
+			super(context, imageView);
+		}
+
+		@Override
+		public void onLoadComplete() {
+			mPendingImageViews.remove(getImageView());
+			if (mPendingImageViews.size() == 0) {
+				setLoadComplete();
+			}
+		}
 	}
 }

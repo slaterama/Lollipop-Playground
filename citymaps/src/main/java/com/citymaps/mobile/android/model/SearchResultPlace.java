@@ -1,6 +1,10 @@
 package com.citymaps.mobile.android.model;
 
+import android.content.Context;
 import com.citymaps.citymapsengine.LonLat;
+import com.citymaps.mobile.android.app.SessionManager;
+import com.citymaps.mobile.android.config.Endpoint;
+import com.citymaps.mobile.android.config.Environment;
 import com.google.gson.annotations.SerializedName;
 
 public class SearchResultPlace extends SearchResult {
@@ -306,6 +310,11 @@ public class SearchResultPlace extends SearchResult {
 		mLogoImage = logoImage;
 		setChanged();
 		notifyObservers(LOGO_IMAGE);
+	}
+
+	public String getLogoImageUrl(Context context) {
+		Environment environment = SessionManager.getInstance(context).getEnvironment();
+		return environment.buildUrlString(Endpoint.Type.PLACE_ICON, mLogoImage);
 	}
 
 	public void setLon(double lon) {

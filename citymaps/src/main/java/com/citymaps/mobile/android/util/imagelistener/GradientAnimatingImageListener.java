@@ -30,9 +30,9 @@ public class GradientAnimatingImageListener extends AnimatingImageListener {
 	}
 
 	@Override
-	protected void onSetBitmap(Bitmap bitmap, boolean isImmediate) {
+	protected void onSetBitmap(Bitmap bitmap) {
 		if (mGradientDrawable == null) {
-			super.onSetBitmap(bitmap, isImmediate);
+			super.onSetBitmap(bitmap);
 		} else {
 			Resources resources = mContext.getResources();
 			Drawable[] layers = new Drawable[2];

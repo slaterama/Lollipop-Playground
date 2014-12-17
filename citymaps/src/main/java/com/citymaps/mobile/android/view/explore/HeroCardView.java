@@ -65,9 +65,9 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	public void onBindData(final D data, boolean animateImages) {
 		super.onBindData(data, animateImages);
 
-		mNameView.setText(data.getName());
-
 		mPendingImageViews.addAll(Arrays.asList(mMainImageView));
+
+		mNameView.setText(data.getName());
 
 		final String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
 		if (TextUtils.isEmpty(foursquarePhotoUrl)) {

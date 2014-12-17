@@ -42,13 +42,7 @@ public class AnimatingImageListener
 		if (bitmap == null) {
 			mImageView.setVisibility(View.INVISIBLE);
 		} else {
-			onSetBitmap(bitmap, isImmediate);
-			mImageView.setVisibility(View.VISIBLE);
-			if (!isImmediate && mAnimation != null) {
-				mImageView.startAnimation(mAnimation);
-			} else {
-				onLoadComplete();
-			}
+			setBitmap(bitmap, isImmediate);
 		}
 	}
 
@@ -72,7 +66,17 @@ public class AnimatingImageListener
 
 	}
 
-	protected void onSetBitmap(Bitmap bitmap, boolean isImmediate) {
+	public void setBitmap(Bitmap bitmap, boolean isImmediate) {
+		onSetBitmap(bitmap);
+		mImageView.setVisibility(View.VISIBLE);
+		if (!isImmediate && mAnimation != null) {
+			mImageView.startAnimation(mAnimation);
+		} else {
+			onLoadComplete();
+		}
+	}
+
+	protected void onSetBitmap(Bitmap bitmap) {
 		mImageView.setImageBitmap(bitmap);
 	}
 

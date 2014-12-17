@@ -1,14 +1,23 @@
 package com.citymaps.mobile.android.view.explore;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.util.GraphicsUtils;
+import com.citymaps.mobile.android.util.imagelistener.AnimatingImageListener;
+
+import java.util.Arrays;
 
 public class UserCardView extends CitymapsCardView<User> {
 
@@ -62,6 +71,10 @@ public class UserCardView extends CitymapsCardView<User> {
 
 	@Override
 	public void onBindData(User data, boolean animateImages) {
+		super.onBindData(data, animateImages);
+
+		mPendingImageViews.addAll(Arrays.asList(mMainImageView, mAvatarView));
+
 		mNameView.setText(data.getName());
 		String username = data.getUsername();
 		mUsernameView.setText(username);
@@ -70,6 +83,79 @@ public class UserCardView extends CitymapsCardView<User> {
 		boolean followed = data.isFollowed();
 		mFollowButton.setText(getResources().getString(followed ? R.string.card_unfollow_user : R.string.card_follow_user, username));
 
-		// TODO Image stuff
+		String postcardUrl = data.getPostcardUrl();
+		if (TextUtils.isEmpty(postcardUrl)) {
+			User.PostcardTemplate postcardTemplate = data.getPostcardTemplate();
+			if (postcardTemplate == null) {
+				postcardTemplate = User.PostcardTemplate.DEFAULT;
+			}
+			ImageLoader.ImageCache cache = VolleyManager.getInstance(getContext()).getImageCache();
+			String cacheKey = "#" + VolleyManager.OPTION_BLUR25 + postcardTemplate.toString();
+			Bitmap postcardBitmap = cache.getBitmap(cacheKey);
+			boolean isImmediate = (postcardBitmap != null);
+			if (!isImmediate) {
+				BitmapDrawable postcardDrawable = (BitmapDrawable) getResources().getDrawable(postcardTemplate.getResId());
+				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
+				cache.putBitmap(cacheKey, postcardBitmap);
+			}
+			new ImageListener(getContext(), mMainImageView).setBitmap(postcardBitmap, isImmediate);
+		} else {
+			mImageContainers.add(mImageLoader.get(postcardUrl,
+					new ImageListener(getContext(), mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25));
+		}
+
+		String avatarUrl = data.getAvatarUrl();
+		if (TextUtils.isEmpty(avatarUrl)) {
+			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
+					getResources(), R.drawable.default_user_avatar_mini));
+		} else {
+			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+			mImageContainers.add(mImageLoader.get(avatarUrl, new AvatarImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+		}
+	}
+
+	@Override
+	protected void resetView() {
+		super.resetView();
+		mMainImageView.setImageDrawable(null);
+		mAvatarView.setImageDrawable(null);
+	}
+
+	protected class ImageListener extends AnimatingImageListener {
+		public ImageListener(Context context, ImageView imageView, int animationResId) {
+			super(context, imageView, animationResId);
+		}
+
+		public ImageListener(Context context, ImageView imageView) {
+			super(context, imageView);
+		}
+
+		@Override
+		public void onLoadComplete() {
+			mPendingImageViews.remove(getImageView());
+			if (mPendingImageViews.size() == 0) {
+				setLoadComplete();
+			}
+		}
+	}
+
+	protected class AvatarImageListener extends AnimatingImageListener {
+		private static final int DEFAULT_ANIMATION_RES_ID = R.anim.grow_from_zero;
+
+		public AvatarImageListener(Context context, ImageView imageView, int animationResId) {
+			super(context, imageView, animationResId);
+		}
+
+		public AvatarImageListener(Context context, ImageView imageView) {
+			this(context, imageView, DEFAULT_ANIMATION_RES_ID);
+		}
+
+		@Override
+		public void onLoadComplete() {
+			mPendingImageViews.remove(getImageView());
+			if (mPendingImageViews.size() == 0) {
+				setLoadComplete();
+			}
+		}
 	}
 }

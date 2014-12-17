@@ -632,7 +632,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				LogEx.d("!!!!! All views have been laid out !!!!!");
 
 				if (!checkPendingCardViews()) {
-					LogEx.d(String.format("Number of pending card views=%d", mPendingCardViews.size()));
+//					LogEx.d(String.format("Number of pending card views=%d", mPendingCardViews.size()));
 				}
 			}
 		}
@@ -644,12 +644,15 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 
 		protected boolean checkPendingCardViews() {
-			boolean empty = (mPendingCardViews.size() == 0);
-			if (empty) {
+			int size = mPendingCardViews.size();
+			LogEx.d(String.format("Number of pending card views=%d", size));
+			if (size == 0) {
 				LogEx.d("!!!!! All cards have completed loading !!!!!");
 				mAnimationHelper = null;
+				return true;
 			}
-			return empty;
+
+			return false;
 		}
 	}
 

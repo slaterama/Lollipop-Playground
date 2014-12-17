@@ -126,6 +126,13 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 		}
 	}
 
+	@Override
+	protected void resetView() {
+		super.resetView();
+		mMainImageView.setImageDrawable(null);
+		mAvatarView.setImageDrawable(null);
+	}
+
 	protected class ImageListener extends AnimatingImageListener {
 		public ImageListener(Context context, ImageView imageView, int animationResId) {
 			super(context, imageView, animationResId);
