@@ -12,7 +12,6 @@ public class SearchResultCollection extends SearchResult {
 	public static final String COVER_IMAGE_URL = "cover_image_url";
 	public static final String DESCRIPTION = "description";
 	public static final String EDITORS = "editors";
-	public static final String FOURSQUARE_ID = "foursquare_id";
 	public static final String IS_SAVED = "is_saved";
 	public static final String LIKES = "likes";
 	public static final String MARKER_NAME = "marker_name";
@@ -37,11 +36,6 @@ public class SearchResultCollection extends SearchResult {
 
 	@SerializedName(EDITORS)
 	private List<User> mEditors;
-
-	@SerializedName(FOURSQUARE_ID)
-	private String mFoursquareId;
-
-	private String mFoursquarePhotoUrl;
 
 	@SerializedName(IS_SAVED)
 	private boolean mSaved;
@@ -124,24 +118,6 @@ public class SearchResultCollection extends SearchResult {
 		mEditors = editors;
 		setChanged();
 		notifyObservers(EDITORS);
-	}
-
-	public String getFoursquareId() {
-		return mFoursquareId;
-	}
-
-	public void setFoursquareId(String foursquareId) {
-		mFoursquareId = foursquareId;
-		setChanged();
-		notifyObservers(FOURSQUARE_ID);
-	}
-
-	public String getFoursquarePhotoUrl() {
-		return mFoursquarePhotoUrl;
-	}
-
-	public void setFoursquarePhotoUrl(String foursquarePhotoUrl) {
-		mFoursquarePhotoUrl = foursquarePhotoUrl;
 	}
 
 	public boolean isSaved() {

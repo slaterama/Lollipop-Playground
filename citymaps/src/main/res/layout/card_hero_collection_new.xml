@@ -14,7 +14,7 @@
 				android:layout_height="match_parent"
 				android:scaleType="centerCrop"
 				android:contentDescription="@null"
-				android:visibility="invisible"/>
+				android:visibility="visible"/>
 
 	</FrameLayout>
 

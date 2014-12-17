@@ -19,7 +19,6 @@ public class SearchResultPlace extends SearchResult {
 	public static final String CITY = "city";
 	public static final String DEALS = "deals";
 	public static final String EXPLORE_SCORE = "explore_score";
-	public static final String FOURSQUARE_ID = "foursquare_id";
 	public static final String IS_CLOSED = "is_closed";
 	public static final String IS_LIKED = "is_liked";
 	public static final String LAT = "lat";
@@ -76,11 +75,6 @@ public class SearchResultPlace extends SearchResult {
 
 	@SerializedName(EXPLORE_SCORE)
 	private int mExploreScore;
-
-	@SerializedName(FOURSQUARE_ID)
-	private String mFoursquareId;
-
-	private String mFoursquarePhotoUrl;
 
 	@SerializedName(LAT)
 	private double mLat;
@@ -264,24 +258,6 @@ public class SearchResultPlace extends SearchResult {
 		mExploreScore = exploreScore;
 		setChanged();
 		notifyObservers(EXPLORE_SCORE);
-	}
-
-	public String getFoursquareId() {
-		return mFoursquareId;
-	}
-
-	public void setFoursquareId(String foursquareId) {
-		mFoursquareId = foursquareId;
-		setChanged();
-		notifyObservers(FOURSQUARE_ID);
-	}
-
-	public String getFoursquarePhotoUrl() {
-		return mFoursquarePhotoUrl;
-	}
-
-	public void setFoursquarePhotoUrl(String foursquarePhotoUrl) {
-		mFoursquarePhotoUrl = foursquarePhotoUrl;
 	}
 
 	public void setLat(double lat) {

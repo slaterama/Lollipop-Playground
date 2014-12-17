@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class CitymapsCardView<D> extends CardView {
 
@@ -13,6 +17,8 @@ public abstract class CitymapsCardView<D> extends CardView {
 	private D mData;
 
 	private OnLoadCompleteListener mOnLoadCompleteListener;
+
+	protected Set<ImageLoader.ImageContainer> mImageContainers;
 
 	public CitymapsCardView(Context context) {
 		super(context);
@@ -30,6 +36,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 	}
 
 	protected void init(Context context) {
+		mImageContainers = new HashSet<ImageLoader.ImageContainer>();
 		Resources resources = context.getResources();
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
