@@ -15,9 +15,9 @@ import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResult;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.imagelistener.GradientAnimatingImageListener;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardView<D> {
 
@@ -34,6 +34,8 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	protected ViewGroup mInfoContainerView;
 
 	protected TextView mNameView;
+
+	protected Set<ImageView> mPendingImageViews;
 
 	public HeroCardView(Context context) {
 		super(context);
@@ -53,6 +55,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mNameView = (TextView) findViewById(R.id.card_name);
+		mPendingImageViews = new HashSet<ImageView>();
 	}
 
 	@Override
@@ -69,6 +72,8 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 			container.cancelRequest();
 			iterator.remove();
 		}
+
+		mPendingImageViews.addAll(Arrays.asList(mMainImageView));
 
 		mNameView.setText(data.getName());
 
@@ -88,8 +93,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 								String foursquarePhotoUrl = photo.getPhotoUrl();
 								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 								mImageContainers.add(loader.get(foursquarePhotoUrl,
-										ImageLoader.getImageListener(mMainImageView, 0, 0)));
-								// TODO My own listener WITH gradient & ability to remove from mImageContainers
+										new MainImageListener(getContext(), mMainImageView)));
 							}
 						}
 					},
@@ -104,8 +108,26 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
 			mImageContainers.add(loader.get(foursquarePhotoUrl,
-					ImageLoader.getImageListener(mMainImageView, 0, 0)));
-			// TODO My own listener WITH gradient & ability to remove from mImageContainers
+					new MainImageListener(getContext(), mMainImageView)));
+		}
+	}
+
+	protected void onLoadComplete(ImageView imageView) {
+		int sizeBeforeRemove = mPendingImageViews.size();
+		mPendingImageViews.remove(imageView);
+		if (mOnLoadCompleteListener != null && sizeBeforeRemove == 1 && mPendingImageViews.size() == 0) {
+			mOnLoadCompleteListener.onLoadComplete(this);
+		}
+	}
+
+	protected class MainImageListener extends GradientAnimatingImageListener {
+		public MainImageListener(Context context, ImageView imageView) {
+			super(context, imageView);
+		}
+
+		@Override
+		public void onLoadComplete() {
+			HeroCardView.this.onLoadComplete(getImageView());
 		}
 	}
 }

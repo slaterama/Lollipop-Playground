@@ -317,13 +317,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 	};
 
-	private CitymapsCardView.OnLoadCompleteListener mCardView_OnLoadCompleteListener = new CitymapsCardView.OnLoadCompleteListener() {
-		@Override
-		public void onLoadComplete(CitymapsCardView v) {
-			LogEx.d(String.format("v=%s", v));
-		}
-	};
-
 	/**
 	 * ********************************************************************************
 	 * RecyclerView adapters

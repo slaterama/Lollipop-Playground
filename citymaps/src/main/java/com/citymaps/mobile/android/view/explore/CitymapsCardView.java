@@ -16,7 +16,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	private D mData;
 
-	private OnLoadCompleteListener mOnLoadCompleteListener;
+	protected OnLoadCompleteListener mOnLoadCompleteListener;
 
 	protected Set<ImageLoader.ImageContainer> mImageContainers;
 
