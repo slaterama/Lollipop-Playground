@@ -38,7 +38,10 @@ import com.citymaps.mobile.android.util.ResourcesUtils;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ExploreActivity extends TrackedActionBarActivity {
 
@@ -138,6 +141,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		// Set up helper fragment
 
 		if (savedInstanceState == null) {
+			mAnimationHelper = new AnimationHelper();
 			mHelperFragment = HelperFragment.newInstance(mMapLocation, mMapRadius, mMapZoom);
 			getSupportFragmentManager()
 					.beginTransaction()
@@ -145,18 +149,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 					.commit();
 		} else {
 			mHelperFragment = (HelperFragment) getSupportFragmentManager().getFragment(savedInstanceState, STATE_KEY_HELPER_FRAGMENT);
-			new Handler().post(new Runnable() {
-				@Override
-				public void run() {
-					onRequestsComplete(true);
-				}
-			});
-		}
-
-		// Set up animation helper
-
-		if (savedInstanceState == null) {
-			mAnimationHelper = new AnimationHelper();
+			setAdapters();
+			updateHeroLabel();
 		}
 	}
 
@@ -188,14 +182,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	protected void onRequestsComplete(boolean isImmediate) {
-		if (mAnimationHelper == null) {
-			populateData();
-		} else {
-			mAnimationHelper.mProgressBarAnimatorSet.start();
-		}
-	}
-
 	private int getCardSize(View view, float cardsAcross) {
 		/*
 		 * NOTE: This returns the "perceived" card width. That is, the width of the card minus any shadow/elevation element.
@@ -212,6 +198,55 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		return Math.max((int) (perceivedAvailableWidth / cardsAcross), 0);
 	}
 
+	protected void setAdapters() {
+		mHeroAdapter = new HeroAdapter(mHelperFragment.mHeroItems);
+		mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections);
+		mFeaturedMappersAdapter = new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers);
+		mFeaturedDealsAdapter = new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals);
+
+		mHeroRecyclerView.setAdapter(mHeroAdapter);
+		mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter);
+		mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
+		mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
+	}
+
+	protected void updateHeroLabel() {
+		String city = null;
+		if (mHelperFragment.mHeroItems != null && mHelperFragment.mHeroItems.size() > 0) {
+			for (SearchResult searchResult : mHelperFragment.mHeroItems) {
+				if (searchResult instanceof SearchResultPlace) {
+					SearchResultPlace searchResultPlace = (SearchResultPlace) searchResult;
+					city = searchResultPlace.getCity();
+				} else if (searchResult instanceof SearchResultCollection) {
+					SearchResultCollection searchResultCollection = (SearchResultCollection) searchResult;
+					List<User> editors = searchResultCollection.getEditors();
+					if (editors != null && editors.size() > 0) {
+						city = editors.get(0).getCity();
+					}
+				}
+				if (!TextUtils.isEmpty(city)) {
+					break;
+				}
+			}
+		}
+		if (TextUtils.isEmpty(city)) {
+			mHeroLabelView.setText(R.string.explore_best_around_me);
+		} else {
+			mHeroLabelView.setText(getString(R.string.explore_best_around, city));
+		}
+	}
+
+	/*
+	protected void onRequestsComplete(boolean isImmediate) {
+		if (mAnimationHelper == null) {
+			populateData();
+		} else {
+			mAnimationHelper.mProgressBarAnimatorSet.start();
+		}
+	}
+	*/
+
+	/*
 	private void populateData() {
 		mHeroProgressBar.setVisibility(View.GONE);
 		mFeaturedCollectionsProgressBar.setVisibility(View.GONE);
@@ -275,6 +310,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
 		mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
 	}
+	*/
 
 	private OnSizeChangedListener mRecyclerView_OnSizeChangedListener = new OnSizeChangedListener() {
 		@Override
@@ -305,14 +341,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				} else {
 					return;
 				}
-
-				v.post(new Runnable() {
-					@Override
-					public void run() {
-						v.getLayoutParams().height = v.getPaddingTop() + cardRect.height() + v.getPaddingBottom();
-						v.requestLayout();
-					}
-				});
+				v.getLayoutParams().height = v.getPaddingTop() + cardRect.height() + v.getPaddingBottom();
+				v.requestLayout();
 			}
 		}
 	};
@@ -563,7 +593,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		public AnimationHelper() {
 			super();
-
 			mPendingRecyclerViews = new HashSet<View>();
 
 			ProgressBar[] progressBars = new ProgressBar[]{mHeroProgressBar, mFeaturedCollectionsProgressBar,
@@ -578,12 +607,33 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			mProgressBarAnimatorSet.addListener(mProgressBar_AnimatorListener);
 
 			mPendingCardViews = new HashSet<CitymapsCardView>();
+
+			mHeroRecyclerView.setVisibility(View.INVISIBLE);
+			mHeroRecyclerView.addOnLayoutChangeListener(this);
+			mHeroProgressBar.setVisibility(View.VISIBLE);
+			mFeaturedCollectionsRecyclerView.setVisibility(View.INVISIBLE);
+			mFeaturedCollectionsRecyclerView.addOnLayoutChangeListener(this);
+			mFeaturedCollectionsProgressBar.setVisibility(View.VISIBLE);
+			mFeaturedMappersRecyclerView.setVisibility(View.INVISIBLE);
+			mFeaturedMappersRecyclerView.addOnLayoutChangeListener(this);
+			mFeaturedMappersProgressBar.setVisibility(View.VISIBLE);
+			mFeaturedDealsRecyclerView.setVisibility(View.INVISIBLE);
+			mFeaturedDealsRecyclerView.addOnLayoutChangeListener(this);
+			mFeaturedDealsProgressBar.setVisibility(View.VISIBLE);
+
+			// At this point:
+			// * All data will start to retrieve
+			// * If the data in a recycler view > 0, onLayoutChange will pick it up and
+			// "process" that recycler view.
+			// * Otherwise, we have to catch that there is no data and "process" it manually
 		}
 
+		/*
 		public void addPendingRecyclerView(RecyclerView recyclerView) {
 			mPendingRecyclerViews.add(recyclerView);
 			recyclerView.addOnLayoutChangeListener(this);
 		}
+		*/
 
 		private Animator.AnimatorListener mProgressBar_AnimatorListener = new Animator.AnimatorListener() {
 			@Override
@@ -592,7 +642,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				populateData();
+//				populateData();
 			}
 
 			@Override
@@ -613,6 +663,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				if (childCount > 0) {
 					// Temporarily hide the RecyclerView until all cards have loaded their images
 //					v.setVisibility(View.INVISIBLE);
+
+					LogEx.d(String.format("v=%s", v));
 
 					for (int i = 0; i < childCount; i++) {
 						View child = viewGroup.getChildAt(i);
@@ -649,7 +701,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			if (size == 0) {
 //				LogEx.d("!!!!! All cards have completed loading !!!!!");
 
-				startAnimation();
+//				startAnimation();
 
 				mAnimationHelper = null;
 				return true;
@@ -658,9 +710,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			return false;
 		}
 
+		/*
 		protected void startAnimation() {
 			mProgressBarAnimatorSet.start();
 		}
+		*/
 	}
 
 	/**
@@ -826,7 +880,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		private void onRequestComplete() {
 			mCompletedRequests++;
 			if (mCompletedRequests == 4) {
-				mActivity.onRequestsComplete(false);
+//				mActivity.onRequestsComplete(false);
 			}
 		}
 	}
