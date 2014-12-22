@@ -38,10 +38,7 @@ import com.citymaps.mobile.android.util.ResourcesUtils;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ExploreActivity extends TrackedActionBarActivity {
 
@@ -584,6 +581,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	protected class AnimationHelper
 			implements View.OnLayoutChangeListener {
 
+		private Set<RecyclerView> mPendingRecyclerViews;
+
+		private Timer mTimer;
+		private TimerTask mTimerTask;
+
 		public AnimationHelper() {
 			mHeroRecyclerView.setVisibility(View.INVISIBLE);
 			mHeroProgressBar.setVisibility(View.VISIBLE);
@@ -593,38 +595,76 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			mFeaturedMappersProgressBar.setVisibility(View.VISIBLE);
 			mFeaturedDealsRecyclerView.setVisibility(View.INVISIBLE);
 			mFeaturedDealsProgressBar.setVisibility(View.VISIBLE);
+
+			mPendingRecyclerViews = new HashSet<RecyclerView>(Arrays.asList(
+					mHeroRecyclerView, mFeaturedCollectionsRecyclerView,
+					mFeaturedMappersRecyclerView, mFeaturedDealsRecyclerView));
+
+			mTimerTask = new TimerTask() {
+				@Override
+				public void run() {
+					LogEx.d();
+				}
+			};
+
+			mTimer = new Timer();
+			mTimer.schedule(mTimerTask, 5000);
+		}
+
+		protected void markRecyclerViewAsProcessed(RecyclerView recyclerView) {
+			mPendingRecyclerViews.remove(recyclerView);
+			if (mPendingRecyclerViews.size() == 0) {
+				LogEx.d();
+			}
 		}
 
 		private void setupHeroAdapter(List<SearchResult> searchResults, boolean listenForLayout) {
-			if (listenForLayout) {
-				mHeroRecyclerView.addOnLayoutChangeListener(this);
+			if (searchResults != null && searchResults.size() > 0) {
+				if (listenForLayout) {
+					mHeroRecyclerView.addOnLayoutChangeListener(this);
+				}
+				mHeroAdapter = new HeroAdapter(mHelperFragment.mHeroItems);
+				mHeroRecyclerView.setAdapter(mHeroAdapter);
+			} else {
+				markRecyclerViewAsProcessed(mHeroRecyclerView);
 			}
-			mHeroAdapter = new HeroAdapter(mHelperFragment.mHeroItems);
-			mHeroRecyclerView.setAdapter(mHeroAdapter);
+			updateHeroLabel();
 		}
 
 		private void setupFeaturedCollectionsAdapter(List<SearchResultCollection> searchResults, boolean listenForLayout) {
-			if (listenForLayout) {
-				mFeaturedCollectionsRecyclerView.addOnLayoutChangeListener(this);
+			if (searchResults != null && searchResults.size() > 0) {
+				if (listenForLayout) {
+					mFeaturedCollectionsRecyclerView.addOnLayoutChangeListener(this);
+				}
+				mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections);
+				mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter);
+			} else {
+				markRecyclerViewAsProcessed(mFeaturedCollectionsRecyclerView);
 			}
-			mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections);
-			mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter);
 		}
 
 		private void setupFeaturedMappersAdapter(List<User> users, boolean listenForLayout) {
-			if (listenForLayout) {
-				mFeaturedMappersRecyclerView.addOnLayoutChangeListener(this);
+			if (users != null && users.size() > 0) {
+				if (listenForLayout) {
+					mFeaturedMappersRecyclerView.addOnLayoutChangeListener(this);
+				}
+				mFeaturedMappersAdapter = new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers);
+				mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
+			} else {
+				markRecyclerViewAsProcessed(mFeaturedMappersRecyclerView);
 			}
-			mFeaturedMappersAdapter = new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers);
-			mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
 		}
 
 		private void setupFeaturedDealsAdapter(List<SearchResultPlace> searchResults, boolean listenForLayout) {
-			if (listenForLayout) {
-				mFeaturedDealsRecyclerView.addOnLayoutChangeListener(this);
+			if (searchResults != null && searchResults.size() > 0) {
+				if (listenForLayout) {
+					mFeaturedDealsRecyclerView.addOnLayoutChangeListener(this);
+				}
+				mFeaturedDealsAdapter = new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals);
+				mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
+			} else {
+				markRecyclerViewAsProcessed(mFeaturedDealsRecyclerView);
 			}
-			mFeaturedDealsAdapter = new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals);
-			mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
 		}
 
 		@Override
@@ -633,14 +673,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			RecyclerView recyclerView = (RecyclerView) v;
 			int childCount = recyclerView.getChildCount();
 			if (childCount > 0) {
-
-				// TODO TODO TODO TODO **********************************************************************
-				// So at THIS point I know how many views I want to load.
-				// Note the four recycler views and when they're all "complete"?
-				// Also register all the child views that I want to listen for "onBindComplete" or equivalent method
-
-				LogEx.d(String.format("v=%s, childCount=%d", v, childCount));
-
+				markRecyclerViewAsProcessed(recyclerView);
 				recyclerView.removeOnLayoutChangeListener(this);
 			}
 		}
@@ -802,8 +835,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		private float mMapRadius;
 		private int mMapZoom;
 
-		private int mCompletedRequests = 0;
-
 		private List<SearchResult> mHeroItems;
 		private List<SearchResultCollection> mFeaturedCollections;
 		private List<User> mFeaturedMappers;
@@ -842,11 +873,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onResponse(List<SearchResult> response) {
 							mHeroItems = response;
-							if (mHeroItems == null || mHeroItems.size() == 0) {
-								// TODO No data
-							} else {
-								animationHelper.setupHeroAdapter(mHeroItems, true);
-							}
+							animationHelper.setupHeroAdapter(mHeroItems, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -855,8 +882,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 							if (LogEx.isLoggable(LogEx.ERROR)) {
 								LogEx.e(error.getMessage(), error);
 							}
-
-							// TODO No data
+							mHeroItems = null;
+							animationHelper.setupHeroAdapter(null, false);
 						}
 					});
 
@@ -872,12 +899,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 									mFeaturedCollections.add((SearchResultCollection) searchResult);
 								}
 							}
-
-							if (mFeaturedCollections.size() == 0) {
-								// TODO No data
-							} else {
-								animationHelper.setupFeaturedCollectionsAdapter(mFeaturedCollections, true);
-							}
+							animationHelper.setupFeaturedCollectionsAdapter(mFeaturedCollections, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -886,8 +908,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 							if (LogEx.isLoggable(LogEx.ERROR)) {
 								LogEx.e(error.getMessage(), error);
 							}
-
-							// TODO No data
+							mFeaturedCollections = null;
+							animationHelper.setupFeaturedCollectionsAdapter(null, false);
 						}
 					});
 
@@ -897,11 +919,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onResponse(List<User> response) {
 							mFeaturedMappers = response;
-							if (mFeaturedMappers == null || mFeaturedMappers.size() == 0) {
-								// TODO No data
-							} else {
-								animationHelper.setupFeaturedMappersAdapter(mFeaturedMappers, true);
-							}
+							animationHelper.setupFeaturedMappersAdapter(mFeaturedMappers, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -910,8 +928,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 							if (LogEx.isLoggable(LogEx.ERROR)) {
 								LogEx.e(error.getMessage(), error);
 							}
-
-							// TODO No data
+							mFeaturedMappers = null;
+							animationHelper.setupFeaturedMappersAdapter(null, false);
 						}
 					});
 
@@ -926,12 +944,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 									mFeaturedDeals.add((SearchResultPlace) searchResult);
 								}
 							}
-
-							if (mFeaturedDeals == null || mFeaturedDeals.size() == 0) {
-								// TODO No data
-							} else {
-								animationHelper.setupFeaturedDealsAdapter(mFeaturedDeals, true);
-							}
+							animationHelper.setupFeaturedDealsAdapter(mFeaturedDeals, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -940,8 +953,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 							if (LogEx.isLoggable(LogEx.ERROR)) {
 								LogEx.e(error.getMessage(), error);
 							}
-
-							// TODO No data
+							mFeaturedDeals = null;
+							animationHelper.setupFeaturedDealsAdapter(null, true);
 						}
 					});
 
