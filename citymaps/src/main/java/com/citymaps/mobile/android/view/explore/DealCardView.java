@@ -90,7 +90,7 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 			} else {
 				useAvatarImageAsMainImage = false;
 				mImageContainers.add(mImageLoader.get(imageUrl,
-						new ImageListener(getContext(), mMainImageView)));
+						new ImageListener(getContext(), mMainImageView, animateImages)));
 			}
 		} else {
 			useAvatarImageAsMainImage = true;
@@ -114,10 +114,10 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 							}
 							int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 							mImageContainers.add(mImageLoader.get(avatarImageUrl,
-									new ImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+									new ImageListener(getContext(), mAvatarView, animateImages), size, size, VolleyManager.OPTION_CIRCLE));
 							if (useAvatarImageAsMainImage) {
 								mImageContainers.add(mImageLoader.get(avatarImageUrl,
-										new ImageListener(getContext(), mMainImageView)));
+										new ImageListener(getContext(), mMainImageView, animateImages)));
 							}
 						}
 					},
@@ -133,10 +133,10 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new ImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+					new ImageListener(getContext(), mAvatarView, animateImages), size, size, VolleyManager.OPTION_CIRCLE));
 			if (useAvatarImageAsMainImage) {
 				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-						new ImageListener(getContext(), mMainImageView)));
+						new ImageListener(getContext(), mMainImageView, animateImages)));
 			}
 		}
 	}
@@ -149,19 +149,15 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 	}
 
 	protected class ImageListener extends AnimatingImageListener {
-		public ImageListener(Context context, ImageView imageView, int animationResId) {
-			super(context, imageView, animationResId);
-		}
-
-		public ImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
+		public ImageListener(Context context, ImageView imageView, boolean animateImage) {
+			super(context, imageView, animateImage);
 		}
 
 		@Override
-		public void onLoadComplete() {
+		public void onImageLoadComplete() {
 			mPendingImageViews.remove(getImageView());
 			if (mPendingImageViews.size() == 0) {
-				setLoadComplete();
+				notifyBindComplete();
 			}
 		}
 	}

@@ -25,6 +25,10 @@ public class GradientAnimatingImageListener extends AnimatingImageListener {
 		this(context, imageView, animationResId, DEFAULT_GRADIENT_RES_ID);
 	}
 
+	public GradientAnimatingImageListener(Context context, ImageView imageView, boolean animateImage) {
+		this(context, imageView, animateImage ? DEFAULT_ANIMATION_RES_ID : 0);
+	}
+
 	public GradientAnimatingImageListener(Context context, ImageView imageView) {
 		this(context, imageView, DEFAULT_ANIMATION_RES_ID, DEFAULT_GRADIENT_RES_ID);
 	}

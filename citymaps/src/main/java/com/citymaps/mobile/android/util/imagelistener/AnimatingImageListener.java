@@ -28,6 +28,10 @@ public class AnimatingImageListener
 		}
 	}
 
+	public AnimatingImageListener(Context context, ImageView imageView, boolean animateImage) {
+		this(context, imageView, animateImage ? DEFAULT_ANIMATION_RES_ID : 0);
+	}
+
 	public AnimatingImageListener(Context context, ImageView imageView) {
 		this(context, imageView, DEFAULT_ANIMATION_RES_ID);
 	}
@@ -58,7 +62,7 @@ public class AnimatingImageListener
 
 	@Override
 	public void onAnimationEnd(Animation animation) {
-		onLoadComplete();
+		onImageLoadComplete();
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class AnimatingImageListener
 		if (!isImmediate && mAnimation != null) {
 			mImageView.startAnimation(mAnimation);
 		} else {
-			onLoadComplete();
+			onImageLoadComplete();
 		}
 	}
 
@@ -80,7 +84,7 @@ public class AnimatingImageListener
 		mImageView.setImageBitmap(bitmap);
 	}
 
-	public void onLoadComplete() {
+	public void onImageLoadComplete() {
 
 	}
 }

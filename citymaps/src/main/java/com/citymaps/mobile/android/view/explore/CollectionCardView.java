@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.model.Collection;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
@@ -72,7 +73,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 	}
 
 	@Override
-	public void onBindData(final SearchResultCollection data, boolean animateImages) {
+	public void onBindData(final SearchResultCollection data, final boolean animateImages) {
 		super.onBindData(data, animateImages);
 
 		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
@@ -97,7 +98,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 								String foursquarePhotoUrl = photo.getPhotoUrl();
 								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-										new ImageListener(getContext(), mMainImageView)));
+										new ImageListener(getContext(), mMainImageView, animateImages)));
 							}
 						}
 					},
@@ -112,16 +113,17 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new ImageListener(getContext(), mMainImageView)));
+					new ImageListener(getContext(), mMainImageView, animateImages)));
 		}
 
 		String avatarUrl = data.getOwnerAvatar();
 		if (TextUtils.isEmpty(avatarUrl)) {
+			// TODO Cache this like blurred image in UserCardView main image
 			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mImageContainers.add(mImageLoader.get(avatarUrl, new ImageListener(getContext(), mAvatarView),
+			mImageContainers.add(mImageLoader.get(avatarUrl, new ImageListener(getContext(), mAvatarView, animateImages),
 					size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
@@ -134,19 +136,16 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 	}
 
 	protected class ImageListener extends AnimatingImageListener {
-		public ImageListener(Context context, ImageView imageView, int animationResId) {
-			super(context, imageView, animationResId);
-		}
-
-		public ImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
+		public ImageListener(Context context, ImageView imageView, boolean animateImage) {
+			super(context, imageView, animateImage);
 		}
 
 		@Override
-		public void onLoadComplete() {
+		public void onImageLoadComplete() {
+			super.onImageLoadComplete();
 			mPendingImageViews.remove(getImageView());
 			if (mPendingImageViews.size() == 0) {
-				setLoadComplete();
+				notifyBindComplete();
 			}
 		}
 	}

@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
@@ -17,7 +16,8 @@ import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.imagelistener.GradientAnimatingImageListener;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardView<D> {
 
@@ -62,7 +62,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	}
 
 	@Override
-	public void onBindData(final D data, boolean animateImages) {
+	public void onBindData(final D data, final boolean animateImages) {
 		super.onBindData(data, animateImages);
 
 		mPendingImageViews.addAll(Arrays.asList(mMainImageView));
@@ -85,7 +85,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 
 								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-										new MainImageListener(getContext(), mMainImageView)));
+										new MainImageListener(getContext(), mMainImageView, animateImages)));
 							}
 						}
 					},
@@ -100,7 +100,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new MainImageListener(getContext(), mMainImageView)));
+					new MainImageListener(getContext(), mMainImageView, animateImages)));
 		}
 	}
 
@@ -111,19 +111,16 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	}
 
 	protected class MainImageListener extends GradientAnimatingImageListener {
-		public MainImageListener(Context context, ImageView imageView, int animationResId) {
-			super(context, imageView, animationResId);
-		}
-
-		public MainImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
+		public MainImageListener(Context context, ImageView imageView, boolean animateImage) {
+			super(context, imageView, animateImage);
 		}
 
 		@Override
-		public void onLoadComplete() {
+		public void onImageLoadComplete() {
+			super.onImageLoadComplete();
 			mPendingImageViews.remove(getImageView());
 			if (mPendingImageViews.size() == 0) {
-				setLoadComplete();
+				notifyBindComplete();
 			}
 		}
 	}

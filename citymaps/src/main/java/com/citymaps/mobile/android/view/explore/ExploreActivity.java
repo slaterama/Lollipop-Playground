@@ -345,18 +345,18 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		protected static final int VIEW_TYPE_VIEW_ALL = Integer.MIN_VALUE;
 
 		protected boolean mHasViewAllCard = true;
-		protected boolean mIsInInitialLoad;
+//		protected boolean mIsInInitialLoad;
 		protected List<D> mItems;
 
 		public ExploreAdapter(List<D> items) {
 			super();
-			mIsInInitialLoad = true;
+//			mIsInInitialLoad = true;
 			mItems = items;
 		}
 
-		public void setInInitialLoad(boolean isInInitialLoad) {
-			mIsInInitialLoad = isInInitialLoad;
-		}
+//		public void setInInitialLoad(boolean isInInitialLoad) {
+//			mIsInInitialLoad = isInInitialLoad;
+//		}
 
 		public List<D> getItems() {
 			return mItems;
@@ -437,7 +437,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				}
 			}
 			cardView.setDefaultCardSize(mHeroDefaultCardSize);
-//			cardView.setOnLoadCompleteListener(mAnimationHelper);
+			cardView.setOnBindCompleteListener(mAnimationHelper);
 			int actualCardWidth = mHeroCardRect.width() + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, mHeroCardRect.height()));
 			return new ExploreViewHolder(cardView);
@@ -445,14 +445,14 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-			boolean animate = true; // TODO (mAnimationHelper != null);
+			boolean animateImages = false; // TODO (mAnimationHelper != null);
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof CollectionHeroCardView) {
-				((CollectionHeroCardView) holder.itemView).setData((SearchResultCollection) mItems.get(position), animate);
+				((CollectionHeroCardView) holder.itemView).setData((SearchResultCollection) mItems.get(position), animateImages);
 			} else if (holder.itemView instanceof PlaceHeroCardView) {
-				((PlaceHeroCardView) holder.itemView).setData((SearchResultPlace) mItems.get(position), animate);
+				((PlaceHeroCardView) holder.itemView).setData((SearchResultPlace) mItems.get(position), animateImages);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_hero, animate);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_hero, animateImages);
 			}
 		}
 	}
@@ -474,19 +474,19 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			int perceivedWidth = mFeaturedCollectionsCardRect.width();
 			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setDefaultCardSize(perceivedWidth);
-//			cardView.setOnLoadCompleteListener(mAnimationHelper);
+			cardView.setOnBindCompleteListener(mAnimationHelper);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, mFeaturedCollectionsCardRect.height()));
 			return new ExploreViewHolder(cardView);
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-			boolean animate = true; // TODO (mAnimationHelper != null);
+			boolean animateImages = false; // TODO (mAnimationHelper != null);
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof CollectionCardView) {
-				((CollectionCardView) holder.itemView).setData(mItems.get(position), animate);
+				((CollectionCardView) holder.itemView).setData(mItems.get(position), animateImages);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_collections, animate);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_collections, animateImages);
 			}
 		}
 	}
@@ -508,19 +508,19 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			int perceivedWidth = mFeaturedMappersCardRect.width();
 			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setDefaultCardSize(perceivedWidth);
-//			cardView.setOnLoadCompleteListener(mAnimationHelper);
+			cardView.setOnBindCompleteListener(mAnimationHelper);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, mFeaturedMappersCardRect.height()));
 			return new ExploreViewHolder(cardView);
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-			boolean animate = true; // TODO (mAnimationHelper != null);
+			boolean animateImages = false; // TODO (mAnimationHelper != null);
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof UserCardView) {
-				((UserCardView) holder.itemView).setData(mItems.get(position), animate);
+				((UserCardView) holder.itemView).setData(mItems.get(position), animateImages);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_mappers, animate);
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_mappers, animateImages);
 			}
 		}
 	}
@@ -542,17 +542,17 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			int perceivedWidth = mFeaturedDealsCardRect.width();
 			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
 			cardView.setDefaultCardSize(perceivedWidth);
-//			cardView.setOnLoadCompleteListener(mAnimationHelper);
+			cardView.setOnBindCompleteListener(mAnimationHelper);
 			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, mFeaturedDealsCardRect.height()));
 			return new ExploreViewHolder(cardView);
 		}
 
 		@Override
 		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-			boolean animate = true; // TODO (mAnimationHelper != null);
+			boolean animateImages = false; // TODO (mAnimationHelper != null);
 			super.onBindViewHolder(holder, position);
 			if (holder.itemView instanceof DealCardView) {
-				((DealCardView) holder.itemView).setData(mItems.get(position), animate);
+				((DealCardView) holder.itemView).setData(mItems.get(position), animateImages);
 			} else if (holder.itemView instanceof ViewAllCardView) {
 				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_deals, false);
 			}
@@ -579,9 +579,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	}
 
 	protected class AnimationHelper
-			implements View.OnLayoutChangeListener {
+			implements View.OnLayoutChangeListener,
+			CitymapsCardView.OnBindCompleteListener {
 
 		private Set<RecyclerView> mPendingRecyclerViews;
+
+		private Set<CitymapsCardView> mPendingCardViews;
 
 		private Timer mTimer;
 		private TimerTask mTimerTask;
@@ -600,6 +603,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 					mHeroRecyclerView, mFeaturedCollectionsRecyclerView,
 					mFeaturedMappersRecyclerView, mFeaturedDealsRecyclerView));
 
+			mPendingCardViews = new HashSet<CitymapsCardView>();
+
 			mTimerTask = new TimerTask() {
 				@Override
 				public void run() {
@@ -614,7 +619,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		protected void markRecyclerViewAsProcessed(RecyclerView recyclerView) {
 			mPendingRecyclerViews.remove(recyclerView);
 			if (mPendingRecyclerViews.size() == 0) {
-				LogEx.d();
+				LogEx.d(); // TODO
 			}
 		}
 
@@ -676,6 +681,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				markRecyclerViewAsProcessed(recyclerView);
 				recyclerView.removeOnLayoutChangeListener(this);
 			}
+		}
+
+		@Override
+		public void onBindComplete(CitymapsCardView v) {
+			LogEx.d();
 		}
 	}
 
@@ -863,8 +873,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				mMapZoom = args.getInt(ARG_MAP_ZOOM);
 			}
 
-			final AnimationHelper animationHelper = mActivity.getAnimationHelper();
-
 			int offset = 0;
 			int limit = 6;
 			SearchResultsRequest featuredHeroItemsRequest = SearchResultsRequest.newFeaturedHeroItemsRequest(getActivity(),
@@ -873,7 +881,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onResponse(List<SearchResult> response) {
 							mHeroItems = response;
-							animationHelper.setupHeroAdapter(mHeroItems, true);
+							mActivity.getAnimationHelper().setupHeroAdapter(mHeroItems, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -883,7 +891,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 								LogEx.e(error.getMessage(), error);
 							}
 							mHeroItems = null;
-							animationHelper.setupHeroAdapter(null, false);
+							mActivity.getAnimationHelper().setupHeroAdapter(null, false);
 						}
 					});
 
@@ -899,7 +907,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 									mFeaturedCollections.add((SearchResultCollection) searchResult);
 								}
 							}
-							animationHelper.setupFeaturedCollectionsAdapter(mFeaturedCollections, true);
+							mActivity.getAnimationHelper().setupFeaturedCollectionsAdapter(mFeaturedCollections, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -909,7 +917,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 								LogEx.e(error.getMessage(), error);
 							}
 							mFeaturedCollections = null;
-							animationHelper.setupFeaturedCollectionsAdapter(null, false);
+							mActivity.getAnimationHelper().setupFeaturedCollectionsAdapter(null, false);
 						}
 					});
 
@@ -919,7 +927,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onResponse(List<User> response) {
 							mFeaturedMappers = response;
-							animationHelper.setupFeaturedMappersAdapter(mFeaturedMappers, true);
+							mActivity.getAnimationHelper().setupFeaturedMappersAdapter(mFeaturedMappers, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -929,7 +937,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 								LogEx.e(error.getMessage(), error);
 							}
 							mFeaturedMappers = null;
-							animationHelper.setupFeaturedMappersAdapter(null, false);
+							mActivity.getAnimationHelper().setupFeaturedMappersAdapter(null, false);
 						}
 					});
 
@@ -944,7 +952,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 									mFeaturedDeals.add((SearchResultPlace) searchResult);
 								}
 							}
-							animationHelper.setupFeaturedDealsAdapter(mFeaturedDeals, true);
+							mActivity.getAnimationHelper().setupFeaturedDealsAdapter(mFeaturedDeals, true);
 						}
 					},
 					new Response.ErrorListener() {
@@ -954,7 +962,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 								LogEx.e(error.getMessage(), error);
 							}
 							mFeaturedDeals = null;
-							animationHelper.setupFeaturedDealsAdapter(null, true);
+							mActivity.getAnimationHelper().setupFeaturedDealsAdapter(null, true);
 						}
 					});
 

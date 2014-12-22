@@ -98,10 +98,10 @@ public class UserCardView extends CitymapsCardView<User> {
 				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
 				cache.putBitmap(cacheKey, postcardBitmap);
 			}
-			new ImageListener(getContext(), mMainImageView).setBitmap(postcardBitmap, isImmediate);
+			new ImageListener(getContext(), mMainImageView, animateImages).setBitmap(postcardBitmap, isImmediate);
 		} else {
 			mImageContainers.add(mImageLoader.get(postcardUrl,
-					new ImageListener(getContext(), mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25));
+					new ImageListener(getContext(), mMainImageView, animateImages), 300, 300, VolleyManager.OPTION_BLUR25));
 		}
 
 		String avatarUrl = data.getAvatarUrl();
@@ -110,7 +110,8 @@ public class UserCardView extends CitymapsCardView<User> {
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mImageContainers.add(mImageLoader.get(avatarUrl, new AvatarImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+			mImageContainers.add(mImageLoader.get(avatarUrl,
+					new AvatarImageListener(getContext(), mAvatarView, animateImages), size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
 
@@ -122,19 +123,15 @@ public class UserCardView extends CitymapsCardView<User> {
 	}
 
 	protected class ImageListener extends AnimatingImageListener {
-		public ImageListener(Context context, ImageView imageView, int animationResId) {
-			super(context, imageView, animationResId);
-		}
-
-		public ImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
+		public ImageListener(Context context, ImageView imageView, boolean animateImage) {
+			super(context, imageView, animateImage);
 		}
 
 		@Override
-		public void onLoadComplete() {
+		public void onImageLoadComplete() {
 			mPendingImageViews.remove(getImageView());
 			if (mPendingImageViews.size() == 0) {
-				setLoadComplete();
+				notifyBindComplete();
 			}
 		}
 	}
@@ -142,19 +139,15 @@ public class UserCardView extends CitymapsCardView<User> {
 	protected class AvatarImageListener extends AnimatingImageListener {
 		private static final int DEFAULT_ANIMATION_RES_ID = R.anim.grow_from_zero;
 
-		public AvatarImageListener(Context context, ImageView imageView, int animationResId) {
-			super(context, imageView, animationResId);
-		}
-
-		public AvatarImageListener(Context context, ImageView imageView) {
-			this(context, imageView, DEFAULT_ANIMATION_RES_ID);
+		public AvatarImageListener(Context context, ImageView imageView, boolean animateImage) {
+			super(context, imageView, animateImage ? DEFAULT_ANIMATION_RES_ID : 0);
 		}
 
 		@Override
-		public void onLoadComplete() {
+		public void onImageLoadComplete() {
 			mPendingImageViews.remove(getImageView());
 			if (mPendingImageViews.size() == 0) {
-				setLoadComplete();
+				notifyBindComplete();
 			}
 		}
 	}

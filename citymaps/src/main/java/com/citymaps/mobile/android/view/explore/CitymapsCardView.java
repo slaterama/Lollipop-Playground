@@ -9,6 +9,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.app.VolleyManager.CustomImageLoader;
+import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,11 +19,11 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	protected CustomImageLoader mImageLoader;
 
-	protected boolean mLoadComplete = false;
+	protected boolean mBindComplete = false;
 
 	protected D mData;
 
-	protected OnLoadCompleteListener mOnLoadCompleteListener;
+	protected OnBindCompleteListener mOnBindCompleteListener;
 
 	protected Set<ImageLoader.ImageContainer> mImageContainers;
 
@@ -62,18 +63,18 @@ public abstract class CitymapsCardView<D> extends CardView {
 		onBindData(data, animateImages);
 	}
 
-	public void setOnLoadCompleteListener(OnLoadCompleteListener onLoadCompleteListener) {
-		mOnLoadCompleteListener = onLoadCompleteListener;
+	public void setOnBindCompleteListener(OnBindCompleteListener onBindCompleteListener) {
+		mOnBindCompleteListener = onBindCompleteListener;
 	}
 
-	public boolean isLoadComplete() {
-		return mLoadComplete;
+	public boolean isBindComplete() {
+		return mBindComplete;
 	}
 
-	public void setLoadComplete() {
-		mLoadComplete = true;
-		if (mOnLoadCompleteListener != null) {
-			mOnLoadCompleteListener.onLoadComplete(this);
+	public void notifyBindComplete() {
+		mBindComplete = true;
+		if (mOnBindCompleteListener != null) {
+			mOnBindCompleteListener.onBindComplete(this);
 		}
 	}
 
@@ -92,7 +93,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 		}
 	}
 
-	public static interface OnLoadCompleteListener {
-		public void onLoadComplete(CitymapsCardView v);
+	public static interface OnBindCompleteListener {
+		public void onBindComplete(CitymapsCardView v);
 	}
 }
