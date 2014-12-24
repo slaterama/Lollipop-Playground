@@ -4,7 +4,7 @@
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
-			 tools:context="com.citymaps.mobile.android.view.ExploreActivity">
+			 tools:context="com.citymaps.mobile.android.view.ExploreActivityOldest">
 
 	<com.citymaps.mobile.android.widget.ObservableScrollView
 			android:id="@+id/explore_scrollview"

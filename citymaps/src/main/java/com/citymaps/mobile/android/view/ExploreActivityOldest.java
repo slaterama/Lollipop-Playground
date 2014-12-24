@@ -44,7 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExploreActivity extends TrackedActionBarActivity
+public class ExploreActivityOldest extends TrackedActionBarActivity
 		implements View.OnLayoutChangeListener {
 
 	private static final int CAROUSEL_INITIAL_LOAD_DELAY = 250;
@@ -350,7 +350,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 			Boolean shouldAnimate = (Boolean) holder.itemView.getTag(R.id.explore_card_should_animate);
 			if (shouldAnimate != null && shouldAnimate == Boolean.TRUE) {
 				holder.itemView.setTag(R.id.explore_card_should_animate, false);
-				Animation animation = AnimationUtils.loadAnimation(ExploreActivity.this, R.anim.overshoot_in_right);
+				Animation animation = AnimationUtils.loadAnimation(ExploreActivityOldest.this, R.anim.overshoot_in_right);
 				animation.setStartOffset(position * CAROUSEL_ITEM_LOAD_DELAY);
 				holder.itemView.startAnimation(animation);
 			}
@@ -389,18 +389,18 @@ public class ExploreActivity extends TrackedActionBarActivity
 			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
-				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivityOldest.this);
 				viewAllCardView.setData(CarouselType.BEST_AROUND);
 				cardView = viewAllCardView;
 			} else {
 				CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
 				switch (type) {
 					case PLACE: {
-						cardView = new BestAroundPlaceCardView(ExploreActivity.this);
+						cardView = new BestAroundPlaceCardView(ExploreActivityOldest.this);
 						break;
 					}
 					case COLLECTION: {
-						cardView = new BestAroundCollectionCardView(ExploreActivity.this);
+						cardView = new BestAroundCollectionCardView(ExploreActivityOldest.this);
 						break;
 					}
 					default:
@@ -452,11 +452,11 @@ public class ExploreActivity extends TrackedActionBarActivity
 			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
-				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivityOldest.this);
 				viewAllCardView.setData(CarouselType.FEATURED_COLLECTIONS);
 				cardView = viewAllCardView;
 			} else {
-				cardView = new CollectionCardView(ExploreActivity.this);
+				cardView = new CollectionCardView(ExploreActivityOldest.this);
 			}
 			if (mAnimateOnInitialLoad) {
 				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
@@ -499,11 +499,11 @@ public class ExploreActivity extends TrackedActionBarActivity
 			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
-				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivityOldest.this);
 				viewAllCardView.setData(CarouselType.FEATURED_MAPPERS);
 				cardView = viewAllCardView;
 			} else {
-				cardView = new UserCardView(ExploreActivity.this);
+				cardView = new UserCardView(ExploreActivityOldest.this);
 			}
 			if (mAnimateOnInitialLoad) {
 				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
@@ -547,11 +547,11 @@ public class ExploreActivity extends TrackedActionBarActivity
 			//super.onCreateViewHolder(parent, viewType);
 			CitymapsCardView cardView;
 			if (viewType == Integer.MAX_VALUE) {
-				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivity.this);
+				ViewAllCardView viewAllCardView = new ViewAllCardView(ExploreActivityOldest.this);
 				viewAllCardView.setData(CarouselType.FEATURED_DEALS);
 				cardView = viewAllCardView;
 			} else {
-				cardView = new DealCardView(ExploreActivity.this);
+				cardView = new DealCardView(ExploreActivityOldest.this);
 			}
 			if (mAnimateOnInitialLoad) {
 				Boolean hasScrolled = (Boolean) mCarousel.mRecyclerView.getTag(R.id.explore_has_scrolled);
@@ -593,7 +593,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 			return fragment;
 		}
 
-		private ExploreActivity mActivity;
+		private ExploreActivityOldest mActivity;
 
 		private ParcelableLonLat mMapLocation;
 		private float mMapRadius;
@@ -610,7 +610,7 @@ public class ExploreActivity extends TrackedActionBarActivity
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			try {
-				mActivity = (ExploreActivity) activity;
+				mActivity = (ExploreActivityOldest) activity;
 			} catch (ClassCastException e) {
 				throw new ClassCastException(
 						"ExploreActivity.HelperFragment must be attached to ExploreActivity");

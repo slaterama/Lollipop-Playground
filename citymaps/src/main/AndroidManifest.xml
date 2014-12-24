@@ -207,7 +207,7 @@
 				android:theme="@style/AppTheme.TranslucentAppBar.Overlay">
 		</activity>
 		<activity
-				android:name="com.citymaps.mobile.android.view.explore.ExploreActivity"
+				android:name=".view.explorenew.ExploreActivity"
 				android:label="@string/explore_activity_title">
 		</activity>
 		<activity

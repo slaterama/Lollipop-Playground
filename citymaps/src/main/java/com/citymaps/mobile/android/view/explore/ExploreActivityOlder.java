@@ -39,7 +39,7 @@ import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
 import java.util.*;
 
-public class ExploreActivity extends TrackedActionBarActivity {
+public class ExploreActivityOlder extends TrackedActionBarActivity {
 
 	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
 
@@ -233,22 +233,22 @@ public class ExploreActivity extends TrackedActionBarActivity {
 					mHeroDefaultCardSize = getCardSize(v, mDefaultCardsAcross); // Card size across for "default"
 					int cardSize = getCardSize(v, mHeroCardsAcross);
 					mHeroCardRect = new Rect(0, 0, cardSize,
-							HeroCardView.getDesiredHeight(ExploreActivity.this, mHeroDefaultCardSize));
+							HeroCardView.getDesiredHeight(ExploreActivityOlder.this, mHeroDefaultCardSize));
 					cardRect = mHeroCardRect;
 				} else if (v == mFeaturedCollectionsRecyclerView) {
 					int cardSize = getCardSize(v, mFeaturedCollectionsCardsAcross);
 					mFeaturedCollectionsCardRect = new Rect(0, 0, cardSize,
-							CollectionCardView.getDesiredHeight(ExploreActivity.this, cardSize));
+							CollectionCardView.getDesiredHeight(ExploreActivityOlder.this, cardSize));
 					cardRect = mFeaturedCollectionsCardRect;
 				} else if (v == mFeaturedMappersRecyclerView) {
 					int cardSize = getCardSize(v, mFeaturedMappersCardsAcross);
 					mFeaturedMappersCardRect = new Rect(0, 0, cardSize,
-							UserCardView.getDesiredHeight(ExploreActivity.this, cardSize));
+							UserCardView.getDesiredHeight(ExploreActivityOlder.this, cardSize));
 					cardRect = mFeaturedMappersCardRect;
 				} else if (v == mFeaturedDealsRecyclerView) {
 					int cardSize = getCardSize(v, mFeaturedDealsCardsAcross);
 					mFeaturedDealsCardRect = new Rect(0, 0, cardSize,
-							DealCardView.getDesiredHeight(ExploreActivity.this, cardSize));
+							DealCardView.getDesiredHeight(ExploreActivityOlder.this, cardSize));
 					cardRect = mFeaturedDealsCardRect;
 				} else {
 					return;
@@ -355,15 +355,15 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			CitymapsCardView cardView;
 			if (viewType == VIEW_TYPE_VIEW_ALL) {
-				cardView = new ViewAllCardView(ExploreActivity.this);
+				cardView = new ViewAllCardView(ExploreActivityOlder.this);
 			} else {
 				CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
 				switch (type) {
 					case PLACE:
-						cardView = new PlaceHeroCardView(ExploreActivity.this);
+						cardView = new PlaceHeroCardView(ExploreActivityOlder.this);
 						break;
 					case COLLECTION:
-						cardView = new CollectionHeroCardView(ExploreActivity.this);
+						cardView = new CollectionHeroCardView(ExploreActivityOlder.this);
 						break;
 					default:
 						throw new IllegalStateException("HeroAdapter expects only place or collection search results");
@@ -404,9 +404,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			CitymapsCardView cardView;
 			if (viewType == VIEW_TYPE_VIEW_ALL) {
-				cardView = new ViewAllCardView(ExploreActivity.this);
+				cardView = new ViewAllCardView(ExploreActivityOlder.this);
 			} else {
-				cardView = new CollectionCardView(ExploreActivity.this);
+				cardView = new CollectionCardView(ExploreActivityOlder.this);
 			}
 			int perceivedWidth = mFeaturedCollectionsCardRect.width();
 			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
@@ -442,9 +442,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			CitymapsCardView cardView;
 			if (viewType == VIEW_TYPE_VIEW_ALL) {
-				cardView = new ViewAllCardView(ExploreActivity.this);
+				cardView = new ViewAllCardView(ExploreActivityOlder.this);
 			} else {
-				cardView = new UserCardView(ExploreActivity.this);
+				cardView = new UserCardView(ExploreActivityOlder.this);
 			}
 			int perceivedWidth = mFeaturedMappersCardRect.width();
 			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
@@ -480,9 +480,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			CitymapsCardView cardView;
 			if (viewType == VIEW_TYPE_VIEW_ALL) {
-				cardView = new ViewAllCardView(ExploreActivity.this);
+				cardView = new ViewAllCardView(ExploreActivityOlder.this);
 			} else {
-				cardView = new DealCardView(ExploreActivity.this);
+				cardView = new DealCardView(ExploreActivityOlder.this);
 			}
 			int perceivedWidth = mFeaturedDealsCardRect.width();
 			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
@@ -752,7 +752,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			return fragment;
 		}
 
-		private ExploreActivity mActivity;
+		private ExploreActivityOlder mActivity;
 
 		private ParcelableLonLat mMapLocation;
 		private float mMapRadius;
@@ -767,7 +767,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			try {
-				mActivity = (ExploreActivity) activity;
+				mActivity = (ExploreActivityOlder) activity;
 			} catch (ClassCastException e) {
 				throw new ClassCastException(
 						"ExploreActivity.HelperFragment must be attached to ExploreActivity");
