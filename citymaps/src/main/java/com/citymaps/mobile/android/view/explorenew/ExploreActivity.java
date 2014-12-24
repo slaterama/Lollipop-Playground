@@ -2,17 +2,21 @@ package com.citymaps.mobile.android.view.explorenew;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MarginLayoutParamsCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
@@ -22,18 +26,13 @@ import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
-import com.citymaps.mobile.android.model.SearchResult;
-import com.citymaps.mobile.android.model.SearchResultCollection;
-import com.citymaps.mobile.android.model.SearchResultPlace;
-import com.citymaps.mobile.android.model.User;
+import com.citymaps.mobile.android.model.*;
 import com.citymaps.mobile.android.model.request.SearchResultsRequest;
 import com.citymaps.mobile.android.model.request.UsersRequest;
+import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
+import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.util.ResourcesUtils;
-import com.citymaps.mobile.android.view.explore.CollectionCardView;
-import com.citymaps.mobile.android.view.explore.DealCardView;
-import com.citymaps.mobile.android.view.explore.HeroCardView;
-import com.citymaps.mobile.android.view.explore.UserCardView;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
@@ -43,18 +42,6 @@ import java.util.List;
 public class ExploreActivity extends TrackedActionBarActivity {
 
 	private static final String STATE_KEY_HELPER_FRAGMENT = "helperFragment";
-
-	/*
-	private boolean mUseCompatPadding;
-	private int mCardMaxElevation;
-	private int mCardPerceivedMargin;
-
-	private float mDefaultCardsAcross;
-	private float mHeroCardsAcross;
-	private float mFeaturedCollectionsCardsAcross;
-	private float mFeaturedMappersCardsAcross;
-	private float mFeaturedDealsCardsAcross;
-	*/
 
 	private CardSizeHelper mCardSizeHelper;
 
@@ -70,30 +57,17 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	private RecyclerViewEx mFeaturedMappersRecyclerView;
 	private RecyclerViewEx mFeaturedDealsRecyclerView;
 
-	/*
 	private HeroAdapter mHeroAdapter;
 	private FeaturedCollectionsAdapter mFeaturedCollectionsAdapter;
 	private FeaturedMappersAdapter mFeaturedMappersAdapter;
 	private FeaturedDealsAdapter mFeaturedDealsAdapter;
-	*/
-
-	/*
-	private int mHeroDefaultCardSize;
-	private Rect mHeroCardRect;
-	private Rect mFeaturedCollectionsCardRect;
-	private Rect mFeaturedMappersCardRect;
-	private Rect mFeaturedDealsCardRect;
-	*/
-
-	private ParcelableLonLat mMapLocation;
-	private float mMapRadius;
-	private int mMapZoom;
 
 	private HelperFragment mHelperFragment;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_explore);
 		mCardSizeHelper = new CardSizeHelper(this);
 
 		// Set up views
@@ -128,7 +102,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		// Set up helper fragment
 
 		if (savedInstanceState == null) {
-			mHelperFragment = HelperFragment.newInstance(mMapLocation, mMapRadius, mMapZoom);
+			mHelperFragment = HelperFragment.newInstance(getIntent());
 			getSupportFragmentManager()
 					.beginTransaction()
 					.add(mHelperFragment, HelperFragment.FRAGMENT_TAG)
@@ -198,19 +172,259 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	}
 
 	private void onHeroRequestResponse(List<SearchResult> response) {
-
+		if (mHeroAdapter == null) {
+			mHeroAdapter = new HeroAdapter(this, response);
+			mHeroRecyclerView.setAdapter(mHeroAdapter);
+		} else {
+			mHeroAdapter.setItems(response);
+		}
 	}
 
 	private void onFeaturedCollectionsRequestResponse(List<SearchResultCollection> response) {
-
+		if (mFeaturedCollectionsAdapter == null) {
+			mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(this, response);
+			mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter);
+		} else {
+			mFeaturedCollectionsAdapter.setItems(response);
+		}
 	}
 
 	private void onFeaturedMappersRequestResponse(List<User> response) {
-
+		if (mFeaturedMappersAdapter == null) {
+			mFeaturedMappersAdapter = new FeaturedMappersAdapter(this, response);
+			mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
+		} else {
+			mFeaturedMappersAdapter.setItems(response);
+		}
 	}
 
 	private void onFeaturedDealsRequestResponse(List<SearchResultPlace> response) {
+		if (mFeaturedDealsAdapter == null) {
+			mFeaturedDealsAdapter = new FeaturedDealsAdapter(this, response);
+			mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
+		} else {
+			mFeaturedDealsAdapter.setItems(response);
+		}
+	}
 
+	/*
+	 * ********************************************************************************
+	 * RecyclerView adapters
+	 * ********************************************************************************
+	 */
+
+	private abstract class ExploreAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		protected static final int VIEW_TYPE_VIEW_ALL = Integer.MIN_VALUE;
+
+		protected Context mContext;
+		protected List<D> mItems;
+
+		protected boolean mHasViewAllCard = true;
+
+		public ExploreAdapter(Context context, List<D> items) {
+			super();
+			mContext = context;
+			mItems = items;
+		}
+
+		public List<D> getItems() {
+			return mItems;
+		}
+
+		public void setItems(List<D> items) {
+			mItems = items;
+			notifyDataSetChanged();
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			if (mHasViewAllCard && position == getItemCount() - 1) {
+				return VIEW_TYPE_VIEW_ALL;
+			} else {
+				return super.getItemViewType(position);
+			}
+		}
+
+		@Override
+		public int getItemCount() {
+			if (mItems == null) {
+				return 0;
+			} else {
+				return mItems.size() + (mHasViewAllCard ? 1 : 0);
+			}
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			return (viewType == VIEW_TYPE_VIEW_ALL ?
+					new ExploreViewHolder(new ViewAllCardView(mContext)) : null);
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			// Configure the correct margin depending on position
+			if (holder.itemView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
+				int margin = (int) (mCardSizeHelper.mCardPerceivedMargin -
+						2 * (holder.itemView instanceof CardView ? ((CardView) holder.itemView).getMaxCardElevation() : 0));
+				MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
+				holder.itemView.setLayoutParams(mlp);
+			}
+		}
+	}
+
+	private class HeroAdapter extends ExploreAdapter<SearchResult> {
+
+		public HeroAdapter(Context context, List<SearchResult> items) {
+			super(context, items);
+			mHasViewAllCard = false;
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			int viewType = super.getItemViewType(position);
+			if (viewType != VIEW_TYPE_VIEW_ALL) {
+				SearchResult searchResult = mItems.get(position);
+				viewType = searchResult.getType().value();
+			}
+			return viewType;
+		}
+
+		@Override
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			ViewHolder holder = super.onCreateViewHolder(parent, viewType);
+			if (holder == null) {
+				CitymapsCardView cardView;
+				CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
+				switch (type) {
+					case PLACE:
+						cardView = new PlaceHeroCardView(mContext);
+						break;
+					case COLLECTION:
+						cardView = new CollectionHeroCardView(mContext);
+						break;
+					default:
+						throw new IllegalStateException("HeroAdapter expects only place or collection search results");
+				}
+				cardView.setTag(RecyclerViewType.HERO);
+				cardView.setDefaultCardSize(mCardSizeHelper.mHeroDefaultCardSize);
+				int actualCardWidth = mCardSizeHelper.mHeroCardRect.width() +
+						(mCardSizeHelper.mUseCompatPadding ? 2 * mCardSizeHelper.mCardMaxElevation : 0);
+				cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, mCardSizeHelper.mHeroCardRect.height()));
+				holder = new ExploreViewHolder(cardView);
+			}
+			return holder;
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			boolean animateImages = false; // TODO (mAnimationHelper != null);
+			super.onBindViewHolder(holder, position);
+			if (holder.itemView instanceof CollectionHeroCardView) {
+				((CollectionHeroCardView) holder.itemView).setData((SearchResultCollection) mItems.get(position));
+			} else if (holder.itemView instanceof PlaceHeroCardView) {
+				((PlaceHeroCardView) holder.itemView).setData((SearchResultPlace) mItems.get(position));
+			} else if (holder.itemView instanceof ViewAllCardView) {
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_hero);
+			}
+		}
+	}
+
+	private class FeaturedCollectionsAdapter extends ExploreAdapter<SearchResultCollection> {
+
+		public FeaturedCollectionsAdapter(Context context, List<SearchResultCollection> items) {
+			super(context, items);
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			CitymapsCardView cardView;
+			if (viewType == VIEW_TYPE_VIEW_ALL) {
+				cardView = new ViewAllCardView(mContext);
+			} else {
+				cardView = new CollectionCardView(mContext);
+			}
+			cardView.setTag(RecyclerViewType.FEATURED_COLLECTIONS);
+			mCardSizeHelper.updateCardLayoutParams(cardView);
+			return new ExploreViewHolder(cardView);
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			boolean animateImages = false; // TODO (mAnimationHelper != null);
+			super.onBindViewHolder(holder, position);
+			if (holder.itemView instanceof CollectionCardView) {
+				((CollectionCardView) holder.itemView).setData(mItems.get(position));
+			} else if (holder.itemView instanceof ViewAllCardView) {
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_collections);
+			}
+		}
+	}
+
+	private class FeaturedMappersAdapter extends ExploreAdapter<User> {
+
+		public FeaturedMappersAdapter(Context context, List<User> items) {
+			super(context, items);
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			CitymapsCardView cardView;
+			if (viewType == VIEW_TYPE_VIEW_ALL) {
+				cardView = new ViewAllCardView(mContext);
+			} else {
+				cardView = new UserCardView(mContext);
+			}
+			cardView.setTag(RecyclerViewType.FEATURED_MAPPERS);
+			mCardSizeHelper.updateCardLayoutParams(cardView);
+			return new ExploreViewHolder(cardView);
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			super.onBindViewHolder(holder, position);
+			if (holder.itemView instanceof UserCardView) {
+				((UserCardView) holder.itemView).setData(mItems.get(position));
+			} else if (holder.itemView instanceof ViewAllCardView) {
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_mappers);
+			}
+		}
+	}
+
+	private class FeaturedDealsAdapter extends ExploreAdapter<SearchResultPlace> {
+
+		public FeaturedDealsAdapter(Context context, List<SearchResultPlace> items) {
+			super(context, items);
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			CitymapsCardView cardView;
+			if (viewType == VIEW_TYPE_VIEW_ALL) {
+				cardView = new ViewAllCardView(mContext);
+			} else {
+				cardView = new DealCardView(mContext);
+			}
+			cardView.setTag(RecyclerViewType.FEATURED_DEALS);
+			mCardSizeHelper.updateCardLayoutParams(cardView);
+			return new ExploreViewHolder(cardView);
+		}
+
+		@Override
+		public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			super.onBindViewHolder(holder, position);
+			if (holder.itemView instanceof DealCardView) {
+				((DealCardView) holder.itemView).setData(mItems.get(position));
+			} else if (holder.itemView instanceof ViewAllCardView) {
+				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_deals);
+			}
+		}
+	}
+
+	private class ExploreViewHolder extends ViewHolder {
+		public ExploreViewHolder(View itemView) {
+			super(itemView);
+		}
 	}
 
 	/*
@@ -256,11 +470,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 
 		private int getCardSize(View view, float cardsAcross) {
-		/*
-		 * NOTE: This returns the "perceived" card width. That is, the width of the card minus any shadow/elevation element.
-		 * When setting the actual width of cards (i.e. in the createViewHolder method of the various adapters),
-		 * any "compat" padding will need to be added if appropriate.
-		 */
+			/*
+			 * NOTE: This returns the "perceived" card width. That is, the width of the card minus any shadow/elevation element.
+			 * When setting the actual width of cards (i.e. in the createViewHolder method of the various adapters),
+			 * any "compat" padding will need to be added if appropriate.
+			 */
 
 			int elevationFactor = (mUseCompatPadding ? mCardMaxElevation : 0);
 			int perceivedPaddingLeft = view.getPaddingLeft() + elevationFactor;
@@ -269,6 +483,31 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			int perceivedTotalMargin = mCardPerceivedMargin * marginCount;
 			int perceivedAvailableWidth = view.getWidth() - perceivedPaddingLeft - perceivedPaddingRight - perceivedTotalMargin;
 			return Math.max((int) (perceivedAvailableWidth / cardsAcross), 0);
+		}
+
+		private void updateCardLayoutParams(CitymapsCardView cardView) {
+			Rect rect;
+			RecyclerViewType type = (RecyclerViewType) cardView.getTag();
+			switch (type) {
+				case HERO:
+					rect = mFeaturedDealsCardRect;
+					break;
+				case FEATURED_COLLECTIONS:
+					rect = mFeaturedCollectionsCardRect;
+					break;
+				case FEATURED_MAPPERS:
+					rect = mFeaturedMappersCardRect;
+					break;
+				case FEATURED_DEALS:
+					rect = mFeaturedDealsCardRect;
+					break;
+				default:
+					return;
+			}
+			int perceivedWidth = rect.width();
+			int actualCardWidth = perceivedWidth + (mUseCompatPadding ? 2 * mCardMaxElevation : 0);
+			cardView.setDefaultCardSize(perceivedWidth);
+			cardView.setLayoutParams(new RecyclerView.LayoutParams(actualCardWidth, rect.height()));
 		}
 
 		@Override
@@ -328,12 +567,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		private static final String ARG_MAP_RADIUS = "mapRadius";
 		private static final String ARG_MAP_ZOOM = "mapZoom";
 
-		public static HelperFragment newInstance(ParcelableLonLat location, float radius, int zoom) {
+		public static HelperFragment newInstance(Intent intent) {
 			HelperFragment fragment = new HelperFragment();
 			Bundle args = new Bundle(3);
-			args.putParcelable(ARG_MAP_LOCATION, location);
-			args.putFloat(ARG_MAP_RADIUS, radius);
-			args.putInt(ARG_MAP_ZOOM, zoom);
+			args.putParcelable(ARG_MAP_LOCATION, IntentUtils.getMapLocation(intent));
+			args.putFloat(ARG_MAP_RADIUS, IntentUtils.getMapRadius(intent, MapUtils.DEFAULT_SEARCH_RADIUS));
+			args.putInt(ARG_MAP_ZOOM, IntentUtils.getMapZoom(intent, MapUtils.DEFAULT_SEARCH_ZOOM));
 			fragment.setArguments(args);
 			return fragment;
 		}

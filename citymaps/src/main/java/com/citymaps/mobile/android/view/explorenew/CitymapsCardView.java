@@ -1,10 +1,9 @@
-package com.citymaps.mobile.android.view.explore;
+package com.citymaps.mobile.android.view.explorenew;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
@@ -16,17 +15,11 @@ import java.util.Set;
 
 public abstract class CitymapsCardView<D> extends CardView {
 
-	protected CustomImageLoader mImageLoader;
-
-	protected boolean mBindComplete = false;
-
 	protected D mData;
 
-	protected OnBindCompleteListener mOnBindCompleteListener;
+	protected CustomImageLoader mImageLoader;
 
 	protected Set<ImageLoader.ImageContainer> mImageContainers;
-
-	protected Set<ImageView> mPendingImageViews;
 
 	public CitymapsCardView(Context context) {
 		super(context);
@@ -46,7 +39,6 @@ public abstract class CitymapsCardView<D> extends CardView {
 	protected void init(Context context) {
 		mImageLoader = VolleyManager.getInstance(context).getImageLoader();
 		mImageContainers = new HashSet<ImageLoader.ImageContainer>();
-		mPendingImageViews = new HashSet<ImageView>();
 		Resources resources = context.getResources();
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
@@ -57,31 +49,15 @@ public abstract class CitymapsCardView<D> extends CardView {
 		return mData;
 	}
 
-	public void setData(D data, boolean animateImages) {
+	public void setData(D data) {
 		mData = data;
-		onBindData(data, animateImages);
-	}
-
-	public void setOnBindCompleteListener(OnBindCompleteListener onBindCompleteListener) {
-		mOnBindCompleteListener = onBindCompleteListener;
-	}
-
-	public boolean isBindComplete() {
-		return mBindComplete;
-	}
-
-	public void notifyBindComplete() {
-		mBindComplete = true;
-		if (mOnBindCompleteListener != null) {
-			mOnBindCompleteListener.onBindComplete(this);
-		}
+		resetView();
+		onBindView(data);
 	}
 
 	public abstract void setDefaultCardSize(int size);
 
-	public void onBindData(D data, boolean animateImages) {
-		resetView();
-	}
+	public abstract void onBindView(D data);
 
 	protected void resetView() {
 		Iterator<ImageLoader.ImageContainer> iterator = mImageContainers.iterator();
@@ -90,9 +66,5 @@ public abstract class CitymapsCardView<D> extends CardView {
 			container.cancelRequest();
 			iterator.remove();
 		}
-	}
-
-	public static interface OnBindCompleteListener {
-		public void onBindComplete(CitymapsCardView v);
 	}
 }

@@ -274,7 +274,7 @@ public class ExploreActivityOlder extends TrackedActionBarActivity {
 		}
 	}
 
-	/**
+	/*
 	 * ********************************************************************************
 	 * RecyclerView adapters
 	 * ********************************************************************************

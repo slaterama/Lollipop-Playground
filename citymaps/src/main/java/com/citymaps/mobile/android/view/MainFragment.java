@@ -24,7 +24,7 @@ import com.citymaps.mobile.android.map.ParcelableMapPosition;
 import com.citymaps.mobile.android.map.SimpleMapViewOwner;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.MapUtils;
-import com.citymaps.mobile.android.view.explore.ExploreActivityOlder;
+import com.citymaps.mobile.android.view.explorenew.ExploreActivity;
 import com.citymaps.mobile.android.widget.FloatingActionButton;
 
 /**
@@ -197,7 +197,7 @@ public class MainFragment extends Fragment {
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(getActivity(), ExploreActivityOlder.class);
+				Intent intent = new Intent(getActivity(), ExploreActivity.class);
 				IntentUtils.putMapLocation(intent, new ParcelableLonLat(mMapView.getCenter()));
 				IntentUtils.putMapRadius(intent, MapUtils.getMapRadius(mMapView));
 				IntentUtils.putMapZoom(intent, (int) mMapView.getZoom());
