@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.CardView;
@@ -17,8 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ProgressBar;
@@ -142,7 +139,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		// Set up helper fragment
 
 		if (savedInstanceState == null) {
-//			mAnimationHelper = new AnimationHelper();
 			mHelperFragment = HelperFragment.newInstance(mMapLocation, mMapRadius, mMapZoom);
 			getSupportFragmentManager()
 					.beginTransaction()
@@ -228,82 +224,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 	}
 
-	/*
-	protected void onRequestsComplete(boolean isImmediate) {
-		if (mAnimationHelper == null) {
-			populateData();
-		} else {
-			mAnimationHelper.mProgressBarAnimatorSet.start();
-		}
-	}
-	*/
-
-	/*
-	private void populateData() {
-		mHeroProgressBar.setVisibility(View.GONE);
-		mFeaturedCollectionsProgressBar.setVisibility(View.GONE);
-		mFeaturedMappersProgressBar.setVisibility(View.GONE);
-		mFeaturedDealsProgressBar.setVisibility(View.GONE);
-
-		String city = null;
-		if (mHelperFragment.mHeroItems != null && mHelperFragment.mHeroItems.size() > 0) {
-			for (SearchResult searchResult : mHelperFragment.mHeroItems) {
-				if (searchResult instanceof SearchResultPlace) {
-					SearchResultPlace searchResultPlace = (SearchResultPlace) searchResult;
-					city = searchResultPlace.getCity();
-				} else if (searchResult instanceof SearchResultCollection) {
-					SearchResultCollection searchResultCollection = (SearchResultCollection) searchResult;
-					List<User> editors = searchResultCollection.getEditors();
-					if (editors != null && editors.size() > 0) {
-						city = editors.get(0).getCity();
-					}
-				}
-				if (!TextUtils.isEmpty(city)) {
-					break;
-				}
-			}
-		}
-		if (TextUtils.isEmpty(city)) {
-			mHeroLabelView.setText(R.string.explore_best_around_me);
-		} else {
-			mHeroLabelView.setText(getString(R.string.explore_best_around, city));
-		}
-
-		if (mAnimationHelper != null) {
-			int pendingRecyclerViewCount = 0;
-			if (mHelperFragment.mHeroItems != null && mHelperFragment.mHeroItems.size() > 0) {
-				mAnimationHelper.addPendingRecyclerView(mHeroRecyclerView);
-				pendingRecyclerViewCount++;
-			}
-			if (mHelperFragment.mFeaturedCollections != null && mHelperFragment.mFeaturedCollections.size() > 0) {
-				mAnimationHelper.addPendingRecyclerView(mFeaturedCollectionsRecyclerView);
-				pendingRecyclerViewCount++;
-			}
-			if (mHelperFragment.mFeaturedMappers != null && mHelperFragment.mFeaturedMappers.size() > 0) {
-				mAnimationHelper.addPendingRecyclerView(mFeaturedMappersRecyclerView);
-				pendingRecyclerViewCount++;
-			}
-			if (mHelperFragment.mFeaturedDeals != null && mHelperFragment.mFeaturedDeals.size() > 0) {
-				mAnimationHelper.addPendingRecyclerView(mFeaturedDealsRecyclerView);
-				pendingRecyclerViewCount++;
-			}
-			if (pendingRecyclerViewCount == 0) {
-				LogEx.d("!!!!! No RecyclerViews had any data !!!!!");
-			}
-		}
-
-		mHeroAdapter = new HeroAdapter(mHelperFragment.mHeroItems);
-		mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(mHelperFragment.mFeaturedCollections);
-		mFeaturedMappersAdapter = new FeaturedMappersAdapter(mHelperFragment.mFeaturedMappers);
-		mFeaturedDealsAdapter = new FeaturedDealsAdapter(mHelperFragment.mFeaturedDeals);
-
-		mHeroRecyclerView.setAdapter(mHeroAdapter);
-		mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter);
-		mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter);
-		mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter);
-	}
-	*/
-
 	private OnSizeChangedListener mRecyclerView_OnSizeChangedListener = new OnSizeChangedListener() {
 		@Override
 		public void onSizeChanged(final View v, int w, int h, int oldw, int oldh) {
@@ -364,18 +284,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		protected static final int VIEW_TYPE_VIEW_ALL = Integer.MIN_VALUE;
 
 		protected boolean mHasViewAllCard = true;
-		//		protected boolean mIsInInitialLoad;
 		protected List<D> mItems;
 
 		public ExploreAdapter(List<D> items) {
 			super();
-//			mIsInInitialLoad = true;
 			mItems = items;
 		}
-
-//		public void setInInitialLoad(boolean isInInitialLoad) {
-//			mIsInInitialLoad = isInInitialLoad;
-//		}
 
 		public List<D> getItems() {
 			return mItems;
@@ -739,14 +653,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 
 		private void addPendingCardView(CitymapsCardView cardView) {
-//			final int size;
 			synchronized (this) {
 				mPendingCardViews.add(cardView);
-//				size = mPendingCardViews.size();
 			}
-
-//			LogEx.d(String.format("size=%d", size));
-
 			cardView.setVisibility(View.INVISIBLE);
 			cardView.setOnBindCompleteListener(this);
 		}
@@ -819,133 +728,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			}
 		}
 	}
-
-	/*
-	protected class AnimationHelper implements View.OnLayoutChangeListener, CitymapsCardView.OnLoadCompleteListener {
-
-		private Set<View> mPendingRecyclerViews;
-
-		private AnimatorSet mProgressBarAnimatorSet;
-
-		private Set<CitymapsCardView> mPendingCardViews;
-
-		public AnimationHelper() {
-			super();
-			mPendingRecyclerViews = new HashSet<View>();
-
-			ProgressBar[] progressBars = new ProgressBar[]{mHeroProgressBar, mFeaturedCollectionsProgressBar,
-					mFeaturedMappersProgressBar, mFeaturedDealsProgressBar};
-			Animator[] animators = new Animator[progressBars.length];
-			for (int i = 0; i < progressBars.length; i++) {
-				animators[i] = AnimatorInflater.loadAnimator(ExploreActivity.this, R.animator.shrink_to_zero);
-				animators[i].setTarget(progressBars[i]);
-			}
-			mProgressBarAnimatorSet = new AnimatorSet();
-			mProgressBarAnimatorSet.playTogether(animators);
-			mProgressBarAnimatorSet.addListener(mProgressBar_AnimatorListener);
-
-			mPendingCardViews = new HashSet<CitymapsCardView>();
-
-			mHeroRecyclerView.setVisibility(View.INVISIBLE);
-			mHeroRecyclerView.addOnLayoutChangeListener(this);
-			mHeroProgressBar.setVisibility(View.VISIBLE);
-			mFeaturedCollectionsRecyclerView.setVisibility(View.INVISIBLE);
-			mFeaturedCollectionsRecyclerView.addOnLayoutChangeListener(this);
-			mFeaturedCollectionsProgressBar.setVisibility(View.VISIBLE);
-			mFeaturedMappersRecyclerView.setVisibility(View.INVISIBLE);
-			mFeaturedMappersRecyclerView.addOnLayoutChangeListener(this);
-			mFeaturedMappersProgressBar.setVisibility(View.VISIBLE);
-			mFeaturedDealsRecyclerView.setVisibility(View.INVISIBLE);
-			mFeaturedDealsRecyclerView.addOnLayoutChangeListener(this);
-			mFeaturedDealsProgressBar.setVisibility(View.VISIBLE);
-
-			// At this point:
-			// * All data will start to retrieve
-			// * If the data in a recycler view > 0, onLayoutChange will pick it up and
-			// "process" that recycler view.
-			// * Otherwise, we have to catch that there is no data and "process" it manually
-		}
-
-		private void onDataRequestComplete() {
-			LogEx.d("");
-		}
-
-		private Animator.AnimatorListener mProgressBar_AnimatorListener = new Animator.AnimatorListener() {
-			@Override
-			public void onAnimationStart(Animator animation) {
-			}
-
-			@Override
-			public void onAnimationEnd(Animator animation) {
-//				populateData();
-			}
-
-			@Override
-			public void onAnimationCancel(Animator animation) {
-			}
-
-			@Override
-			public void onAnimationRepeat(Animator animation) {
-			}
-		};
-
-		@Override
-		public void onLayoutChange(View v, int left, int top, int right, int bottom,
-								   int oldLeft, int oldTop, int oldRight, int oldBottom) {
-			if (v instanceof ViewGroup) {
-				ViewGroup viewGroup = (ViewGroup) v;
-				int childCount = viewGroup.getChildCount();
-				if (childCount > 0) {
-					// Temporarily hide the RecyclerView until all cards have loaded their images
-//					v.setVisibility(View.INVISIBLE);
-
-					LogEx.d(String.format("v=%s", v));
-
-					for (int i = 0; i < childCount; i++) {
-						View child = viewGroup.getChildAt(i);
-						if (child instanceof CitymapsCardView) {
-							CitymapsCardView cardView = (CitymapsCardView) child;
-							if (!cardView.isLoadComplete()) {
-								mPendingCardViews.add(cardView);
-							}
-						}
-					}
-
-					v.removeOnLayoutChangeListener(this);
-				}
-			}
-			mPendingRecyclerViews.remove(v);
-			if (mPendingRecyclerViews.size() == 0) {
-//				LogEx.d("!!!!! All views have been laid out !!!!!");
-
-				if (!checkPendingCardViews()) {
-//					LogEx.d(String.format("Number of pending card views=%d", mPendingCardViews.size()));
-				}
-			}
-		}
-
-		@Override
-		public void onLoadComplete(CitymapsCardView v) {
-			mPendingCardViews.remove(v);
-			checkPendingCardViews();
-		}
-
-		protected boolean checkPendingCardViews() {
-			int size = mPendingCardViews.size();
-//			LogEx.d(String.format("Number of pending card views=%d", size));
-			if (size == 0) {
-//				LogEx.d("!!!!! All cards have completed loading !!!!!");
-
-//				startAnimation();
-
-//				mAnimationHelper = null;
-				return true;
-			}
-
-			return false;
-		}
-	}
-	*/
 
 	/**
 	 * ******************************************************************************
