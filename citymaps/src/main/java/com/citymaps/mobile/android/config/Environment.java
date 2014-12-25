@@ -170,7 +170,7 @@ public abstract class Environment {
 		DEVELOPMENT;
 
 		public static Type defaultType() {
-			String buildType = "production"; // TODO TEMP !!!!! BuildConfig.BUILD_TYPE;
+			String buildType = BuildConfig.BUILD_TYPE;
 			//String flavor = BuildConfig.FLAVOR; <-- Unused for now
 			if (BUILD_VARIANT_DEVELOPMENT.equals(buildType)) {
 				return DEVELOPMENT;
