@@ -27,7 +27,7 @@ public class CollectionHeroCardView extends HeroCardView<SearchResultCollection>
 	}
 
 	@Override
-	public void onBindView(final SearchResultCollection data) {
-		super.onBindView(data);
+	public void onBindView(final SearchResultCollection data, boolean inInitialLayout) {
+		super.onBindView(data, inInitialLayout);
 	}
 }

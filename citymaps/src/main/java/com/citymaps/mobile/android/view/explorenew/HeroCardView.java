@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.explorenew;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 
 	protected TextView mNameView;
 
+	protected Bitmap mPendingMainImageBitmap;
+
 	public HeroCardView(Context context) {
 		super(context);
 	}
@@ -60,7 +63,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	}
 
 	@Override
-	public void onBindView(final D data) {
+	public void onBindView(final D data, boolean inInitialLayout) {
 		mNameView.setText(data.getName());
 
 		final String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
@@ -104,20 +107,26 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 		mMainImageView.setImageDrawable(null);
 	}
 
+	@Override
+	public void setPendingBitmaps() {
+		if (mPendingMainImageBitmap != null) {
+			new MainImageListener(getContext(), mMainImageView).setBitmap(mPendingMainImageBitmap, true);
+			mPendingMainImageBitmap = null;
+		}
+	}
+
 	protected class MainImageListener extends GradientAnimatingImageListener {
 		public MainImageListener(Context context, ImageView imageView) {
 			super(context, imageView);
 		}
 
-		/*
 		@Override
-		public void onImageLoadComplete() {
-			super.onImageLoadComplete();
-			mPendingImageViews.remove(getImageView());
-			if (mPendingImageViews.size() == 0) {
-				notifyBindComplete();
+		public void setBitmap(Bitmap bitmap, boolean isImmediate) {
+			if (isImmediate || !mInInitialLayout) {
+				super.setBitmap(bitmap, isImmediate);
+			} else {
+				mPendingMainImageBitmap = bitmap;
 			}
 		}
-		*/
 	}
 }

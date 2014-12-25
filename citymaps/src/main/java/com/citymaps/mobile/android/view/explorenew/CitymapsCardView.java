@@ -17,6 +17,8 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	protected D mData;
 
+	protected boolean mInInitialLayout;
+
 	protected CustomImageLoader mImageLoader;
 
 	protected Set<ImageLoader.ImageContainer> mImageContainers;
@@ -50,14 +52,19 @@ public abstract class CitymapsCardView<D> extends CardView {
 	}
 
 	public void setData(D data) {
+		setData(data, false);
+	}
+
+	public void setData(D data, boolean inInitialLayout) {
 		mData = data;
+		mInInitialLayout = inInitialLayout;
 		resetView();
-		onBindView(data);
+		onBindView(data, inInitialLayout);
 	}
 
 	public abstract void setDefaultCardSize(int size);
 
-	public abstract void onBindView(D data);
+	public abstract void onBindView(D data, boolean inInitialLayout);
 
 	protected void resetView() {
 		Iterator<ImageLoader.ImageContainer> iterator = mImageContainers.iterator();
@@ -66,5 +73,8 @@ public abstract class CitymapsCardView<D> extends CardView {
 			container.cancelRequest();
 			iterator.remove();
 		}
+	}
+
+	public void setPendingBitmaps() {
 	}
 }

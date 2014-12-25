@@ -67,7 +67,7 @@ public class UserCardView extends CitymapsCardView<User> {
 	}
 
 	@Override
-	public void onBindView(User data) {
+	public void onBindView(User data, boolean inInitialLayout) {
 		mNameView.setText(data.getName());
 		String username = data.getUsername();
 		mUsernameView.setText(username);

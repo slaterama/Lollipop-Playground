@@ -18,6 +18,7 @@ public class AnimatingImageListener
 	protected Context mContext;
 	protected ImageView mImageView;
 
+	private boolean mAnimationSet = false;
 	protected int mAnimationResId = R.anim.grow_fade_in_center;
 	private Animation mAnimation;
 
@@ -33,13 +34,14 @@ public class AnimatingImageListener
 	public void setAnimationResId(int animationResId) {
 		if (animationResId != mAnimationResId) {
 			mAnimationResId = animationResId;
-			mAnimation = null;
+			mAnimationSet = false;
 		}
 	}
 
 	public Animation getAnimation() {
-		if (mAnimation == null && mAnimationResId != 0) {
-			mAnimation = AnimationUtils.loadAnimation(mContext, mAnimationResId);
+		if (!mAnimationSet) {
+			mAnimation = (mAnimationResId == 0 ? null : AnimationUtils.loadAnimation(mContext, mAnimationResId));
+			mAnimationSet = true;
 		}
 		return mAnimation;
 	}
@@ -56,10 +58,12 @@ public class AnimatingImageListener
 
 	public void setBitmap(Bitmap bitmap, boolean isImmediate) {
 		mImageView.setImageDrawable(getDrawable(bitmap));
-		mImageView.setVisibility(View.VISIBLE);
-		Animation animation = getAnimation();
-		if (!isImmediate && animation != null) {
-			mImageView.startAnimation(animation);
+		if (!isImmediate) {
+			Animation animation = getAnimation();
+			if (animation != null) {
+				mImageView.setVisibility(View.VISIBLE);
+				mImageView.startAnimation(animation);
+			}
 		}
 	}
 

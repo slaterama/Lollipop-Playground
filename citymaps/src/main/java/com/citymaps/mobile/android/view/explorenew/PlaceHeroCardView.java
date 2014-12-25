@@ -27,7 +27,7 @@ public class PlaceHeroCardView extends HeroCardView<SearchResultPlace> {
 	}
 
 	@Override
-	public void onBindView(final SearchResultPlace data) {
-		super.onBindView(data);
+	public void onBindView(final SearchResultPlace data, boolean inInitialLayout) {
+		super.onBindView(data, inInitialLayout);
 	}
 }

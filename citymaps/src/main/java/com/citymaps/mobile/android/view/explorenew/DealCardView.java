@@ -68,7 +68,7 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 	}
 
 	@Override
-	public void onBindView(final SearchResultPlace data) {
+	public void onBindView(final SearchResultPlace data, boolean inInitialLayout) {
 		mPlaceNameView.setText(data.getName());
 
 		final boolean useAvatarImageAsMainImage;

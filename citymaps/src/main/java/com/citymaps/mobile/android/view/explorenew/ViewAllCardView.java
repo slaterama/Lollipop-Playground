@@ -36,7 +36,7 @@ public class ViewAllCardView extends CitymapsCardView<Integer> {
 	}
 
 	@Override
-	public void onBindView(Integer data) {
+	public void onBindView(Integer data, boolean inInitialLayout) {
 		mLabelView.setText(data);
 	}
 }

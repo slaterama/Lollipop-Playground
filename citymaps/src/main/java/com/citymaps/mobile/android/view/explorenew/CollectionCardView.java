@@ -70,7 +70,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 	}
 
 	@Override
-	public void onBindView(final SearchResultCollection data) {
+	public void onBindView(final SearchResultCollection data, boolean inInitialLayout) {
 		mNumMarkersView.setText(String.valueOf(data.getNumMarkers()));
 		mNameView.setText(data.getName());
 		mDescriptionView.setText(data.getDescription());
