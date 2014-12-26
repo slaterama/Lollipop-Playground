@@ -90,7 +90,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 		if (inInitialLayout != mInInitialLayout) {
 			mInInitialLayout = inInitialLayout;
 			if (!inInitialLayout) {
-				synchronized (LOCK) {
+//				synchronized (LOCK) {
 					Set<Integer> keySet = mPendingBitmaps.keySet();
 					Iterator<Integer> iterator = keySet.iterator();
 					while (iterator.hasNext()) {
@@ -98,7 +98,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 						restorePendingBitmap(key, mPendingBitmaps.get(key));
 						iterator.remove();
 					}
-				}
+//				}
 			}
 		}
 	}
@@ -115,12 +115,12 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 		@Override
 		public void setBitmap(Bitmap bitmap, boolean isImmediate) {
-			if (isImmediate || !mInInitialLayout) {
-				super.setBitmap(bitmap, isImmediate);
-			} else {
-				synchronized (LOCK) {
+			if (mInInitialLayout && !isImmediate) {
+//				synchronized (LOCK) {
 					mPendingBitmaps.put(mKey, bitmap);
-				}
+//				}
+			} else {
+				super.setBitmap(bitmap, isImmediate);
 			}
 		}
 	}

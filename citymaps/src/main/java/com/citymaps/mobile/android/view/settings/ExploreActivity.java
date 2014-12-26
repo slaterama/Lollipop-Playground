@@ -753,6 +753,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				}
 				size += childCount;
 			}
+			final List<CitymapsCardView> cardViews = new ArrayList<CitymapsCardView>(size);
 			List<Animator> cardViewAnimators = new ArrayList<Animator>(size);
 			int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 			int totalOffset = 0;
@@ -761,6 +762,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				int childCount = recyclerView.getChildCount();
 				for (int i = 0; i < childCount; i++) {
 					final CitymapsCardView cardView = (CitymapsCardView) recyclerView.getChildAt(i);
+					cardViews.add(cardView);
 					float to = cardView.getX();
 					float from = to + width;
 					ObjectAnimator animator = ObjectAnimator.ofFloat(cardView, "x", from, to);
@@ -777,7 +779,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onAnimationEnd(Animator animation) {
 							super.onAnimationEnd(animation);
-							cardView.setInInitialLayout(false);
+//							cardView.setInInitialLayout(false);
 						}
 					});
 					cardViewAnimators.add(animator);
@@ -803,6 +805,9 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					mInInitialLayout = false;
+					for (CitymapsCardView cardView : cardViews) {
+						cardView.setInInitialLayout(false);
+					}
 				}
 			});
 		}
