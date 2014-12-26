@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.explorenew;
+package com.citymaps.mobile.android.view.settings;
 
 import android.animation.*;
 import android.app.Activity;
@@ -36,6 +36,7 @@ import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.MapUtils;
 import com.citymaps.mobile.android.util.ResourcesUtils;
+import com.citymaps.mobile.android.view.cards.*;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
@@ -57,6 +58,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	private ProgressBar mFeaturedCollectionsProgressBar;
 	private ProgressBar mFeaturedMappersProgressBar;
 	private ProgressBar mFeaturedDealsProgressBar;
+
+	private TextView mHeroNoItemsView;
+	private TextView mFeaturedCollectionsNoItemsView;
+	private TextView mFeaturedMappersNoItemsView;
+	private TextView mFeaturedDealsNoItemsView;
 
 	private RecyclerViewEx mHeroRecyclerView;
 	private RecyclerViewEx mFeaturedCollectionsRecyclerView;
@@ -86,6 +92,11 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		mFeaturedCollectionsProgressBar = (ProgressBar) findViewById(R.id.explore_featured_collections_progressbar);
 		mFeaturedMappersProgressBar = (ProgressBar) findViewById(R.id.explore_featured_mappers_progressbar);
 		mFeaturedDealsProgressBar = (ProgressBar) findViewById(R.id.explore_featured_deals_progressbar);
+
+		mHeroNoItemsView = (TextView) findViewById(R.id.explore_hero_no_items);
+		mFeaturedCollectionsNoItemsView = (TextView) findViewById(R.id.explore_featured_collections_no_items);
+		mFeaturedMappersNoItemsView = (TextView) findViewById(R.id.explore_featured_mappers_no_items);
+		mFeaturedDealsNoItemsView = (TextView) findViewById(R.id.explore_featured_deals_no_items);
 
 		mHeroRecyclerView = (RecyclerViewEx) findViewById(R.id.explore_hero_recycler);
 		mFeaturedCollectionsRecyclerView = (RecyclerViewEx) findViewById(R.id.explore_featured_collections_recycler);
@@ -658,13 +669,14 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			ProgressBar[] progressBars = new ProgressBar[]{mHeroProgressBar,
 					mFeaturedCollectionsProgressBar, mFeaturedMappersProgressBar,
 					mFeaturedDealsProgressBar};
-			ObjectAnimator[] progressBarAnimators = new ObjectAnimator[progressBars.length];
+			List<Animator> progressBarAnimators = new ArrayList<Animator>(progressBars.length);
 			for (int i = 0; i < progressBars.length; i++) {
-				progressBarAnimators[i] = ObjectAnimator.ofPropertyValuesHolder(progressBars[i],
+				ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(progressBars[i],
 						PropertyValuesHolder.ofFloat("scaleX", 0.0f),
 						PropertyValuesHolder.ofFloat("scaleY", 0.0f));
-				progressBarAnimators[i].setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
-				progressBarAnimators[i].setInterpolator(new AnticipateInterpolator(5.0f));
+				animator.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
+				animator.setInterpolator(new AnticipateInterpolator(5.0f));
+				progressBarAnimators.add(animator);
 			}
 			AnimatorSet progressBarAnimatorSet = new AnimatorSet();
 			progressBarAnimatorSet.playTogether(progressBarAnimators);
@@ -673,26 +685,59 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				public void onAnimationEnd(Animator animation) {
 					super.onAnimationEnd(animation);
 					mHeroProgressBar.setVisibility(View.GONE);
-					mHeroRecyclerView.setVisibility(View.VISIBLE);
+					if (mHeroRecyclerView.getChildCount() == 0) {
+						mHeroNoItemsView.setVisibility(View.VISIBLE);
+					} else {
+						mHeroRecyclerView.setVisibility(View.VISIBLE);
+					}
 					mFeaturedCollectionsProgressBar.setVisibility(View.GONE);
-					mFeaturedCollectionsRecyclerView.setVisibility(View.VISIBLE);
+					if (mFeaturedCollectionsRecyclerView.getChildCount() == 0) {
+						mFeaturedCollectionsNoItemsView.setVisibility(View.VISIBLE);
+					} else {
+						mFeaturedCollectionsRecyclerView.setVisibility(View.VISIBLE);
+					}
 					mFeaturedMappersProgressBar.setVisibility(View.GONE);
-					mFeaturedMappersRecyclerView.setVisibility(View.VISIBLE);
+					if (mFeaturedMappersRecyclerView.getChildCount() == 0) {
+						mFeaturedMappersNoItemsView.setVisibility(View.VISIBLE);
+					} else {
+						mFeaturedMappersRecyclerView.setVisibility(View.VISIBLE);
+					}
 					mFeaturedDealsProgressBar.setVisibility(View.GONE);
-					mFeaturedDealsRecyclerView.setVisibility(View.VISIBLE);
+					if (mFeaturedDealsRecyclerView.getChildCount() == 0) {
+						mFeaturedDealsNoItemsView.setVisibility(View.VISIBLE);
+					} else {
+						mFeaturedDealsRecyclerView.setVisibility(View.VISIBLE);
+					}
 				}
 			});
 
 			// Make a second animator set using all initial card views
+			// and if necessary, a third set indicating data sets with no values
 			RecyclerView[] recyclerViews = new RecyclerView[]{mHeroRecyclerView,
 					mFeaturedCollectionsRecyclerView, mFeaturedMappersRecyclerView,
 					mFeaturedDealsRecyclerView};
+			List<Animator> noItemsAnimators = new ArrayList<Animator>();
 			int size = 0;
 			for (RecyclerView recyclerView : recyclerViews) {
-				size += recyclerView.getChildCount();
+				int childCount = recyclerView.getChildCount();
+				if (childCount == 0) {
+					Animator animator = AnimatorInflater.loadAnimator(ExploreActivity.this, R.animator.grow_fade_in_center);
+					final View target;
+					if (recyclerView == mFeaturedCollectionsRecyclerView) {
+						target = findViewById(R.id.explore_featured_deals_no_items);
+					} else if (recyclerView == mFeaturedMappersRecyclerView) {
+						target = findViewById(R.id.explore_featured_mappers_no_items);
+					} else if (recyclerView == mFeaturedDealsRecyclerView) {
+						target = findViewById(R.id.explore_featured_collections_no_items);
+					} else {
+						target = findViewById(R.id.explore_hero_no_items);
+					}
+					animator.setTarget(target);
+					noItemsAnimators.add(animator);
+				}
+				size += childCount;
 			}
-			ObjectAnimator[] cardViewAnimators = new ObjectAnimator[size];
-			int index = 0;
+			List<Animator> cardViewAnimators = new ArrayList<Animator>(size);
 			int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 			int totalOffset = 0;
 			for (RecyclerView recyclerView : recyclerViews) {
@@ -719,17 +764,25 @@ public class ExploreActivity extends TrackedActionBarActivity {
 							cardView.setInInitialLayout(false);
 						}
 					});
-					cardViewAnimators[index] = animator;
-					index++;
+					cardViewAnimators.add(animator);
 					totalOffset += ANIMATOR_OFFSET;
 				}
 			}
-			AnimatorSet cardViewAnimatorSet = new AnimatorSet();
 
-			// TODO If cardViewAnimators.length is 0, this line crashes
-			cardViewAnimatorSet.playTogether(cardViewAnimators);
+			List<Animator> animatorSets = new ArrayList<Animator>();
+			animatorSets.add(progressBarAnimatorSet);
+			if (noItemsAnimators.size() > 0) {
+				AnimatorSet set = new AnimatorSet();
+				set.playTogether(noItemsAnimators);
+				animatorSets.add(set);
+			}
+			if (cardViewAnimators.size() > 0) {
+				AnimatorSet set = new AnimatorSet();
+				set.playTogether(cardViewAnimators);
+				animatorSets.add(set);
+			}
 			mAnimatorSet = new AnimatorSet();
-			mAnimatorSet.playSequentially(progressBarAnimatorSet, cardViewAnimatorSet);
+			mAnimatorSet.playSequentially(animatorSets);
 			mAnimatorSet.addListener(new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {

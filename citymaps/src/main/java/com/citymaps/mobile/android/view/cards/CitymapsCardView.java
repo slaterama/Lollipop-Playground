@@ -1,40 +1,33 @@
 package com.citymaps.mobile.android.view.cards;
 
-import android.animation.AnimatorInflater;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.util.GraphicsUtils;
+import com.citymaps.mobile.android.app.VolleyManager;
+import com.citymaps.mobile.android.app.VolleyManager.CustomImageLoader;
+import com.citymaps.mobile.android.util.imagelistener.AnimatingImageListener;
+
+import java.util.*;
 
 public abstract class CitymapsCardView<D> extends CardView {
 
-	protected static Drawable mMiniAvatarNoImageDrawable;
-
-	protected static Drawable getMiniAvatarNoImageDrawable(Resources resources) {
-		if (mMiniAvatarNoImageDrawable == null) {
-			int size = resources.getDimensionPixelSize(R.dimen.mini_avatar_size);
-			Bitmap bitmap = GraphicsUtils.createBitmapWithBackgroundColor(resources, resources.getColor(R.color.default_image_background), size, size, R.drawable.ic_no_image_white_24dp);
-			mMiniAvatarNoImageDrawable = GraphicsUtils.createCircularBitmapDrawable(resources, bitmap);
-		}
-		return mMiniAvatarNoImageDrawable;
-	}
+	protected static final int BITMAP_KEY_MAIN = 0;
+	protected static final int BITMAP_KEY_AVATAR = 1;
 
 	protected D mData;
-	protected int mBaseSize;
+
+	protected boolean mInInitialLayout;
+
+	protected CustomImageLoader mImageLoader;
+
+	protected Set<ImageLoader.ImageContainer> mImageContainers;
+
+	protected Map<Integer, Bitmap> mPendingBitmaps;
 
 	public CitymapsCardView(Context context) {
 		super(context);
@@ -51,29 +44,14 @@ public abstract class CitymapsCardView<D> extends CardView {
 		init(context);
 	}
 
-	public void init(Context context) {
+	protected void init(Context context) {
+		mImageLoader = VolleyManager.getInstance(context).getImageLoader();
+		mImageContainers = new HashSet<ImageLoader.ImageContainer>();
+		mPendingBitmaps = new HashMap<Integer, Bitmap>();
 		Resources resources = context.getResources();
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
-
-		int[] attrs;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			attrs = new int[]{android.R.attr.selectableItemBackgroundBorderless};
-			setStateListAnimator(AnimatorInflater.loadStateListAnimator(context, R.animator.elevation));
-		} else {
-			attrs = new int[]{android.R.attr.selectableItemBackground};
-		}
-		TypedArray a = context.obtainStyledAttributes(attrs);
-		Drawable selectableItemBackgroundBorderLess = a.getDrawable(0);
-		a.recycle();
-
-		setForeground(selectableItemBackgroundBorderLess);
-		setClickable(true);
-	}
-
-	public void setBaseSize(int size) {
-		mBaseSize = size;
 	}
 
 	public D getData() {
@@ -81,110 +59,60 @@ public abstract class CitymapsCardView<D> extends CardView {
 	}
 
 	public void setData(D data) {
+		setData(data, false);
+	}
+
+	public void setData(D data, boolean inInitialLayout) {
 		mData = data;
-		onBindData(data);
+		mInInitialLayout = inInitialLayout;
+		resetView();
+		onBindView(data, inInitialLayout);
 	}
 
-	protected abstract void onBindData(D data);
+	public abstract void setDefaultCardSize(int size);
 
-	protected static class CardImageListener implements ImageLoader.ImageListener, Animation.AnimationListener {
-		protected Context mContext;
-		protected ImageView mImageView;
-		protected Animation mAnimation;
+	public abstract void onBindView(D data, boolean inInitialLayout);
 
-		public CardImageListener(Context context) {
-			super();
-			mContext = context;
-			mAnimation = onCreateAnimation();
-			mAnimation.setAnimationListener(this);
+	protected void resetView() {
+		Iterator<ImageLoader.ImageContainer> iterator = mImageContainers.iterator();
+		while (iterator.hasNext()) {
+			ImageLoader.ImageContainer container = iterator.next();
+			container.cancelRequest();
+			iterator.remove();
 		}
+	}
 
-		public CardImageListener setView(ImageView imageView) {
-			if (imageView == null) {
-				throw new NullPointerException("imageView can not be null");
+	public void setInInitialLayout(boolean inInitialLayout) {
+		if (inInitialLayout != mInInitialLayout) {
+			mInInitialLayout = inInitialLayout;
+			if (!inInitialLayout) {
+				Set<Integer> keySet = mPendingBitmaps.keySet();
+				Iterator<Integer> iterator = keySet.iterator();
+				while (iterator.hasNext()) {
+					int key = iterator.next();
+					restorePendingBitmap(key, mPendingBitmaps.get(key));
+					iterator.remove();
+				}
 			}
-			mImageView = imageView;
-			clearImage();
-			return this;
+		}
+	}
+
+	protected abstract void restorePendingBitmap(int key, Bitmap bitmap);
+
+	protected class CardViewImageListener extends AnimatingImageListener {
+		protected int mKey;
+
+		public CardViewImageListener(Context context, ImageView imageView, int key) {
+			super(context, imageView);
+			mKey = key;
 		}
 
 		@Override
-		public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-			Bitmap bitmap = response.getBitmap();
-			if (bitmap == null) {
-				// Bitmap needs to be loaded
+		public void setBitmap(Bitmap bitmap, boolean isImmediate) {
+			if (isImmediate || !mInInitialLayout) {
+				super.setBitmap(bitmap, isImmediate);
 			} else {
-				setImage(bitmap, !isImmediate);
-			}
-		}
-
-		@Override
-		public void onErrorResponse(VolleyError error) {
-			clearImage();
-		}
-
-		@Override
-		public void onAnimationStart(Animation animation) {
-		}
-
-		@Override
-		public void onAnimationEnd(Animation animation) {
-		}
-
-		@Override
-		public void onAnimationRepeat(Animation animation) {
-		}
-
-		protected Animation onCreateAnimation() {
-			return AnimationUtils.loadAnimation(mContext, R.anim.grow_fade_in_center);
-		}
-
-		protected void setImage(Bitmap bitmap, boolean animate) {
-			if (mImageView == null) {
-				throw new IllegalStateException("You must call setView() before calling this method");
-			}
-			mImageView.setImageBitmap(bitmap);
-			mImageView.setVisibility(View.VISIBLE);
-			if (animate && mAnimation != null) {
-				startAnimation();
-			}
-		}
-
-		protected void clearImage() {
-			if (mImageView == null) {
-				throw new IllegalStateException("You must call setView() before calling this method");
-			}
-			mImageView.clearAnimation();
-			mImageView.setVisibility(View.INVISIBLE);
-			mImageView.setImageDrawable(null);
-		}
-
-		protected void startAnimation() {
-			if (mImageView == null) {
-				throw new IllegalStateException("You must call setView() before calling this method");
-			}
-			if (mAnimation != null) {
-				mImageView.startAnimation(mAnimation);
-			}
-		}
-	}
-
-	protected static class GradientCardImageListener extends CardImageListener {
-		public GradientCardImageListener(Context context) {
-			super(context);
-		}
-
-		@Override
-		public void setImage(Bitmap bitmap, boolean animate) {
-			Resources resources = mContext.getResources();
-			Drawable[] layers = new Drawable[2];
-			layers[0] = new BitmapDrawable(resources, bitmap);
-			layers[1] = resources.getDrawable(R.drawable.card_image_gradient);
-			LayerDrawable drawable = new LayerDrawable(layers);
-			mImageView.setImageDrawable(drawable);
-			mImageView.setVisibility(View.VISIBLE);
-			if (animate) {
-				mImageView.startAnimation(mAnimation);
+				mPendingBitmaps.put(mKey, bitmap);
 			}
 		}
 	}

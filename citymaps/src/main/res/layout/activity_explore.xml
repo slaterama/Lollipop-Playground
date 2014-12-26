@@ -51,6 +51,16 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
+				<TextView
+						android:id="@+id/explore_hero_no_items"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:gravity="center_horizontal"
+						android:text="@string/explore_hero_no_items"
+						android:textAppearance="?android:textAppearanceMedium"
+						android:visibility="invisible"/>
+
 				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_hero_recycler"
 						android:layout_width="match_parent"
@@ -60,7 +70,7 @@
 						android:paddingStart="@dimen/activity_horizontal_margin"
 						android:paddingRight="@dimen/activity_horizontal_margin"
 						android:paddingEnd="@dimen/activity_horizontal_margin"
-						android:clipToPadding="false" />
+						android:clipToPadding="false"/>
 
 				<ProgressBar
 						android:id="@+id/explore_hero_progressbar"
@@ -130,6 +140,17 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
+				<TextView
+						android:id="@+id/explore_featured_collections_no_items"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:gravity="center_horizontal"
+						android:text="@string/explore_hero_no_items"
+						android:textAppearance="?android:textAppearanceMedium"
+						android:visibility="invisible"
+						tools:visibility="visible"/>
+
 				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_featured_collections_recycler"
 						android:layout_width="match_parent"
@@ -139,7 +160,8 @@
 						android:paddingStart="@dimen/activity_horizontal_margin"
 						android:paddingRight="@dimen/activity_horizontal_margin"
 						android:paddingEnd="@dimen/activity_horizontal_margin"
-						android:clipToPadding="false" />
+						android:clipToPadding="false"
+						tools:visibility="invisible"/>
 
 				<ProgressBar
 						android:id="@+id/explore_featured_collections_progressbar"
@@ -182,6 +204,16 @@
 					android:id="@+id/explore_featured_mappers_container"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
+
+				<TextView
+						android:id="@+id/explore_featured_mappers_no_items"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:gravity="center_horizontal"
+						android:text="@string/explore_hero_no_items"
+						android:textAppearance="?android:textAppearanceMedium"
+						android:visibility="invisible"/>
 
 				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_featured_mappers_recycler"
@@ -235,6 +267,16 @@
 					android:id="@+id/explore_featured_deals_container"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
+
+				<TextView
+						android:id="@+id/explore_featured_deals_no_items"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:gravity="center_horizontal"
+						android:text="@string/explore_hero_no_items"
+						android:textAppearance="?android:textAppearanceMedium"
+						android:visibility="invisible"/>
 
 				<com.citymaps.mobile.android.widget.RecyclerViewEx
 						android:id="@+id/explore_featured_deals_recycler"

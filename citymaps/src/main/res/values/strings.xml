@@ -55,6 +55,11 @@
 	<string name="explore_my_places">My Places</string>
 	<string name="explore_friends_places">Friends\' Places</string>
 
+	<string name="explore_hero_no_items">No suggestions found\nfor this location</string>
+	<string name="explore_featured_collections_no_items">No collections found\nfor this location</string>
+	<string name="explore_featured_mappers_no_items">No mappers found\nfor this location</string>
+	<string name="explore_featured_deals_no_items">No deals found\nfor this location</string>
+
 	<!--
 	================================================================================
 	Card strings

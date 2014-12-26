@@ -2,6 +2,8 @@ package com.citymaps.mobile.android.util.imagelistener;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -11,33 +13,37 @@ import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 
 public class AnimatingImageListener
-		implements ImageLoader.ImageListener, Animation.AnimationListener {
-
-	protected static final int DEFAULT_ANIMATION_RES_ID = R.anim.grow_fade_in_center;
+		implements ImageLoader.ImageListener {
 
 	protected Context mContext;
 	protected ImageView mImageView;
-	protected Animation mAnimation;
 
-	public AnimatingImageListener(Context context, ImageView imageView, int animationResId) {
-		mContext = context;
-		mImageView = imageView;
-		if (animationResId != 0) {
-			mAnimation = AnimationUtils.loadAnimation(context, animationResId);
-			mAnimation.setAnimationListener(this);
-		}
-	}
-
-	public AnimatingImageListener(Context context, ImageView imageView, boolean animateImage) {
-		this(context, imageView, animateImage ? DEFAULT_ANIMATION_RES_ID : 0);
-	}
+	private boolean mAnimationSet = false;
+	protected int mAnimationResId = R.anim.grow_fade_in_center;
+	private Animation mAnimation;
 
 	public AnimatingImageListener(Context context, ImageView imageView) {
-		this(context, imageView, DEFAULT_ANIMATION_RES_ID);
+		mContext = context;
+		mImageView = imageView;
 	}
 
 	public ImageView getImageView() {
 		return mImageView;
+	}
+
+	public void setAnimationResId(int animationResId) {
+		if (animationResId != mAnimationResId) {
+			mAnimationResId = animationResId;
+			mAnimationSet = false;
+		}
+	}
+
+	public Animation getAnimation() {
+		if (!mAnimationSet) {
+			mAnimation = (mAnimationResId == 0 ? null : AnimationUtils.loadAnimation(mContext, mAnimationResId));
+			mAnimationSet = true;
+		}
+		return mAnimation;
 	}
 
 	@Override
@@ -50,41 +56,23 @@ public class AnimatingImageListener
 		}
 	}
 
-	@Override
-	public void onErrorResponse(VolleyError error) {
-
-	}
-
-	@Override
-	public void onAnimationStart(Animation animation) {
-
-	}
-
-	@Override
-	public void onAnimationEnd(Animation animation) {
-		onImageLoadComplete();
-	}
-
-	@Override
-	public void onAnimationRepeat(Animation animation) {
-
-	}
-
 	public void setBitmap(Bitmap bitmap, boolean isImmediate) {
-		onSetBitmap(bitmap);
-		mImageView.setVisibility(View.VISIBLE);
-		if (!isImmediate && mAnimation != null) {
-			mImageView.startAnimation(mAnimation);
-		} else {
-			onImageLoadComplete();
+		mImageView.setImageDrawable(getDrawable(bitmap));
+		if (!isImmediate) {
+			Animation animation = getAnimation();
+			if (animation != null) {
+				mImageView.setVisibility(View.VISIBLE);
+				mImageView.startAnimation(animation);
+			}
 		}
 	}
 
-	protected void onSetBitmap(Bitmap bitmap) {
-		mImageView.setImageBitmap(bitmap);
+	@Override
+	public void onErrorResponse(VolleyError error) {
+		// TODO
 	}
 
-	public void onImageLoadComplete() {
-
+	protected Drawable getDrawable(Bitmap bitmap) {
+		return (bitmap == null ? null : new BitmapDrawable(mContext.getResources(), bitmap));
 	}
 }

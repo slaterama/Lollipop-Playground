@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.explorenew;
+package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
 import android.graphics.Bitmap;

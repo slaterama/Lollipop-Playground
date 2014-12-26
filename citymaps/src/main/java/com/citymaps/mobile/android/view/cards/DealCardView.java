@@ -1,45 +1,39 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.Deal;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultPlace;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
-import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
 
 public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 
-	public static int getDesiredHeight(Context context, int size) {
+	public static int getDesiredHeight(Context context, int defaultCardSize) {
 		DealCardView cardView = new DealCardView(context);
-		cardView.setBaseSize(size);
+		cardView.setDefaultCardSize(defaultCardSize);
 		cardView.measure(0, 0);
 		return cardView.getMeasuredHeight();
 	}
 
 	private ViewGroup mMainContainerView;
+	private ViewGroup mInfoContainerView;
 	private ImageView mMainImageView;
 	private TextView mNameView;
-//	private TextView mDescriptionView;
 	private ImageView mAvatarView;
-	private TextView mUsernameView;
-
-	private ImageContainer mMainImageContainer;
-	private ImageContainer mAvatarImageContainer;
+	private TextView mPlaceNameView;
 
 	public DealCardView(Context context) {
 		super(context);
@@ -54,136 +48,107 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 	}
 
 	@Override
-	public void init(Context context) {
+	protected void init(Context context) {
+		inflate(context, R.layout.card_deal_new, this);
+		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
+		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
+		mMainImageView = (ImageView) findViewById(R.id.card_image);
+		mNameView = (TextView) findViewById(R.id.card_name);
+		mAvatarView = (ImageView) findViewById(R.id.card_avatar);
+		mPlaceNameView = (TextView) findViewById(R.id.card_place_name);
 		super.init(context);
-		View view = View.inflate(context, R.layout.card_deal, this);
-		mMainContainerView = (ViewGroup) view.findViewById(R.id.card_main_container);
-		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
-		mNameView = (TextView) view.findViewById(R.id.card_name);
-//		mDescriptionView = (TextView) view.findViewById(R.id.card_description);
-		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
-		mUsernameView = (TextView) view.findViewById(R.id.card_username);
 	}
 
 	@Override
-	public void setBaseSize(int size) {
-		super.setBaseSize(size);
-		mMainContainerView.getLayoutParams().width = size;
-	}
-
-	public ViewGroup getMainContainerView() {
-		return mMainContainerView;
-	}
-
-	public ImageView getMainImageView() {
-		return mMainImageView;
-	}
-
-	public TextView getNameView() {
-		return mNameView;
-	}
-
-	/*
-	public TextView getDescriptionView() {
-		return mDescriptionView;
-	}
-	*/
-
-	public ImageView getAvatarView() {
-		return mAvatarView;
-	}
-
-	public TextView getUsernameView() {
-		return mUsernameView;
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		switch (key) {
+			case BITMAP_KEY_MAIN:
+				new CardViewImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
+				break;
+			case BITMAP_KEY_AVATAR:
+				new CardViewImageListener(getContext(), mAvatarView, key).setBitmap(bitmap, true);
+				break;
+		}
 	}
 
 	@Override
-	protected void onBindData(final SearchResultPlace searchResult) {
-		if (mMainImageContainer != null) {
-			mMainImageContainer.cancelRequest();
-		}
+	public void setDefaultCardSize(int defaultCardSize) {
+		mMainContainerView.getLayoutParams().width = defaultCardSize;
+		mMainContainerView.requestLayout();
+	}
 
-		if (mAvatarImageContainer != null) {
-			mAvatarImageContainer.cancelRequest();
-		}
+	@Override
+	public void onBindView(final SearchResultPlace data, boolean inInitialLayout) {
+		mPlaceNameView.setText(data.getName());
 
-		mUsernameView.setText(searchResult.getName());
+		final boolean useAvatarImageAsMainImage;
 
-		Deal[] deals = searchResult.getDeals();
-		if (deals == null || deals.length < 1) {
-			return;
-		}
+		Deal[] deals = data.getDeals();
+		if (deals != null && deals.length > 0) {
+			Deal deal = deals[0];
+			mNameView.setText(deal.getLabel());
 
-		Deal deal = deals[0];
-		mNameView.setText(deal.getLabel());
-
-		final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
-		final String imageUrl = deal.getThumbnailImage(Deal.GrouponThumbnailSize.XLARGE);
-		if (TextUtils.isEmpty(imageUrl)) {
-			final String foursquarePhotoUrl = searchResult.getFoursquarePhotoUrl();
-			if (TextUtils.isEmpty(foursquarePhotoUrl)) {
-				mMainImageView.setImageDrawable(null);
-
-				String foursquareId = searchResult.getFoursquareId();
-				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(), foursquareId, 1,
-						new Response.Listener<List<FoursquarePhoto>>() {
-							@Override
-							public void onResponse(List<FoursquarePhoto> response) {
-								if (response != null && response.size() > 0) {
-									FoursquarePhoto photo = response.get(0);
-									String foursquarePhotoUtil = photo.getPhotoUrl();
-									searchResult.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mMainImageContainer = loader.get(foursquarePhotoUtil,
-											new CardImageListener(getContext()).setView(mMainImageView));
-								}
-							}
-						},
-						new Response.ErrorListener() {
-							@Override
-							public void onErrorResponse(VolleyError error) {
-								LogEx.d();
-							}
-						});
-				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+			final String imageUrl = deal.getThumbnailImage(Deal.GrouponThumbnailSize.XLARGE);
+			if (TextUtils.isEmpty(imageUrl)) {
+				useAvatarImageAsMainImage = true;
 			} else {
-				mMainImageContainer = loader.get(foursquarePhotoUrl,
-						new CardImageListener(getContext()).setView(mMainImageView));
+				useAvatarImageAsMainImage = false;
+				mImageContainers.add(mImageLoader.get(imageUrl,
+						new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 			}
 		} else {
-			mMainImageContainer = loader.get(imageUrl,
-					new CardImageListener(getContext()).setView(mMainImageView));
+			useAvatarImageAsMainImage = true;
 		}
 
-		// TODO TEMP
-		mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
-				getResources(), R.drawable.default_fb_avatar));
-
-		/*
-		String avatarUrl = searchResult.getOwnerAvatar();
-		if (TextUtils.isEmpty(avatarUrl)) {
-			mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
-					getResources(), R.drawable.default_user_avatar_mini));
-		} else {
-			final ImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
-			loader.get(avatarUrl,
-					new ImageLoader.ImageListener() {
+		String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
+		if (TextUtils.isEmpty(foursquarePhotoUrl)) {
+			String foursquareId = data.getFoursquareId();
+			FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(),
+					foursquareId, 1,
+					new Response.Listener<List<FoursquarePhoto>>() {
 						@Override
-						public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-							Bitmap bitmap = response.getBitmap();
-							if (bitmap == null) {
-								mAvatarView.setImageDrawable(null);
+						public void onResponse(List<FoursquarePhoto> response) {
+							String avatarImageUrl;
+							if (response == null || response.size() == 0) {
+								avatarImageUrl = data.getLogoImageUrl(getContext());
 							} else {
-								mAvatarView.setImageDrawable(DrawableUtils.createCircularBitmapDrawable(
-										getResources(), bitmap));
+								FoursquarePhoto photo = response.get(0);
+								avatarImageUrl = photo.getPhotoUrl();
+								data.setFoursquarePhotoUrl(avatarImageUrl);
+							}
+							int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+							mImageContainers.add(mImageLoader.get(avatarImageUrl,
+									new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
+							if (useAvatarImageAsMainImage) {
+								mImageContainers.add(mImageLoader.get(avatarImageUrl,
+										new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 							}
 						}
-
+					},
+					new Response.ErrorListener() {
 						@Override
 						public void onErrorResponse(VolleyError error) {
-							mAvatarView.setImageDrawable(getMiniAvatarNoImageDrawable(getResources()));
+							if (LogEx.isLoggable(LogEx.ERROR)) {
+								LogEx.e(error.getMessage(), error);
+							}
 						}
 					});
+			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+		} else {
+			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+					new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
+			if (useAvatarImageAsMainImage) {
+				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+						new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
+			}
 		}
-		*/
+	}
+
+	@Override
+	protected void resetView() {
+		super.resetView();
+		mMainImageView.setImageDrawable(null);
+		mAvatarView.setImageDrawable(null);
 	}
 }

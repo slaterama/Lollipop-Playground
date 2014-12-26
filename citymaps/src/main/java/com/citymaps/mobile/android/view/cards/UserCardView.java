@@ -3,19 +3,13 @@ package com.citymaps.mobile.android.view.cards;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
-import com.android.volley.toolbox.Volley;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
@@ -23,26 +17,21 @@ import com.citymaps.mobile.android.util.GraphicsUtils;
 
 public class UserCardView extends CitymapsCardView<User> {
 
-	public static int getDesiredHeight(Context context, int size) {
-		CollectionCardView cardView = new CollectionCardView(context);
-		cardView.setBaseSize(size);
+	public static int getDesiredHeight(Context context, int defaultCardSize) {
+		UserCardView cardView = new UserCardView(context);
+		cardView.setDefaultCardSize(defaultCardSize);
 		cardView.measure(0, 0);
 		return cardView.getMeasuredHeight();
 	}
 
 	private ViewGroup mMainContainerView;
+	private ViewGroup mInfoContainerView;
 	private ImageView mMainImageView;
 	private ImageView mAvatarView;
 	private TextView mNameView;
 	private TextView mUsernameView;
 	private TextView mFollowersView;
 	private Button mFollowButton;
-
-	private ImageContainer mMainImageContainer;
-	private ImageContainer mAvatarImageContainer;
-
-	private CardImageListener mUserCardImageListener;
-	private UserCardAvatarImageListener mUserCardAvatarImageListener;
 
 	public UserCardView(Context context) {
 		super(context);
@@ -57,78 +46,50 @@ public class UserCardView extends CitymapsCardView<User> {
 	}
 
 	@Override
-	public void init(Context context) {
+	protected void init(Context context) {
+		inflate(context, R.layout.card_user_new, this);
+		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
+		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
+		mMainImageView = (ImageView) findViewById(R.id.card_image);
+		mAvatarView = (ImageView) findViewById(R.id.card_avatar);
+		mNameView = (TextView) findViewById(R.id.card_name);
+		mUsernameView = (TextView) findViewById(R.id.card_username);
+		mFollowersView = (TextView) findViewById(R.id.card_followers);
+		mFollowButton = (Button) findViewById(R.id.card_user_action_follow);
 		super.init(context);
-
-		mUserCardImageListener = new CardImageListener(context);
-		mUserCardAvatarImageListener = new UserCardAvatarImageListener(context);
-
-		View view = View.inflate(context, R.layout.card_user, this);
-		mMainContainerView = (ViewGroup) view.findViewById(R.id.card_main_container);
-		mMainImageView = (ImageView) view.findViewById(R.id.card_image);
-		mAvatarView = (ImageView) view.findViewById(R.id.card_avatar);
-		mNameView = (TextView) view.findViewById(R.id.card_name);
-		mUsernameView = (TextView) view.findViewById(R.id.card_username);
-		mFollowersView = (TextView) view.findViewById(R.id.card_followers);
-		mFollowButton = (Button) view.findViewById(R.id.card_user_action_follow);
 	}
 
 	@Override
-	public void setBaseSize(int size) {
-		super.setBaseSize(size);
-		mMainContainerView.getLayoutParams().width = size;
-	}
-
-	public ViewGroup getMainContainerView() {
-		return mMainContainerView;
-	}
-
-	public ImageView getAvatarView() {
-		return mAvatarView;
-	}
-
-	public ImageView getMainImageView() {
-		return mMainImageView;
-	}
-
-	public TextView getNameView() {
-		return mNameView;
-	}
-
-	public TextView getFollowersView() {
-		return mFollowersView;
-	}
-
-	public TextView getUsernameView() {
-		return mUsernameView;
-	}
-
-	public Button getFollowButton() {
-		return mFollowButton;
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		switch (key) {
+			case BITMAP_KEY_MAIN:
+				new CardViewImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
+				break;
+			case BITMAP_KEY_AVATAR:
+				new CardViewImageListener(getContext(), mAvatarView, key).setBitmap(bitmap, true);
+				break;
+		}
 	}
 
 	@Override
-	protected void onBindData(User user) {
-		if (mMainImageContainer != null) {
-			mMainImageContainer.cancelRequest();
-		}
+	public void setDefaultCardSize(int defaultCardSize) {
+		mMainContainerView.getLayoutParams().width = defaultCardSize;
+		mMainContainerView.requestLayout();
+	}
 
-		if (mAvatarImageContainer != null) {
-			mAvatarImageContainer.cancelRequest();
-		}
-
-		mNameView.setText(user.getName());
-		String username = user.getUsername();
+	@Override
+	public void onBindView(User data, boolean inInitialLayout) {
+		mNameView.setText(data.getName());
+		String username = data.getUsername();
 		mUsernameView.setText(username);
-		int followers = user.getFollowersCount();
+		int followers = data.getFollowersCount();
 		mFollowersView.setText(getResources().getQuantityString(R.plurals.card_followers, followers, followers));
-		boolean followed = user.isFollowed();
+		boolean followed = data.isFollowed();
 		mFollowButton.setText(getResources().getString(followed ? R.string.card_unfollow_user : R.string.card_follow_user, username));
 
-		final VolleyManager.CustomImageLoader loader = VolleyManager.getInstance(getContext()).getImageLoader();
-		String postcardUrl = user.getPostcardUrl();
+		String postcardUrl = data.getPostcardUrl();
 		if (TextUtils.isEmpty(postcardUrl)) {
-			User.PostcardTemplate postcardTemplate = user.getPostcardTemplate();
+			User.PostcardTemplate postcardTemplate = data.getPostcardTemplate();
 			if (postcardTemplate == null) {
 				postcardTemplate = User.PostcardTemplate.DEFAULT;
 			}
@@ -141,31 +102,27 @@ public class UserCardView extends CitymapsCardView<User> {
 				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
 				cache.putBitmap(cacheKey, postcardBitmap);
 			}
-			mUserCardImageListener.setView(mMainImageView).setImage(postcardBitmap, isImmediate);
+			new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN).setBitmap(postcardBitmap, isImmediate);
 		} else {
-			mMainImageContainer = loader.get(postcardUrl,
-					mUserCardImageListener.setView(mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25);
+			mImageContainers.add(mImageLoader.get(postcardUrl,
+					new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN), 300, 300, VolleyManager.OPTION_BLUR25));
 		}
 
-		String avatarUrl = user.getAvatarUrl();
+		String avatarUrl = data.getAvatarUrl();
 		if (TextUtils.isEmpty(avatarUrl)) {
 			mAvatarView.setImageDrawable(GraphicsUtils.createCircularBitmapDrawable(
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mAvatarImageContainer = loader.get(avatarUrl,
-					mUserCardAvatarImageListener.setView(mAvatarView), size, size, VolleyManager.OPTION_CIRCLE);
+			mImageContainers.add(mImageLoader.get(avatarUrl,
+					new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
 
-	private class UserCardAvatarImageListener extends CardImageListener {
-		public UserCardAvatarImageListener(Context context) {
-			super(context);
-		}
-
-		@Override
-		protected Animation onCreateAnimation() {
-			return AnimationUtils.loadAnimation(mContext, R.anim.grow_from_zero);
-		}
+	@Override
+	protected void resetView() {
+		super.resetView();
+		mMainImageView.setImageDrawable(null);
+		mAvatarView.setImageDrawable(null);
 	}
 }
