@@ -158,7 +158,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				mFeaturedDealsRecyclerView.setVisibility(View.INVISIBLE);
 				mFeaturedDealsNoItemsView.setVisibility(View.VISIBLE);
 			}
-			updateHeroLabel();
 		}
 	}
 
@@ -232,6 +231,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		} else {
 			mFeaturedCollectionsAdapter.setItems(response);
 		}
+		updateHeroLabel();
 	}
 
 	private void onFeaturedMappersRequestResponse(List<User> response) {

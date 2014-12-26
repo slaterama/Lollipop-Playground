@@ -1,5 +1,6 @@
 package com.citymaps.mobile.android.view.cards;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -18,6 +19,8 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	protected static final int BITMAP_KEY_MAIN = 0;
 	protected static final int BITMAP_KEY_AVATAR = 1;
+
+	protected final Object LOCK = new Object();
 
 	protected D mData;
 
@@ -44,6 +47,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 		init(context);
 	}
 
+	@SuppressLint("UseSparseArrays")
 	protected void init(Context context) {
 		mImageLoader = VolleyManager.getInstance(context).getImageLoader();
 		mImageContainers = new HashSet<ImageLoader.ImageContainer>();
@@ -86,12 +90,14 @@ public abstract class CitymapsCardView<D> extends CardView {
 		if (inInitialLayout != mInInitialLayout) {
 			mInInitialLayout = inInitialLayout;
 			if (!inInitialLayout) {
-				Set<Integer> keySet = mPendingBitmaps.keySet();
-				Iterator<Integer> iterator = keySet.iterator();
-				while (iterator.hasNext()) {
-					int key = iterator.next();
-					restorePendingBitmap(key, mPendingBitmaps.get(key));
-					iterator.remove();
+				synchronized (LOCK) {
+					Set<Integer> keySet = mPendingBitmaps.keySet();
+					Iterator<Integer> iterator = keySet.iterator();
+					while (iterator.hasNext()) {
+						int key = iterator.next();
+						restorePendingBitmap(key, mPendingBitmaps.get(key));
+						iterator.remove();
+					}
 				}
 			}
 		}
@@ -112,7 +118,9 @@ public abstract class CitymapsCardView<D> extends CardView {
 			if (isImmediate || !mInInitialLayout) {
 				super.setBitmap(bitmap, isImmediate);
 			} else {
-				mPendingBitmaps.put(mKey, bitmap);
+				synchronized (LOCK) {
+					mPendingBitmaps.put(mKey, bitmap);
+				}
 			}
 		}
 	}
