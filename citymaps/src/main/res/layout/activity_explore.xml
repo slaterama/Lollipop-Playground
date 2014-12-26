@@ -146,7 +146,7 @@
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
 						android:gravity="center_horizontal"
-						android:text="@string/explore_hero_no_items"
+						android:text="@string/explore_featured_collections_no_items"
 						android:textAppearance="?android:textAppearanceMedium"
 						android:visibility="invisible"
 						tools:visibility="visible"/>
@@ -211,7 +211,7 @@
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
 						android:gravity="center_horizontal"
-						android:text="@string/explore_hero_no_items"
+						android:text="@string/explore_featured_mappers_no_items"
 						android:textAppearance="?android:textAppearanceMedium"
 						android:visibility="invisible"/>
 
@@ -274,7 +274,7 @@
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
 						android:gravity="center_horizontal"
-						android:text="@string/explore_hero_no_items"
+						android:text="@string/explore_featured_deals_no_items"
 						android:textAppearance="?android:textAppearanceMedium"
 						android:visibility="invisible"/>
 

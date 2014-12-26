@@ -139,9 +139,25 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		} else {
 			mDataFragment = (DataFragment) getSupportFragmentManager().getFragment(savedInstanceState, STATE_KEY_DATA_FRAGMENT);
 			onHeroRequestResponse(mDataFragment.mHeroItems);
+			if (mDataFragment.mHeroItems == null || mDataFragment.mHeroItems.size() == 0) {
+				mHeroRecyclerView.setVisibility(View.INVISIBLE);
+				mHeroNoItemsView.setVisibility(View.VISIBLE);
+			}
 			onFeaturedCollectionsRequestResponse(mDataFragment.mFeaturedCollections);
+			if (mDataFragment.mFeaturedCollections == null || mDataFragment.mFeaturedCollections.size() == 0) {
+				mFeaturedCollectionsRecyclerView.setVisibility(View.INVISIBLE);
+				mFeaturedCollectionsNoItemsView.setVisibility(View.VISIBLE);
+			}
 			onFeaturedMappersRequestResponse(mDataFragment.mFeaturedMappers);
+			if (mDataFragment.mFeaturedMappers == null || mDataFragment.mFeaturedMappers.size() == 0) {
+				mFeaturedMappersRecyclerView.setVisibility(View.INVISIBLE);
+				mFeaturedMappersNoItemsView.setVisibility(View.VISIBLE);
+			}
 			onFeaturedDealsRequestResponse(mDataFragment.mFeaturedDeals);
+			if (mDataFragment.mFeaturedDeals == null || mDataFragment.mFeaturedDeals.size() == 0) {
+				mFeaturedDealsRecyclerView.setVisibility(View.INVISIBLE);
+				mFeaturedDealsNoItemsView.setVisibility(View.VISIBLE);
+			}
 			updateHeroLabel();
 		}
 	}
@@ -309,7 +325,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public int getItemCount() {
-			if (mItems == null) {
+			if (mItems == null || mItems.size() == 0) {
 				return 0;
 			} else {
 				return mItems.size() + (mHasViewAllCard ? 1 : 0);
