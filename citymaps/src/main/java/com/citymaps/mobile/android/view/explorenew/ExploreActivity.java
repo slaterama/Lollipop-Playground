@@ -691,7 +691,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			for (RecyclerView recyclerView : recyclerViews) {
 				size += recyclerView.getChildCount();
 			}
-			final CitymapsCardView[] cardViews = new CitymapsCardView[size];
 			ObjectAnimator[] cardViewAnimators = new ObjectAnimator[size];
 			int index = 0;
 			int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
@@ -700,11 +699,10 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				int width = recyclerView.getWidth();
 				int childCount = recyclerView.getChildCount();
 				for (int i = 0; i < childCount; i++) {
-					final View child = recyclerView.getChildAt(i);
-					cardViews[index] = (CitymapsCardView) child;
-					float to = child.getX();
+					final CitymapsCardView cardView = (CitymapsCardView) recyclerView.getChildAt(i);
+					float to = cardView.getX();
 					float from = to + width;
-					ObjectAnimator animator = ObjectAnimator.ofFloat(child, "x", from, to);
+					ObjectAnimator animator = ObjectAnimator.ofFloat(cardView, "x", from, to);
 					animator.setDuration(duration);
 					animator.setInterpolator(new OvershootInterpolator(0.75f));
 					animator.setStartDelay(totalOffset);
@@ -712,7 +710,13 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onAnimationStart(Animator animation) {
 							super.onAnimationStart(animation);
-							child.setVisibility(View.VISIBLE);
+							cardView.setVisibility(View.VISIBLE);
+						}
+
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							super.onAnimationEnd(animation);
+							cardView.setInInitialLayout(false);
 						}
 					});
 					cardViewAnimators[index] = animator;
@@ -730,9 +734,6 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					mInInitialLayout = false;
-					for (CitymapsCardView cardView : cardViews) {
-						cardView.setPendingBitmaps();
-					}
 				}
 			});
 		}

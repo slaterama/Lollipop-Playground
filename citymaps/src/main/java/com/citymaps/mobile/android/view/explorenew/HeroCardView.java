@@ -2,6 +2,9 @@ package com.citymaps.mobile.android.view.explorenew;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -34,8 +37,6 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 
 	protected TextView mNameView;
 
-	protected Bitmap mPendingMainImageBitmap;
-
 	public HeroCardView(Context context) {
 		super(context);
 	}
@@ -63,6 +64,15 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	}
 
 	@Override
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		switch (key) {
+			case BITMAP_KEY_MAIN:
+				new MainImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
+				break;
+		}
+	}
+
+	@Override
 	public void onBindView(final D data, boolean inInitialLayout) {
 		mNameView.setText(data.getName());
 
@@ -82,7 +92,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 
 								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-										new MainImageListener(getContext(), mMainImageView)));
+										new MainImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 							}
 						}
 					},
@@ -97,7 +107,7 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new MainImageListener(getContext(), mMainImageView)));
+					new MainImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 		}
 	}
 
@@ -107,26 +117,19 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 		mMainImageView.setImageDrawable(null);
 	}
 
-	@Override
-	public void setPendingBitmaps() {
-		if (mPendingMainImageBitmap != null) {
-			new MainImageListener(getContext(), mMainImageView).setBitmap(mPendingMainImageBitmap, true);
-			mPendingMainImageBitmap = null;
-		}
-	}
+	protected class MainImageListener extends CardViewImageListener {
+		Drawable mGradientDrawable;
 
-	protected class MainImageListener extends GradientAnimatingImageListener {
-		public MainImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
+		public MainImageListener(Context context, ImageView imageView, int key) {
+			super(context, imageView, key);
+			mGradientDrawable = mContext.getResources().getDrawable(R.drawable.card_image_gradient);
 		}
 
 		@Override
-		public void setBitmap(Bitmap bitmap, boolean isImmediate) {
-			if (isImmediate || !mInInitialLayout) {
-				super.setBitmap(bitmap, isImmediate);
-			} else {
-				mPendingMainImageBitmap = bitmap;
-			}
+		protected Drawable getDrawable(Bitmap bitmap) {
+			return new LayerDrawable(new Drawable[]{
+					new BitmapDrawable(mContext.getResources(), bitmap),
+					mGradientDrawable});
 		}
 	}
 }

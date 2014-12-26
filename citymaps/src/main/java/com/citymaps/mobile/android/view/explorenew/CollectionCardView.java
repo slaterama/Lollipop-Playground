@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.explorenew;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -64,6 +65,18 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 	}
 
 	@Override
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		switch (key) {
+			case BITMAP_KEY_MAIN:
+				new CardViewImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
+				break;
+			case BITMAP_KEY_AVATAR:
+				new CardViewImageListener(getContext(), mAvatarView, key).setBitmap(bitmap, true);
+				break;
+		}
+	}
+
+	@Override
 	public void setDefaultCardSize(int defaultCardSize) {
 		mMainContainerView.getLayoutParams().width = defaultCardSize;
 		mMainContainerView.requestLayout();
@@ -91,7 +104,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 								String foursquarePhotoUrl = photo.getPhotoUrl();
 								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-										new ImageListener(getContext(), mMainImageView)));
+										new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 							}
 						}
 					},
@@ -106,7 +119,7 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 		} else {
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new ImageListener(getContext(), mMainImageView)));
+					new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 		}
 
 		String avatarUrl = data.getOwnerAvatar();
@@ -116,7 +129,8 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mImageContainers.add(mImageLoader.get(avatarUrl, new ImageListener(getContext(), mAvatarView),
+			mImageContainers.add(mImageLoader.get(avatarUrl,
+					new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR),
 					size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
@@ -126,22 +140,5 @@ public class CollectionCardView extends CitymapsCardView<SearchResultCollection>
 		super.resetView();
 		mMainImageView.setImageDrawable(null);
 		mAvatarView.setImageDrawable(null);
-	}
-
-	protected class ImageListener extends AnimatingImageListener {
-		public ImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
-		}
-
-		/*
-		@Override
-		public void onImageLoadComplete() {
-			super.onImageLoadComplete();
-			mPendingImageViews.remove(getImageView());
-			if (mPendingImageViews.size() == 0) {
-				notifyBindComplete();
-			}
-		}
-		*/
 	}
 }

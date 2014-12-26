@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.explorenew;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
@@ -31,8 +32,13 @@ public class ViewAllCardView extends CitymapsCardView<Integer> {
 	}
 
 	@Override
-	public void setDefaultCardSize(int size) {
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		// No action
+	}
 
+	@Override
+	public void setDefaultCardSize(int size) {
+		// No action
 	}
 
 	@Override

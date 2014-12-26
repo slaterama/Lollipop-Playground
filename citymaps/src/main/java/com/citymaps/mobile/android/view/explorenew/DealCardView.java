@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.view.explorenew;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -62,6 +63,18 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 	}
 
 	@Override
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		switch (key) {
+			case BITMAP_KEY_MAIN:
+				new CardViewImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
+				break;
+			case BITMAP_KEY_AVATAR:
+				new CardViewImageListener(getContext(), mAvatarView, key).setBitmap(bitmap, true);
+				break;
+		}
+	}
+
+	@Override
 	public void setDefaultCardSize(int defaultCardSize) {
 		mMainContainerView.getLayoutParams().width = defaultCardSize;
 		mMainContainerView.requestLayout();
@@ -84,7 +97,7 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 			} else {
 				useAvatarImageAsMainImage = false;
 				mImageContainers.add(mImageLoader.get(imageUrl,
-						new ImageListener(getContext(), mMainImageView)));
+						new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 			}
 		} else {
 			useAvatarImageAsMainImage = true;
@@ -108,10 +121,10 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 							}
 							int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 							mImageContainers.add(mImageLoader.get(avatarImageUrl,
-									new ImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+									new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
 							if (useAvatarImageAsMainImage) {
 								mImageContainers.add(mImageLoader.get(avatarImageUrl,
-										new ImageListener(getContext(), mMainImageView)));
+										new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 							}
 						}
 					},
@@ -127,10 +140,10 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new ImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+					new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
 			if (useAvatarImageAsMainImage) {
 				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-						new ImageListener(getContext(), mMainImageView)));
+						new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
 			}
 		}
 	}
@@ -140,21 +153,5 @@ public class DealCardView extends CitymapsCardView<SearchResultPlace> {
 		super.resetView();
 		mMainImageView.setImageDrawable(null);
 		mAvatarView.setImageDrawable(null);
-	}
-
-	protected class ImageListener extends AnimatingImageListener {
-		public ImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
-		}
-
-		/*
-		@Override
-		public void onImageLoadComplete() {
-			mPendingImageViews.remove(getImageView());
-			if (mPendingImageViews.size() == 0) {
-				notifyBindComplete();
-			}
-		}
-		*/
 	}
 }

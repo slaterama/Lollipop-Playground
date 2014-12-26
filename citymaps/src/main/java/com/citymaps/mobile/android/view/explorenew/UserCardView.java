@@ -61,6 +61,18 @@ public class UserCardView extends CitymapsCardView<User> {
 	}
 
 	@Override
+	protected void restorePendingBitmap(int key, Bitmap bitmap) {
+		switch (key) {
+			case BITMAP_KEY_MAIN:
+				new CardViewImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
+				break;
+			case BITMAP_KEY_AVATAR:
+				new CardViewImageListener(getContext(), mAvatarView, key).setBitmap(bitmap, true);
+				break;
+		}
+	}
+
+	@Override
 	public void setDefaultCardSize(int defaultCardSize) {
 		mMainContainerView.getLayoutParams().width = defaultCardSize;
 		mMainContainerView.requestLayout();
@@ -91,10 +103,10 @@ public class UserCardView extends CitymapsCardView<User> {
 				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
 				cache.putBitmap(cacheKey, postcardBitmap);
 			}
-			new ImageListener(getContext(), mMainImageView).setBitmap(postcardBitmap, isImmediate);
+			new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN).setBitmap(postcardBitmap, isImmediate);
 		} else {
 			mImageContainers.add(mImageLoader.get(postcardUrl,
-					new ImageListener(getContext(), mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25));
+					new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN), 300, 300, VolleyManager.OPTION_BLUR25));
 		}
 
 		String avatarUrl = data.getAvatarUrl();
@@ -104,7 +116,7 @@ public class UserCardView extends CitymapsCardView<User> {
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 			mImageContainers.add(mImageLoader.get(avatarUrl,
-					new AvatarImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+					new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
 
@@ -113,38 +125,5 @@ public class UserCardView extends CitymapsCardView<User> {
 		super.resetView();
 		mMainImageView.setImageDrawable(null);
 		mAvatarView.setImageDrawable(null);
-	}
-
-	protected class ImageListener extends AnimatingImageListener {
-		public ImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
-		}
-
-		/*
-		@Override
-		public void onImageLoadComplete() {
-			mPendingImageViews.remove(getImageView());
-			if (mPendingImageViews.size() == 0) {
-				notifyBindComplete();
-			}
-		}
-		*/
-	}
-
-	protected class AvatarImageListener extends AnimatingImageListener {
-		public AvatarImageListener(Context context, ImageView imageView) {
-			super(context, imageView);
-			setAnimationResId(R.anim.grow_from_zero);
-		}
-
-		/*
-		@Override
-		public void onImageLoadComplete() {
-			mPendingImageViews.remove(getImageView());
-			if (mPendingImageViews.size() == 0) {
-				notifyBindComplete();
-			}
-		}
-		*/
 	}
 }
