@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.util.LogEx;
 
 public class AnimatingImageListener
 		implements ImageLoader.ImageListener {
@@ -70,6 +71,7 @@ public class AnimatingImageListener
 	@Override
 	public void onErrorResponse(VolleyError error) {
 		// TODO
+		LogEx.e("There was a problem with this request", error);
 	}
 
 	protected Drawable getDrawable(Bitmap bitmap) {

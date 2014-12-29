@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 import com.citymaps.mobile.android.R;
 
-public class ViewAllCardView extends CitymapsCardView<Integer> {
+public class ViewAllCardView extends ExploreCardView<Integer> {
 
 	private TextView mLabelView;
 
@@ -28,11 +28,6 @@ public class ViewAllCardView extends CitymapsCardView<Integer> {
 		setCardBackgroundColor(getResources().getColor(R.color.color_primary));
 		mLabelView = (TextView) findViewById(R.id.card_view_all_label);
 		super.init(context);
-	}
-
-	@Override
-	protected void restorePendingBitmap(int key, Bitmap bitmap) {
-		// No action
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package com.citymaps.mobile.android.view.settings;
+package com.citymaps.mobile.android.view;
 
 import android.animation.*;
 import android.app.Activity;
@@ -377,7 +377,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			CitymapsCardView cardView;
+			ExploreCardView cardView;
 			ViewHolder holder = super.onCreateViewHolder(parent, viewType);
 			if (holder == null) {
 				CitymapsObject.ObjectType type = CitymapsObject.ObjectType.valueOf(viewType);
@@ -393,7 +393,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				}
 				holder = new ExploreViewHolder(cardView);
 			} else {
-				cardView = (CitymapsCardView) holder.itemView;
+				cardView = (ExploreCardView) holder.itemView;
 			}
 			cardView.setTag(ExploreDataType.HERO);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
@@ -428,13 +428,13 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			CitymapsCardView cardView;
+			ExploreCardView cardView;
 			ViewHolder holder = super.onCreateViewHolder(parent, viewType);
 			if (holder == null) {
 				cardView = new CollectionCardView(mContext);
 				holder = new ExploreViewHolder(cardView);
 			} else {
-				cardView = (CitymapsCardView) holder.itemView;
+				cardView = (ExploreCardView) holder.itemView;
 			}
 			cardView.setTag(ExploreDataType.FEATURED_COLLECTIONS);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
@@ -467,13 +467,13 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			CitymapsCardView cardView;
+			ExploreCardView cardView;
 			ViewHolder holder = super.onCreateViewHolder(parent, viewType);
 			if (holder == null) {
 				cardView = new UserCardView(mContext);
 				holder = new ExploreViewHolder(cardView);
 			} else {
-				cardView = (CitymapsCardView) holder.itemView;
+				cardView = (ExploreCardView) holder.itemView;
 			}
 			cardView.setTag(ExploreDataType.FEATURED_MAPPERS);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
@@ -506,13 +506,13 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			CitymapsCardView cardView;
+			ExploreCardView cardView;
 			ViewHolder holder = super.onCreateViewHolder(parent, viewType);
 			if (holder == null) {
 				cardView = new DealCardView(mContext);
 				holder = new ExploreViewHolder(cardView);
 			} else {
-				cardView = (CitymapsCardView) holder.itemView;
+				cardView = (ExploreCardView) holder.itemView;
 			}
 			cardView.setTag(ExploreDataType.FEATURED_DEALS);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
@@ -597,7 +597,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			return Math.max((int) (perceivedAvailableWidth / cardsAcross), 0);
 		}
 
-		private void updateCardLayoutParams(CitymapsCardView cardView) {
+		private void updateCardLayoutParams(ExploreCardView cardView) {
 			Rect rect;
 			ExploreDataType type = (ExploreDataType) cardView.getTag();
 			if (type == null) {
@@ -753,7 +753,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				}
 				size += childCount;
 			}
-			final List<CitymapsCardView> cardViews = new ArrayList<CitymapsCardView>(size);
+			final List<ExploreCardView> cardViews = new ArrayList<ExploreCardView>(size);
 			List<Animator> cardViewAnimators = new ArrayList<Animator>(size);
 			int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 			int totalOffset = 0;
@@ -761,7 +761,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				int width = recyclerView.getWidth();
 				int childCount = recyclerView.getChildCount();
 				for (int i = 0; i < childCount; i++) {
-					final CitymapsCardView cardView = (CitymapsCardView) recyclerView.getChildAt(i);
+					final ExploreCardView cardView = (ExploreCardView) recyclerView.getChildAt(i);
 					cardViews.add(cardView);
 					float to = cardView.getX();
 					float from = to + width;
@@ -779,7 +779,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 						@Override
 						public void onAnimationEnd(Animator animation) {
 							super.onAnimationEnd(animation);
-//							cardView.setInInitialLayout(false);
+							cardView.setInInitialLayout(false);
 						}
 					});
 					cardViewAnimators.add(animator);
@@ -805,7 +805,8 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					mInInitialLayout = false;
-					for (CitymapsCardView cardView : cardViews) {
+					for (ExploreCardView cardView : cardViews) {
+
 						cardView.setInInitialLayout(false);
 					}
 				}

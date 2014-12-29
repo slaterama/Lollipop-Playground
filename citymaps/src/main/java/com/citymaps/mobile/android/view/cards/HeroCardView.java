@@ -21,7 +21,7 @@ import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
 
-public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardView<D> {
+public abstract class HeroCardView<D extends SearchResult> extends ExploreCardView<D> {
 
 	public static int getDesiredHeight(Context context, int defaultCardSize) {
 		// Use PlaceHeroCardView since HeroCardView is abstract
@@ -64,50 +64,48 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 	}
 
 	@Override
-	protected void restorePendingBitmap(int key, Bitmap bitmap) {
-		switch (key) {
-			case BITMAP_KEY_MAIN:
-				new MainImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
-				break;
-		}
-	}
-
-	@Override
 	public void onBindView(final D data, boolean inInitialLayout) {
 		mNameView.setText(data.getName());
 
 		final String foursquarePhotoUrl = data.getFoursquarePhotoUrl();
 		if (TextUtils.isEmpty(foursquarePhotoUrl)) {
 			String foursquareId = data.getFoursquareId();
-			FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(),
-					foursquareId, 1,
-					new Response.Listener<List<FoursquarePhoto>>() {
-						@Override
-						public void onResponse(List<FoursquarePhoto> response) {
-							if (response == null || response.size() == 0) {
-								// TODO Default image?
-							} else {
-								FoursquarePhoto photo = response.get(0);
-								String foursquarePhotoUrl = photo.getPhotoUrl();
-								data.setFoursquarePhotoUrl(foursquarePhotoUrl);
+			if (TextUtils.isEmpty(foursquareId)) {
+				// TODO TODO TODO
+				if (LogEx.isLoggable(LogEx.WARN)) {
+					LogEx.w(String.format("'%s': empty foursquare id", data.getName()));
+				}
+			} else {
+				FoursquarePhotosRequest request = FoursquarePhotosRequest.getFoursquarePhotosRequest(getContext(),
+						foursquareId, 1,
+						new Response.Listener<List<FoursquarePhoto>>() {
+							@Override
+							public void onResponse(List<FoursquarePhoto> response) {
+								if (response == null || response.size() == 0) {
+									// TODO Default image?
+								} else {
+									FoursquarePhoto photo = response.get(0);
+									String foursquarePhotoUrl = photo.getPhotoUrl();
+									data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 
-								mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-										new MainImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
+									mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
+											new MainImageListener(getContext(), mMainImageView)));
+								}
 							}
-						}
-					},
-					new Response.ErrorListener() {
-						@Override
-						public void onErrorResponse(VolleyError error) {
-							if (LogEx.isLoggable(LogEx.ERROR)) {
-								LogEx.e(error.getMessage(), error);
+						},
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								if (LogEx.isLoggable(LogEx.ERROR)) {
+									LogEx.e(error.getMessage(), error);
+								}
 							}
-						}
-					});
-			VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+						});
+				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
+			}
 		} else {
 			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new MainImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN)));
+					new MainImageListener(getContext(), mMainImageView)));
 		}
 	}
 
@@ -117,11 +115,20 @@ public abstract class HeroCardView<D extends SearchResult> extends CitymapsCardV
 		mMainImageView.setImageDrawable(null);
 	}
 
+	@Override
+	public void onSetPendingBitmap(ImageView imageView, Bitmap bitmap) {
+		if (imageView == mMainImageView) {
+			new MainImageListener(getContext(), imageView).setBitmap(bitmap, false);
+		} else {
+			super.onSetPendingBitmap(imageView, bitmap);
+		}
+	}
+
 	protected class MainImageListener extends CardViewImageListener {
 		Drawable mGradientDrawable;
 
-		public MainImageListener(Context context, ImageView imageView, int key) {
-			super(context, imageView, key);
+		public MainImageListener(Context context, ImageView imageView) {
+			super(context, imageView);
 			mGradientDrawable = mContext.getResources().getDrawable(R.drawable.card_image_gradient);
 		}
 

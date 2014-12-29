@@ -207,7 +207,7 @@
 				android:theme="@style/AppTheme.TranslucentAppBar.Overlay">
 		</activity>
 		<activity
-				android:name=".view.settings.ExploreActivity"
+				android:name=".view.ExploreActivity"
 				android:label="@string/explore_activity_title">
 		</activity>
 		<activity

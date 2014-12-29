@@ -15,10 +15,7 @@ import com.citymaps.mobile.android.util.imagelistener.AnimatingImageListener;
 
 import java.util.*;
 
-public abstract class CitymapsCardView<D> extends CardView {
-
-	protected static final int BITMAP_KEY_MAIN = 0;
-	protected static final int BITMAP_KEY_AVATAR = 1;
+public abstract class ExploreCardView<D> extends CardView {
 
 	protected final Object LOCK = new Object();
 
@@ -30,19 +27,19 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	protected Set<ImageLoader.ImageContainer> mImageContainers;
 
-	protected Map<Integer, Bitmap> mPendingBitmaps;
+	protected Map<ImageView, Bitmap> mPendingBitmaps;
 
-	public CitymapsCardView(Context context) {
+	public ExploreCardView(Context context) {
 		super(context);
 		init(context);
 	}
 
-	public CitymapsCardView(Context context, AttributeSet attrs) {
+	public ExploreCardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(context);
 	}
 
-	public CitymapsCardView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public ExploreCardView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		init(context);
 	}
@@ -51,7 +48,7 @@ public abstract class CitymapsCardView<D> extends CardView {
 	protected void init(Context context) {
 		mImageLoader = VolleyManager.getInstance(context).getImageLoader();
 		mImageContainers = new HashSet<ImageLoader.ImageContainer>();
-		mPendingBitmaps = new HashMap<Integer, Bitmap>();
+		mPendingBitmaps = new HashMap<ImageView, Bitmap>();
 		Resources resources = context.getResources();
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
@@ -77,6 +74,10 @@ public abstract class CitymapsCardView<D> extends CardView {
 
 	public abstract void onBindView(D data, boolean inInitialLayout);
 
+	public void onSetPendingBitmap(ImageView imageView, Bitmap bitmap) {
+		new AnimatingImageListener(getContext(), imageView).setBitmap(bitmap, false);
+	}
+
 	protected void resetView() {
 		Iterator<ImageLoader.ImageContainer> iterator = mImageContainers.iterator();
 		while (iterator.hasNext()) {
@@ -90,35 +91,31 @@ public abstract class CitymapsCardView<D> extends CardView {
 		if (inInitialLayout != mInInitialLayout) {
 			mInInitialLayout = inInitialLayout;
 			if (!inInitialLayout) {
-//				synchronized (LOCK) {
-					Set<Integer> keySet = mPendingBitmaps.keySet();
-					Iterator<Integer> iterator = keySet.iterator();
+				synchronized (LOCK) {
+					Set<ImageView> keySet = mPendingBitmaps.keySet();
+					Iterator<ImageView> iterator = keySet.iterator();
 					while (iterator.hasNext()) {
-						int key = iterator.next();
-						restorePendingBitmap(key, mPendingBitmaps.get(key));
+						ImageView imageView = iterator.next();
+						Bitmap bitmap = mPendingBitmaps.get(imageView);
+						onSetPendingBitmap(imageView, bitmap);
 						iterator.remove();
 					}
-//				}
+				}
 			}
 		}
 	}
 
-	protected abstract void restorePendingBitmap(int key, Bitmap bitmap);
-
 	protected class CardViewImageListener extends AnimatingImageListener {
-		protected int mKey;
-
-		public CardViewImageListener(Context context, ImageView imageView, int key) {
+		public CardViewImageListener(Context context, ImageView imageView) {
 			super(context, imageView);
-			mKey = key;
 		}
 
 		@Override
 		public void setBitmap(Bitmap bitmap, boolean isImmediate) {
 			if (mInInitialLayout && !isImmediate) {
-//				synchronized (LOCK) {
-					mPendingBitmaps.put(mKey, bitmap);
-//				}
+				synchronized (LOCK) {
+					mPendingBitmaps.put(mImageView, bitmap);
+				}
 			} else {
 				super.setBitmap(bitmap, isImmediate);
 			}

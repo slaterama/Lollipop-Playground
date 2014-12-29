@@ -15,7 +15,7 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.GraphicsUtils;
 
-public class UserCardView extends CitymapsCardView<User> {
+public class UserCardView extends ExploreCardView<User> {
 
 	public static int getDesiredHeight(Context context, int defaultCardSize) {
 		UserCardView cardView = new UserCardView(context);
@@ -60,18 +60,6 @@ public class UserCardView extends CitymapsCardView<User> {
 	}
 
 	@Override
-	protected void restorePendingBitmap(int key, Bitmap bitmap) {
-		switch (key) {
-			case BITMAP_KEY_MAIN:
-				new CardViewImageListener(getContext(), mMainImageView, key).setBitmap(bitmap, true);
-				break;
-			case BITMAP_KEY_AVATAR:
-				new CardViewImageListener(getContext(), mAvatarView, key).setBitmap(bitmap, true);
-				break;
-		}
-	}
-
-	@Override
 	public void setDefaultCardSize(int defaultCardSize) {
 		mMainContainerView.getLayoutParams().width = defaultCardSize;
 		mMainContainerView.requestLayout();
@@ -102,10 +90,10 @@ public class UserCardView extends CitymapsCardView<User> {
 				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
 				cache.putBitmap(cacheKey, postcardBitmap);
 			}
-			new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN).setBitmap(postcardBitmap, isImmediate);
+			new CardViewImageListener(getContext(), mMainImageView).setBitmap(postcardBitmap, isImmediate);
 		} else {
 			mImageContainers.add(mImageLoader.get(postcardUrl,
-					new CardViewImageListener(getContext(), mMainImageView, BITMAP_KEY_MAIN), 300, 300, VolleyManager.OPTION_BLUR25));
+					new CardViewImageListener(getContext(), mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25));
 		}
 
 		String avatarUrl = data.getAvatarUrl();
@@ -115,7 +103,7 @@ public class UserCardView extends CitymapsCardView<User> {
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 			mImageContainers.add(mImageLoader.get(avatarUrl,
-					new CardViewImageListener(getContext(), mAvatarView, BITMAP_KEY_AVATAR), size, size, VolleyManager.OPTION_CIRCLE));
+					new CardViewImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
 
