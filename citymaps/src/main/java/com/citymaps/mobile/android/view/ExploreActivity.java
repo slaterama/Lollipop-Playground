@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.CardView;
@@ -801,16 +802,17 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			}
 			mAnimatorSet = new AnimatorSet();
 			mAnimatorSet.playSequentially(animatorSets);
+			/*
 			mAnimatorSet.addListener(new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					mInInitialLayout = false;
 					for (ExploreCardView cardView : cardViews) {
-
 						cardView.setInInitialLayout(false);
 					}
 				}
 			});
+			*/
 		}
 
 		public void start() {
