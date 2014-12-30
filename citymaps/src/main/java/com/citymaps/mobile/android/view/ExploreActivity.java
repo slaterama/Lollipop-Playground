@@ -802,17 +802,12 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			}
 			mAnimatorSet = new AnimatorSet();
 			mAnimatorSet.playSequentially(animatorSets);
-			/*
 			mAnimatorSet.addListener(new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					mInInitialLayout = false;
-					for (ExploreCardView cardView : cardViews) {
-						cardView.setInInitialLayout(false);
-					}
 				}
 			});
-			*/
 		}
 
 		public void start() {
