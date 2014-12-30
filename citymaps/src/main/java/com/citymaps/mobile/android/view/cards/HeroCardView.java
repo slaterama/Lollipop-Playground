@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.FoursquarePhoto;
@@ -37,6 +38,8 @@ public abstract class HeroCardView<D extends SearchResult> extends ExploreCardVi
 
 	protected TextView mNameView;
 
+	protected MainImageListener mMainImageListener;
+
 	public HeroCardView(Context context) {
 		super(context);
 	}
@@ -55,6 +58,7 @@ public abstract class HeroCardView<D extends SearchResult> extends ExploreCardVi
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mNameView = (TextView) findViewById(R.id.card_name);
+		mMainImageListener = new MainImageListener(getContext(), mMainImageView);
 	}
 
 	@Override
@@ -88,8 +92,7 @@ public abstract class HeroCardView<D extends SearchResult> extends ExploreCardVi
 									String foursquarePhotoUrl = photo.getPhotoUrl();
 									data.setFoursquarePhotoUrl(foursquarePhotoUrl);
 
-									mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-											new MainImageListener(getContext(), mMainImageView)));
+									mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mMainImageListener));
 								}
 							}
 						},
@@ -104,8 +107,7 @@ public abstract class HeroCardView<D extends SearchResult> extends ExploreCardVi
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			}
 		} else {
-			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new MainImageListener(getContext(), mMainImageView)));
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mMainImageListener));
 		}
 	}
 
@@ -118,7 +120,7 @@ public abstract class HeroCardView<D extends SearchResult> extends ExploreCardVi
 	@Override
 	public void onSetPendingBitmap(ImageView imageView, Bitmap bitmap) {
 		if (imageView == mMainImageView) {
-			new MainImageListener(getContext(), imageView).setBitmap(bitmap, false);
+			mMainImageListener.setBitmap(bitmap, false); //new MainImageListener(getContext(), imageView).setBitmap(bitmap, false);
 		} else {
 			super.onSetPendingBitmap(imageView, bitmap);
 		}

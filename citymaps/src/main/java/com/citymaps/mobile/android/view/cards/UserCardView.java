@@ -1,10 +1,8 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,12 +13,10 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.GraphicsUtils;
 import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
 
 public class UserCardView extends ExploreCardView<User> {
 
@@ -40,6 +36,9 @@ public class UserCardView extends ExploreCardView<User> {
 	private TextView mFollowersView;
 	private Button mFollowButton;
 
+	private CardViewImageListener mMainImageListener;
+	private CardViewImageListener mAvatarImageListener;
+
 	public UserCardView(Context context) {
 		super(context);
 	}
@@ -54,6 +53,7 @@ public class UserCardView extends ExploreCardView<User> {
 
 	@Override
 	protected void init(Context context) {
+		super.init(context);
 		inflate(context, R.layout.card_user_new, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
@@ -63,7 +63,8 @@ public class UserCardView extends ExploreCardView<User> {
 		mUsernameView = (TextView) findViewById(R.id.card_username);
 		mFollowersView = (TextView) findViewById(R.id.card_followers);
 		mFollowButton = (Button) findViewById(R.id.card_user_action_follow);
-		super.init(context);
+		mMainImageListener = new CardViewImageListener(context, mMainImageView);
+		mAvatarImageListener = new CardViewImageListener(context, mAvatarView);
 	}
 
 	@Override
@@ -97,10 +98,9 @@ public class UserCardView extends ExploreCardView<User> {
 				postcardBitmap = VolleyManager.BitmapEditor.newEditor(getContext(), VolleyManager.OPTION_BLUR25).edit(postcardDrawable.getBitmap());
 				cache.putBitmap(cacheKey, postcardBitmap);
 			}
-			new CardViewImageListener(getContext(), mMainImageView).setBitmap(postcardBitmap, isImmediate);
+			mMainImageListener.setBitmap(postcardBitmap, isImmediate);
 		} else {
-			mImageContainers.add(mImageLoader.get(postcardUrl,
-					new CardViewImageListener(getContext(), mMainImageView),
+			mImageContainers.add(mImageLoader.get(postcardUrl, mMainImageListener,
 					BuildConfig.DEFAULT_AVATAR_IMAGE_SIZE, BuildConfig.DEFAULT_AVATAR_IMAGE_SIZE, VolleyManager.OPTION_BLUR25));
 		}
 
@@ -110,8 +110,8 @@ public class UserCardView extends ExploreCardView<User> {
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mImageContainers.add(mImageLoader.get(avatarUrl,
-					new CardViewImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+			mImageContainers.add(mImageLoader.get(avatarUrl, mAvatarImageListener,
+					size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
 

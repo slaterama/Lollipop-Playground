@@ -12,6 +12,7 @@ package com.citymaps.mobile.android.app;
 import android.content.Context;
 import android.graphics.*;
 import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
@@ -250,7 +251,7 @@ public class VolleyManager {
 
 	public static abstract class BitmapEditor {
 		public static BitmapEditor newEditor(Context context, String option) {
-			if (TextUtils.equals(option, OPTION_BLUR25)) {
+			if (TextUtils.equals(option, OPTION_BLUR25) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // TODO Blur for < LOLLIPOP
 				return new Blur25BitmapEditor(context);
 			} else if (TextUtils.equals(option, OPTION_CIRCLE)) {
 				return new CircleBitmapEditor(context);

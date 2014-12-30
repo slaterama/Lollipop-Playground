@@ -36,6 +36,9 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 	private ImageView mAvatarView;
 	private TextView mPlaceNameView;
 
+	private CardViewImageListener mMainImageListener;
+	private CardViewImageListener mAvatarImageListener;
+
 	public DealCardView(Context context) {
 		super(context);
 	}
@@ -50,6 +53,7 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 
 	@Override
 	protected void init(Context context) {
+		super.init(context);
 		inflate(context, R.layout.card_deal_new, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
@@ -57,7 +61,8 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 		mNameView = (TextView) findViewById(R.id.card_name);
 		mAvatarView = (ImageView) findViewById(R.id.card_avatar);
 		mPlaceNameView = (TextView) findViewById(R.id.card_place_name);
-		super.init(context);
+		mMainImageListener = new CardViewImageListener(context, mMainImageView);
+		mAvatarImageListener = new CardViewImageListener(context, mAvatarView);
 	}
 
 	@Override
@@ -82,8 +87,7 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 				useAvatarImageAsMainImage = true;
 			} else {
 				useAvatarImageAsMainImage = false;
-				mImageContainers.add(mImageLoader.get(imageUrl,
-						new CardViewImageListener(getContext(), mMainImageView)));
+				mImageContainers.add(mImageLoader.get(imageUrl, mMainImageListener));
 			}
 		} else {
 			useAvatarImageAsMainImage = true;
@@ -112,11 +116,10 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 									data.setFoursquarePhotoUrl(avatarImageUrl);
 								}
 								int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-								mImageContainers.add(mImageLoader.get(avatarImageUrl,
-										new CardViewImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+								mImageContainers.add(mImageLoader.get(avatarImageUrl, mAvatarImageListener,
+										size, size, VolleyManager.OPTION_CIRCLE));
 								if (useAvatarImageAsMainImage) {
-									mImageContainers.add(mImageLoader.get(avatarImageUrl,
-											new CardViewImageListener(getContext(), mMainImageView)));
+									mImageContainers.add(mImageLoader.get(avatarImageUrl, mMainImageListener));
 								}
 							}
 						},
@@ -132,11 +135,10 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 			}
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new CardViewImageListener(getContext(), mAvatarView), size, size, VolleyManager.OPTION_CIRCLE));
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mAvatarImageListener,
+					size, size, VolleyManager.OPTION_CIRCLE));
 			if (useAvatarImageAsMainImage) {
-				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-						new CardViewImageListener(getContext(), mMainImageView)));
+				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mMainImageListener));
 			}
 		}
 	}

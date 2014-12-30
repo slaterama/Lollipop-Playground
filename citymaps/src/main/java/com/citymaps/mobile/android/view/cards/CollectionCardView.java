@@ -38,6 +38,9 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 	private ImageView mAvatarView;
 	private TextView mUsernameView;
 
+	private CardViewImageListener mMainImageListener;
+	private CardViewImageListener mAvatarImageListener;
+
 	public CollectionCardView(Context context) {
 		super(context);
 	}
@@ -52,6 +55,7 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 
 	@Override
 	protected void init(Context context) {
+		super.init(context);
 		inflate(context, R.layout.card_collection_new, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
@@ -61,7 +65,8 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 		mDescriptionView = (TextView) findViewById(R.id.card_description);
 		mAvatarView = (ImageView) findViewById(R.id.card_avatar);
 		mUsernameView = (TextView) findViewById(R.id.card_username);
-		super.init(context);
+		mMainImageListener = new CardViewImageListener(context, mMainImageView);
+		mAvatarImageListener = new CardViewImageListener(context, mAvatarView);
 	}
 
 	@Override
@@ -97,8 +102,7 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 									FoursquarePhoto photo = response.get(0);
 									String foursquarePhotoUrl = photo.getPhotoUrl();
 									data.setFoursquarePhotoUrl(foursquarePhotoUrl);
-									mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-											new CardViewImageListener(getContext(), mMainImageView)));
+									mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mMainImageListener));
 								}
 							}
 						},
@@ -113,8 +117,7 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 				VolleyManager.getInstance(getContext()).getRequestQueue().add(request);
 			}
 		} else {
-			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl,
-					new CardViewImageListener(getContext(), mMainImageView)));
+			mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mMainImageListener));
 		}
 
 		String avatarUrl = data.getOwnerAvatar();
@@ -124,8 +127,7 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 					getResources(), R.drawable.default_user_avatar_mini));
 		} else {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-			mImageContainers.add(mImageLoader.get(avatarUrl,
-					new CardViewImageListener(getContext(), mAvatarView),
+			mImageContainers.add(mImageLoader.get(avatarUrl, mAvatarImageListener,
 					size, size, VolleyManager.OPTION_CIRCLE));
 		}
 	}
