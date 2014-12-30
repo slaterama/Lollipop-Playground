@@ -1,7 +1,7 @@
 package com.citymaps.mobile.android.util;
 
 import android.content.Intent;
-import com.citymaps.mobile.android.BuildConfig;
+import android.net.Uri;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
@@ -10,6 +10,12 @@ import com.citymaps.mobile.android.model.ThirdPartyUser;
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
  */
 public class IntentUtils {
+
+	private static final String URI_SCHEME = "content";
+	private static final String URI_AUTHORITY = PackageUtils.getNonDevPackageName();
+	private static final String URI_PATH_COLLECTION = "collection";
+	private static final String URI_PATH_PLACE = "place";
+	private static final String URI_PATH_USER = "user";
 
 	private static final String PROPERTY_NAME_EMAIL = "email";
 
@@ -31,7 +37,7 @@ public class IntentUtils {
 	/**
 	 * A static constant describing the application package name.
 	 */
-	private static final String PACKAGE_NAME = BuildConfig.PACKAGE_NAME; //BuildConfig.class.getPackage().getName();
+	private static final String PACKAGE_NAME = PackageUtils.getNonDevPackageName();
 
 	/**
 	 * A convenience method used to build action intent strings.
@@ -155,6 +161,47 @@ public class IntentUtils {
 
 	public static ThirdPartyUser getThirdPartyUser(Intent intent) {
 		return intent.getParcelableExtra(EXTRA_THIRD_PARTY_USER);
+	}
+
+	// Get Citymaps-specific intents (i.e. for deep-linking)
+
+	public static Intent getCollectionIntent(String mapId) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
+		Uri uri = new Uri.Builder()
+				.scheme(URI_SCHEME)
+				.encodedAuthority(URI_AUTHORITY)
+				.appendEncodedPath(URI_PATH_COLLECTION)
+				.appendEncodedPath(mapId)
+				.build();
+		intent.setData(uri);
+		return intent;
+	}
+
+	public static Intent getPlaceIntent(String businessId) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
+		Uri uri = new Uri.Builder()
+				.scheme(URI_SCHEME)
+				.encodedAuthority(URI_AUTHORITY)
+				.appendEncodedPath(URI_PATH_PLACE)
+				.appendEncodedPath(businessId)
+				.build();
+		intent.setData(uri);
+		return intent;
+	}
+
+	public static Intent getUserIntent(String userId) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
+		Uri uri = new Uri.Builder()
+				.scheme(URI_SCHEME)
+				.encodedAuthority(URI_AUTHORITY)
+				.appendEncodedPath(URI_PATH_USER)
+				.appendEncodedPath(userId)
+				.build();
+		intent.setData(uri);
+		return intent;
 	}
 
 	private IntentUtils() {

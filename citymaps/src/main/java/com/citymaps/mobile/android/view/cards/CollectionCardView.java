@@ -3,6 +3,7 @@ package com.citymaps.mobile.android.view.cards;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import com.citymaps.mobile.android.model.FoursquarePhoto;
 import com.citymaps.mobile.android.model.SearchResultCollection;
 import com.citymaps.mobile.android.model.request.FoursquarePhotosRequest;
 import com.citymaps.mobile.android.util.GraphicsUtils;
+import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 
 import java.util.List;
@@ -133,5 +135,10 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 		super.resetView();
 		mMainImageView.setImageDrawable(null);
 		mAvatarView.setImageDrawable(null);
+	}
+
+	@Override
+	public void onClick(View v) {
+		getContext().startActivity(IntentUtils.getCollectionIntent(mData.getId()));
 	}
 }

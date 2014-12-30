@@ -2,8 +2,10 @@ package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.model.SearchResultCollection;
+import com.citymaps.mobile.android.util.IntentUtils;
 
 public class CollectionHeroCardView extends HeroCardView<SearchResultCollection> {
 
@@ -28,5 +30,10 @@ public class CollectionHeroCardView extends HeroCardView<SearchResultCollection>
 	@Override
 	public void onBindView(final SearchResultCollection data, boolean inInitialLayout) {
 		super.onBindView(data, inInitialLayout);
+	}
+
+	@Override
+	public void onClick(View v) {
+		getContext().startActivity(IntentUtils.getCollectionIntent(mData.getMapId()));
 	}
 }

@@ -22,7 +22,7 @@ public class UserActivity extends TrackedActionBarActivity {
 
 		Intent intent = getIntent();
 		Uri data = intent.getData();
-		String id = data.getQueryParameter("id");
+		String id = data.getLastPathSegment();
 		if (TextUtils.isEmpty(id)) {
 			mHelloWorld.setText("User is not logged in");
 		} else {
@@ -33,7 +33,7 @@ public class UserActivity extends TrackedActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.profile, menu);
+		getMenuInflater().inflate(R.menu.user, menu);
 		return true;
 	}
 

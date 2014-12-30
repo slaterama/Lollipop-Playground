@@ -1,19 +1,26 @@
 package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
+import com.citymaps.mobile.android.BuildConfig;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.util.GraphicsUtils;
+import com.citymaps.mobile.android.util.IntentUtils;
+import com.citymaps.mobile.android.util.LogEx;
 
 public class UserCardView extends ExploreCardView<User> {
 
@@ -93,7 +100,8 @@ public class UserCardView extends ExploreCardView<User> {
 			new CardViewImageListener(getContext(), mMainImageView).setBitmap(postcardBitmap, isImmediate);
 		} else {
 			mImageContainers.add(mImageLoader.get(postcardUrl,
-					new CardViewImageListener(getContext(), mMainImageView), 300, 300, VolleyManager.OPTION_BLUR25));
+					new CardViewImageListener(getContext(), mMainImageView),
+					BuildConfig.DEFAULT_AVATAR_IMAGE_SIZE, BuildConfig.DEFAULT_AVATAR_IMAGE_SIZE, VolleyManager.OPTION_BLUR25));
 		}
 
 		String avatarUrl = data.getAvatarUrl();
@@ -112,5 +120,10 @@ public class UserCardView extends ExploreCardView<User> {
 		super.resetView();
 		mMainImageView.setImageDrawable(null);
 		mAvatarView.setImageDrawable(null);
+	}
+
+	@Override
+	public void onClick(View v) {
+		getContext().startActivity(IntentUtils.getUserIntent(mData.getId()));
 	}
 }

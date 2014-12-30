@@ -108,13 +108,14 @@
 				android:label="@string/collection_activity_title">
 			<intent-filter>
 				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE" />
 
 				<action android:name="android.intent.action.VIEW"/>
 
 				<data
-						android:host="com.citymaps.mobile.android"
-						android:pathPrefix="/collection"
-						android:scheme="citymaps.internal"/>
+						android:scheme="@string/default_scheme"
+						android:host="@string/default_host"
+						android:pathPrefix="/collection"/>
 			</intent-filter>
 		</activity>
 
@@ -123,13 +124,14 @@
 				android:label="@string/place_activity_title">
 			<intent-filter>
 				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE" />
 
 				<action android:name="android.intent.action.VIEW"/>
 
 				<data
-						android:host="com.citymaps.mobile.android"
-						android:pathPrefix="/place"
-						android:scheme="citymaps.internal"/>
+						android:scheme="@string/default_scheme"
+						android:host="@string/default_host"
+						android:pathPrefix="/place"/>
 			</intent-filter>
 		</activity>
 
@@ -138,13 +140,14 @@
 				android:label="@string/user_activity_title">
 			<intent-filter>
 				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE" />
 
 				<action android:name="android.intent.action.VIEW"/>
 
 				<data
-						android:host="com.citymaps.mobile.android"
-						android:pathPrefix="/user"
-						android:scheme="citymaps.internal"/>
+						android:scheme="@string/default_scheme"
+						android:host="@string/default_host"
+						android:pathPrefix="/user"/>
 			</intent-filter>
 		</activity>
 

@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import com.android.volley.toolbox.ImageLoader;
 import com.citymaps.mobile.android.R;
@@ -15,7 +16,8 @@ import com.citymaps.mobile.android.util.imagelistener.AnimatingImageListener;
 
 import java.util.*;
 
-public abstract class ExploreCardView<D> extends CardView {
+public abstract class ExploreCardView<D> extends CardView
+		implements View.OnClickListener {
 
 	protected final Object LOCK = new Object();
 
@@ -53,6 +55,7 @@ public abstract class ExploreCardView<D> extends CardView {
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
+		setOnClickListener(this);
 	}
 
 	public D getData() {
@@ -103,6 +106,11 @@ public abstract class ExploreCardView<D> extends CardView {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onClick(View v) {
+
 	}
 
 	protected class CardViewImageListener extends AnimatingImageListener {

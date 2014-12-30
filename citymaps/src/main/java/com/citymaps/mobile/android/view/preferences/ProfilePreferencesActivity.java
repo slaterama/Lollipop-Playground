@@ -32,7 +32,7 @@ public class ProfilePreferencesActivity extends TrackedActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.profile_preferences, menu);
+		getMenuInflater().inflate(R.menu.user_preferences, menu);
 		return true;
 	}
 

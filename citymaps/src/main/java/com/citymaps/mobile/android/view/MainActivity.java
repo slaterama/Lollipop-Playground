@@ -132,11 +132,7 @@ public class MainActivity extends TrackedActionBarActivity
 			case R.id.action_profile:
 				User user = SessionManager.getInstance(this).getCurrentUser();
 				String userId = (user == null ? "" : user.getId());
-				String uriString = String.format("citymaps.internal://com.citymaps.mobile.android/user?id=%s", userId);
-				Intent intent = new Intent(Intent.ACTION_VIEW);
-				intent.addCategory(Intent.CATEGORY_DEFAULT);
-				intent.setData(Uri.parse(uriString));
-				startActivity(intent);
+				startActivity(IntentUtils.getUserIntent(userId));
 				return true;
 			case R.id.action_friend_finder:
 				doTest();
