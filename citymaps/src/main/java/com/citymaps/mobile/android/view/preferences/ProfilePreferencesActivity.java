@@ -15,6 +15,11 @@ public class ProfilePreferencesActivity extends TrackedActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// NOTE: As per https://code.google.com/p/android/issues/detail?id=78701,
+		// without this line, using android.R.id.content as the container res id
+		// won't work
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		if (savedInstanceState == null) {
 			Fragment fragment = PreferencesFragment.newInstance();
 			getSupportFragmentManager()

@@ -41,24 +41,29 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
+
 		<activity
 				android:name="com.citymaps.mobile.android.view.housekeeping.TourActivity"
 				android:label="@string/tour_activity_title">
 		</activity>
+
 		<activity
 				android:name="com.citymaps.mobile.android.view.housekeeping.EnableLocationActivity"
 				android:label="@string/loc_activity_title">
 		</activity>
+
 		<activity
 				android:name="com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity"
 				android:noHistory="true"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
+
 		<activity
 				android:name="com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity"
 				android:screenOrientation="sensorPortrait"
 				android:theme="@style/AppTheme.NoTitleOrActionBar">
 		</activity>
+
 		<activity
 				android:name="com.citymaps.mobile.android.view.housekeeping.SigninActivity"
 				android:label="@string/signin_activity_title"
@@ -74,11 +79,73 @@
 						android:scheme="citymaps.internal"/>
 			</intent-filter>
 		</activity>
+
 		<activity
 				android:name="com.facebook.LoginActivity"
 				android:label="@string/app_name"
 				android:screenOrientation="portrait"
 				android:theme="@android:style/Theme.Translucent.NoTitleBar">
+		</activity>
+
+		<!-- "Main" activities -->
+
+		<activity
+				android:name="com.citymaps.mobile.android.view.MainActivity"
+				android:label="@string/app_name"
+				android:launchMode="singleTop"
+				android:theme="@style/AppTheme.TranslucentAppBar.Overlay">
+		</activity>
+
+		<activity
+				android:name=".view.ExploreActivity"
+				android:label="@string/explore_activity_title">
+		</activity>
+
+		<!-- Detail activities -->
+
+		<activity
+				android:name=".view.CollectionActivity"
+				android:label="@string/collection_activity_title">
+			<intent-filter>
+				<category android:name="android.intent.category.DEFAULT"/>
+
+				<action android:name="android.intent.action.VIEW"/>
+
+				<data
+						android:host="com.citymaps.mobile.android"
+						android:pathPrefix="/collection"
+						android:scheme="citymaps.internal"/>
+			</intent-filter>
+		</activity>
+
+		<activity
+				android:name=".view.PlaceActivity"
+				android:label="@string/place_activity_title">
+			<intent-filter>
+				<category android:name="android.intent.category.DEFAULT"/>
+
+				<action android:name="android.intent.action.VIEW"/>
+
+				<data
+						android:host="com.citymaps.mobile.android"
+						android:pathPrefix="/place"
+						android:scheme="citymaps.internal"/>
+			</intent-filter>
+		</activity>
+
+		<activity
+				android:name=".view.UserActivity"
+				android:label="@string/user_activity_title">
+			<intent-filter>
+				<category android:name="android.intent.category.DEFAULT"/>
+
+				<action android:name="android.intent.action.VIEW"/>
+
+				<data
+						android:host="com.citymaps.mobile.android"
+						android:pathPrefix="/user"
+						android:scheme="citymaps.internal"/>
+			</intent-filter>
 		</activity>
 
 		<!-- Preference activities -->
@@ -95,6 +162,7 @@
 					android:value=".view.MainActivity" />
 		</activity>
 		-->
+
 		<activity
 				android:name="com.citymaps.mobile.android.view.preferences.MainPreferencesActivity"
 				android:label="@string/preferences_activity_title"
@@ -106,6 +174,7 @@
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
 		</activity>
+
 		<activity
 				android:name=".view.preferences.AddBusinessActivity"
 				android:label="@string/add_business_activity_title"
@@ -122,6 +191,7 @@
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
 		</activity>
+
 		<activity
 				android:name=".view.preferences.ProfilePreferencesActivity"
 				android:label="@string/pref_profile_activity_title"
@@ -138,6 +208,7 @@
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
 		</activity>
+
 		<activity
 				android:name=".view.preferences.ThirdPartyPreferencesActivity"
 				android:label="@string/pref_third_party_activity_title"
@@ -154,6 +225,7 @@
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
 		</activity>
+
 		<activity
 				android:name=".view.preferences.InviteFriendsActivity"
 				android:label="@string/invite_friends_activity_title"
@@ -170,6 +242,7 @@
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
 		</activity>
+
 		<activity
 				android:name=".view.preferences.NotificationsPreferencesActivity"
 				android:label="@string/pref_notifications_activity_title"
@@ -186,6 +259,7 @@
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
 		</activity>
+
 		<activity
 				android:name=".view.preferences.DeveloperPreferencesActivity"
 				android:label="@string/pref_developer_activity_title"
@@ -196,24 +270,6 @@
 			<meta-data
 					android:name="android.support.PARENT_ACTIVITY"
 					android:value=".view.MainActivity"/>
-		</activity>
-
-		<!-- Other activities -->
-
-		<activity
-				android:name="com.citymaps.mobile.android.view.MainActivity"
-				android:label="@string/app_name"
-				android:launchMode="singleTop"
-				android:theme="@style/AppTheme.TranslucentAppBar.Overlay">
-		</activity>
-		<activity
-				android:name=".view.ExploreActivity"
-				android:label="@string/explore_activity_title">
-		</activity>
-		<activity
-				android:name="com.citymaps.mobile.android.view.ProfileActivity"
-				android:label="@string/profile_activity_title"
-				android:theme="@style/AppTheme">
 		</activity>
 
 		<!-- Services -->
@@ -228,6 +284,7 @@
 				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 		</service>
+
 		<service
 				android:name="com.citymaps.mobile.android.map.MapViewService"
 				android:enabled="true"

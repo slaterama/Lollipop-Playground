@@ -122,7 +122,7 @@ public class SigninCreateAccountFragment extends FormFragment
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		TextView disclaimerView = (TextView) view.findViewById(R.id.signin_create_account_disclaimer);
-		disclaimerView.setText(Html.fromHtml(getString(R.string.signin_create_account_disclaimer)));
+		//disclaimerView.setText(Html.fromHtml(getString(R.string.signin_create_account_disclaimer)));
 		Spannable spannable = (Spannable) Html.fromHtml(getString(R.string.signin_create_account_disclaimer));
 		ViewUtils.setSpannableText(disclaimerView, spannable);
 

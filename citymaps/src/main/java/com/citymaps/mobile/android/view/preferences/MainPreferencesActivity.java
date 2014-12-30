@@ -6,7 +6,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -17,15 +19,9 @@ import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.BuildConfig;
@@ -36,10 +32,7 @@ import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.UserRequest;
 import com.citymaps.mobile.android.preference.PreferenceFragment;
-import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.Pref;
-import com.citymaps.mobile.android.util.ShareUtils;
-import com.citymaps.mobile.android.util.SharedPrefUtils;
+import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.view.MainActivity;
 import com.citymaps.mobile.android.view.housekeeping.SignoutDialogFragment;
 
@@ -48,6 +41,12 @@ public class MainPreferencesActivity extends TrackedActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// NOTE: As per https://code.google.com/p/android/issues/detail?id=78701,
+		// without this line, using android.R.id.content as the container res id
+		// won't work
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		if (savedInstanceState == null) {
 			Fragment fragment = PreferencesFragment.newInstance();
 			getSupportFragmentManager()
@@ -117,8 +116,9 @@ public class MainPreferencesActivity extends TrackedActionBarActivity {
 		}
 
 		@Override
-		public void onViewCreated(View view, Bundle savedInstanceState) {
+		public void onViewCreated(final View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
+
 			addPreferencesFromResource(R.xml.preferences_general);
 
 			mCurrentUser = SessionManager.getInstance(getActivity()).getCurrentUser();

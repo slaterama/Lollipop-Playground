@@ -10,9 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.citymaps.mobile.android.R;
+import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.Config;
+import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.notused_provider.config.ConfigContract.Settings;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
@@ -22,6 +24,7 @@ import com.citymaps.mobile.android.view.housekeeping.AuthenticateActivity;
 import com.citymaps.mobile.android.view.housekeeping.HardUpdateActivity;
 import com.citymaps.mobile.android.view.housekeeping.SoftUpdateDialogFragment;
 import com.citymaps.mobile.android.view.preferences.MainPreferencesActivity;
+import com.citymaps.mobile.android.view.settings.PreferencesActivity;
 
 import static com.citymaps.mobile.android.util.IntentUtils.ACTION_CONFIG_LOADED;
 
@@ -127,7 +130,13 @@ public class MainActivity extends TrackedActionBarActivity
 				startActivityForResult(new Intent(this, MainPreferencesActivity.class), REQUEST_CODE_PREFERENCES);
 				return true;
 			case R.id.action_profile:
-				startActivity(new Intent(this, ProfileActivity.class));
+				User user = SessionManager.getInstance(this).getCurrentUser();
+				String userId = (user == null ? "" : user.getId());
+				String uriString = String.format("citymaps.internal://com.citymaps.mobile.android/user?id=%s", userId);
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.addCategory(Intent.CATEGORY_DEFAULT);
+				intent.setData(Uri.parse(uriString));
+				startActivity(intent);
 				return true;
 			case R.id.action_friend_finder:
 				doTest();
