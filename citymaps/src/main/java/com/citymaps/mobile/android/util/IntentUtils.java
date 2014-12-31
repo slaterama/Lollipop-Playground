@@ -5,6 +5,7 @@ import android.net.Uri;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.ThirdPartyUser;
+import com.citymaps.mobile.android.view.cards.CardType;
 
 /**
  * A class for referencing Citymaps-specific Intent actions, categories and extras.
@@ -60,6 +61,8 @@ public class IntentUtils {
 		return String.format("%s.%s.%s", PACKAGE_NAME, EXTRA, name);
 	}
 
+	public static final String EXTRA_CARD_TYPE = makeExtra("CARD_TYPE");
+
 	/**
 	 * BroadcastReceiver Action: Sent to inform about Android config information being loaded.
 	 */
@@ -98,6 +101,14 @@ public class IntentUtils {
 	public static final String EXTRA_STARTUP_MODE = makeExtra("STARTUP_MODE");
 
 	public static final String EXTRA_THIRD_PARTY_USER = makeExtra("THIRD_PARTY_USER");
+
+	public static void putCardType(Intent intent, CardType cardType) {
+		intent.putExtra(EXTRA_CARD_TYPE, cardType);
+	}
+
+	public static CardType getCardType(Intent intent) {
+		return (CardType) intent.getSerializableExtra(EXTRA_CARD_TYPE);
+	}
 
 	public static void putConfig(Intent intent, Config config) {
 		intent.putExtra(EXTRA_CONFIG, config);

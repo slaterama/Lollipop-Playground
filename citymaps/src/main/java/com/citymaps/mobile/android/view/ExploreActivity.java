@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.widget.CardView;
@@ -75,7 +74,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	private FeaturedMappersAdapter mFeaturedMappersAdapter;
 	private FeaturedDealsAdapter mFeaturedDealsAdapter;
 
-	private Set<ExploreDataType> mExploreDataTypeSet;
+	private Set<CardType> mCardTypeSet;
 
 	private DataFragment mDataFragment;
 
@@ -104,22 +103,27 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		mFeaturedMappersRecyclerView = (RecyclerViewEx) findViewById(R.id.explore_featured_mappers_recycler);
 		mFeaturedDealsRecyclerView = (RecyclerViewEx) findViewById(R.id.explore_featured_deals_recycler);
 
-		mHeroRecyclerView.setTag(ExploreDataType.HERO);
-		mFeaturedCollectionsRecyclerView.setTag(ExploreDataType.FEATURED_COLLECTIONS);
-		mFeaturedMappersRecyclerView.setTag(ExploreDataType.FEATURED_MAPPERS);
-		mFeaturedDealsRecyclerView.setTag(ExploreDataType.FEATURED_DEALS);
+		mHeroRecyclerView.setTag(CardType.HERO);
+		mFeaturedCollectionsRecyclerView.setTag(CardType.FEATURED_COLLECTIONS);
+		mFeaturedMappersRecyclerView.setTag(CardType.FEATURED_MAPPERS);
+		mFeaturedDealsRecyclerView.setTag(CardType.FEATURED_DEALS);
 
 		mHeroRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		mFeaturedCollectionsRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		mFeaturedMappersRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		mFeaturedDealsRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
+		mHeroRecyclerView.setAdapter(mHeroAdapter = new HeroAdapter(this));
+		mFeaturedCollectionsRecyclerView.setAdapter(mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(this));
+		mFeaturedMappersRecyclerView.setAdapter(mFeaturedMappersAdapter = new FeaturedMappersAdapter(this));
+		mFeaturedDealsRecyclerView.setAdapter(mFeaturedDealsAdapter = new FeaturedDealsAdapter(this));
+
 		mHeroRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mFeaturedCollectionsRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mFeaturedMappersRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mFeaturedDealsRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 
-		// Set up helper fragment
+		// Set up data fragment
 
 		if (savedInstanceState == null) {
 			mInInitialLayout = true;
@@ -131,7 +135,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			mFeaturedCollectionsProgressBar.setVisibility(View.VISIBLE);
 			mFeaturedMappersProgressBar.setVisibility(View.VISIBLE);
 			mFeaturedDealsProgressBar.setVisibility(View.VISIBLE);
-			mExploreDataTypeSet = new HashSet<ExploreDataType>(Arrays.asList(ExploreDataType.values()));
+			mCardTypeSet = new HashSet<CardType>(Arrays.asList(CardType.values()));
 			mDataFragment = DataFragment.newInstance(getIntent());
 			getSupportFragmentManager()
 					.beginTransaction()
@@ -217,46 +221,26 @@ public class ExploreActivity extends TrackedActionBarActivity {
 	}
 
 	private void onHeroRequestResponse(List<SearchResult> response) {
-		if (mHeroAdapter == null) {
-			mHeroRecyclerView.setAdapter(
-					mHeroAdapter = new HeroAdapter(this, response));
-		} else {
-			mHeroAdapter.setItems(response);
-		}
-	}
-
-	private void onFeaturedCollectionsRequestResponse(List<SearchResultCollection> response) {
-		if (mFeaturedCollectionsAdapter == null) {
-			mFeaturedCollectionsRecyclerView.setAdapter(
-					mFeaturedCollectionsAdapter = new FeaturedCollectionsAdapter(this, response));
-		} else {
-			mFeaturedCollectionsAdapter.setItems(response);
-		}
+		mHeroAdapter.setItems(response);
 		updateHeroLabel();
 	}
 
+	private void onFeaturedCollectionsRequestResponse(List<SearchResultCollection> response) {
+		mFeaturedCollectionsAdapter.setItems(response);
+	}
+
 	private void onFeaturedMappersRequestResponse(List<User> response) {
-		if (mFeaturedMappersAdapter == null) {
-			mFeaturedMappersRecyclerView.setAdapter(
-					mFeaturedMappersAdapter = new FeaturedMappersAdapter(this, response));
-		} else {
-			mFeaturedMappersAdapter.setItems(response);
-		}
+		mFeaturedMappersAdapter.setItems(response);
 	}
 
 	private void onFeaturedDealsRequestResponse(List<SearchResultPlace> response) {
-		if (mFeaturedDealsAdapter == null) {
-			mFeaturedDealsRecyclerView.setAdapter(
-					mFeaturedDealsAdapter = new FeaturedDealsAdapter(this, response));
-		} else {
-			mFeaturedDealsAdapter.setItems(response);
-		}
+		mFeaturedDealsAdapter.setItems(response);
 	}
 
-	private void onExploreDataTypeLoaded(ExploreDataType type) {
-		if (mExploreDataTypeSet != null) {
-			mExploreDataTypeSet.remove(type);
-			if (mExploreDataTypeSet.size() == 0) {
+	private void onCardTypeLoaded(CardType type) {
+		if (mCardTypeSet != null) {
+			mCardTypeSet.remove(type);
+			if (mCardTypeSet.size() == 0) {
 				new AnimatorHelper().start();
 			}
 		}
@@ -267,7 +251,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public void onLayoutChange(View v, int left, int top, int right, int bottom,
 								   int oldLeft, int oldTop, int oldRight, int oldBottom) {
 			if (v instanceof RecyclerView && ((RecyclerView) v).getChildCount() > 0) {
-				onExploreDataTypeLoaded((ExploreDataType) v.getTag());
+				onCardTypeLoaded((CardType) v.getTag());
 				v.removeOnLayoutChangeListener(this);
 			}
 		}
@@ -284,19 +268,18 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		protected Context mContext;
 		protected List<D> mItems;
-		protected ExploreDataType mExploreDataType;
+		protected CardType mCardType;
 		protected RecyclerView mRecyclerView;
 
 		protected boolean mHasViewAllCard = true;
 
-		public ExploreAdapter(Context context, List<D> items) {
+		public ExploreAdapter(Context context) {
 			super();
 			mContext = context;
-			init(context, items);
+			init(context);
 		}
 
-		protected void init(Context context, List<D> items) {
-			setItems(items);
+		protected void init(Context context) {
 		}
 
 		public List<D> getItems() {
@@ -307,7 +290,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			mItems = items;
 			if (mInInitialLayout) {
 				if (items == null || items.size() == 0) {
-					onExploreDataTypeLoaded(mExploreDataType);
+					onCardTypeLoaded(mCardType);
 				} else {
 					mRecyclerView.addOnLayoutChangeListener(mRecyclerView_OnLayoutChangeListener);
 				}
@@ -334,9 +317,14 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 
 		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			return (viewType == VIEW_TYPE_VIEW_ALL ?
-					new ExploreViewHolder(new ViewAllCardView(mContext)) : null);
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			if (viewType == VIEW_TYPE_VIEW_ALL) {
+				ViewAllCardView cardView = (new ViewAllCardView(mContext));
+				cardView.setIntent(getIntent());
+				return new ExploreViewHolder(cardView);
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -354,16 +342,16 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 	private class HeroAdapter extends ExploreAdapter<SearchResult> {
 
-		public HeroAdapter(Context context, List<SearchResult> items) {
-			super(context, items);
+		public HeroAdapter(Context context) {
+			super(context);
 		}
 
 		@Override
-		protected void init(Context context, List<SearchResult> items) {
-			mExploreDataType = ExploreDataType.HERO;
+		protected void init(Context context) {
+			super.init(context);
+			mCardType = CardType.HERO;
 			mRecyclerView = mHeroRecyclerView;
 			mHasViewAllCard = false;
-			super.init(context, items);
 		}
 
 		@Override
@@ -396,7 +384,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			} else {
 				cardView = (ExploreCardView) holder.itemView;
 			}
-			cardView.setTag(ExploreDataType.HERO);
+			cardView.setTag(CardType.HERO);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
 			return holder;
 		}
@@ -409,22 +397,22 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			} else if (holder.itemView instanceof PlaceHeroCardView) {
 				((PlaceHeroCardView) holder.itemView).setData((SearchResultPlace) mItems.get(position), mInInitialLayout);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_hero);
+				((ViewAllCardView) holder.itemView).setData(CardType.HERO);
 			}
 		}
 	}
 
 	private class FeaturedCollectionsAdapter extends ExploreAdapter<SearchResultCollection> {
 
-		public FeaturedCollectionsAdapter(Context context, List<SearchResultCollection> items) {
-			super(context, items);
+		public FeaturedCollectionsAdapter(Context context) {
+			super(context);
 		}
 
 		@Override
-		protected void init(Context context, List<SearchResultCollection> items) {
-			mExploreDataType = ExploreDataType.FEATURED_COLLECTIONS;
+		protected void init(Context context) {
+			super.init(context);
+			mCardType = CardType.FEATURED_COLLECTIONS;
 			mRecyclerView = mFeaturedCollectionsRecyclerView;
-			super.init(context, items);
 		}
 
 		@Override
@@ -437,7 +425,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			} else {
 				cardView = (ExploreCardView) holder.itemView;
 			}
-			cardView.setTag(ExploreDataType.FEATURED_COLLECTIONS);
+			cardView.setTag(CardType.FEATURED_COLLECTIONS);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
 			return holder;
 		}
@@ -448,22 +436,22 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			if (holder.itemView instanceof CollectionCardView) {
 				((CollectionCardView) holder.itemView).setData(mItems.get(position), mInInitialLayout);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_collections);
+				((ViewAllCardView) holder.itemView).setData(CardType.FEATURED_COLLECTIONS);
 			}
 		}
 	}
 
 	private class FeaturedMappersAdapter extends ExploreAdapter<User> {
 
-		public FeaturedMappersAdapter(Context context, List<User> items) {
-			super(context, items);
+		public FeaturedMappersAdapter(Context context) {
+			super(context);
 		}
 
 		@Override
-		protected void init(Context context, List<User> items) {
-			mExploreDataType = ExploreDataType.FEATURED_MAPPERS;
+		protected void init(Context context) {
+			super.init(context);
+			mCardType = CardType.FEATURED_MAPPERS;
 			mRecyclerView = mFeaturedMappersRecyclerView;
-			super.init(context, items);
 		}
 
 		@Override
@@ -476,7 +464,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			} else {
 				cardView = (ExploreCardView) holder.itemView;
 			}
-			cardView.setTag(ExploreDataType.FEATURED_MAPPERS);
+			cardView.setTag(CardType.FEATURED_MAPPERS);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
 			return holder;
 		}
@@ -487,22 +475,22 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			if (holder.itemView instanceof UserCardView) {
 				((UserCardView) holder.itemView).setData(mItems.get(position), mInInitialLayout);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_mappers);
+				((ViewAllCardView) holder.itemView).setData(CardType.FEATURED_MAPPERS);
 			}
 		}
 	}
 
 	private class FeaturedDealsAdapter extends ExploreAdapter<SearchResultPlace> {
 
-		public FeaturedDealsAdapter(Context context, List<SearchResultPlace> items) {
-			super(context, items);
+		public FeaturedDealsAdapter(Context context) {
+			super(context);
 		}
 
 		@Override
-		protected void init(Context context, List<SearchResultPlace> items) {
-			mExploreDataType = ExploreDataType.FEATURED_DEALS;
+		protected void init(Context context) {
+			super.init(context);
+			mCardType = CardType.FEATURED_DEALS;
 			mRecyclerView = mFeaturedDealsRecyclerView;
-			super.init(context, items);
 		}
 
 		@Override
@@ -515,7 +503,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			} else {
 				cardView = (ExploreCardView) holder.itemView;
 			}
-			cardView.setTag(ExploreDataType.FEATURED_DEALS);
+			cardView.setTag(CardType.FEATURED_DEALS);
 			mCardSizeHelper.updateCardLayoutParams(cardView);
 			return holder;
 		}
@@ -526,7 +514,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			if (holder.itemView instanceof DealCardView) {
 				((DealCardView) holder.itemView).setData(mItems.get(position), mInInitialLayout);
 			} else if (holder.itemView instanceof ViewAllCardView) {
-				((ViewAllCardView) holder.itemView).setData(R.string.card_view_all_featured_deals);
+				((ViewAllCardView) holder.itemView).setData(CardType.FEATURED_DEALS);
 			}
 		}
 	}
@@ -600,7 +588,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 
 		private void updateCardLayoutParams(ExploreCardView cardView) {
 			Rect rect;
-			ExploreDataType type = (ExploreDataType) cardView.getTag();
+			CardType type = (CardType) cardView.getTag();
 			if (type == null) {
 				return;
 			}
@@ -632,7 +620,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
 			if (w != oldw) {
 				final Rect cardRect;
-				ExploreDataType type = (ExploreDataType) v.getTag();
+				CardType type = (CardType) v.getTag();
 				switch (type) {
 					case HERO: {
 						mHeroDefaultCardSize = getCardSize(v, mDefaultCardsAcross); // Card size across for "default"
@@ -971,12 +959,5 @@ public class ExploreActivity extends TrackedActionBarActivity {
 			queue.add(featuredMappersRequest);
 			queue.add(featuredDealsRequest);
 		}
-	}
-
-	private static enum ExploreDataType {
-		HERO,
-		FEATURED_COLLECTIONS,
-		FEATURED_MAPPERS,
-		FEATURED_DEALS
 	}
 }

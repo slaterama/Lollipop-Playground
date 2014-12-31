@@ -101,6 +101,22 @@
 				android:label="@string/explore_activity_title">
 		</activity>
 
+		<activity
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllHeroActivity">
+		</activity>
+
+		<activity
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedCollectionsActivity">
+		</activity>
+
+		<activity
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedMappersActivity">
+		</activity>
+
+		<activity
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedDealsActivity">
+		</activity>
+
 		<!-- Detail activities -->
 
 		<activity
