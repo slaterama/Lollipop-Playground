@@ -102,19 +102,23 @@
 		</activity>
 
 		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllHeroActivity">
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllHeroActivity"
+				android:label="@string/explore_best_around_me">
 		</activity>
 
 		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedCollectionsActivity">
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedCollectionsActivity"
+				android:label="@string/explore_featured_collections">
 		</activity>
 
 		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedMappersActivity">
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedMappersActivity"
+				android:label="@string/explore_featured_mappers">
 		</activity>
 
 		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedDealsActivity">
+				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedDealsActivity"
+				android:label="@string/explore_featured_deals">
 		</activity>
 
 		<!-- Detail activities -->

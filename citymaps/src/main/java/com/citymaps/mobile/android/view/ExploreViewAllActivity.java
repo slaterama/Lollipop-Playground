@@ -22,6 +22,8 @@ public abstract class ExploreViewAllActivity<D> extends TrackedActionBarActivity
 
 	private static final String STATE_KEY_DATA_FRAGMENT = "dataFragment";
 
+	private static final int REQUEST_LIMIT = 25;
+
 	protected RecyclerView mRecyclerView;
 
 	protected DataFragment mDataFragment;
@@ -56,7 +58,6 @@ public abstract class ExploreViewAllActivity<D> extends TrackedActionBarActivity
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			setTitle(R.string.explore_best_around_me);
 		}
 
 		@Override
@@ -69,7 +70,6 @@ public abstract class ExploreViewAllActivity<D> extends TrackedActionBarActivity
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			setTitle(R.string.explore_featured_collections);
 		}
 
 		@Override
@@ -82,7 +82,6 @@ public abstract class ExploreViewAllActivity<D> extends TrackedActionBarActivity
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			setTitle(R.string.explore_featured_mappers);
 		}
 
 		@Override
@@ -95,7 +94,6 @@ public abstract class ExploreViewAllActivity<D> extends TrackedActionBarActivity
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			setTitle(R.string.explore_featured_deals);
 		}
 
 		@Override
