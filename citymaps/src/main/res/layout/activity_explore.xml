@@ -4,7 +4,7 @@
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
-			 tools:context="com.citymaps.mobile.android.view.ExploreActivityOldest">
+			 tools:context="com.citymaps.mobile.android.view.ExploreActivity">
 
 	<com.citymaps.mobile.android.widget.ObservableScrollView
 			android:id="@+id/explore_scrollview"
@@ -35,14 +35,14 @@
 						android:layout_weight="1"
 						android:text="@string/explore_best_around_me" />
 
-				<!--
 				<Button
 						android:id="@+id/explore_hero_view_all_button"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						style="?android:borderlessButtonStyle"
-						android:text="@string/explore_view_all" />
-				-->
+						android:text="@string/explore_view_all"
+						android:visibility="gone"
+						android:onClick="onViewAllClick"/>
 
 			</LinearLayout>
 
@@ -131,7 +131,8 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						style="?android:borderlessButtonStyle"
-						android:text="@string/explore_view_all" />
+						android:text="@string/explore_view_all"
+						android:onClick="onViewAllClick"/>
 
 			</LinearLayout>
 
@@ -196,7 +197,8 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						style="?android:borderlessButtonStyle"
-						android:text="@string/explore_view_all" />
+						android:text="@string/explore_view_all"
+						android:onClick="onViewAllClick"/>
 
 			</LinearLayout>
 
@@ -259,7 +261,8 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						style="?android:borderlessButtonStyle"
-						android:text="@string/explore_view_all" />
+						android:text="@string/explore_view_all"
+						android:onClick="onViewAllClick"/>
 
 			</LinearLayout>
 

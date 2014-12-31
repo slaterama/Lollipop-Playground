@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
@@ -123,6 +124,16 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		mFeaturedMappersRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mFeaturedDealsRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 
+		Button heroViewAllButton = (Button) findViewById(R.id.explore_hero_view_all_button);
+		Button featuredCollectionsViewAllButton = (Button) findViewById(R.id.explore_featured_collections_view_all_button);
+		Button featuredMappersViewAllButton = (Button) findViewById(R.id.explore_featured_mappers_view_all_button);
+		Button featuredDealsViewAllButton = (Button) findViewById(R.id.explore_featured_deals_view_all_button);
+
+		heroViewAllButton.setTag(CardType.HERO);
+		featuredCollectionsViewAllButton.setTag(CardType.FEATURED_COLLECTIONS);
+		featuredMappersViewAllButton.setTag(CardType.FEATURED_MAPPERS);
+		featuredDealsViewAllButton.setTag(CardType.FEATURED_DEALS);
+
 		// Set up data fragment
 
 		if (savedInstanceState == null) {
@@ -192,6 +203,16 @@ public class ExploreActivity extends TrackedActionBarActivity {
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void onViewAllClick(View v) {
+		Intent intent = getIntent();
+		Intent viewAllIntent = new Intent(this, ExploreViewAllActivity.class);
+		IntentUtils.putCardType(viewAllIntent, (CardType) v.getTag());
+		IntentUtils.putMapLocation(viewAllIntent, IntentUtils.getMapLocation(intent));
+		IntentUtils.putMapRadius(viewAllIntent, IntentUtils.getMapRadius(intent, MapUtils.DEFAULT_SEARCH_RADIUS));
+		IntentUtils.putMapZoom(viewAllIntent, IntentUtils.getMapZoom(intent, MapUtils.DEFAULT_SEARCH_ZOOM));
+		this.startActivity(viewAllIntent);
 	}
 
 	protected void updateHeroLabel() {

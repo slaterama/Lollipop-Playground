@@ -94,6 +94,8 @@ public class IntentUtils {
 
 	public static final String EXTRA_MAP_ZOOM = makeExtra("MAP_ZOOM");
 
+	public static final String EXTRA_SIZE = makeExtra("SIZE");
+
 	/**
 	 * Whether the app is currently in "startup mode" (i.e. walking the user through
 	 * a series of initial screens including LaunchActivity, TourActivity, etc.)
@@ -156,6 +158,14 @@ public class IntentUtils {
 
 	public static int getMapZoom(Intent intent, int defaultValue) {
 		return intent.getIntExtra(EXTRA_MAP_ZOOM, defaultValue);
+	}
+
+	public static void putSize(Intent intent, int size) {
+		intent.putExtra(EXTRA_SIZE, size);
+	}
+
+	public static int getSize(Intent intent, int defaultValue) {
+		return intent.getIntExtra(EXTRA_SIZE, defaultValue);
 	}
 
 	public static void putStartupMode(Intent intent, boolean startupMode) {

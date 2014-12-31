@@ -46,7 +46,6 @@ public abstract class ExploreCardView<D> extends CardView
 		init(context);
 	}
 
-	@SuppressLint("UseSparseArrays")
 	protected void init(Context context) {
 		mImageLoader = VolleyManager.getInstance(context).getImageLoader();
 		mImageContainers = new HashSet<ImageLoader.ImageContainer>();

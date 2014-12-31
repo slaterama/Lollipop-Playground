@@ -42,6 +42,12 @@
 		<item name="actionBarStyle">@style/Widget.AppBar.Translucent</item>
 	</style>
 
+	<!-- Base application theme with overlay -->
+
+	<style name="AppTheme.Overlay">
+		<item name="windowActionBarOverlay">true</item>
+	</style>
+
 	<!-- Base application theme with translucent app bar and overlay -->
 
 	<style name="AppTheme.TranslucentAppBar.Overlay">

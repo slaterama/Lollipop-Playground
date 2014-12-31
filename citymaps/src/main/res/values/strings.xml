@@ -102,6 +102,20 @@
 
 	<!--
 	================================================================================
+	Explore "view all" strings
+	================================================================================
+	-->
+
+	<string name="view_all_header_hero_title2">Best Around</string>
+	<string name="view_all_header_featured_title1">Featured</string>
+	<string name="view_all_header_featured_collections_title2">Collections</string>
+	<string name="view_all_header_featured_mappers_title2">Mappers</string>
+	<string name="view_all_header_featured_deals_title2">Deals</string>
+
+	<string name="view_all_filter_everything">Everything</string>
+
+	<!--
+	================================================================================
 	Preferences strings
 	================================================================================
 	-->

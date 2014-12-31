@@ -102,23 +102,8 @@
 		</activity>
 
 		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllHeroActivity"
-				android:label="@string/explore_best_around_me">
-		</activity>
-
-		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedCollectionsActivity"
-				android:label="@string/explore_featured_collections">
-		</activity>
-
-		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedMappersActivity"
-				android:label="@string/explore_featured_mappers">
-		</activity>
-
-		<activity
-				android:name=".view.ExploreViewAllActivity$ExploreViewAllFeaturedDealsActivity"
-				android:label="@string/explore_featured_deals">
+				android:name=".view.ExploreViewAllActivity"
+				android:theme="@style/AppTheme.Overlay">
 		</activity>
 
 		<!-- Detail activities -->
@@ -172,19 +157,6 @@
 		</activity>
 
 		<!-- Preference activities -->
-
-		<!--
-		<activity
-				android:name="com.citymaps.mobile.android.view.settings.PreferencesActivity"
-				android:label="@string/preferences_activity_title"
-				android:parentActivityName="com.citymaps.mobile.android.view.MainActivity"
-				tools:ignore="UnusedAttribute">
-
-			<meta-data
-					android:name="android.support.PARENT_ACTIVITY"
-					android:value=".view.MainActivity" />
-		</activity>
-		-->
 
 		<activity
 				android:name="com.citymaps.mobile.android.view.preferences.MainPreferencesActivity"

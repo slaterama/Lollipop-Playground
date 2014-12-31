@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:citymaps="http://schemas.android.com/apk/res-auto"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+	<com.citymaps.mobile.android.widget.RatioFrameLayout
+			android:id="@+id/explore_view_all_header_ratioframelayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			citymaps:ratio="1.77777778"
+			android:background="@color/color_primary">
+
+		<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="center"
+				android:orientation="vertical">
+
+			<TextView
+					android:id="@+id/explore_view_all_title1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="center_horizontal"
+					tools:text="Featured"
+					android:textAppearance="?android:textAppearanceSmallInverse" />
+
+			<TextView
+					android:id="@+id/explore_view_all_title2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="center_horizontal"
+					tools:text="Collections"
+					android:textAppearance="?android:textAppearanceLargeInverse" />
+
+		</LinearLayout>
+
+	</com.citymaps.mobile.android.widget.RatioFrameLayout>
+
+	<Button
+			android:id="@+id/explore_view_all_header_filter_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_marginTop="@dimen/component_baseline_grid"
+			android:text="@string/view_all_filter_everything"/>
+
+</LinearLayout>

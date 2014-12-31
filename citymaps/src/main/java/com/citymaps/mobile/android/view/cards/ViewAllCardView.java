@@ -83,22 +83,8 @@ public class ViewAllCardView extends ExploreCardView<CardType> {
 	@Override
 	public void onClick(View v) {
 		Context context = getContext();
-		final Class clazz;
-		switch (mCardType) {
-			case FEATURED_COLLECTIONS:
-				clazz = ExploreViewAllActivity.ExploreViewAllFeaturedCollectionsActivity.class;
-				break;
-			case FEATURED_MAPPERS:
-				clazz = ExploreViewAllActivity.ExploreViewAllFeaturedMappersActivity.class;
-				break;
-			case FEATURED_DEALS:
-				clazz = ExploreViewAllActivity.ExploreViewAllFeaturedDealsActivity.class;
-				break;
-			case HERO:
-			default:
-				clazz = ExploreViewAllActivity.ExploreViewAllHeroActivity.class;
-		}
-		Intent intent = new Intent(context, clazz);
+		Intent intent = new Intent(context, ExploreViewAllActivity.class);
+		IntentUtils.putCardType(intent, mCardType);
 		IntentUtils.putMapLocation(intent, IntentUtils.getMapLocation(mIntent));
 		IntentUtils.putMapRadius(intent, IntentUtils.getMapRadius(mIntent, MapUtils.DEFAULT_SEARCH_RADIUS));
 		IntentUtils.putMapZoom(intent, IntentUtils.getMapZoom(mIntent, MapUtils.DEFAULT_SEARCH_ZOOM));
