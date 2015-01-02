@@ -3,8 +3,7 @@ package com.citymaps.mobile.android.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -15,14 +14,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.citymaps.mobile.android.R;
-import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.app.VolleyManager;
 import com.citymaps.mobile.android.map.ParcelableLonLat;
 import com.citymaps.mobile.android.model.SearchResult;
@@ -31,12 +28,9 @@ import com.citymaps.mobile.android.model.SearchResultPlace;
 import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.SearchResultsRequest;
 import com.citymaps.mobile.android.model.request.UsersRequest;
-import com.citymaps.mobile.android.util.IntentUtils;
-import com.citymaps.mobile.android.util.LogEx;
-import com.citymaps.mobile.android.util.MapUtils;
-import com.citymaps.mobile.android.util.ResourcesUtils;
+import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.view.cards.CardType;
-import com.citymaps.mobile.android.widget.RatioFrameLayout;
+import com.citymaps.mobile.android.widget.RatioCardView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +88,10 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	protected ActionBar mActionBar;
 	protected float mActionBarInitialElevation;
 
+	protected Drawable mActionBarBackgroundDrawable;
 	protected View mActionBarView;
+	protected TextView mActionBarTitleView;
+	protected AlphaForegroundColorSpan mAlphaForegroundColorSpan;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -107,9 +104,8 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 					"ExploreViewAllFragment must be attached to an Activity of type ActionBarActivity");
 		}
 
-		View decorView = activity.getWindow().getDecorView();
-		int resId = getResources().getIdentifier("action_bar", "id", activity.getPackageName());
-		mActionBarView = decorView.findViewById(resId);
+		mActionBarView = ActivityUtils.getActionBarView(activity);
+		mActionBarTitleView = ActivityUtils.getActionBarTitleView(activity);
 	}
 
 	@Override
@@ -117,7 +113,11 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		mActionBar.setElevation(0.0f);
-		mActionBarView.setAlpha(0.0f);
+//		mActionBarView.setAlpha(0.0f);
+		mActionBarBackgroundDrawable = getResources().getDrawable(R.drawable.ab_background);
+		mActionBarBackgroundDrawable.setAlpha(0);
+		mActionBar.setBackgroundDrawable(mActionBarBackgroundDrawable);
+		mActionBarTitleView.setAlpha(0.0f);
 
 		Bundle args = getArguments();
 		if (args != null) {
@@ -238,7 +238,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	public static class HeaderViewHolder extends ViewHolder {
 		public LinearLayout mLinearLayout;
-		public RatioFrameLayout mFrameLayout;
+		public RatioCardView mHeaderBackground;
 		public TextView mTitleView1;
 		public TextView mTitleView2;
 		public Button mFilterButton;
@@ -246,10 +246,17 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		public HeaderViewHolder(LinearLayout itemView) {
 			super(itemView);
 			mLinearLayout = itemView;
-			mFrameLayout = (RatioFrameLayout) itemView.findViewById(R.id.explore_view_all_header_ratioframelayout);
+			mHeaderBackground = (RatioCardView) itemView.findViewById(R.id.explore_view_all_header_ratiocardview);
 			mTitleView1 = (TextView) itemView.findViewById(R.id.explore_view_all_title1);
 			mTitleView2 = (TextView) itemView.findViewById(R.id.explore_view_all_title2);
 			mFilterButton = (Button) itemView.findViewById(R.id.explore_view_all_header_filter_button);
+
+			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mHeaderBackground.getLayoutParams();
+			int paddingLeft = mHeaderBackground.getPaddingLeft();
+			int paddingTop = mHeaderBackground.getPaddingTop();
+			int paddingRight = mHeaderBackground.getPaddingRight();
+			LogEx.d(String.format("lp=%s, paddingLeft=%d, paddingTop=%d, paddingRight=%d", lp, paddingLeft, paddingTop, paddingRight));
+			lp.setMargins(-paddingLeft, -paddingTop, -paddingRight, lp.bottomMargin);
 		}
 	}
 

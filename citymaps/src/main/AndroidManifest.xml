@@ -103,7 +103,7 @@
 
 		<activity
 				android:name=".view.ExploreViewAllActivity"
-				android:theme="@style/AppTheme.Overlay">
+				android:theme="@style/AppTheme.TransparentAppBar.Overlay">
 		</activity>
 
 		<!-- Detail activities -->

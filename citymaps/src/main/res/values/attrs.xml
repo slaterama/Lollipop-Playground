@@ -46,6 +46,11 @@
 		<attr name="baseOnSmallestWidth" />
 	</declare-styleable>
 
+	<declare-styleable name="RatioCardView">
+		<attr name="ratio" />
+		<attr name="baseOnSmallestWidth" />
+	</declare-styleable>
+
 	<declare-styleable name="SwitchPreferenceEx">
 		<attr name="checkOnClick" format="boolean" />
 		<attr name="secondaryIcon" format="reference" />

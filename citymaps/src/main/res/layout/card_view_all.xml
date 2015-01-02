@@ -11,7 +11,7 @@
 			android:layout_gravity="center"
 			android:padding="@dimen/component_baseline_grid"
 			android:gravity="center_horizontal"
-			tools:text="@string/card_view_all_best_around"
+			tools:text="@string/card_view_all_hero"
 			android:textAppearance="?android:textAppearanceMediumInverse"
 			android:textColor="@android:color/white"
 			android:textStyle="bold" />

@@ -42,6 +42,14 @@
 		<item name="actionBarStyle">@style/Widget.AppBar.Translucent</item>
 	</style>
 
+	<!-- Base application theme with transparent app bar -->
+	<!-- Inspired by "Pushing the ActionBar to the Next Level" by Cyril Mottier,
+	     http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/ -->
+
+	<style name="AppTheme.TransparentAppBar">
+		<item name="actionBarStyle">@style/Widget.AppBar.Transparent</item>
+	</style>
+
 	<!-- Base application theme with overlay -->
 
 	<style name="AppTheme.Overlay">
@@ -51,6 +59,12 @@
 	<!-- Base application theme with translucent app bar and overlay -->
 
 	<style name="AppTheme.TranslucentAppBar.Overlay">
+		<item name="windowActionBarOverlay">true</item>
+	</style>
+
+	<!-- Base application theme with transparent app bar and overlay -->
+
+	<style name="AppTheme.TransparentAppBar.Overlay">
 		<item name="windowActionBarOverlay">true</item>
 	</style>
 

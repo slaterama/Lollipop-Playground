@@ -19,6 +19,7 @@
 	<dimen name="state_pressed_elevation">8dp</dimen>
 
 	<dimen name="default_elevation">12dp</dimen>
+	<dimen name="negative_default_elevation">-12dp</dimen>
 
 	<dimen name="compat_shadow_offset">12dp</dimen>
 
