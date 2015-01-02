@@ -13,6 +13,7 @@
 			android:layout_height="wrap_content"
 			app:ratio="1.77777778"
 			app:cardCornerRadius="0dp"
+			app:baseOnSmallestWidth="true"
 			app:cardElevation="@dimen/default_elevation"
 			app:cardMaxElevation="@dimen/default_elevation"
 			app:cardUseCompatPadding="true"

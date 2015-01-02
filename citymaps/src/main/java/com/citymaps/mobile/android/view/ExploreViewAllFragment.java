@@ -34,6 +34,7 @@ import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.view.cards.CardType;
 import com.citymaps.mobile.android.view.cards.CollectionCardView;
 import com.citymaps.mobile.android.view.cards.ExploreCardView;
+import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RatioCardView;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
@@ -95,10 +96,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	protected ActionBarActivity mActivity;
 	protected ActionBar mActionBar;
 	protected float mActionBarInitialElevation;
-
 	protected Drawable mActionBarBackgroundDrawable;
 	protected View mActionBarView;
 	protected TextView mActionBarTitleView;
+
+	protected int mActionBarHeight;
+	protected int mHeaderHeight;
+
+	protected boolean mActionBarShowing = false;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -111,8 +116,6 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		}
 
 		mCardSizeHelper = new CardSizeHelper(activity, false);
-		mActionBarView = ActivityUtils.getActionBarView(activity);
-		mActionBarTitleView = ActivityUtils.getActionBarTitleView(activity);
 	}
 
 	@Override
@@ -146,11 +149,15 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		// Set up for transparent ActionBar logic
 		mActionBar = mActivity.getSupportActionBar();
+		mActionBarHeight = ActivityUtils.getActionBarHeight(mActivity);
 		mActionBarInitialElevation = mActionBar.getElevation();
 		mActionBar.setElevation(0.0f);
 		mActionBarBackgroundDrawable = getResources().getDrawable(R.drawable.ab_background);
 		mActionBarBackgroundDrawable.setAlpha(0);
 		mActionBar.setBackgroundDrawable(mActionBarBackgroundDrawable);
+		mActionBarShowing = false;
+		mActionBarView = ActivityUtils.getActionBarView(mActivity);
+		mActionBarTitleView = ActivityUtils.getActionBarTitleView(mActivity);
 		mActionBarTitleView.setAlpha(0.0f);
 	}
 
@@ -205,6 +212,20 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	protected abstract void onDataReturned(int size);
 
+	protected void showActionBar() {
+		if (!mActionBarShowing) {
+			LogEx.d(); // TODO
+			mActionBarShowing = true;
+		}
+	}
+
+	protected void hideActionBar() {
+		if (mActionBarShowing) {
+			LogEx.d(); // TODO
+			mActionBarShowing = false;
+		}
+	}
+
 	protected RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
 		protected int mScrollY = 0;
 
@@ -212,7 +233,16 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 			super.onScrolled(recyclerView, dx, dy);
 			mScrollY += dy;
-			LogEx.d(String.format("mScrollY=%d", mScrollY));
+			int target = mHeaderHeight - mActionBarHeight;
+			if (mScrollY < target) {
+				if (!mActionBarShowing) {
+					showActionBar();
+				}
+			} else {
+				if (mActionBarShowing) {
+					hideActionBar();
+				}
+			}
 		}
 	};
 
@@ -259,7 +289,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 				StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) header.getLayoutParams();
 				layoutParams.setFullSpan(true);
 				header.setLayoutParams(layoutParams);
-				return new HeaderViewHolder(header);
+				final HeaderViewHolder holder = new HeaderViewHolder(header);
+				holder.mHeaderBackground.setOnSizeChangedListener(new OnSizeChangedListener() {
+					@Override
+					public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
+						mHeaderHeight = holder.mHeaderBackground.getPerceivedHeight();
+					}
+				});
+				return holder;
 			} else {
 				return null;
 			}

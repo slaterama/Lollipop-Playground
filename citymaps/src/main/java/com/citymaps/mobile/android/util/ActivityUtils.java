@@ -1,6 +1,7 @@
 package com.citymaps.mobile.android.util;
 
 import android.app.Activity;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -95,6 +96,15 @@ public class ActivityUtils {
 			}
 		}
 		return actionBarTitleView;
+	}
+
+	public static int getActionBarHeight(Activity activity) {
+		int actionBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+			actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+		}
+		return actionBarHeight;
 	}
 
 	private ActivityUtils() {

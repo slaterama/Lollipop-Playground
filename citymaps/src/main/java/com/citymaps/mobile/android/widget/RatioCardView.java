@@ -18,6 +18,8 @@ public class RatioCardView extends CardView {
 
 	private DisplayMetrics mDisplayMetrics;
 
+	private OnSizeChangedListener mOnSizeChangedListener;
+
 	public RatioCardView(Context context) {
 		super(context);
 		init(context, null, 0);
@@ -45,6 +47,24 @@ public class RatioCardView extends CardView {
 		Display display = manager.getDefaultDisplay();
 		mDisplayMetrics = new DisplayMetrics();
 		display.getMetrics(mDisplayMetrics);
+	}
+
+	public int getPerceivedWidth() {
+		int width = getWidth();
+		if (width == 0) {
+			return 0;
+		} else {
+			return width - (getUseCompatPadding() ? getPaddingLeft() + getPaddingRight() : 0);
+		}
+	}
+
+	public int getPerceivedHeight() {
+		int height = getHeight();
+		if (height == 0) {
+			return 0;
+		} else {
+			return height - (getUseCompatPadding() ? getPaddingTop() + getPaddingBottom() : 0);
+		}
 	}
 
 	@Override
@@ -81,10 +101,10 @@ public class RatioCardView extends CardView {
 				if (Math.abs(actualAspect - mRatio) > 0.0000001) {
 
 					boolean done = false;
-					int compatPadding = (getUseCompatPadding() ? (int) (2 * Math.max(getCardElevation(), getMaxCardElevation())) : 0);
 
 					// Try adjusting width to be proportional to height
 					if (resizeWidth) {
+						int compatPadding = (getUseCompatPadding() ? getPaddingTop() + getPaddingBottom() : 0);
 						int perceivedHeight = measuredHeight - compatPadding;
 						int perceivedWidth = Math.max((int) (perceivedHeight * mRatio), getSuggestedMinimumWidth());
 						int newWidth = perceivedWidth + compatPadding;
@@ -112,6 +132,7 @@ public class RatioCardView extends CardView {
 							}
 						}
 
+						int compatPadding = (getUseCompatPadding() ? getPaddingLeft() + getPaddingRight() : 0);
 						int perceivedWidth = widthToUse - compatPadding;
 						int perceivedHeight = Math.max((int) (perceivedWidth / mRatio), getSuggestedMinimumHeight());
 						int newHeight = perceivedHeight + compatPadding;
@@ -166,5 +187,17 @@ public class RatioCardView extends CardView {
 	public void setRatio(float ratio) {
 		mRatio = Math.max(ratio, 0.0f);
 		forceLayout();
+	}
+
+	public void setOnSizeChangedListener(OnSizeChangedListener onSizeChangedListener) {
+		mOnSizeChangedListener = onSizeChangedListener;
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		if (mOnSizeChangedListener != null) {
+			mOnSizeChangedListener.onSizeChanged(this, w, h, oldw, oldh);
+		}
 	}
 }
