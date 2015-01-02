@@ -167,6 +167,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL));
 		mRecyclerView.setAdapter(mAdapter = newAdapter(getActivity()));
 		mRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
+		mRecyclerView.setOnScrollListener(mOnScrollListener);
 	}
 
 	@Override
@@ -203,6 +204,17 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	protected abstract ExploreViewAllAdapter newAdapter(Context context);
 
 	protected abstract void onDataReturned(int size);
+
+	protected RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+		protected int mScrollY = 0;
+
+		@Override
+		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+			super.onScrolled(recyclerView, dx, dy);
+			mScrollY += dy;
+			LogEx.d(String.format("mScrollY=%d", mScrollY));
+		}
+	};
 
 	protected abstract class ExploreViewAllAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		protected static final int HEADER_VIEW_TYPE = -1;
@@ -401,6 +413,8 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 					HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
 					headerViewHolder.mTitleView1.setText(R.string.view_all_header_featured_title1);
 					headerViewHolder.mTitleView2.setText(R.string.view_all_header_featured_collections_title2);
+				} else {
+					((CollectionCardView) holder.itemView).setData(mItems.get(position));
 				}
 			}
 		}
