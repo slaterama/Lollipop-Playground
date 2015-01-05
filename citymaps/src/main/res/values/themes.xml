@@ -53,19 +53,23 @@
 	<!-- Base application theme with overlay -->
 
 	<style name="AppTheme.Overlay">
+		<item name="android:windowActionBarOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
 	</style>
 
 	<!-- Base application theme with translucent app bar and overlay -->
 
 	<style name="AppTheme.TranslucentAppBar.Overlay">
+		<item name="android:windowActionBarOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
 	</style>
 
 	<!-- Base application theme with transparent app bar and overlay -->
 
 	<style name="AppTheme.TransparentAppBar.Overlay">
+		<item name="android:windowActionBarOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
+		<item name="android:windowContentOverlay">@android:color/transparent</item>
 	</style>
 
 </resources>

@@ -1,9 +1,14 @@
 package com.citymaps.mobile.android.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
@@ -17,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.Response;
@@ -97,7 +103,6 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	protected ActionBar mActionBar;
 	protected float mActionBarInitialElevation;
 	protected Drawable mActionBarBackgroundDrawable;
-	protected View mActionBarView;
 	protected TextView mActionBarTitleView;
 
 	protected int mActionBarHeight;
@@ -130,8 +135,11 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 			mZoom = args.getInt(ARG_MAP_ZOOM);
 		}
 
+		mAdapter = newAdapter(mActivity);
+
 		if (savedInstanceState != null) {
 			mDataFragment = (DataFragment) getFragmentManager().getFragment(savedInstanceState, STATE_KEY_DATA_FRAGMENT);
+			onDataReturned(-1);
 		}
 		if (mDataFragment == null) {
 			mDataFragment = DataFragment.newInstance(args);
@@ -156,7 +164,6 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		mActionBarBackgroundDrawable.setAlpha(0);
 		mActionBar.setBackgroundDrawable(mActionBarBackgroundDrawable);
 		mActionBarShowing = false;
-		mActionBarView = ActivityUtils.getActionBarView(mActivity);
 		mActionBarTitleView = ActivityUtils.getActionBarTitleView(mActivity);
 		mActionBarTitleView.setAlpha(0.0f);
 	}
@@ -172,7 +179,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		mRecyclerView = (RecyclerViewEx) view.findViewById(R.id.recyclerview);
 		mRecyclerView.setTag(mCardType);
 		mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL));
-		mRecyclerView.setAdapter(mAdapter = newAdapter(getActivity()));
+		mRecyclerView.setAdapter(mAdapter);
 		mRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mRecyclerView.setOnScrollListener(mOnScrollListener);
 	}
@@ -212,16 +219,47 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	protected abstract void onDataReturned(int size);
 
+	private HeaderViewHolder getHeaderViewHolder() {
+		if (mRecyclerView.getChildCount() > 0) {
+			View child = mRecyclerView.getChildAt(0);
+			Object tag = child.getTag();
+			if (tag instanceof HeaderViewHolder) {
+				return (HeaderViewHolder) tag;
+			}
+		}
+		return null;
+	}
+
 	protected void showActionBar() {
 		if (!mActionBarShowing) {
-			LogEx.d(); // TODO
+			mActionBarBackgroundDrawable.setAlpha(255);
+			mActionBar.setElevation(mActionBarInitialElevation);
+			HeaderViewHolder holder = getHeaderViewHolder();
+			if (holder != null) {
+				holder.mHeaderBackground.setCardElevation(0.0f);
+			}
+
+			ObjectAnimator animator = ObjectAnimator.ofFloat(mActionBarTitleView, "alpha", 0.0f, 1.0f);
+			animator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+			animator.start();
+
 			mActionBarShowing = true;
 		}
 	}
 
 	protected void hideActionBar() {
 		if (mActionBarShowing) {
-			LogEx.d(); // TODO
+			mActionBarBackgroundDrawable.setAlpha(0);
+			mActionBar.setElevation(0);
+			HeaderViewHolder holder = getHeaderViewHolder();
+			if (holder != null) {
+				holder.mHeaderBackground.setCardElevation(mActionBarInitialElevation);
+			}
+
+			ObjectAnimator animator = ObjectAnimator.ofFloat(mActionBarTitleView, "alpha", 1.0f, 0.0f);
+			animator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+			animator.start();
+
 			mActionBarShowing = false;
 		}
 	}
@@ -234,7 +272,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 			super.onScrolled(recyclerView, dx, dy);
 			mScrollY += dy;
 			int target = mHeaderHeight - mActionBarHeight;
-			if (mScrollY < target) {
+			if (mScrollY > target) {
 				if (!mActionBarShowing) {
 					showActionBar();
 				}
@@ -248,6 +286,8 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	protected abstract class ExploreViewAllAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		protected static final int HEADER_VIEW_TYPE = -1;
+
+		protected static final int HEADER_VIEW_COUNT = 1;
 
 		protected Context mContext;
 		protected LayoutInflater mInflater;
@@ -274,7 +314,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		@Override
 		public int getItemCount() {
-			return (mItems == null ? 0 : mItems.size()) + 1;
+			return (mItems == null ? 0 : mItems.size()) + HEADER_VIEW_COUNT;
 		}
 
 		@Override
@@ -285,17 +325,18 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			if (viewType == HEADER_VIEW_TYPE) {
-				LinearLayout header = (LinearLayout) mInflater.inflate(R.layout.explore_view_all_header, parent, false);
-				StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) header.getLayoutParams();
+				View headerView = mInflater.inflate(R.layout.explore_view_all_header, parent, false);
+				StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) headerView.getLayoutParams();
 				layoutParams.setFullSpan(true);
-				header.setLayoutParams(layoutParams);
-				final HeaderViewHolder holder = new HeaderViewHolder(header);
+				headerView.setLayoutParams(layoutParams);
+				final HeaderViewHolder holder = new HeaderViewHolder(headerView, mActionBarInitialElevation);
 				holder.mHeaderBackground.setOnSizeChangedListener(new OnSizeChangedListener() {
 					@Override
 					public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
 						mHeaderHeight = holder.mHeaderBackground.getPerceivedHeight();
 					}
 				});
+				headerView.setTag(holder);
 				return holder;
 			} else {
 				return null;
@@ -324,10 +365,11 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		public TextView mTitleView2;
 		public Button mFilterButton;
 
-		public HeaderViewHolder(LinearLayout itemView) {
+		public HeaderViewHolder(View itemView, float elevation) {
 			super(itemView);
-			mLinearLayout = itemView;
+			mLinearLayout = (LinearLayout) itemView.findViewById(R.id.explore_view_all_header);
 			mHeaderBackground = (RatioCardView) itemView.findViewById(R.id.explore_view_all_header_ratiocardview);
+			mHeaderBackground.setCardElevation(elevation);
 			mTitleView1 = (TextView) itemView.findViewById(R.id.explore_view_all_title1);
 			mTitleView2 = (TextView) itemView.findViewById(R.id.explore_view_all_title2);
 			mFilterButton = (Button) itemView.findViewById(R.id.explore_view_all_header_filter_button);
@@ -375,7 +417,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 				if (position == 0) {
 					return HEADER_VIEW_TYPE;
 				} else {
-					SearchResult searchResult = mItems.get(position);
+					SearchResult searchResult = mItems.get(position - HEADER_VIEW_COUNT);
 					return searchResult.getType().value();
 				}
 			}
@@ -451,7 +493,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 					headerViewHolder.mTitleView1.setText(R.string.view_all_header_featured_title1);
 					headerViewHolder.mTitleView2.setText(R.string.view_all_header_featured_collections_title2);
 				} else {
-					((CollectionCardView) holder.itemView).setData(mItems.get(position));
+					((CollectionCardView) holder.itemView).setData(mItems.get(position - HEADER_VIEW_COUNT));
 				}
 			}
 		}

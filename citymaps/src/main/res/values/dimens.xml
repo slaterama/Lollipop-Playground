@@ -6,6 +6,8 @@
 
 	<dimen name="signin_authenticate_button_width">290dp</dimen>
 
+	<item name="default_header_ratio" format="float" type="dimen">1.77777778</item>
+
 	<!--
 	================================================================================
 	FloatingActionButton dimensions

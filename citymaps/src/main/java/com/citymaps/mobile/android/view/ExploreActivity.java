@@ -628,7 +628,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				}
 				size += childCount;
 			}
-			final List<ExploreCardView> cardViews = new ArrayList<ExploreCardView>(size);
+//			final List<ExploreCardView> cardViews = new ArrayList<ExploreCardView>(size);
 			List<Animator> cardViewAnimators = new ArrayList<Animator>(size);
 			int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 			int totalOffset = 0;
@@ -637,7 +637,7 @@ public class ExploreActivity extends TrackedActionBarActivity {
 				int childCount = recyclerView.getChildCount();
 				for (int i = 0; i < childCount; i++) {
 					final ExploreCardView cardView = (ExploreCardView) recyclerView.getChildAt(i);
-					cardViews.add(cardView);
+//					cardViews.add(cardView);
 					float to = cardView.getX();
 					float from = to + width;
 					ObjectAnimator animator = ObjectAnimator.ofFloat(cardView, "x", from, to);
