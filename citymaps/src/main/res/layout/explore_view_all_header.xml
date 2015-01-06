@@ -2,14 +2,13 @@
 <LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:app="http://schemas.android.com/apk/res-auto"
-		xmlns:tools="http://schemas.android.com/tools"
 		android:id="@+id/explore_view_all_header"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical">
 
 	<com.citymaps.mobile.android.widget.RatioCardView
-			android:id="@+id/explore_view_all_header_ratiocardview"
+			android:id="@+id/explore_view_all_header_card"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			app:ratio="@dimen/default_header_ratio"
@@ -18,39 +17,14 @@
 			app:cardElevation="@dimen/default_elevation"
 			app:cardMaxElevation="@dimen/default_elevation"
 			app:cardUseCompatPadding="true"
-			app:cardBackgroundColor="@color/color_primary">
-
-		<LinearLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center"
-				android:gravity="center"
-				android:orientation="vertical">
-
-			<TextView
-					android:id="@+id/explore_view_all_title1"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:gravity="center_horizontal"
-					tools:text="Featured"
-					android:textAppearance="?android:textAppearanceSmallInverse" />
-
-			<TextView
-					android:id="@+id/explore_view_all_title2"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:gravity="center_horizontal"
-					tools:text="Collections"
-					android:textAppearance="?android:textAppearanceLargeInverse" />
-
-		</LinearLayout>
-
-	</com.citymaps.mobile.android.widget.RatioCardView>
+			app:cardBackgroundColor="@color/color_primary"
+			android:visibility="invisible" />
 
 	<Button
 			android:id="@+id/explore_view_all_header_filter_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/component_baseline_grid"
 			android:layout_gravity="center"
 			android:text="@string/view_all_filter_everything"/>
 

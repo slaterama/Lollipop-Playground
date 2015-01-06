@@ -1,14 +1,10 @@
 package com.citymaps.mobile.android.view;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MarginLayoutParamsCompat;
@@ -22,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.Response;
@@ -37,9 +32,7 @@ import com.citymaps.mobile.android.model.User;
 import com.citymaps.mobile.android.model.request.SearchResultsRequest;
 import com.citymaps.mobile.android.model.request.UsersRequest;
 import com.citymaps.mobile.android.util.*;
-import com.citymaps.mobile.android.view.cards.CardType;
-import com.citymaps.mobile.android.view.cards.CollectionCardView;
-import com.citymaps.mobile.android.view.cards.ExploreCardView;
+import com.citymaps.mobile.android.view.cards.*;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RatioCardView;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
@@ -92,6 +85,9 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	protected int mZoom;
 
 	protected RecyclerViewEx mRecyclerView;
+	protected RatioCardView mHeaderView;
+	protected TextView mHeaderTitleView1;
+	protected TextView mHeaderTitleView2;
 
 	protected ExploreViewAllAdapter mAdapter;
 
@@ -101,6 +97,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	protected ActionBarActivity mActivity;
 	protected ActionBar mActionBar;
+	protected View mActionBarView;
 	protected float mActionBarInitialElevation;
 	protected Drawable mActionBarBackgroundDrawable;
 	protected TextView mActionBarTitleView;
@@ -152,6 +149,39 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	}
 
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_explore_view_all, container, false);
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		int activityHorizontalMargin = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
+		mRecyclerView = (RecyclerViewEx) view.findViewById(R.id.recyclerview);
+		mRecyclerView.setTag(mCardType);
+		mRecyclerView.setLayoutManager(new ModifiedStaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL,
+				activityHorizontalMargin, activityHorizontalMargin));
+		mRecyclerView.setAdapter(mAdapter);
+		mRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
+		mRecyclerView.setOnScrollListener(mOnScrollListener);
+
+		mHeaderView = (RatioCardView) view.findViewById(R.id.explore_view_all_header_card);
+		mHeaderTitleView1 = (TextView) view.findViewById(R.id.explore_view_all_title1);
+		mHeaderTitleView2 = (TextView) view.findViewById(R.id.explore_view_all_title2);
+
+		mHeaderView.setOnSizeChangedListener(new OnSizeChangedListener() {
+			@Override
+			public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
+				mHeaderHeight = mHeaderView.getPerceivedHeight();
+			}
+		});
+
+		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mHeaderView.getLayoutParams();
+		lp.setMargins(-mHeaderView.getPaddingLeft(), -mHeaderView.getPaddingTop(),
+				-mHeaderView.getPaddingRight(), lp.bottomMargin);
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -163,25 +193,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		mActionBarBackgroundDrawable = getResources().getDrawable(R.drawable.ab_background);
 		mActionBarBackgroundDrawable.setAlpha(0);
 		mActionBar.setBackgroundDrawable(mActionBarBackgroundDrawable);
-		mActionBarShowing = false;
+		mActionBarView = ActivityUtils.getActionBarView(mActivity);
 		mActionBarTitleView = ActivityUtils.getActionBarTitleView(mActivity);
 		mActionBarTitleView.setAlpha(0.0f);
-	}
+		mActionBarShowing = false;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_explore_view_all, container, false);
-	}
-
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		mRecyclerView = (RecyclerViewEx) view.findViewById(R.id.recyclerview);
-		mRecyclerView.setTag(mCardType);
-		mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL));
-		mRecyclerView.setAdapter(mAdapter);
-		mRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
-		mRecyclerView.setOnScrollListener(mOnScrollListener);
+		if (mHeaderView != null) {
+			mHeaderView.setCardElevation(mActionBarInitialElevation);
+		}
 	}
 
 	@Override
@@ -232,34 +251,18 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	protected void showActionBar() {
 		if (!mActionBarShowing) {
-			mActionBarBackgroundDrawable.setAlpha(255);
-			mActionBar.setElevation(mActionBarInitialElevation);
-			HeaderViewHolder holder = getHeaderViewHolder();
-			if (holder != null) {
-				holder.mHeaderBackground.setCardElevation(0.0f);
-			}
-
 			ObjectAnimator animator = ObjectAnimator.ofFloat(mActionBarTitleView, "alpha", 0.0f, 1.0f);
 			animator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
 			animator.start();
-
 			mActionBarShowing = true;
 		}
 	}
 
 	protected void hideActionBar() {
 		if (mActionBarShowing) {
-			mActionBarBackgroundDrawable.setAlpha(0);
-			mActionBar.setElevation(0);
-			HeaderViewHolder holder = getHeaderViewHolder();
-			if (holder != null) {
-				holder.mHeaderBackground.setCardElevation(mActionBarInitialElevation);
-			}
-
 			ObjectAnimator animator = ObjectAnimator.ofFloat(mActionBarTitleView, "alpha", 1.0f, 0.0f);
 			animator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
 			animator.start();
-
 			mActionBarShowing = false;
 		}
 	}
@@ -271,6 +274,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 			super.onScrolled(recyclerView, dx, dy);
 			mScrollY += dy;
+
 			int target = mHeaderHeight - mActionBarHeight;
 			if (mScrollY > target) {
 				if (!mActionBarShowing) {
@@ -281,10 +285,13 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 					hideActionBar();
 				}
 			}
+
+			float y = 0.0f - (mHeaderView.getPaddingTop() + Math.min(mScrollY, target));
+			mHeaderView.setY(y);
 		}
 	};
 
-	protected abstract class ExploreViewAllAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	protected abstract class ExploreViewAllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		protected static final int HEADER_VIEW_TYPE = -1;
 
 		protected static final int HEADER_VIEW_COUNT = 1;
@@ -329,13 +336,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 				StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) headerView.getLayoutParams();
 				layoutParams.setFullSpan(true);
 				headerView.setLayoutParams(layoutParams);
-				final HeaderViewHolder holder = new HeaderViewHolder(headerView, mActionBarInitialElevation);
-				holder.mHeaderBackground.setOnSizeChangedListener(new OnSizeChangedListener() {
-					@Override
-					public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
-						mHeaderHeight = holder.mHeaderBackground.getPerceivedHeight();
-					}
-				});
+				HeaderViewHolder holder = new HeaderViewHolder(headerView, mActionBarInitialElevation);
 				headerView.setTag(holder);
 				return holder;
 			} else {
@@ -361,17 +362,13 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	public static class HeaderViewHolder extends ViewHolder {
 		public LinearLayout mLinearLayout;
 		public RatioCardView mHeaderBackground;
-		public TextView mTitleView1;
-		public TextView mTitleView2;
 		public Button mFilterButton;
 
 		public HeaderViewHolder(View itemView, float elevation) {
 			super(itemView);
 			mLinearLayout = (LinearLayout) itemView.findViewById(R.id.explore_view_all_header);
-			mHeaderBackground = (RatioCardView) itemView.findViewById(R.id.explore_view_all_header_ratiocardview);
+			mHeaderBackground = (RatioCardView) itemView.findViewById(R.id.explore_view_all_header_card);
 			mHeaderBackground.setCardElevation(elevation);
-			mTitleView1 = (TextView) itemView.findViewById(R.id.explore_view_all_title1);
-			mTitleView2 = (TextView) itemView.findViewById(R.id.explore_view_all_title2);
 			mFilterButton = (Button) itemView.findViewById(R.id.explore_view_all_header_filter_button);
 			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mHeaderBackground.getLayoutParams();
 			lp.setMargins(-mHeaderBackground.getPaddingLeft(), -mHeaderBackground.getPaddingTop(),
@@ -386,6 +383,12 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	}
 
 	public static class ExploreViewAllHeroFragment extends ExploreViewAllFragment<SearchResult> {
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
+			mHeaderTitleView1.setVisibility(View.GONE);
+			mHeaderTitleView2.setText(R.string.view_all_header_hero_title2);
+		}
 
 		@Override
 		protected ExploreViewAllAdapter newAdapter(Context context) {
@@ -399,10 +402,10 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		@Override
 		protected void onDataReturned(int size) {
-			((HeroAdapter) mAdapter).setItems(((HeroDataFragment) mDataFragment).mData);
+			mAdapter.setItems(((HeroDataFragment) mDataFragment).mData);
 		}
 
-		protected class HeroAdapter extends ExploreViewAllAdapter<SearchResult> {
+		protected class HeroAdapter extends ExploreViewAllAdapter {
 			public HeroAdapter(Context context) {
 				super(context);
 			}
@@ -414,6 +417,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 			@Override
 			public int getItemViewType(int position) {
+				// TODO
 				if (position == 0) {
 					return HEADER_VIEW_TYPE;
 				} else {
@@ -424,22 +428,25 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 			@Override
 			public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+				// TODO
 				return super.onCreateViewHolder(parent, viewType);
 			}
 
 			@Override
 			public void onBindViewHolder(ViewHolder holder, int position) {
+				// TODO
 				super.onBindViewHolder(holder, position);
-				if (holder instanceof HeaderViewHolder) {
-					HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-					headerViewHolder.mTitleView1.setVisibility(View.GONE);
-					headerViewHolder.mTitleView2.setText(R.string.view_all_header_hero_title2);
-				}
 			}
 		}
 	}
 
 	public static class ExploreViewAllFeaturedCollectionsFragment extends ExploreViewAllFragment<SearchResultCollection> {
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
+			mHeaderTitleView1.setText(R.string.view_all_header_featured_title1);
+			mHeaderTitleView2.setText(R.string.view_all_header_featured_collections_title2);
+		}
 
 		@Override
 		protected int getSpanCount() {
@@ -458,10 +465,10 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		@Override
 		protected void onDataReturned(int size) {
-			((FeaturedCollectionsAdapter) mAdapter).setItems(((FeaturedCollectionsDataFragment) mDataFragment).mData);
+			mAdapter.setItems(((FeaturedCollectionsDataFragment) mDataFragment).mData);
 		}
 
-		protected class FeaturedCollectionsAdapter extends ExploreViewAllAdapter<SearchResultCollection> {
+		protected class FeaturedCollectionsAdapter extends ExploreViewAllAdapter {
 			public FeaturedCollectionsAdapter(Context context) {
 				super(context);
 			}
@@ -478,8 +485,9 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 					holder = super.onCreateViewHolder(parent, viewType);
 				} else {
 					ExploreCardView cardView = new CollectionCardView(mContext);
-					holder = new ExploreViewAllViewHolder(cardView);
+					cardView.setVariableHeight(true);
 					cardView.setTag(CardType.FEATURED_COLLECTIONS);
+					holder = new ExploreViewAllViewHolder(cardView);
 					mCardSizeHelper.updateCardLayoutParams(cardView);
 				}
 				return holder;
@@ -489,9 +497,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 			public void onBindViewHolder(ViewHolder holder, int position) {
 				super.onBindViewHolder(holder, position);
 				if (holder instanceof HeaderViewHolder) {
-					HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-					headerViewHolder.mTitleView1.setText(R.string.view_all_header_featured_title1);
-					headerViewHolder.mTitleView2.setText(R.string.view_all_header_featured_collections_title2);
+
 				} else {
 					((CollectionCardView) holder.itemView).setData(mItems.get(position - HEADER_VIEW_COUNT));
 				}
@@ -500,6 +506,12 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	}
 
 	public static class ExploreViewAllFeaturedMappersFragment extends ExploreViewAllFragment<User> {
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
+			mHeaderTitleView1.setText(R.string.view_all_header_featured_title1);
+			mHeaderTitleView2.setText(R.string.view_all_header_featured_mappers_title2);
+		}
 
 		@Override
 		protected int getSpanCount() {
@@ -518,10 +530,10 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		@Override
 		protected void onDataReturned(int size) {
-			((FeaturedMappersAdapter) mAdapter).setItems(((FeaturedMappersDataFragment) mDataFragment).mData);
+			mAdapter.setItems(((FeaturedMappersDataFragment) mDataFragment).mData);
 		}
 
-		protected class FeaturedMappersAdapter extends ExploreViewAllAdapter<User> {
+		protected class FeaturedMappersAdapter extends ExploreViewAllAdapter {
 			public FeaturedMappersAdapter(Context context) {
 				super(context);
 			}
@@ -533,22 +545,38 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 			@Override
 			public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-				return super.onCreateViewHolder(parent, viewType);
+				ViewHolder holder;
+				if (viewType == HEADER_VIEW_TYPE) {
+					holder = super.onCreateViewHolder(parent, viewType);
+				} else {
+					ExploreCardView cardView = new UserCardView(mContext);
+					cardView.setVariableHeight(true);
+					cardView.setTag(CardType.FEATURED_MAPPERS);
+					holder = new ExploreViewAllViewHolder(cardView);
+					mCardSizeHelper.updateCardLayoutParams(cardView);
+				}
+				return holder;
 			}
 
 			@Override
 			public void onBindViewHolder(ViewHolder holder, int position) {
 				super.onBindViewHolder(holder, position);
 				if (holder instanceof HeaderViewHolder) {
-					HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-					headerViewHolder.mTitleView1.setText(R.string.view_all_header_featured_title1);
-					headerViewHolder.mTitleView2.setText(R.string.view_all_header_featured_mappers_title2);
+
+				} else {
+					((UserCardView) holder.itemView).setData(mItems.get(position - HEADER_VIEW_COUNT));
 				}
 			}
 		}
 	}
 
 	public static class ExploreViewAllFeaturedDealsFragment extends ExploreViewAllFragment<SearchResultPlace> {
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
+			mHeaderTitleView1.setText(R.string.view_all_header_featured_title1);
+			mHeaderTitleView2.setText(R.string.view_all_header_featured_deals_title2);
+		}
 
 		@Override
 		protected int getSpanCount() {
@@ -567,10 +595,10 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		@Override
 		protected void onDataReturned(int size) {
-			((FeaturedDealsAdapter) mAdapter).setItems(((FeaturedDealsDataFragment) mDataFragment).mData);
+			mAdapter.setItems(((FeaturedDealsDataFragment) mDataFragment).mData);
 		}
 
-		protected class FeaturedDealsAdapter extends ExploreViewAllAdapter<SearchResultPlace> {
+		protected class FeaturedDealsAdapter extends ExploreViewAllAdapter {
 			public FeaturedDealsAdapter(Context context) {
 				super(context);
 			}
@@ -582,16 +610,26 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 			@Override
 			public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-				return super.onCreateViewHolder(parent, viewType);
+				ViewHolder holder;
+				if (viewType == HEADER_VIEW_TYPE) {
+					holder = super.onCreateViewHolder(parent, viewType);
+				} else {
+					ExploreCardView cardView = new DealCardView(mContext);
+					cardView.setVariableHeight(true);
+					cardView.setTag(CardType.FEATURED_DEALS);
+					holder = new ExploreViewAllViewHolder(cardView);
+					mCardSizeHelper.updateCardLayoutParams(cardView);
+				}
+				return holder;
 			}
 
 			@Override
 			public void onBindViewHolder(ViewHolder holder, int position) {
 				super.onBindViewHolder(holder, position);
 				if (holder instanceof HeaderViewHolder) {
-					HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-					headerViewHolder.mTitleView1.setText(R.string.view_all_header_featured_title1);
-					headerViewHolder.mTitleView2.setText(R.string.view_all_header_featured_deals_title2);
+
+				} else {
+					((DealCardView) holder.itemView).setData(mItems.get(position - HEADER_VIEW_COUNT));
 				}
 			}
 		}

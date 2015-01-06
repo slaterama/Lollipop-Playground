@@ -53,6 +53,7 @@ public abstract class ExploreCardView<D> extends CardView
 		setCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_default_elevation));
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
+		setPreventCornerOverlap(false);
 		setOnClickListener(this);
 	}
 
