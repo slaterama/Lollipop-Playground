@@ -156,11 +156,12 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		int activityHorizontalMargin = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
 		mRecyclerView = (RecyclerViewEx) view.findViewById(R.id.recyclerview);
 		mRecyclerView.setTag(mCardType);
-		mRecyclerView.setLayoutManager(new ModifiedStaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL,
-				activityHorizontalMargin, activityHorizontalMargin));
+
+		StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL);
+		layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+		mRecyclerView.setLayoutManager(layoutManager);
 		mRecyclerView.setAdapter(mAdapter);
 		mRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mRecyclerView.setOnScrollListener(mOnScrollListener);
@@ -268,26 +269,28 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	}
 
 	protected RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
-		protected int mScrollY = 0;
-
 		@Override
 		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 			super.onScrolled(recyclerView, dx, dy);
-			mScrollY += dy;
-
-			int target = mHeaderHeight - mActionBarHeight;
-			if (mScrollY > target) {
-				if (!mActionBarShowing) {
-					showActionBar();
-				}
-			} else {
-				if (mActionBarShowing) {
-					hideActionBar();
+			int target = mActionBarHeight - mHeaderHeight;
+			View child = recyclerView.getChildAt(0);
+			if (child != null) {
+				int position = recyclerView.getChildPosition(child);
+				if (position == 0) {
+					int top = child.getTop();
+					float y = -mHeaderView.getPaddingTop() + Math.max(top, target);
+					mHeaderView.setY(y);
+					if (y < target) {
+						if (!mActionBarShowing) {
+							showActionBar();
+						}
+					} else {
+						if (mActionBarShowing) {
+							hideActionBar();
+						}
+					}
 				}
 			}
-
-			float y = 0.0f - (mHeaderView.getPaddingTop() + Math.min(mScrollY, target));
-			mHeaderView.setY(y);
 		}
 	};
 
@@ -354,6 +357,12 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 							2 * (holder.itemView instanceof CardView ? ((CardView) holder.itemView).getMaxCardElevation() : 0));
 					MarginLayoutParamsCompat.setMarginEnd(mlp, position < getItemCount() - 1 ? margin : 0);
 					holder.itemView.setLayoutParams(mlp);
+				}
+
+				if (position >= getItemCount() - 1) {
+					if (mDataFragment.mHasMore) {
+						mDataFragment.retrieveNext();
+					}
 				}
 			}
 		}
@@ -675,6 +684,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 		protected int mOffset = 0;
 		protected List<D> mData;
+		protected boolean mHasMore;
 
 		@Override
 		public void onAttach(Activity activity) {
@@ -717,12 +727,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	public static class HeroDataFragment extends DataFragment<SearchResult> {
 		@Override
 		public void retrieveNext() {
+			final int limit = DEFAULT_LIMIT;
 			SearchResultsRequest request = SearchResultsRequest.newFeaturedHeroItemsRequest(getActivity(),
-					mMapLocation, mMapZoom, mMapRadius, mOffset, DEFAULT_LIMIT,
+					mMapLocation, mMapZoom, mMapRadius, mOffset, limit,
 					new Response.Listener<List<SearchResult>>() {
 						@Override
 						public void onResponse(List<SearchResult> response) {
 							int size = response.size();
+							mHasMore = (size == limit);
 							mOffset += size;
 							mData.addAll(response);
 							Intent data = new Intent();
@@ -746,12 +758,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	public static class FeaturedCollectionsDataFragment extends DataFragment<SearchResultCollection> {
 		@Override
 		public void retrieveNext() {
+			final int limit = DEFAULT_LIMIT;
 			SearchResultsRequest request = SearchResultsRequest.newFeaturedCollectionsRequest(getActivity(),
-					mMapLocation, mMapZoom, mMapRadius, mOffset, DEFAULT_LIMIT,
+					mMapLocation, mMapZoom, mMapRadius, mOffset, limit,
 					new Response.Listener<List<SearchResult>>() {
 						@Override
 						public void onResponse(List<SearchResult> response) {
 							int size = response.size();
+							mHasMore = (size == limit);
 							mOffset += size;
 							for (SearchResult searchResult : response) {
 								if (searchResult instanceof SearchResultCollection) {
@@ -779,12 +793,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	public static class FeaturedMappersDataFragment extends DataFragment<User> {
 		@Override
 		public void retrieveNext() {
+			final int limit = DEFAULT_LIMIT;
 			UsersRequest request = UsersRequest.newFeaturedMappersRequest(getActivity(),
-					mMapLocation, mMapRadius, mOffset, DEFAULT_LIMIT,
+					mMapLocation, mMapRadius, mOffset, limit,
 					new Response.Listener<List<User>>() {
 						@Override
 						public void onResponse(List<User> response) {
 							int size = response.size();
+							mHasMore = (size == limit);
 							mOffset += size;
 							mData.addAll(response);
 							Intent data = new Intent();
@@ -808,12 +824,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	public static class FeaturedDealsDataFragment extends DataFragment<SearchResultPlace> {
 		@Override
 		public void retrieveNext() {
+			final int limit = DEFAULT_LIMIT;
 			SearchResultsRequest request = SearchResultsRequest.newFeaturedDealsRequest(getActivity(),
-					mMapLocation, mMapZoom, mMapRadius, mOffset, DEFAULT_LIMIT,
+					mMapLocation, mMapZoom, mMapRadius, mOffset, limit,
 					new Response.Listener<List<SearchResult>>() {
 						@Override
 						public void onResponse(List<SearchResult> response) {
 							int size = response.size();
+							mHasMore = (size == limit);
 							mOffset += size;
 							for (SearchResult searchResult : response) {
 								if (searchResult instanceof SearchResultPlace) {

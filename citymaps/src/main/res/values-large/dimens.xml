@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<item name="default_header_ratio" format="float" type="dimen">2</item>
+	<item name="default_header_ratio" format="float" type="dimen">2.5</item>
 
 	<!--
 	================================================================================
