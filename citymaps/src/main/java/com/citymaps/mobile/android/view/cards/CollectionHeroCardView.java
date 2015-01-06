@@ -23,7 +23,7 @@ public class CollectionHeroCardView extends HeroCardView<SearchResultCollection>
 
 	@Override
 	protected void init(Context context) {
-		inflate(context, R.layout.card_hero_collection_new, this);
+		inflate(context, R.layout.card_hero_collection, this);
 		super.init(context);
 	}
 

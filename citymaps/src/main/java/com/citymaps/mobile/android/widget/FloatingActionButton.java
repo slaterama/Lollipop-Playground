@@ -26,7 +26,7 @@ public class FloatingActionButton extends CardView {
 		initialize(context, attrs, R.attr.floatingActionButtonStyle);
 	}
 
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		initialize(context, attrs, defStyleAttr);

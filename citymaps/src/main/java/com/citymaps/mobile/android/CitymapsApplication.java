@@ -1,11 +1,11 @@
 package com.citymaps.mobile.android;
 
-import android.app.Application;
 import android.content.Intent;
+import android.support.multidex.MultiDexApplication;
 import com.citymaps.mobile.android.service.StartupService;
 import com.citymaps.mobile.android.util.LogEx;
 
-public class CitymapsApplication extends Application {
+public class CitymapsApplication extends MultiDexApplication {
 
 	public CitymapsApplication() {
 		super();

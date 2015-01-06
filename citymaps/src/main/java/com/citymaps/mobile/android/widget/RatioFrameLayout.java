@@ -38,7 +38,7 @@ public class RatioFrameLayout extends FrameLayout {
 		init(context, attrs, defStyle);
 	}
 
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public RatioFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
 		init(context, attrs, defStyleAttr);

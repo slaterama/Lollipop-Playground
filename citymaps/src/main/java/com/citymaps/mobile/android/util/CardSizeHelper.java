@@ -12,6 +12,8 @@ import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 public class CardSizeHelper
 		implements OnSizeChangedListener {
 	private Context mContext;
+	private int mAdditionalPaddingLeft;
+	private int mAdditionalPaddingRight;
 	private boolean mConstrainRecyclerHeight;
 
 	private boolean mUseCompatPadding;
@@ -31,7 +33,13 @@ public class CardSizeHelper
 	private Rect mFeaturedDealsCardRect;
 
 	public CardSizeHelper(Context context, boolean constrainRecyclerHeight) {
+		this(context, 0, 0, constrainRecyclerHeight);
+	}
+
+	public CardSizeHelper(Context context, int additionalPaddingLeft, int additionalPaddingRight, boolean constrainRecyclerHeight) {
 		mContext = context;
+		mAdditionalPaddingLeft = additionalPaddingLeft;
+		mAdditionalPaddingRight = additionalPaddingRight;
 		mConstrainRecyclerHeight = constrainRecyclerHeight;
 
 		// Get dimensions and other resources for recycler view card layout
@@ -52,11 +60,11 @@ public class CardSizeHelper
 	}
 
 	private int getCardSize(View view, float cardsAcross) {
-			/*
-			 * NOTE: This returns the "perceived" card width. That is, the width of the card minus any shadow/elevation element.
-			 * When setting the actual width of cards (i.e. in the createViewHolder method of the various adapters),
-			 * any "compat" padding will need to be added if appropriate.
-			 */
+		/*
+		 * NOTE: This returns the "perceived" card width. That is, the width of the card minus any shadow/elevation element.
+		 * When setting the actual width of cards (i.e. in the createViewHolder method of the various adapters),
+		 * any "compat" padding will need to be added if appropriate.
+		 */
 
 		int elevationFactor = (mUseCompatPadding ? mCardMaxElevation : 0);
 		int perceivedPaddingLeft = view.getPaddingLeft() + elevationFactor;

@@ -56,7 +56,7 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 	@Override
 	protected void init(Context context) {
 		super.init(context);
-		inflate(context, R.layout.card_collection_new, this);
+		inflate(context, R.layout.card_collection, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
@@ -129,6 +129,17 @@ public class CollectionCardView extends ExploreCardView<SearchResultCollection> 
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 			mImageContainers.add(mImageLoader.get(avatarUrl, mAvatarImageListener,
 					size, size, VolleyManager.OPTION_CIRCLE));
+		}
+	}
+
+	@Override
+	public void setVariableHeight(boolean variableHeight) {
+		if (variableHeight) {
+			mNameView.setMaxLines(Integer.MAX_VALUE);
+			mDescriptionView.setMaxLines(Integer.MAX_VALUE);
+		} else {
+			mNameView.setMaxLines(2);
+			mDescriptionView.setMaxLines(3);
 		}
 	}
 

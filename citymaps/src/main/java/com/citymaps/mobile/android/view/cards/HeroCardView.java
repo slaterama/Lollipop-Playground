@@ -112,6 +112,11 @@ public abstract class HeroCardView<D extends SearchResult> extends ExploreCardVi
 	}
 
 	@Override
+	public void setVariableHeight(boolean variableHeight) {
+		// No action
+	}
+
+	@Override
 	protected void resetView() {
 		super.resetView();
 		mMainImageView.setImageDrawable(null);

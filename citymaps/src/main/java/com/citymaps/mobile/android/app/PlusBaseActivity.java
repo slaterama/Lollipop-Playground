@@ -72,9 +72,13 @@ public abstract class PlusBaseActivity extends TrackedActionBarActivity
 
         // Initialize the PlusClient connection.
         // Scopes indicate the information about the user your application will be able to access.
+        /* TODO Broken as of 'com.google.android.gms:play-services:6.5.87', but we're current not using
+           this class so commenting it out for now */
+        /*
         mPlusClient =
                 new PlusClient.Builder(this, this, this).setScopes(Scopes.PLUS_LOGIN,
                         Scopes.PLUS_ME).build();
+        */
     }
 
     /**

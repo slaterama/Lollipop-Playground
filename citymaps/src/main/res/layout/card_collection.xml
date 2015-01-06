@@ -1,116 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<merge
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:support="http://schemas.android.com/apk/res-auto"
-		xmlns:citymaps="http://schemas.android.com/apk/res-auto"
-		xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		support:cardElevation="2dp"
-		support:cardUseCompatPadding="true"
-		support:cardPreventCornerOverlap="true">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+	   xmlns:citymaps="http://schemas.android.com/apk/res-auto"
+	   xmlns:tools="http://schemas.android.com/tools"
+	   android:layout_width="match_parent"
+	   android:layout_height="match_parent">
 
 	<LinearLayout
 			android:id="@id/card_main_container"
 			android:layout_width="match_parent"
-			tools:layout_width="250dp"
 			android:layout_height="wrap_content"
+			tools:layout_width="250dp"
 			android:orientation="vertical"
 			android:showDividers="middle"
 			android:divider="@drawable/divider_horizontal_grey_1px">
 
-		<RelativeLayout
+		<LinearLayout
+				android:id="@id/card_info_container"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:showDividers="middle"
+				android:divider="@drawable/divider_horizontal_grey_1px">
+
+			<RelativeLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content">
+
+				<FrameLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:background="@color/default_image_background">
+
+					<com.citymaps.mobile.android.widget.RatioImageView
+							android:id="@id/card_image"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:scaleType="centerCrop"
+							android:contentDescription="@null"
+							citymaps:ratio="1.0"
+							android:visibility="visible"/>
+
+				</FrameLayout>
+
+				<TextView
+						android:id="@+id/card_marker_count"
+						android:layout_width="@dimen/mini_avatar_size"
+						android:layout_height="@dimen/mini_avatar_size"
+						android:layout_alignParentTop="true"
+						android:layout_alignParentRight="true"
+						android:layout_alignParentEnd="true"
+						android:layout_marginTop="@dimen/component_baseline_grid"
+						android:layout_marginRight="@dimen/component_baseline_grid"
+						android:layout_marginEnd="@dimen/component_baseline_grid"
+						android:gravity="center"
+						android:textAppearance="?android:textAppearanceMedium"
+						tools:text="25"
+						android:background="@drawable/avatar_background_collection_count"
+						tools:ignore="RtlHardcoded" />
+
+			</RelativeLayout>
 
 			<FrameLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="@color/default_image_background">
+					android:padding="@dimen/component_baseline_grid">
 
-				<com.citymaps.mobile.android.widget.RatioImageView
-						android:id="@id/card_image"
+				<LinearLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:scaleType="centerCrop"
-						android:contentDescription="@null"
-						citymaps:ratio="1.0"
-						android:visibility="visible"/>
+						android:orientation="vertical">
+
+					<TextView
+							android:id="@id/card_name"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:textAppearanceMedium"
+							android:maxLines="2"
+							android:ellipsize="end"
+							tools:text="Places Citymaps Loves The Most In The Whole Wide World" />
+
+					<TextView
+							android:id="@id/card_description"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:textAppearanceSmall"
+							android:maxLines="3"
+							android:ellipsize="end"
+							tools:text="The best places around the Citymaps office that we favorite for food." />
+
+				</LinearLayout>
+
+				<!-- The following LinearLayout is to ensure a constant card height,
+				     regardless of the length of the name/description -->
+
+				<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:orientation="vertical"
+						android:visibility="invisible">
+
+					<TextView
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:textAppearanceMedium"
+							android:lines="2"
+							android:maxLines="2" />
+
+					<TextView
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:textAppearanceSmall"
+							android:lines="3"
+							android:maxLines="3" />
+
+				</LinearLayout>
 
 			</FrameLayout>
 
-			<TextView
-					android:id="@+id/card_marker_count"
-					android:layout_width="@dimen/mini_avatar_size"
-					android:layout_height="@dimen/mini_avatar_size"
-					android:layout_alignParentTop="true"
-					android:layout_alignParentRight="true"
-					android:layout_alignParentEnd="true"
-					android:layout_marginTop="@dimen/component_baseline_grid"
-					android:layout_marginRight="@dimen/component_baseline_grid"
-					android:layout_marginEnd="@dimen/component_baseline_grid"
-					android:gravity="center"
-					android:textAppearance="?android:textAppearanceMedium"
-					tools:text="25"
-					android:background="@drawable/avatar_background_collection_count" />
-
-		</RelativeLayout>
-
-		<FrameLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:padding="@dimen/component_baseline_grid">
-
-			<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:orientation="vertical"
-					android:visibility="invisible">
-
-				<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:textAppearance="?android:textAppearanceMedium"
-						android:lines="2"
-						android:maxLines="2" />
-
-				<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:textAppearance="?android:textAppearanceSmall"
-						android:lines="3"
-						android:maxLines="3" />
-
-			</LinearLayout>
-
-			<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:orientation="vertical">
-
-				<TextView
-						android:id="@id/card_name"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:textAppearance="?android:textAppearanceMedium"
-						android:maxLines="2"
-						android:ellipsize="end"
-						tools:text="Places Citymaps Loves The Most In The Whole Wide World" />
-
-				<TextView
-						android:id="@id/card_description"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:textAppearance="?android:textAppearanceSmall"
-						android:lines="3"
-						android:maxLines="3"
-						android:ellipsize="end"
-						tools:text="The best places around the Citymaps office that we favorite for food." />
-
-			</LinearLayout>
-
-		</FrameLayout>
+		</LinearLayout>
 
 		<LinearLayout
 				android:id="@id/card_avatar_container"
@@ -128,7 +135,8 @@
 					android:scaleType="centerCrop"
 					tools:src="@drawable/default_fb_avatar"
 					android:contentDescription="@null"
-					android:background="@drawable/avatar_border_round_white_2dp" />
+					android:background="@drawable/avatar_border_round_white_2dp"
+					android:clickable="true" />
 
 			<LinearLayout
 					android:layout_width="0dp"
@@ -136,7 +144,9 @@
 					android:layout_weight="1"
 					android:layout_marginLeft="@dimen/component_baseline_grid"
 					android:layout_marginStart="@dimen/component_baseline_grid"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:clickable="true"
+					tools:ignore="RtlHardcoded">
 
 				<TextView
 						android:layout_width="wrap_content"
@@ -149,19 +159,11 @@
 						android:id="@id/card_username"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_marginLeft="-8dp"
-						android:layout_marginStart="-8dp"
-						android:layout_marginTop="-8dp"
-						android:layout_marginRight="-8dp"
-						android:layout_marginEnd="-8dp"
-						android:layout_marginBottom="-8dp"
-						android:padding="8dp"
 						android:maxLines="1"
 						android:ellipsize="end"
 						android:textStyle="bold"
 						android:textColor="@color/color_primary_dark"
 						android:background="?android:selectableItemBackground"
-						android:clickable="true"
 						tools:text="ChrisW" />
 
 			</LinearLayout>
