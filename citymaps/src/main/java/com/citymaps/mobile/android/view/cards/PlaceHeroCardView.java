@@ -23,7 +23,7 @@ public class PlaceHeroCardView extends HeroCardView<SearchResultPlace> {
 
 	@Override
 	protected void init(Context context) {
-		inflate(context, R.layout.card_hero_place_new, this);
+		inflate(context, R.layout.card_hero_place, this);
 		super.init(context);
 	}
 

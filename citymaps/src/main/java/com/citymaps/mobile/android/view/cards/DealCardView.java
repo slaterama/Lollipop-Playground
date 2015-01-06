@@ -54,7 +54,7 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 	@Override
 	protected void init(Context context) {
 		super.init(context);
-		inflate(context, R.layout.card_deal_new, this);
+		inflate(context, R.layout.card_deal, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
@@ -140,6 +140,17 @@ public class DealCardView extends ExploreCardView<SearchResultPlace> {
 			if (useAvatarImageAsMainImage) {
 				mImageContainers.add(mImageLoader.get(foursquarePhotoUrl, mMainImageListener));
 			}
+		}
+	}
+
+	@Override
+	public void setVariableHeight(boolean variableHeight) {
+		if (variableHeight) {
+//			mNameView.setMaxLines(Integer.MAX_VALUE);
+			mNameView.setMinLines(0);
+		} else {
+//			mNameView.setMaxLines(5);
+			mNameView.setMinLines(5);
 		}
 	}
 

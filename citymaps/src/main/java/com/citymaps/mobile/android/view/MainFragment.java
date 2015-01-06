@@ -178,7 +178,7 @@ public class MainFragment extends Fragment {
 		return inflater.inflate(R.layout.fragment_main, container, false);
 	}
 
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);

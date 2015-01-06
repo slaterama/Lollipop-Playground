@@ -54,7 +54,7 @@ public class UserCardView extends ExploreCardView<User> {
 	@Override
 	protected void init(Context context) {
 		super.init(context);
-		inflate(context, R.layout.card_user_new, this);
+		inflate(context, R.layout.card_user, this);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);
@@ -112,6 +112,19 @@ public class UserCardView extends ExploreCardView<User> {
 			int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 			mImageContainers.add(mImageLoader.get(avatarUrl, mAvatarImageListener,
 					size, size, VolleyManager.OPTION_CIRCLE));
+		}
+	}
+
+	@Override
+	public void setVariableHeight(boolean variableHeight) {
+		if (variableHeight) {
+			mNameView.setMaxLines(Integer.MAX_VALUE);
+			mUsernameView.setMaxLines(Integer.MAX_VALUE);
+			mFollowersView.setMaxLines(Integer.MAX_VALUE);
+		} else {
+			mNameView.setMaxLines(2);
+			mUsernameView.setMaxLines(1);
+			mFollowersView.setMaxLines(1);
 		}
 	}
 

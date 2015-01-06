@@ -81,6 +81,11 @@ public class ViewAllCardView extends ExploreCardView<CardType> {
 	}
 
 	@Override
+	public void setVariableHeight(boolean variableHeight) {
+		// No action
+	}
+
+	@Override
 	public void onClick(View v) {
 		Context context = getContext();
 		Intent intent = new Intent(context, ExploreViewAllActivity.class);

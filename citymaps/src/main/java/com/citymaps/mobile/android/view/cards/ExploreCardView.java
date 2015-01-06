@@ -1,6 +1,5 @@
 package com.citymaps.mobile.android.view.cards;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -75,6 +74,8 @@ public abstract class ExploreCardView<D> extends CardView
 	public abstract void setDefaultCardSize(int size);
 
 	public abstract void onBindView(D data, boolean inInitialLayout);
+
+	public abstract void setVariableHeight(boolean variableHeight);
 
 	public void onSetPendingBitmap(ImageView imageView, Bitmap bitmap) {
 		new AnimatingImageListener(getContext(), imageView).setBitmap(bitmap, false);

@@ -107,7 +107,6 @@ public class ActivityUtils {
 				theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
 			actionBarHeight = TypedValue.complexToDimensionPixelOffset(tv.data, activity.getResources().getDisplayMetrics());
 		}
-		LogEx.d(String.format("actionBarHeight=%d", actionBarHeight));
 		return actionBarHeight;
 	}
 
