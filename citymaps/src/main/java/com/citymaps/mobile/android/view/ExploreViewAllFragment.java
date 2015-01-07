@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.Response;
@@ -35,6 +36,7 @@ import com.citymaps.mobile.android.util.*;
 import com.citymaps.mobile.android.view.cards.*;
 import com.citymaps.mobile.android.widget.OnSizeChangedListener;
 import com.citymaps.mobile.android.widget.RatioCardView;
+import com.citymaps.mobile.android.widget.RatioFrameLayout;
 import com.citymaps.mobile.android.widget.RecyclerViewEx;
 
 import java.util.ArrayList;
@@ -85,7 +87,7 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 	protected int mZoom;
 
 	protected RecyclerViewEx mRecyclerView;
-	protected RatioCardView mHeaderView;
+	protected CardView mHeaderView;
 	protected TextView mHeaderTitleView1;
 	protected TextView mHeaderTitleView2;
 
@@ -104,6 +106,8 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	protected int mActionBarHeight;
 	protected int mHeaderHeight;
+
+	protected View mHeaderPlaceholderView;
 
 	protected boolean mActionBarShowing = false;
 
@@ -160,23 +164,14 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 		mRecyclerView.setTag(mCardType);
 
 		StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL);
-		layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
 		mRecyclerView.setLayoutManager(layoutManager);
 		mRecyclerView.setAdapter(mAdapter);
 		mRecyclerView.setOnSizeChangedListener(mCardSizeHelper);
 		mRecyclerView.setOnScrollListener(mOnScrollListener);
 
-		mHeaderView = (RatioCardView) view.findViewById(R.id.explore_view_all_header_card);
+		mHeaderView = (CardView) view.findViewById(R.id.explore_view_all_header_card);
 		mHeaderTitleView1 = (TextView) view.findViewById(R.id.explore_view_all_title1);
 		mHeaderTitleView2 = (TextView) view.findViewById(R.id.explore_view_all_title2);
-
-		mHeaderView.setOnSizeChangedListener(new OnSizeChangedListener() {
-			@Override
-			public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
-				mHeaderHeight = mHeaderView.getPerceivedHeight();
-			}
-		});
-
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mHeaderView.getLayoutParams();
 		lp.setMargins(-mHeaderView.getPaddingLeft(), -mHeaderView.getPaddingTop(),
 				-mHeaderView.getPaddingRight(), lp.bottomMargin);
@@ -277,10 +272,10 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 			if (child != null) {
 				int position = recyclerView.getChildPosition(child);
 				if (position == 0) {
-					int top = child.getTop();
-					float y = -mHeaderView.getPaddingTop() + Math.max(top, target);
+					int top = child.getTop() - mHeaderView.getPaddingTop();
+					float y = Math.max(top, target);
 					mHeaderView.setY(y);
-					if (y < target) {
+					if (y <= target) {
 						if (!mActionBarShowing) {
 							showActionBar();
 						}
@@ -338,8 +333,16 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 				View headerView = mInflater.inflate(R.layout.explore_view_all_header, parent, false);
 				StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) headerView.getLayoutParams();
 				layoutParams.setFullSpan(true);
-				headerView.setLayoutParams(layoutParams);
-				HeaderViewHolder holder = new HeaderViewHolder(headerView, mActionBarInitialElevation);
+				//headerView.setLayoutParams(layoutParams);
+
+				HeaderViewHolder holder = new HeaderViewHolder(headerView);
+				holder.mHeaderPlaceholder.setOnSizeChangedListener(new OnSizeChangedListener() {
+					@Override
+					public void onSizeChanged(View v, int w, int h, int oldw, int oldh) {
+						mHeaderHeight = h;
+						mHeaderView.getLayoutParams().height = h + mHeaderView.getPaddingBottom();
+					}
+				});
 				headerView.setTag(holder);
 				return holder;
 			} else {
@@ -370,18 +373,19 @@ public abstract class ExploreViewAllFragment<D> extends Fragment {
 
 	public static class HeaderViewHolder extends ViewHolder {
 		public LinearLayout mLinearLayout;
-		public RatioCardView mHeaderBackground;
+		public RatioFrameLayout mHeaderPlaceholder;
 		public Button mFilterButton;
 
-		public HeaderViewHolder(View itemView, float elevation) {
+		public HeaderViewHolder(View itemView) {
 			super(itemView);
 			mLinearLayout = (LinearLayout) itemView.findViewById(R.id.explore_view_all_header);
-			mHeaderBackground = (RatioCardView) itemView.findViewById(R.id.explore_view_all_header_card);
-			mHeaderBackground.setCardElevation(elevation);
+			mHeaderPlaceholder = (RatioFrameLayout) itemView.findViewById(R.id.explore_view_all_header_placeholder);
 			mFilterButton = (Button) itemView.findViewById(R.id.explore_view_all_header_filter_button);
+			/*
 			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mHeaderBackground.getLayoutParams();
 			lp.setMargins(-mHeaderBackground.getPaddingLeft(), -mHeaderBackground.getPaddingTop(),
 					-mHeaderBackground.getPaddingRight(), lp.bottomMargin);
+			*/
 		}
 	}
 

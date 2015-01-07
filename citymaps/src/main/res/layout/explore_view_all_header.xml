@@ -7,24 +7,16 @@
 		android:layout_height="wrap_content"
 		android:orientation="vertical">
 
-	<com.citymaps.mobile.android.widget.RatioCardView
-			android:id="@+id/explore_view_all_header_card"
+	<com.citymaps.mobile.android.widget.RatioFrameLayout
+			android:id="@+id/explore_view_all_header_placeholder"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:ratio="@dimen/default_header_ratio"
-			app:cardCornerRadius="0dp"
-			app:baseOnSmallestWidth="true"
-			app:cardElevation="@dimen/default_elevation"
-			app:cardMaxElevation="@dimen/default_elevation"
-			app:cardUseCompatPadding="true"
-			app:cardBackgroundColor="@color/color_primary"
-			android:visibility="invisible" />
+			app:ratio="@dimen/default_header_ratio" />
 
 	<Button
 			android:id="@+id/explore_view_all_header_filter_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/component_baseline_grid"
 			android:layout_gravity="center"
 			android:text="@string/view_all_filter_everything"/>
 

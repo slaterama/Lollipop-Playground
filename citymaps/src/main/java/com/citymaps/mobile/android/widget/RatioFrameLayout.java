@@ -23,6 +23,8 @@ public class RatioFrameLayout extends FrameLayout {
 
 	private DisplayMetrics mDisplayMetrics;
 
+	private OnSizeChangedListener mOnSizeChangedListener;
+
 	public RatioFrameLayout(Context context) {
 		super(context);
 		init(context, null, 0);
@@ -172,5 +174,17 @@ public class RatioFrameLayout extends FrameLayout {
 	public void setRatio(float ratio) {
 		mRatio = Math.max(ratio, 0.0f);
 		forceLayout();
+	}
+
+	public void setOnSizeChangedListener(OnSizeChangedListener onSizeChangedListener) {
+		mOnSizeChangedListener = onSizeChangedListener;
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		if (mOnSizeChangedListener != null) {
+			mOnSizeChangedListener.onSizeChanged(this, w, h, oldw, oldh);
+		}
 	}
 }

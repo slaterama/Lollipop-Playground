@@ -1,21 +1,18 @@
 package com.citymaps.mobile.android.view;
 
 import android.content.*;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import com.citymaps.mobile.android.R;
 import com.citymaps.mobile.android.app.SessionManager;
 import com.citymaps.mobile.android.app.TrackedActionBarActivity;
 import com.citymaps.mobile.android.map.MapViewService;
 import com.citymaps.mobile.android.model.Config;
 import com.citymaps.mobile.android.model.User;
-import com.citymaps.mobile.android.notused_provider.config.ConfigContract.Settings;
 import com.citymaps.mobile.android.util.IntentUtils;
 import com.citymaps.mobile.android.util.LogEx;
 import com.citymaps.mobile.android.util.SharedPrefUtils;
@@ -134,7 +131,7 @@ public class MainActivity extends TrackedActionBarActivity
 				startActivity(IntentUtils.getUserIntent(userId));
 				return true;
 			case R.id.action_friend_finder:
-				doTest();
+
 				return true;
 		}
         return super.onOptionsItemSelected(item);
@@ -165,6 +162,7 @@ public class MainActivity extends TrackedActionBarActivity
 		}
 	}
 
+	/*
 	public void doTest() {
 		ContentResolver resolver = getContentResolver();
 
@@ -181,4 +179,5 @@ public class MainActivity extends TrackedActionBarActivity
 				new String[]{"app_version_code"},
 				null);
 	}
+	*/
 }
