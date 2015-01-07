@@ -7,7 +7,7 @@
 		<item name="fabMaxElevation">@dimen/fab_default_elevation</item>
 		<item name="fabUseCompatPadding">false</item>
 		<!--<item name="fabPreventCornerOverlap">true</item>-->
-		<item name="android:foreground">?android:selectableItemBackground</item>
+		<item name="android:foreground">?selectableItemBackgroundBorderless</item>
 	</style>
 
 	<style name="Widget.FloatingActionButton.Light">

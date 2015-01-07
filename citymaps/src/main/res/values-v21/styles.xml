@@ -2,15 +2,15 @@
 <resources>
 
 	<style name="Widget.Material.FloatingActionButton" parent="@style/Widget.FloatingActionButton">
-		<item name="android:foreground">?android:selectableItemBackgroundBorderless</item>
+		<item name="android:foreground">?selectableItemBackgroundBorderless</item>
 	</style>
 
 	<style name="Widget.Material.FloatingActionButton.Light" parent="@style/Widget.FloatingActionButton.Light">
-		<item name="android:foreground">?android:selectableItemBackgroundBorderless</item>
+		<item name="android:foreground">?selectableItemBackgroundBorderless</item>
 	</style>
 
 	<style name="Widget.Material.FloatingActionButton.Dark" parent="@style/Widget.FloatingActionButton.Dark">
-		<item name="android:foreground">?android:selectableItemBackgroundBorderless</item>
+		<item name="android:foreground">?selectableItemBackgroundBorderless</item>
 	</style>
 
 	<style name="Widget.Material.FloatingActionButtonCompat" parent="@android:style/Widget.Material.ImageButton">

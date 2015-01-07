@@ -163,7 +163,7 @@
 						android:ellipsize="end"
 						android:textStyle="bold"
 						android:textColor="@color/color_primary_dark"
-						android:background="?android:selectableItemBackground"
+						android:background="?selectableItemBackground"
 						tools:text="ChrisW" />
 
 			</LinearLayout>

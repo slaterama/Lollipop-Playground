@@ -2,7 +2,10 @@ package com.citymaps.mobile.android.view.cards;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -54,6 +57,19 @@ public abstract class ExploreCardView<D> extends CardView
 		setMaxCardElevation(resources.getDimensionPixelOffset(R.dimen.explore_card_max_elevation));
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
 		setPreventCornerOverlap(false);
+
+		int attr;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			attr = android.R.attr.selectableItemBackground;
+		} else {
+			attr = android.R.attr.selectableItemBackground;
+		}
+		TypedArray a = context.getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {attr});
+		int attributeResourceId = a.getResourceId(0, 0);
+		Drawable drawable = getResources().getDrawable(attributeResourceId);
+		setForeground(drawable);
+		a.recycle();
+
 		setOnClickListener(this);
 	}
 
