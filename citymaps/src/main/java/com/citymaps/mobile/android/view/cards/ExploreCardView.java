@@ -58,17 +58,16 @@ public abstract class ExploreCardView<D> extends CardView
 		setUseCompatPadding(resources.getBoolean(R.bool.explore_card_use_compat_padding));
 		setPreventCornerOverlap(false);
 
-		int attr;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			attr = android.R.attr.selectableItemBackground;
-		} else {
-			attr = android.R.attr.selectableItemBackground;
+		// This is a trick to get the correct ripple (or "normal" for < Lollipop) background for
+		// Explore CardViews. When getting the background directly from the Theme, it was resulting in
+		// a deep pink color.
+
+		View dummy = View.inflate(context, R.layout.card_dummy_selectable_background, null);
+		if (dummy != null) {
+			Drawable background = dummy.getBackground();
+			dummy.setBackground(null);
+			setForeground(background);
 		}
-		TypedArray a = context.getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {attr});
-		int attributeResourceId = a.getResourceId(0, 0);
-		Drawable drawable = getResources().getDrawable(attributeResourceId);
-		setForeground(drawable);
-		a.recycle();
 
 		setOnClickListener(this);
 	}

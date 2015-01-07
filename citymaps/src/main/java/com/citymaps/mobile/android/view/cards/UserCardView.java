@@ -53,8 +53,8 @@ public class UserCardView extends ExploreCardView<User> {
 
 	@Override
 	protected void init(Context context) {
-		super.init(context);
 		inflate(context, R.layout.card_user, this);
+		super.init(context);
 		mMainContainerView = (ViewGroup) findViewById(R.id.card_main_container);
 		mInfoContainerView = (ViewGroup) findViewById(R.id.card_info_container);
 		mMainImageView = (ImageView) findViewById(R.id.card_image);

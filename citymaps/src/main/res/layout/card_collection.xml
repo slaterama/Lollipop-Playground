@@ -38,7 +38,7 @@
 							android:scaleType="centerCrop"
 							android:contentDescription="@null"
 							citymaps:ratio="1.0"
-							android:visibility="visible"/>
+							android:visibility="visible" />
 
 				</FrameLayout>
 
@@ -171,5 +171,12 @@
 		</LinearLayout>
 
 	</LinearLayout>
+
+	<View
+			android:id="@+id/card_selectable_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="?selectableItemBackgroundBorderless"
+			android:visibility="gone" />
 
 </merge>
